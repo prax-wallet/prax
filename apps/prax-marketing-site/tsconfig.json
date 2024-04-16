@@ -1,0 +1,5 @@
+{
+  "extends": "@repo/typescript-config/vite.json",
+  "include": ["src", "*.ts", "__mocks__"],
+  "exclude": ["node_modules"]
+}
