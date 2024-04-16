@@ -29,7 +29,9 @@ jobs:
         run: pnpm build
 
       - name: Deploy dapp static site to firebase
-        uses: w9jds/firebase-action@v13
+        # N.B. the firebase-action helper doesn't support semver, e.g. `@v13`,
+        # so we hardcode a version.
+        uses: w9jds/firebase-action@v13.7.2
         with:
           args: deploy
         env:
