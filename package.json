@@ -1,6 +1,7 @@
 {
   "name": "prax-web",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
@@ -9,26 +10,26 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.2",
-    "@eslint/js": "^9.0.0",
+    "@eslint/js": "^9.2.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@typescript-eslint/eslint-plugin": "^7.7.0",
-    "@typescript-eslint/parser": "^7.7.0",
-    "@types/eslint": "^8.56.9",
-    "eslint": "^9.0.0",
+    "@types/eslint": "^8.56.10",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
+    "eslint": "^9.2.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-config-turbo": "^1.13.2",
+    "eslint-config-turbo": "^1.13.3",
     "eslint-plugin-react": "7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.6",
     "eslint-plugin-tailwindcss": "^3.15.1",
-    "eslint-plugin-turbo": "^1.13.2",
+    "eslint-plugin-turbo": "^1.13.3",
     "prettier": "^3.2.5",
-    "turbo": "^1.13.2",
+    "turbo": "^1.13.3",
     "typescript": "^5.4.5",
-    "vite": "^5.2.9"
+    "vite": "^5.2.11"
   },
-  "packageManager": "pnpm@8.9.0",
+  "packageManager": "pnpm@9.0.6",
   "engines": {
     "node": ">=18"
   }
