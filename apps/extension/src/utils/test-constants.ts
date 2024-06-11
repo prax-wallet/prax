@@ -11,5 +11,5 @@ export const localTestDefaults: LocalStorageState = {
   grpcEndpoint: undefined,
   passwordKeyPrint: undefined,
   frontendUrl: EXAMPLE_MINIFRONT_URL,
-  numeraireAssetId: undefined
+  numeraires: [],
 };

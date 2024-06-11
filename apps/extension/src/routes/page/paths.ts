@@ -8,6 +8,7 @@ export enum PagePath {
   SET_PASSWORD = '/welcome/set-password',
   SET_GRPC_ENDPOINT = '/welcome/set-grpc-endpoint',
   SET_DEFAULT_FRONTEND = '/welcome/set-default-frontend',
+  SET_NUMERAIRES = '/welcome/set-numeraires',
   RESTORE_PASSWORD = '/restore-password',
   RESTORE_PASSWORD_INDEX = '/restore-password/',
   RESTORE_PASSWORD_SET_PASSWORD = '/restore-password/set-password',

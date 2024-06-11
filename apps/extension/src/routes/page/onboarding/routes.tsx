@@ -8,6 +8,7 @@ import { SetPassword } from './set-password';
 import { pageIndexLoader } from '..';
 import { SetGrpcEndpoint } from './set-grpc-endpoint';
 import { SetDefaultFrontendPage } from './default-frontend';
+import { SetNumerairesPage } from './set-numeraire';
 
 export const onboardingRoutes = [
   {
@@ -37,6 +38,10 @@ export const onboardingRoutes = [
   {
     path: PagePath.SET_DEFAULT_FRONTEND,
     element: <SetDefaultFrontendPage />,
+  },
+  {
+    path: PagePath.SET_NUMERAIRES,
+    element: <SetNumerairesPage />,
   },
   {
     path: PagePath.ONBOARDING_SUCCESS,

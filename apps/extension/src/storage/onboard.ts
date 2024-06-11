@@ -48,19 +48,18 @@ export const onboardWallet = async (): Promise<WalletJson> => {
   });
 };
 
-
-export const onboardNumeraire = async (): Promise<string> => {
-  const numeraireAssetId = await localExtStorage.get('numeraireAssetId');
-  if (numeraireAssetId) return numeraireAssetId;
+export const onboardNumeraires = async (): Promise<string[]> => {
+  const numeraires = await localExtStorage.get('numeraires');
+  if (numeraires) return numeraires;
 
   return new Promise(resolve => {
     const storageListener = (changes: Record<string, { newValue?: unknown }>) => {
-      const storageItem = changes['numeraireAssetId']?.newValue as
-          | StorageItem<LocalStorageState['numeraireAssetId']>
-          | undefined;
-      const numeraireAssetId = storageItem?.value;
-      if (numeraireAssetId) {
-        resolve(numeraireAssetId);
+      const storageItem = changes['numeraires']?.newValue as
+        | StorageItem<LocalStorageState['numeraires']>
+        | undefined;
+      const numeraires = storageItem?.value;
+      if (numeraires) {
+        resolve(numeraires);
         localExtStorage.removeListener(storageListener);
       }
     };

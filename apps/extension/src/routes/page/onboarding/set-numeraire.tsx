@@ -5,19 +5,19 @@ import { PagePath } from '../paths';
 import { DefaultFrontendForm } from '../../../shared/components/default-frontend-form';
 import { FormEventHandler } from 'react';
 
-export const SetDefaultFrontendPage = () => {
+export const SetNumerairesPage = () => {
   const navigate = usePageNav();
 
   const onSubmit: FormEventHandler = (event): void => {
     event.preventDefault();
-    navigate(PagePath.SET_NUMERAIRES);
+    navigate(PagePath.ONBOARDING_SUCCESS);
   };
 
   return (
     <FadeTransition>
       <Card className='w-[400px]' gradient>
         <CardHeader>
-          <CardTitle>Select your preferred frontend app</CardTitle>
+          <CardTitle>In which token denomination would you prefer to price assets?</CardTitle>
         </CardHeader>
 
         <CardDescription>

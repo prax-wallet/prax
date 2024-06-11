@@ -7,17 +7,16 @@ import {
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { localExtStorage } from './storage/local';
-import {onboardGrpcEndpoint, onboardNumeraire, onboardWallet} from './storage/onboard';
+import { onboardGrpcEndpoint, onboardNumeraires, onboardWallet } from './storage/onboard';
 import { Services } from '@penumbra-zone/services-context';
 import { ServicesMessage } from './message/services';
 import { WalletServices } from '@penumbra-zone/types/services';
-import {AssetId} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
   const grpcEndpoint = await onboardGrpcEndpoint();
-  const numeraireAssetId = await onboardNumeraire();
-
+  const numeraires = await onboardNumeraires();
 
   const services = new Services({
     grpcEndpoint,
@@ -25,7 +24,7 @@ export const startWalletServices = async () => {
     idbVersion: IDB_VERSION,
     walletId: WalletId.fromJsonString(wallet.id),
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
-    numeraireAssetId: AssetId.fromJsonString(numeraireAssetId)
+    numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
   });
 
   const { blockProcessor, indexedDb } = await services.getWalletServices();
