@@ -7,7 +7,7 @@ import {
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { localExtStorage } from './storage/local';
-import { onboardGrpcEndpoint, onboardNumeraires, onboardWallet } from './storage/onboard';
+import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
 import { Services } from '@penumbra-zone/services-context';
 import { ServicesMessage } from './message/services';
 import { WalletServices } from '@penumbra-zone/types/services';
@@ -16,7 +16,7 @@ import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/a
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
   const grpcEndpoint = await onboardGrpcEndpoint();
-  const numeraires = await onboardNumeraires();
+  let numeraires = await localExtStorage.get('numeraires');
 
   const services = new Services({
     grpcEndpoint,
@@ -94,7 +94,7 @@ const attachServiceControlListener = ({
         return true;
       case ServicesMessage.ChangeNumeraires:
         void (async () => {
-          let newNumeraires = await localExtStorage.get('numeraires');
+          const newNumeraires = await localExtStorage.get('numeraires');
           blockProcessor.setNumeraires(newNumeraires.map(n => AssetId.fromJsonString(n)));
         });
         return true;
