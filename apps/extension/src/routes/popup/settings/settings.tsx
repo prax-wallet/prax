@@ -1,4 +1,5 @@
 import {
+  BarChartIcon,
   DashboardIcon,
   ExitIcon,
   HomeIcon,
@@ -33,6 +34,11 @@ const links = [
     title: 'Connected sites',
     icon: <Link1Icon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_CONNECTED_SITES,
+  },
+  {
+    title: 'Price indexer',
+    icon: <BarChartIcon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_NUMERAIRES,
   },
   {
     title: 'Advanced',

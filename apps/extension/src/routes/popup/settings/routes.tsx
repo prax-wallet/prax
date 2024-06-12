@@ -10,6 +10,7 @@ import { SettingsRPC } from './settings-rpc';
 import { SettingsSecurity } from './settings-security';
 import { SettingsSpendKey } from './settings-spend-key';
 import { SettingsDefaultFrontend } from './settings-default-frontend';
+import { SettingsNumeraires } from './settings-numeraires';
 
 export const settingsRoutes = [
   {
@@ -55,5 +56,9 @@ export const settingsRoutes = [
   {
     path: PopupPath.SETTINGS_SPEND_KEY,
     element: <SettingsSpendKey />,
+  },
+  {
+    path: PopupPath.SETTINGS_NUMERAIRES,
+    element: <SettingsNumeraires />,
   },
 ];
