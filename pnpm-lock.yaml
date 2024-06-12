@@ -150,6 +150,9 @@ importers:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../../packages/crypto
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: link:../../packages/getters
       '@penumbra-zone/perspective':
         specifier: workspace:*
         version: link:../../packages/perspective

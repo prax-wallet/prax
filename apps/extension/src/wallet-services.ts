@@ -92,5 +92,11 @@ const attachServiceControlListener = ({
           .then(() => respond())
           .finally(() => chrome.runtime.reload());
         return true;
+      case ServicesMessage.ChangeNumeraires:
+        void (async () => {
+          let newNumeraires = await localExtStorage.get('numeraires');
+          blockProcessor.setNumeraires(newNumeraires.map(n => AssetId.fromJsonString(n)));
+        });
+        return true;
     }
   });
