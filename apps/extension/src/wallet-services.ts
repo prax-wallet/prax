@@ -16,7 +16,7 @@ import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/a
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
   const grpcEndpoint = await onboardGrpcEndpoint();
-  let numeraires = await localExtStorage.get('numeraires');
+  const numeraires = await localExtStorage.get('numeraires');
 
   const services = new Services({
     grpcEndpoint,
@@ -97,7 +97,7 @@ const attachServiceControlListener = ({
           const newNumeraires = await localExtStorage.get('numeraires');
           blockProcessor.setNumeraires(newNumeraires.map(n => AssetId.fromJsonString(n)));
           await indexedDb.clearSwapBasedPrices();
-        });
+        })().then(() => respond());
         return true;
     }
   });
