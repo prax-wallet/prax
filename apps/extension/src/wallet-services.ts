@@ -96,6 +96,7 @@ const attachServiceControlListener = ({
         void (async () => {
           const newNumeraires = await localExtStorage.get('numeraires');
           blockProcessor.setNumeraires(newNumeraires.map(n => AssetId.fromJsonString(n)));
+          await indexedDb.clearSwapBasedPrices();
         });
         return true;
     }

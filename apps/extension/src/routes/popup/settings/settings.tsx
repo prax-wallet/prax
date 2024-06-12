@@ -36,7 +36,7 @@ const links = [
     href: PopupPath.SETTINGS_CONNECTED_SITES,
   },
   {
-    title: 'Price indexer',
+    title: 'Price denominations',
     icon: <BarChartIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_NUMERAIRES,
   },
