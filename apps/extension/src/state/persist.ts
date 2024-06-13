@@ -7,6 +7,7 @@ import { LocalStorageState } from '../storage/types';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { StorageItem } from '../storage/base';
 import { walletsFromJson } from '@penumbra-zone/types/wallet';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 
 export type Middleware = <
   T,
@@ -117,6 +118,19 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
     set(
       produce((state: AllSlices) => {
         state.numeraires.selectedNumeraires = stored?.value ?? state.numeraires.selectedNumeraires;
+      }),
+    );
+  }
+
+  if (changes['params']) {
+    const stored = changes['params'].newValue as
+      | StorageItem<LocalStorageState['params']>
+      | undefined;
+    set(
+      produce((state: AllSlices) => {
+        state.network.chainId = stored?.value
+          ? AppParameters.fromJsonString(stored.value).chainId
+          : state.network.chainId;
       }),
     );
   }

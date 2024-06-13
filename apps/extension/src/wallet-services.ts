@@ -41,7 +41,7 @@ export const startWalletServices = async () => {
 const getChainId = async (baseUrl: string) => {
   const localChainId = await localExtStorage
     .get('params')
-    .then(json => json && AppParameters.fromJson(json).chainId);
+    .then(json => json && AppParameters.fromJsonString(json).chainId);
 
   if (localChainId) return localChainId;
 

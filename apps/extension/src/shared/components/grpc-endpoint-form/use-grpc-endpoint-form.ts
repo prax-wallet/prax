@@ -12,7 +12,9 @@ import { isValidUrl } from '../../utils/is-valid-url';
 
 const useSaveGrpcEndpointSelector = (state: AllSlices) => ({
   grpcEndpoint: state.network.grpcEndpoint,
+  chainId: state.network.chainId,
   setGrpcEndpoint: state.network.setGRPCEndpoint,
+  setChainId: state.network.setChainId,
 });
 
 const getRpcsFromRegistry = () => {
@@ -25,10 +27,11 @@ export const useGrpcEndpointForm = () => {
   const grpcEndpoints = useMemo(() => getRpcsFromRegistry(), []);
 
   // Get the rpc set in storage (if present)
-  const { grpcEndpoint, setGrpcEndpoint } = useStoreShallow(useSaveGrpcEndpointSelector);
+  const { grpcEndpoint, chainId, setGrpcEndpoint, setChainId } = useStoreShallow(
+    useSaveGrpcEndpointSelector,
+  );
 
   const [originalChainId, setOriginalChainId] = useState<string | undefined>();
-  const [chainId, setChainId] = useState<string>();
   const [grpcEndpointInput, setGrpcEndpointInput] = useState<string>('');
   const [rpcError, setRpcError] = useState<string>();
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false);
