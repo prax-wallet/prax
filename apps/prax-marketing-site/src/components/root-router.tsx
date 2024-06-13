@@ -1,5 +1,5 @@
 import { createHashRouter } from 'react-router-dom';
-import { Index } from './index';
+import { Index } from '.';
 import { PrivacyPolicy } from './privacy-policy';
 
 export const rootRouter = createHashRouter([

@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5173",
-    "clean": "rm -rfv dist",
     "build": "tsc && vite build",
+    "clean": "rm -rfv dist",
+    "dev": "vite --port 5173",
     "lint": "eslint ."
   },
   "dependencies": {

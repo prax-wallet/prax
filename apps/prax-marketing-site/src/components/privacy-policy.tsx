@@ -1,14 +1,14 @@
 export const PrivacyPolicy = () => {
   return (
-    <div className='bg-neutral-800 w-full flex flex-col gap-4 text-white p-10 min-h-screen'>
+    <div className='flex min-h-screen w-full flex-col gap-4 bg-neutral-800 p-10 text-white'>
       <p className='text-3xl'>Privacy Policy</p>
       <p className='italic'>Last updated: May 6, 2024</p>
 
       <p>
-        Welcome to Prax Wallet, created by Penumbra Labs Inc. (“<b>Penumbra Labs</b>,” "<b>we</b>,"
-        "<b>our</b>," or "<b>us</b>"). We are committed to protecting your privacy. This Privacy
-        Policy describes our limited data processing activities related to your use of the Prax
-        Wallet application (the “<b>Software</b>”).
+        Welcome to Prax Wallet, created by Penumbra Labs Inc. (“<b>Penumbra Labs</b>,” &quot;
+        <b>we</b>,&quot; &quot;<b>our</b>,&quot; or &quot;<b>us</b>&quot;). We are committed to
+        protecting your privacy. This Privacy Policy describes our limited data processing
+        activities related to your use of the Prax Wallet application (the “<b>Software</b>”).
       </p>
 
       <p>
@@ -27,7 +27,7 @@ export const PrivacyPolicy = () => {
         In particular, we do <u>not</u> collect the following categories of personal information
         from you:
       </p>
-      <ul className='list-disc ml-10'>
+      <ul className='ml-10 list-disc'>
         <li>
           <b>Identifiers</b>. We do not collect name, email address, contact information, financial
           information, transaction history, or device information.
