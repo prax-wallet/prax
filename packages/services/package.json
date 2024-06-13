@@ -18,7 +18,7 @@
     "./*": "./src/*/index.ts"
   },
   "dependencies": {
-    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/bech32m": "link:../../../web/packages/bech32m",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",

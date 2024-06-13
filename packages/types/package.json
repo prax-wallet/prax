@@ -23,7 +23,7 @@
     }
   },
   "dependencies": {
-    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/bech32m": "link:../../../web/packages/bech32m",
     "@penumbra-zone/getters": "workspace:*",
     "bignumber.js": "^9.1.2",
     "idb": "^8.0.0",
