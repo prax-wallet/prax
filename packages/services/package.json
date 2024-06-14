@@ -25,8 +25,7 @@
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/polyfills": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/block-processor": "link:../../../web/packages/block-processor"
-    "@penumbra-zone/services-context": "workspace:*",
+    "@penumbra-zone/block-processor": "link:../../../web/packages/block-processor",
     "@penumbra-zone/idb": "link:../../../web/packages/idb",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",

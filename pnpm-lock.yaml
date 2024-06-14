@@ -144,6 +144,9 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
+      '@penumbra-zone/block-processor':
+        specifier: link:../../../web/packages/block-processor
+        version: link:../../packages/block-processor
       '@penumbra-zone/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -159,15 +162,9 @@ importers:
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../../packages/protobuf
-      '@penumbra-zone/query':
-        specifier: workspace:*
-        version: link:../../packages/query
       '@penumbra-zone/services':
         specifier: workspace:*
         version: link:../../packages/services
-      '@penumbra-zone/services-context':
-        specifier: workspace:*
-        version: link:../../packages/services-context
       '@penumbra-zone/transport-chrome':
         specifier: workspace:*
         version: link:../../packages/transport-chrome
@@ -488,51 +485,14 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
 
-  packages/query:
-    dependencies:
-      '@penumbra-zone/bech32m':
-        specifier: workspace:*
-        version: link:../bech32m
-      '@penumbra-zone/crypto-web':
-        specifier: workspace:*
-        version: link:../crypto
-      '@penumbra-zone/getters':
-        specifier: workspace:*
-        version: link:../getters
-      '@penumbra-zone/protobuf':
-        specifier: workspace:*
-        version: link:../protobuf
-      '@penumbra-zone/types':
-        specifier: workspace:*
-        version: link:../types
-      '@penumbra-zone/wasm':
-        specifier: workspace:*
-        version: link:../wasm
-      exponential-backoff:
-        specifier: ^3.1.1
-        version: 3.1.1
-    devDependencies:
-      '@buf/cosmos_ibc.bufbuild_es':
-        specifier: 1.9.0-20240530142100-ad4444393387.1
-        version: 1.9.0-20240530142100-ad4444393387.1(@bufbuild/protobuf@1.10.0)
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.9.0-20240528180215-8fe1c79485f8.1
-        version: 1.9.0-20240528180215-8fe1c79485f8.1(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf':
-        specifier: ^1.10.0
-        version: 1.10.0
-      '@connectrpc/connect':
-        specifier: ^1.4.0
-        version: 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect-web':
-        specifier: ^1.4.0
-        version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-
   packages/services:
     dependencies:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
+      '@penumbra-zone/block-processor':
+        specifier: link:../../../web/packages/block-processor
+        version: link:../block-processor
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
@@ -551,12 +511,6 @@ importers:
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
-      '@penumbra-zone/query':
-        specifier: workspace:*
-        version: link:../query
-      '@penumbra-zone/services-context':
-        specifier: workspace:*
-        version: link:../services-context
       '@penumbra-zone/transport-dom':
         specifier: workspace:*
         version: link:../transport-dom
@@ -576,34 +530,6 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
-
-  packages/services-context:
-    dependencies:
-      '@penumbra-labs/registry':
-        specifier: 8.0.1
-        version: 8.0.1
-      '@penumbra-zone/idb':
-        specifier: link:../../../web/packages/idb
-        version: link:../idb
-      '@penumbra-zone/query':
-        specifier: workspace:*
-        version: link:../query
-      '@penumbra-zone/types':
-        specifier: workspace:*
-        version: link:../types
-      '@penumbra-zone/wasm':
-        specifier: workspace:*
-        version: link:../wasm
-      exponential-backoff:
-        specifier: ^3.1.1
-        version: 3.1.1
-    devDependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.9.0-20240528180215-8fe1c79485f8.1
-        version: 1.9.0-20240528180215-8fe1c79485f8.1(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf':
-        specifier: ^1.10.0
-        version: 1.10.0
 
   packages/tailwind-config:
     dependencies:
