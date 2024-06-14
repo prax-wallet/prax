@@ -1,8 +1,9 @@
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { KeyPrintJson } from '@penumbra-zone/crypto-web/encryption';
-import { Jsonified } from '@penumbra-zone/types/jsonified';
+import { Stringified } from '@penumbra-zone/types/jsonified';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { WalletJson } from '@penumbra-zone/types/wallet';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -22,5 +23,6 @@ export interface LocalStorageState {
   passwordKeyPrint: KeyPrintJson | undefined;
   fullSyncHeight: number | undefined;
   knownSites: OriginRecord[];
-  params: Jsonified<AppParameters> | undefined;
+  params: Stringified<AppParameters> | undefined;
+  numeraires: Stringified<AssetId>[];
 }

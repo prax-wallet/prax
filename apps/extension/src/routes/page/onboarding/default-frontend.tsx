@@ -10,7 +10,7 @@ export const SetDefaultFrontendPage = () => {
 
   const onSubmit: FormEventHandler = (event): void => {
     event.preventDefault();
-    navigate(PagePath.ONBOARDING_SUCCESS);
+    navigate(PagePath.SET_NUMERAIRES);
   };
 
   return (

@@ -5,7 +5,9 @@ import { AllSlices, SliceCreator } from '.';
 export interface NetworkSlice {
   grpcEndpoint: string | undefined;
   fullSyncHeight?: number;
+  chainId?: string;
   setGRPCEndpoint: (endpoint: string) => Promise<void>;
+  setChainId: (chainId: string) => void;
 }
 
 export const createNetworkSlice =
@@ -14,12 +16,18 @@ export const createNetworkSlice =
     return {
       grpcEndpoint: undefined,
       fullSyncHeight: undefined,
+      chainId: undefined,
       setGRPCEndpoint: async (endpoint: string) => {
         set(state => {
           state.network.grpcEndpoint = endpoint;
         });
 
         await local.set('grpcEndpoint', endpoint);
+      },
+      setChainId: (chainId: string) => {
+        set(state => {
+          state.network.chainId = chainId;
+        });
       },
     };
   };

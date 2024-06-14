@@ -11,10 +11,12 @@ import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
 import { Services } from '@penumbra-zone/services-context';
 import { ServicesMessage } from './message/services';
 import { WalletServices } from '@penumbra-zone/types/services';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
   const grpcEndpoint = await onboardGrpcEndpoint();
+  const numeraires = await localExtStorage.get('numeraires');
 
   const services = new Services({
     grpcEndpoint,
@@ -22,6 +24,7 @@ export const startWalletServices = async () => {
     idbVersion: IDB_VERSION,
     walletId: WalletId.fromJsonString(wallet.id),
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
+    numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
   });
 
   const { blockProcessor, indexedDb } = await services.getWalletServices();
@@ -38,7 +41,7 @@ export const startWalletServices = async () => {
 const getChainId = async (baseUrl: string) => {
   const localChainId = await localExtStorage
     .get('params')
-    .then(json => json && AppParameters.fromJson(json).chainId);
+    .then(json => json && AppParameters.fromJsonString(json).chainId);
 
   if (localChainId) return localChainId;
 
@@ -88,6 +91,18 @@ const attachServiceControlListener = ({
         })()
           .then(() => respond())
           .finally(() => chrome.runtime.reload());
+        return true;
+      case ServicesMessage.ChangeNumeraires:
+        void (async () => {
+          const newNumeraires = await localExtStorage.get('numeraires');
+          blockProcessor.setNumeraires(newNumeraires.map(n => AssetId.fromJsonString(n)));
+          /**
+           * Changing numeraires causes all BSOD-based prices to be removed.
+           * This means that some new blocks will need to be scanned to get prices for the new numeraires.
+           * It also means that immediately after changing numeraires user will not see any equivalent BSOD-based prices.
+           */
+          await indexedDb.clearSwapBasedPrices();
+        })().then(() => respond());
         return true;
     }
   });
