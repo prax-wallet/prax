@@ -96,6 +96,11 @@ const attachServiceControlListener = ({
         void (async () => {
           const newNumeraires = await localExtStorage.get('numeraires');
           blockProcessor.setNumeraires(newNumeraires.map(n => AssetId.fromJsonString(n)));
+          /**
+           * Changing numeraires causes all BSOD-based prices to be removed.
+           * This means that some new blocks will need to be scanned to get prices for the new numeraires.
+           * It also means that immediately after changing numeraires user will not see any equivalent BSOD-based prices.
+           */
           await indexedDb.clearSwapBasedPrices();
         })().then(() => respond());
         return true;
