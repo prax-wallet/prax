@@ -13,21 +13,27 @@ on:
 jobs:
   build:
     name: Deploy
-    runs-on: ubuntu-latest
+    # The build step takes a lot of CPU, so we'll bump up to 8 vCPUs.
+    runs-on: buildjet-8vcpu-ubuntu-2204
     steps:
       - name: Checkout the source code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
         with:
           version: 8
 
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: pnpm install
+
+      - name: Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: 'latest'
 
       - name: Build static site
         run: pnpm build
-        working-directory: apps/prax-marketing-site
 
       - name: Deploy dapp static site to firebase
         # N.B. the firebase-action helper doesn't support semver, e.g. `@v13`,
@@ -37,4 +43,3 @@ jobs:
           args: deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_PATH: apps/prax-marketing-site/dist
