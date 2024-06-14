@@ -1,0 +1,40 @@
+---
+# Builds the static site via pnpm, then copies that local directory's contents
+# to Firebase, at: https://praxwallet.com
+name: Deploy Prax marketing site
+on:
+  # Support ad-hoc runs via dispatch, so we can deploy from
+  # unmerged feature branches if necessary.
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the source code
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build static site
+        run: pnpm build
+        working-directory: apps/prax-marketing-site
+
+      - name: Deploy dapp static site to firebase
+        # N.B. the firebase-action helper doesn't support semver, e.g. `@v13`,
+        # so we hardcode a version.
+        uses: w9jds/firebase-action@v13.7.2
+        with:
+          args: deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: apps/prax-marketing-site/dist
