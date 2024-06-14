@@ -31,8 +31,8 @@
     }
   },
   "dependencies": {
-    "@penumbra-zone/bech32m": "link:../../../web/packages/bech32m",
-    "@penumbra-zone/getters": "link:../../../web/packages/getters",
+    "@penumbra-zone/bech32m": "5.1.0",
+    "@penumbra-zone/getters": "6.2.0",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   },

@@ -34,14 +34,14 @@
     }
   },
   "dependencies": {
-    "@penumbra-zone/protobuf": "link:../../../web/packages/protobuf",
+    "@penumbra-zone/protobuf": "4.2.0",
     "@penumbra-zone/types": "workspace:*",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
     "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-zone/bech32m": "link:../../../web/packages/bech32m",
+    "@penumbra-zone/bech32m": "5.1.0",
     "fake-indexeddb": "^6.0.0"
   },
   "optionalDependencies": {
