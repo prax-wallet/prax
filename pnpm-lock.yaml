@@ -150,6 +150,9 @@ importers:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../../packages/crypto
+      '@penumbra-zone/idb':
+        specifier: link:../../../web/packages/idb
+        version: link:../../packages/idb
       '@penumbra-zone/perspective':
         specifier: workspace:*
         version: link:../../packages/perspective
@@ -165,9 +168,6 @@ importers:
       '@penumbra-zone/services-context':
         specifier: workspace:*
         version: link:../../packages/services-context
-      '@penumbra-zone/storage':
-        specifier: workspace:*
-        version: link:../../packages/storage
       '@penumbra-zone/transport-chrome':
         specifier: workspace:*
         version: link:../../packages/transport-chrome
@@ -539,6 +539,9 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/idb':
+        specifier: link:../../../web/packages/idb
+        version: link:../idb
       '@penumbra-zone/perspective':
         specifier: workspace:*
         version: link:../perspective
@@ -554,9 +557,6 @@ importers:
       '@penumbra-zone/services-context':
         specifier: workspace:*
         version: link:../services-context
-      '@penumbra-zone/storage':
-        specifier: workspace:*
-        version: link:../storage
       '@penumbra-zone/transport-dom':
         specifier: workspace:*
         version: link:../transport-dom
@@ -582,12 +582,12 @@ importers:
       '@penumbra-labs/registry':
         specifier: 8.0.1
         version: 8.0.1
+      '@penumbra-zone/idb':
+        specifier: link:../../../web/packages/idb
+        version: link:../idb
       '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../query
-      '@penumbra-zone/storage':
-        specifier: workspace:*
-        version: link:../storage
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
@@ -604,40 +604,6 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
-
-  packages/storage:
-    dependencies:
-      '@penumbra-labs/registry':
-        specifier: 8.0.1
-        version: 8.0.1
-      '@penumbra-zone/bech32m':
-        specifier: workspace:*
-        version: link:../bech32m
-      '@penumbra-zone/crypto-web':
-        specifier: workspace:*
-        version: link:../crypto
-      '@penumbra-zone/getters':
-        specifier: workspace:*
-        version: link:../getters
-      idb:
-        specifier: ^8.0.0
-        version: 8.0.0
-    devDependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.9.0-20240528180215-8fe1c79485f8.1
-        version: 1.9.0-20240528180215-8fe1c79485f8.1(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf':
-        specifier: ^1.10.0
-        version: 1.10.0
-      '@penumbra-zone/polyfills':
-        specifier: workspace:*
-        version: link:../polyfills
-      '@penumbra-zone/types':
-        specifier: workspace:*
-        version: link:../types
-      '@penumbra-zone/wasm':
-        specifier: workspace:*
-        version: link:../wasm
 
   packages/tailwind-config:
     dependencies:

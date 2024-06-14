@@ -27,7 +27,7 @@
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/services": "workspace:*",
     "@penumbra-zone/services-context": "workspace:*",
-    "@penumbra-zone/storage": "workspace:*",
+    "@penumbra-zone/idb": "link:../../../web/packages/idb",
     "@penumbra-zone/transport-chrome": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
