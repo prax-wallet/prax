@@ -24,7 +24,7 @@
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/query": "workspace:*",
+    "@penumbra-zone/block-processor": "link:../../../web/packages/block-processor",
     "@penumbra-zone/services": "workspace:*",
     "@penumbra-zone/services-context": "workspace:*",
     "@penumbra-zone/idb": "link:../../../web/packages/idb",
