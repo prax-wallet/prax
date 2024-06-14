@@ -22,7 +22,7 @@
     "@penumbra-labs/registry": "8.0.1",
     "@penumbra-zone/bech32m": "link:../../../web/packages/bech32m",
     "@penumbra-zone/crypto-web": "workspace:*",
-    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/getters": "link:../../../web/packages/getters",
     "idb": "^8.0.0"
   },
   "devDependencies": {

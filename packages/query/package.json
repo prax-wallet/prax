@@ -14,8 +14,8 @@
   "dependencies": {
     "@penumbra-zone/bech32m": "link:../../../web/packages/bech32m",
     "@penumbra-zone/crypto-web": "workspace:*",
-    "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/getters": "link:../../../web/packages/getters",
+    "@penumbra-zone/protobuf": "link:../../../web/packages/protobuf",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "exponential-backoff": "^3.1.1"

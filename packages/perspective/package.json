@@ -1,6 +1,7 @@
 {
   "name": "@penumbra-zone/perspective",
   "version": "4.0.1",
+  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for assuming different perspectives of Penumbra transactions",
   "type": "module",
@@ -31,7 +32,7 @@
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "link:../../../web/packages/bech32m",
-    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/getters": "link:../../../web/packages/getters",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   },

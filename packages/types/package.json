@@ -1,6 +1,7 @@
 {
   "name": "@penumbra-zone/types",
   "version": "7.1.0",
+  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
@@ -24,7 +25,7 @@
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "link:../../../web/packages/bech32m",
-    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/getters": "link:../../../web/packages/getters",
     "bignumber.js": "^9.1.2",
     "idb": "^8.0.0",
     "zod": "^3.23.8"

@@ -67,6 +67,12 @@ const config: webpack.Configuration = {
         exclude: /node_modules/,
       },
       {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
         test: /\.css$/i,
         use: [
           'style-loader',
