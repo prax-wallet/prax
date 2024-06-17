@@ -10,15 +10,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@vitejs/plugin-react-swc": "^3.6.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.4"
   },
   "devDependencies": {
-    "@penumbra-zone/eslint-config": "workspace:*",
-    "@penumbra-zone/tailwind-config": "workspace:*",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",

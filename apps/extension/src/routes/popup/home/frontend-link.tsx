@@ -1,6 +1,6 @@
 import { useStore } from '../../../state';
 import { getDefaultFrontend } from '../../../state/default-frontend';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { MouseEventHandler } from 'react';
 import { usePopupNav } from '../../../utils/navigate';

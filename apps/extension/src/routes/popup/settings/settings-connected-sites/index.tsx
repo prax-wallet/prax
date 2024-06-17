@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Input } from '@penumbra-zone/ui/components/ui/input';
+import { Input } from '@repo/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../../icons/link-gradient';
 import { OriginRecord } from '../../../../storage/types';
 import { AllSlices, useStore } from '../../../../state';

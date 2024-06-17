@@ -12,7 +12,7 @@ import { txApprovalSelector } from '../state/tx-approval';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ConnectError } from '@connectrpc/connect';
 
-import '@penumbra-zone/ui/styles/globals.css';
+import '@repo/ui/styles/globals.css';
 
 chrome.runtime.onMessage.addListener(
   (req: unknown, _: chrome.runtime.MessageSender, responder: (x: unknown) => void) => {

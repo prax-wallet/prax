@@ -1,7 +1,7 @@
-import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/transaction';
+import { TransactionViewComponent } from '@repo/ui/components/ui/tx/view/transaction';
 import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
-import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
+import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
