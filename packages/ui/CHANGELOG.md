@@ -1,5 +1,57 @@
 # @penumbra-zone/ui
 
+## 5.0.0
+
+### Minor Changes
+
+- d8825f9: UI: add `compact` prop to render a minimalistic version of the AccountSwitcher component.
+
+  Minifront: use AccountSwitcher in the IBC-in form
+
+### Patch Changes
+
+- f5c511e: Fix a few layout issues with the header
+- Updated dependencies [9b3f561]
+  - @penumbra-zone/perspective@6.0.0
+  - @penumbra-zone/bech32m@6.1.0
+  - @penumbra-zone/getters@8.0.0
+  - @penumbra-zone/types@9.0.0
+
+## 4.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Minor Changes
+
+- 1ee18e0: relocate navigationmenu into minifront
+
+### Patch Changes
+
+- Updated dependencies [f067fab]
+  - @repo/tailwind-config@3.0.0
+  - @penumbra-zone/perspective@5.0.0
+  - @penumbra-zone/bech32m@6.0.0
+  - @penumbra-zone/getters@7.0.0
+  - @penumbra-zone/types@8.0.0
+
+## 3.5.0
+
+### Minor Changes
+
+- 6b78e22: Tweaks to the auction UI; create a new PopoverMenu component
+
+### Patch Changes
+
+- Updated dependencies [a75256f]
+- Updated dependencies [468ecc7]
+- Updated dependencies [a75256f]
+  - @penumbra-zone/bech32m@5.1.0
+  - @penumbra-zone/getters@6.2.0
+  - @penumbra-zone/perspective@4.0.2
+  - @penumbra-zone/types@7.1.1
+
 ## 3.4.0
 
 ### Minor Changes
