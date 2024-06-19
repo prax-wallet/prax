@@ -1,5 +1,5 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
+import { Button } from '@repo/ui/components/ui/button';
+import { SplashPage } from '@repo/ui/components/ui/splash-page';
 import { useStore } from '../../../state';
 import { getDefaultFrontend } from '../../../state/default-frontend';
 

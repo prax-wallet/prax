@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { SelectList } from '@repo/ui/components/ui/select-list';
+import { cn } from '@repo/ui/lib/utils';
 import { isValidUrl } from '../../utils/is-valid-url';
 
 const isValidAndNotInitial = (url: string, initialUrl?: string): boolean => {

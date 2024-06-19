@@ -8,7 +8,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { localExtStorage } from './storage/local';
 import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
-import { Services } from '@penumbra-zone/services-context';
+import { Services } from '@repo/context';
 import { ServicesMessage } from './message/services';
 import { WalletServices } from '@penumbra-zone/types/services';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';

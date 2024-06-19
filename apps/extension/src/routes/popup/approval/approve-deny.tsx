@@ -1,4 +1,4 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import { useWindowCountdown } from './use-window-countdown';
 
 export const ApproveDeny = ({

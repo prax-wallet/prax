@@ -1,4 +1,4 @@
-import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { SettingsHeader } from './settings-header';
 import { ReactNode } from 'react';
 

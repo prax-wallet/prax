@@ -1,3 +1,0 @@
-crate/target
-crate/**/*.rs.bk
-crate/wasm-pack.log

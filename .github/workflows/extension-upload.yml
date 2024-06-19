@@ -13,16 +13,14 @@ on:
   workflow_call:
   workflow_dispatch:
 
-jobs:
-  turbo-compile:
-    name: Compile
-    uses: ./.github/workflows/compile-wasm.yml
+env:
+  DO_NOT_TRACK: 1
 
+jobs:
   publish:
     environment: ext-publish
     name: Upload extension dist
     runs-on: buildjet-16vcpu-ubuntu-2204
-    needs: turbo-compile
 
     steps:
       - uses: actions/checkout@v4
@@ -30,15 +28,14 @@ jobs:
         uses: buildjet/cache@v3
         with:
           path: .turbo
-          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-built
-          restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+          key: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-publish
+          restore-keys: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test
       - uses: pnpm/action-setup@v2
       - uses: buildjet/setup-node@v4
         with:
-          node-version: '21'
+          node-version: '22'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo telemetry disable
       - run: pnpm turbo build --cache-dir=.turbo
 
       # Outputs beta.zip and prod.zip

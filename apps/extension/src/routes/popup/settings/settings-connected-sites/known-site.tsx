@@ -1,6 +1,6 @@
 import { OriginRecord } from '../../../../storage/types';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import { TrashIcon } from 'lucide-react';
 import { DisplayOriginURL } from '../../../../shared/components/display-origin-url';
 

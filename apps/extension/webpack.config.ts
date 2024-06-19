@@ -22,6 +22,8 @@ const definitions = {
   PRAX: JSON.stringify(process.env['PRAX']),
   PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
   IDB_VERSION: JSON.stringify(Number(process.env['IDB_VERSION'])),
+  'globalThis.__DEV__': JSON.stringify(true),
+  'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
 };
 
 const __dirname = new URL('.', import.meta.url).pathname;
@@ -65,6 +67,12 @@ const config: webpack.Configuration = {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
+      },
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
       },
       {
         test: /\.css$/i,

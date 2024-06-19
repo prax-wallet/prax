@@ -1,5 +1,5 @@
-import { Box } from '@penumbra-zone/ui/components/ui/box';
-import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
+import { Box } from '@repo/ui/components/ui/box';
+import { IconInput } from '@repo/ui/components/ui/icon-input';
 import { useEffect, useState } from 'react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { AddressOwnershipInfo } from './types';

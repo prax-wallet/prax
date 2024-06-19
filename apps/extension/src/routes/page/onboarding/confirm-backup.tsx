@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { BackIcon } from '@penumbra-zone/ui/components/ui/back-icon';
+import { Button } from '@repo/ui/components/ui/button';
+import { BackIcon } from '@repo/ui/components/ui/back-icon';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@penumbra-zone/ui/components/ui/card';
-import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
-import { Input } from '@penumbra-zone/ui/components/ui/input';
+} from '@repo/ui/components/ui/card';
+import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
+import { Input } from '@repo/ui/components/ui/input';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';

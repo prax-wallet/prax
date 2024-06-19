@@ -4,7 +4,7 @@ import { pageRouter } from '../routes/page/router';
 import { StrictMode, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import '@penumbra-zone/ui/styles/globals.css';
+import '@repo/ui/styles/globals.css';
 
 const MainPage = () => {
   const [queryClient] = useState(() => new QueryClient());
