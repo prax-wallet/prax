@@ -1,10 +1,11 @@
 ---
-'context': major
 'prax-marketing-website': major
-'tailwind-config': major
+'@repo/tailwind-config': major
 '@repo/eslint-config': major
+'@repo/tsconfig': major
+'@repo/context': major
 'chrome-extension': major
-'ui': major
+'@repo/ui': major
 ---
 
 use imported packages
