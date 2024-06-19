@@ -1,6 +1,5 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { useEffect } from 'react';
-import { useCountdown } from 'usehooks-ts';
+import { useWindowCountdown } from './use-window-countdown';
 
 export const ApproveDeny = ({
   approve,
@@ -13,8 +12,7 @@ export const ApproveDeny = ({
   ignore?: () => void;
   wait?: number;
 }) => {
-  const [count, { startCountdown }] = useCountdown({ countStart: wait });
-  useEffect(startCountdown, [startCountdown]);
+  const count = useWindowCountdown(wait);
 
   return (
     <div className='flex flex-row flex-wrap justify-center gap-4 bg-black p-4 shadow-lg'>
