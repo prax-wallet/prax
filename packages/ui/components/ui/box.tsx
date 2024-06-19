@@ -17,6 +17,7 @@ const variants = cva('rounded-lg border bg-background', {
       error: 'border-red',
     },
     overflow: {
+      hidden: 'overflow-hidden',
       xHidden: 'overflow-x-hidden',
     },
   },
