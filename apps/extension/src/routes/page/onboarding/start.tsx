@@ -1,12 +1,12 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@penumbra-zone/ui/components/ui/card';
-import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+} from '@repo/ui/components/ui/card';
+import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 

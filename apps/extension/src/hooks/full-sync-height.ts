@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { TendermintQuerier } from '@penumbra-zone/query/queriers/tendermint';
 import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 import { useLoaderData } from 'react-router-dom';
+import { TendermintProxyService } from '@penumbra-zone/protobuf';
+import { createGrpcWebTransport } from '@connectrpc/connect-web';
+import { createPromiseClient } from '@connectrpc/connect';
 
 const tryGetMax = (a?: number, b?: number): number | undefined => {
   // Height can be 0n which is falsy, so should compare to undefined state
@@ -29,8 +31,13 @@ export const useSyncProgress = () => {
   const { data: queriedLatest, error } = useQuery({
     queryKey: ['latestBlockHeight'],
     queryFn: async () => {
-      const querier = new TendermintQuerier({ grpcEndpoint: grpcEndpoint! });
-      const blockHeight = await querier.latestBlockHeight();
+      if (!grpcEndpoint) return;
+      const tendermintClient = createPromiseClient(
+        TendermintProxyService,
+        createGrpcWebTransport({ baseUrl: grpcEndpoint }),
+      );
+      const blockHeight = (await tendermintClient.getStatus({}).catch(() => undefined))?.syncInfo
+        ?.latestBlockHeight;
       return Number(blockHeight);
     },
     enabled: Boolean(grpcEndpoint),

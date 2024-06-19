@@ -1,7 +1,7 @@
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { Network } from '@penumbra-zone/ui/components/ui/network';
+import { Network } from '@repo/ui/components/ui/network';
 import { useChainIdQuery } from '../../../hooks/chain-id';
 import { motion } from 'framer-motion';
 import { useStore } from '../../../state';
@@ -24,7 +24,7 @@ export const IndexHeader = () => {
             animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
             className='overflow-hidden'
           >
-            <Network name={chainId} connectIndicator={false} href={statusPageUrl} />
+            <Network name={chainId} href={statusPageUrl} />
           </motion.div>
         ) : (
           <div className='m-[19px]' />

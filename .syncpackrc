@@ -45,7 +45,7 @@
         "@buf/*"
       ],
       "snapTo": [
-        "penumbra-web"
+        "prax-wallet"
       ]
     }
   ]

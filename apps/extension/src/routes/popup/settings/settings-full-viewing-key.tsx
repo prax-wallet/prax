@@ -1,7 +1,7 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { CopyToClipboard } from '@penumbra-zone/ui/components/ui/copy-to-clipboard';
+import { Button } from '@repo/ui/components/ui/button';
+import { CopyToClipboard } from '@repo/ui/components/ui/copy-to-clipboard';
 import { PasswordInput } from '../../../shared/components/password-input';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';

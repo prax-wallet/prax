@@ -12,12 +12,12 @@ const wrapUnaryImpl =
       const result = methodImplementation(req, ctx);
       if (result instanceof Promise)
         return result.catch((e: unknown) => {
-          if (process.env['NODE_ENV'] === 'development') console.debug(ctx.method.name, req, e);
+          if (globalThis.__DEV__) console.debug(ctx.method.name, req, e);
           throw ConnectError.from(e);
         });
       return result;
     } catch (e) {
-      if (process.env['NODE_ENV'] === 'development') console.debug(ctx.method.name, req, e);
+      if (globalThis.__DEV__) console.debug(ctx.method.name, req, e);
       throw ConnectError.from(e);
     }
   };
@@ -31,7 +31,7 @@ const wrapServerStreamingImpl = (
         yield result;
       }
     } catch (e) {
-      if (process.env['NODE_ENV'] === 'development') console.debug(ctx.method.name, req, e);
+      if (globalThis.__DEV__) console.debug(ctx.method.name, req, e);
       throw ConnectError.from(e);
     }
   };

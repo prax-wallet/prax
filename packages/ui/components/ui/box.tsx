@@ -1,7 +1,7 @@
 import { cva, VariantProps } from 'class-variance-authority';
 import { motion } from 'framer-motion';
 import { PropsWithChildren, ReactNode } from 'react';
-import { RESOLVED_TAILWIND_CONFIG } from '@penumbra-zone/tailwind-config/resolved-tailwind-config';
+import { RESOLVED_TAILWIND_CONFIG } from '@repo/tailwind-config/resolved-tailwind-config';
 import { cn } from '../../lib/utils';
 
 const variants = cva('rounded-lg border bg-background', {

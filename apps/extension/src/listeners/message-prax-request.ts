@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(
         }
       },
       e => {
-        if (process.env['NODE_ENV'] === 'development') {
+        if (globalThis.__DEV__) {
           console.warn('Connection request listener failed:', e);
         }
         if (e instanceof ConnectError && e.code === Code.Unauthenticated) {

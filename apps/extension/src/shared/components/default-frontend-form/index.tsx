@@ -1,9 +1,9 @@
-import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
+import { SelectList } from '@repo/ui/components/ui/select-list';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { useMemo, useRef } from 'react';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import { NewFrontendInput } from './new-frontend-input';
 import { useIsFocus } from './use-is-focus';
 import { extractDomain } from './extract-domain';

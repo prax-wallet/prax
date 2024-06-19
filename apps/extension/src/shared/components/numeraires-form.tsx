@@ -3,10 +3,10 @@ import { AllSlices, useStore } from '../../state';
 import { useChainIdQuery } from '../../hooks/chain-id';
 import { useMemo, useState } from 'react';
 import { ServicesMessage } from '../../message/services';
-import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
+import { SelectList } from '@repo/ui/components/ui/select-list';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const getNumeraireFromRegistry = (chainId?: string): Metadata[] => {
