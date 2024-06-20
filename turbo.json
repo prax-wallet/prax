@@ -39,13 +39,6 @@
     },
     "format": {
       "cache": false,
-      "dependsOn": ["format:ts", "format:rust"]
-    },
-    "format:rust": {
-      "cache": false
-    },
-    "format:ts": {
-      "cache": false,
       "dependsOn": ["//#format:syncpack", "//#format:prettier"]
     },
     "host": {

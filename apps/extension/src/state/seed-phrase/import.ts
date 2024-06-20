@@ -10,7 +10,7 @@ export interface ImportFields {
   phrase: string[];
   update: (text: string, index: number) => void;
   setLength: (length: SeedPhraseLength) => void;
-  wordIsValid: (word: string) => boolean;
+  wordIsValid: (word?: string) => boolean;
   phraseIsValid: () => boolean;
 }
 
@@ -48,7 +48,7 @@ export const createImport: SliceCreator<SeedPhraseSlice['import']> = (set, get) 
       });
     }
   },
-  wordIsValid: word => isInWordList(word),
+  wordIsValid: word => Boolean(word) && isInWordList(word),
   phraseIsValid: () => validateSeedPhrase(get().seedPhrase.import.phrase),
 });
 

@@ -1,9 +1,8 @@
-import * as dotenv from 'dotenv';
-import path from 'path';
 import CopyPlugin from 'copy-webpack-plugin';
+import * as dotenv from 'dotenv';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import url from 'url';
-
+import path from 'node:path';
+import url from 'node:url';
 import webpack from 'webpack';
 
 // Loads default vars from `.env` file in this directory.
@@ -26,13 +25,12 @@ const definitions = {
   'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
 };
 
-const __dirname = new URL('.', import.meta.url).pathname;
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const srcDir = path.join(__dirname, 'src');
-
 const entryDir = path.join(srcDir, 'entry');
 const injectDir = path.join(srcDir, 'content-scripts');
 
-const config: webpack.Configuration = {
+export default {
   entry: {
     'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
     'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
@@ -151,6 +149,4 @@ const config: webpack.Configuration = {
   experiments: {
     asyncWebAssembly: true,
   },
-};
-
-export default config;
+} satisfies webpack.Configuration;
