@@ -70,7 +70,7 @@ export const approveOrigin = async ({
 
   // if user interacted with popup, update record
   if (popupResponse) {
-    void addOrUpdateSiteRecord(popupResponse);
+    await addOrUpdateSiteRecord(popupResponse);
   }
 
   return popupResponse?.choice ?? UserChoice.Denied;
