@@ -1,4 +1,4 @@
-import { CondensedBlockSyncStatus } from '@repo/ui/components/ui/block-sync-status/condensed';
+import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status/condensed';
 import { useSyncProgress } from '../../../hooks/full-sync-height';
 
 export const BlockSync = () => {

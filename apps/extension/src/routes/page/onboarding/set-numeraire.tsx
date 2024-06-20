@@ -1,5 +1,5 @@
-import { Card, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
-import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
+import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { NumeraireForm } from '../../../shared/components/numeraires-form';

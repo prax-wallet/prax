@@ -5,7 +5,7 @@
 '@repo/tsconfig': major
 '@repo/context': major
 'chrome-extension': major
-'@repo/ui': major
+'@penumbra-zone/ui': major
 ---
 
 use imported packages

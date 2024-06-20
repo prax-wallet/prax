@@ -1,6 +1,6 @@
 import { FormEvent, useRef } from 'react';
-import { SelectList } from '@repo/ui/components/ui/select-list';
-import { Button } from '@repo/ui/components/ui/button';
+import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Network } from 'lucide-react';
 import { useGrpcEndpointForm } from './use-grpc-endpoint-form';
 import { ConfirmChangedChainIdDialog } from './confirm-changed-chain-id-dialog';

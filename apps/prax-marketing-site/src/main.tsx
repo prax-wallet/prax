@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './components/root-router';
 
-import './globals.css';
+import '@penumbra-zone/ui/styles/globals.css';
 
 const Main = () => {
   return <RouterProvider router={rootRouter} />;

@@ -1,10 +1,10 @@
-import { Button } from '@repo/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-} from '@repo/ui/components/ui/dialog';
+} from '@penumbra-zone/ui/components/ui/dialog';
 
 export const ConfirmChangedChainIdDialog = ({
   chainId,
