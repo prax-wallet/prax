@@ -1,5 +1,5 @@
 import { FormEvent, MouseEvent, useState } from 'react';
-import { BackIcon } from '@penumbra-zone/ui/components/ui/back-icon';
+import { BackIcon } from '@penumbra-zone/ui/components/ui/icons/back-icon';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
   Card,

@@ -20,10 +20,10 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@types/react": "^18.3.2",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
-    "firebase-tools": "^13.8.0",
+    "firebase-tools": "^13.11.2",
     "postcss": "^8.4.38"
   }
 }

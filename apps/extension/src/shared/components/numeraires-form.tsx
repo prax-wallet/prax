@@ -3,7 +3,7 @@ import { AllSlices, useStore } from '../../state';
 import { useChainIdQuery } from '../../hooks/chain-id';
 import { useMemo, useState } from 'react';
 import { ServicesMessage } from '../../message/services';
-import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
+import { SelectList } from '@penumbra-zone/ui/components/ui/select';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { Button } from '@penumbra-zone/ui/components/ui/button';

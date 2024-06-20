@@ -1,5 +1,5 @@
 import { FormEvent, useRef } from 'react';
-import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
+import { SelectList } from '@penumbra-zone/ui/components/ui/select';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Network } from 'lucide-react';
 import { useGrpcEndpointForm } from './use-grpc-endpoint-form';

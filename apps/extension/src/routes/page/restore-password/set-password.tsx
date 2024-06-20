@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { BackIcon } from '@penumbra-zone/ui/components/ui/back-icon';
+import { BackIcon } from '@penumbra-zone/ui/components/ui/icons/back-icon';
 import {
   Card,
   CardContent,

@@ -1,4 +1,4 @@
-import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
+import { SelectList } from '@penumbra-zone/ui/components/ui/select';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
