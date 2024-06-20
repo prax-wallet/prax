@@ -10,12 +10,16 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@penumbra-zone/ui": "file:../../../web/packages/ui/penumbra-zone-ui-5.0.0.tgz",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
     "tailwindcss": "^3.4.4"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/tailwind-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",

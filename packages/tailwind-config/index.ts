@@ -8,8 +8,8 @@ export default {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-    '../../packages/ui/components/**/*.{ts,tsx}',
     './shared/**/*.{ts,tsx}',
+    './node_modules/@penumbra-zone/ui/**/*.js'
   ],
   theme: {
     container: {
