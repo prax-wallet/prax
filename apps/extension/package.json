@@ -20,7 +20,6 @@
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0",
     "@penumbra-labs/registry": "8.0.1",
-    "@penumbra-zone/ui": "file:/Users/margulus/desktop/Programming/Repository/penumbra/web/packages/ui/penumbra-zone-ui-5.0.0.tgz",
     "@repo/context": "workspace:*",
     "@tanstack/react-query": "4.36.1",
     "buffer": "^6.0.3",
