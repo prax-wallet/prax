@@ -15,7 +15,9 @@ chrome.runtime.onMessage.addListener(
         // user made a choice
         if (status === UserChoice.Approved) {
           respond(PraxConnection.Init);
-          void chrome.tabs.sendMessage(sender.tab!.id!, PraxConnection.Init);
+          void chrome.tabs.sendMessage(sender.tab!.id!, PraxConnection.Init, {
+            documentId: sender.documentId, // Ensures tab has not redirected to another url
+          });
         } else {
           respond(PraxConnection.Denied);
         }
