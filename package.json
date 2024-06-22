@@ -34,7 +34,8 @@
     "@buf/tendermint_tendermint.bufbuild_es": "1.10.0-20231117195010-33ed361a9051.1",
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
-    "@connectrpc/connect-web": "^1.4.0"
+    "@connectrpc/connect-web": "^1.4.0",
+    "pm2": "^5.4.1"
   },
   "devDependencies": {
     "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
