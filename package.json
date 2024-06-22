@@ -23,7 +23,8 @@
     "postinstall": "syncpack list-mismatches",
     "pretest": "playwright install",
     "test": "turbo test",
-    "test:rust": "turbo test:rust"
+    "test:rust": "turbo test:rust",
+    "watch-and-repack": "./watch-and-repack.sh"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20240606104028-442292b00c16.1",
