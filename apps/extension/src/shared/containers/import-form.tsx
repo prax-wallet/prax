@@ -38,6 +38,8 @@ const ImportInput = ({ index }: { index: number }) => {
       <div className='w-7 text-right text-base font-bold'>{index + 1}.</div>
       <Input
         variant={
+          // eslint config needs to be fixed lol
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
           !phrase[index]?.length ? 'default' : wordIsValid(phrase[index]!) ? 'success' : 'error'
         }
         value={phrase[index] ?? ''}

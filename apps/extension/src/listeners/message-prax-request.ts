@@ -1,33 +1,44 @@
 import { Code, ConnectError } from '@connectrpc/connect';
-import { approveOrigin } from '../approve-origin';
+import { approveOrigin } from '../origins/approve-origin';
 import { PraxConnection } from '../message/prax';
-import { JsonValue } from '@bufbuild/protobuf';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { PenumbraRequestFailure } from '@penumbra-zone/client';
+import { assertValidSender } from '../origins/valid-sender';
 
 // listen for page connection requests.
 // this is the only message we handle from an unapproved content script.
 chrome.runtime.onMessage.addListener(
-  (req: PraxConnection.Request | JsonValue, sender, respond: (arg: PraxConnection) => void) => {
+  (req, unvalidatedSender, respond: (failure?: PenumbraRequestFailure) => void) => {
     if (req !== PraxConnection.Request) return false; // instruct chrome we will not respond
 
-    void approveOrigin(sender).then(
+    const validSender = assertValidSender(unvalidatedSender);
+
+    void approveOrigin(validSender).then(
       status => {
-        // user made a choice
+        // user interacted with the popup, resulting in a choice.
         if (status === UserChoice.Approved) {
-          respond(PraxConnection.Init);
-          void chrome.tabs.sendMessage(sender.tab!.id!, PraxConnection.Init);
+          // the request was succesful
+          respond();
+          // init happens separately
+          void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.Init, {
+            documentId: validSender.documentId,
+          });
         } else {
-          respond(PraxConnection.Denied);
+          respond(PenumbraRequestFailure.Denied);
         }
       },
       e => {
-        if (globalThis.__DEV__) {
-          console.warn('Connection request listener failed:', e);
-        }
+        // something is wrong. user may not have seen a popup.
+        if (globalThis.__DEV__) console.warn('Connection request listener failed:', e);
+
         if (e instanceof ConnectError && e.code === Code.Unauthenticated) {
-          respond(PraxConnection.NeedsLogin);
+          // the website should instruct the user to log in
+          respond(PenumbraRequestFailure.NeedsLogin);
         } else {
-          respond(PraxConnection.Denied);
+          // something strange is happening. either storage is broken, the popup
+          // returned an error, the sender is invalid, or someone's misbehaving.
+          // obfuscate this rejection with a random delay 2-12 secs
+          setTimeout(() => respond(PenumbraRequestFailure.Denied), 2000 + Math.random() * 10000);
         }
       },
     );

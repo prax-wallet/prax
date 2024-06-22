@@ -1,3 +1,3 @@
 import './message-external';
-import './tabs-updated-prax-init';
+import './message-prax-init';
 import './message-prax-request';
