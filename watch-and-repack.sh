@@ -24,7 +24,7 @@ install_prax() {
 
 # Reload webpack
 reload_webpack() {
-  pm2 restart webpack-server
+  (cd "$PRAX_REPO_PATH" && pkill -f "webpack-dev-server")
   (cd "$PRAX_REPO_PATH" && pnpm run dev &)
 }
 
