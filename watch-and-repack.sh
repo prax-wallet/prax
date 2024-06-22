@@ -4,6 +4,9 @@
 PENUMBRA_ZONE_WEB_PATH="../../web"
 PRAX_REPO_PATH="."
 
+# Ensure 'pack-public.sh' is executable
+chmod +x "$PENUMBRA_ZONE_WEB_PATH/pack-public.sh"
+
 # Repack the packages in penumbra-zone/web
 repack() {
   (cd "$PENUMBRA_ZONE_WEB_PATH" && ./pack-public.sh)
@@ -16,7 +19,7 @@ install_prax() {
 
 # Reload webpack
 reload_webpack() {
-  pkill -f "pnpm run dev" # Stop any existing webpack dev server
+  pm2 restart webpack-server
   (cd "$PRAX_REPO_PATH" && pnpm run dev &)
 }
 
