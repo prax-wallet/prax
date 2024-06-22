@@ -11,7 +11,7 @@ repack() {
 
 # Install dependencies in prax-wallet/web
 install_prax() {
-  (cd "$PRAX_REPO_PATH" && pnpm install)
+  (cd "$PRAX_REPO_PATH" && pnpm add -w ../../web/packages/*/penumbra-zone-*-*.tgz)
 }
 
 # Reload webpack
