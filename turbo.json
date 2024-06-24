@@ -39,13 +39,6 @@
     },
     "format": {
       "cache": false,
-      "dependsOn": ["format:ts", "format:rust"]
-    },
-    "format:rust": {
-      "cache": false
-    },
-    "format:ts": {
-      "cache": false,
       "dependsOn": ["//#format:syncpack", "//#format:prettier"]
     },
     "host": {
@@ -57,17 +50,9 @@
       "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
       "inputs": ["**/*.ts", "**/*.tsx", "wasm/index*.ts", "package.json"]
     },
-    "lint:rust": {
-      "dependsOn": ["compile"],
-      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
-    },
     "test": {
       "cache": false,
       "dependsOn": ["compile"]
-    },
-    "test:rust": {
-      "dependsOn": ["compile"],
-      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     }
   }
 }

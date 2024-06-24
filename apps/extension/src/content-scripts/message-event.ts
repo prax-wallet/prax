@@ -1,3 +1,4 @@
+import { PenumbraRequestFailure } from '@penumbra-zone/client';
 import { PraxConnection } from '../message/prax';
 
 // @ts-expect-error - ts can't understand the injected string
@@ -18,11 +19,11 @@ export const isPraxRequestMessageEvent = (
 
 export const isPraxFailureMessageEvent = (
   ev: MessageEvent<unknown>,
-): ev is MessageEvent<PraxMessage<PraxConnection.Denied | PraxConnection.NeedsLogin>> => {
+): ev is MessageEvent<PraxMessage<PenumbraRequestFailure>> => {
   if (!isPraxMessageEventData(ev.data)) return false;
   // @ts-expect-error - ts can't understand the injected string
   const status = ev.data[PRAX] as unknown;
-  return status === PraxConnection.Denied || status === PraxConnection.NeedsLogin;
+  return typeof status === 'string' && status in PenumbraRequestFailure;
 };
 
 export const isPraxPortMessageEvent = (

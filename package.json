@@ -4,7 +4,7 @@
   "license": "(MIT OR Apache-2.0)",
   "packageManager": "pnpm@9.1.2",
   "scripts": {
-    "all-check": "pnpm clean && pnpm install && pnpm compile && pnpm lint && pnpm lint:rust && pnpm build && pnpm test && pnpm test:rust",
+    "all-check": "pnpm clean && pnpm install && pnpm lint && pnpm build && pnpm test",
     "buf-update": "pnpm update --latest \"@buf/*\" \"@bufbuild/*\" \"@connectrpc/*\" && pnpm syncpack fix-mismatches && pnpm install",
     "build": "turbo build",
     "clean": "turbo clean",
