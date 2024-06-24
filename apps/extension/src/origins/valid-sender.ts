@@ -36,11 +36,3 @@ export const assertValidSender = (sender?: chrome.runtime.MessageSender) => {
 
   return sender as ValidSender;
 };
-
-export const isValidSender = (sender: chrome.runtime.MessageSender): sender is ValidSender => {
-  try {
-    return Boolean(assertValidSender(sender));
-  } catch {
-    return false;
-  }
-};
