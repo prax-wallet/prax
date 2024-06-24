@@ -99,7 +99,14 @@ export const GrpcEndpointForm = ({
           </div>
 
           <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
-            {isValidationLoading ? <Loader2 className='size-4 animate-spin' /> : submitButtonLabel}
+            {isValidationLoading ? (
+              <>
+                <Loader2 className='mr-2 size-4 animate-spin' />
+                Validating RPC
+              </>
+            ) : (
+              submitButtonLabel
+            )}
           </Button>
         </form>
 
