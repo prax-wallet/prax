@@ -76,7 +76,7 @@ export const GrpcEndpointForm = ({
                   placeholder='Enter URL'
                   ref={customGrpcEndpointInput}
                   value={isCustomGrpcEndpoint && !!grpcEndpointInput ? grpcEndpointInput : ''}
-                  onChange={e => setGrpcEndpointInput(e.target.value)}
+                  onChange={e => setGrpcEndpointInput(e.target.value.replace(/\/$/, ''))}
                   className='w-full rounded border border-secondary bg-background p-1 outline-0 transition hover:border-gray-400 focus:border-gray-400'
                 />
               }
