@@ -1,4 +1,4 @@
-import { TransactionViewComponent } from '@repo/ui/components/ui/tx/view/transaction';
+import { TransactionViewComponent } from '@repo/ui/components/ui/tx';
 import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@repo/ui/components/ui/json-viewer';

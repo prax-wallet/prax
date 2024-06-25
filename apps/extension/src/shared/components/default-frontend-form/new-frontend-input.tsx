@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { SelectList } from '@repo/ui/components/ui/select-list';
+import { SelectList } from '@repo/ui/components/ui/select';
 import { cn } from '@repo/ui/lib/utils';
 import { isValidUrl } from '../../utils/is-valid-url';
 
