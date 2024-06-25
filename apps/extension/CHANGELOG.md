@@ -1,5 +1,19 @@
 # chrome-extension
 
+## 10.0.0
+
+### Major Changes
+
+- e9b0d0d: use imported packages
+
+### Patch Changes
+
+- 93cc701: Update how connection approvals update origin records
+- 2287a89: scope init to documentId
+- Updated dependencies [e9b0d0d]
+  - @repo/context@4.0.0
+  - @repo/ui@4.0.0
+
 ## 9.1.0
 
 ### Minor Changes

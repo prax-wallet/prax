@@ -52,19 +52,12 @@ const requestResponseListener = (msg: MessageEvent<unknown>) => {
   if (msg.origin === window.origin) {
     if (isPraxFailureMessageEvent(msg)) {
       // @ts-expect-error - ts can't understand the injected string
-      const status = msg.data[PRAX] as PraxConnection;
+      const status: unknown = msg.data[PRAX];
       const failure = new Error('Connection request failed');
-      switch (status) {
-        case PraxConnection.Denied:
-          failure.cause = PenumbraRequestFailure.Denied;
-          break;
-        case PraxConnection.NeedsLogin:
-          failure.cause = PenumbraRequestFailure.NeedsLogin;
-          break;
-        default:
-          failure.cause = 'Unknown';
-          break;
-      }
+      failure.cause =
+        typeof status === 'string' && status in PenumbraRequestFailure
+          ? status
+          : `Unknown failure: ${String(status)}`;
       request.reject(failure);
     }
   }

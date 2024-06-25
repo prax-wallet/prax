@@ -2,9 +2,18 @@ import { sessionExtStorage } from './storage/session';
 import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
-import { isChromeResponderDroppedError } from '@penumbra-zone/types/internal-msg/chrome-error';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+
+type ChromeResponderDroppedMessage =
+  'A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received';
+
+const isChromeResponderDroppedError = (
+  e: unknown,
+): e is Error & { message: ChromeResponderDroppedMessage } =>
+  e instanceof Error &&
+  e.message ===
+    'A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received';
 
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
