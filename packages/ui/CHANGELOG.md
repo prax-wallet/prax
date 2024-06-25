@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 4.0.0
+
+### Major Changes
+
+- e9b0d0d: use imported packages
+
 ## 3.4.0
 
 ### Minor Changes
