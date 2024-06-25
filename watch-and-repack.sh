@@ -22,7 +22,13 @@ install_prax() {
 
 # Reload webpack
 reload_webpack() {
-  (cd "$PRAX_REPO_PATH" && pkill -f "webpack-prax-dev-server")
+  # Find the PID of the actively running webpack process 
+  WEBPACK_PID=$(lsof -t -i:5175) 
+
+  if [ -n "$WEBPACK_PID" ]; then
+    kill -9 $WEBPACK_PID
+  fi
+  
   (cd "$PRAX_REPO_PATH" && pnpm run dev &)
 }
 
