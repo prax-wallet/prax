@@ -1,5 +1,5 @@
 import { FormEvent, useRef } from 'react';
-import { SelectList } from '@repo/ui/components/ui/select-list';
+import { SelectList } from '@repo/ui/components/ui/select';
 import { Button } from '@repo/ui/components/ui/button';
 import { Network, Loader2 } from 'lucide-react';
 import { useGrpcEndpointForm } from './use-grpc-endpoint-form';

@@ -11,10 +11,25 @@
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"
   },
+  "files": [
+    "dist",
+    "postcss.config.js",
+    "fonts",
+    "styles"
+  ],
+  "exports": {
+    "./components/ui/icons/*": "./components/ui/icons/*.tsx",
+    "./components/ui/*": "./components/ui/*/index.tsx",
+    "./lib/toast/*": "./lib/toast/*.ts",
+    "./lib/toast/transaction-toast": "./lib/toast/transaction-toast.tsx",
+    "./lib/utils": "./lib/utils.ts",
+    "./postcss.config.js": "./postcss.config.js",
+    "./styles/*": "./styles/*"
+  },
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@mui/material": "^5.15.18",
+    "@penumbra-labs/registry": "8.0.1",
     "@penumbra-zone/bech32m": "^6.1.0",
     "@penumbra-zone/getters": "^8.0.0",
     "@penumbra-zone/perspective": "^6.0.0",
@@ -37,16 +52,6 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@testing-library/jest-dom": "^6.4.5",
     "@textea/json-viewer": "^3.4.1",
-    "@visx/axis": "^3.10.1",
-    "@visx/curve": "^3.3.0",
-    "@visx/grid": "^3.5.0",
-    "@visx/group": "^3.3.0",
-    "@visx/responsive": "^3.10.2",
-    "@visx/scale": "^3.5.0",
-    "@visx/shape": "^3.5.0",
-    "@visx/stats": "^3.5.0",
-    "@visx/threshold": "^3.5.0",
-    "@visx/tooltip": "^3.3.0",
     "bignumber.js": "^9.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -55,6 +60,7 @@
     "framer-motion": "^11.2.4",
     "humanize-duration": "^3.32.0",
     "lucide-react": "^0.378.0",
+    "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.23.1",
@@ -73,17 +79,18 @@
     "@storybook/preview-api": "^8.1.1",
     "@storybook/react": "^8.1.1",
     "@storybook/react-vite": "8.1.1",
+    "@testing-library/dom": "^10.1.0",
     "@testing-library/react": "^15.0.7",
     "@types/humanize-duration": "^3.27.4",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "@types/tinycolor2": "^1.4.6",
-    "autoprefixer": "^10.4.19",
-    "eslint-plugin-storybook": "^0.8.0",
     "postcss": "^8.4.38",
     "prop-types": "^15.8.1",
-    "react": "^18.3.1",
     "storybook": "^8.1.1",
     "tailwindcss": "^3.4.4"
+  },
+  "engine": {
+    "node": ">=22"
   }
 }
