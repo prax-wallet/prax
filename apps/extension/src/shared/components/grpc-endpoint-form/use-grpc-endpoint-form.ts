@@ -35,6 +35,7 @@ export const useGrpcEndpointForm = () => {
   const [grpcEndpointInput, setGrpcEndpointInput] = useState<string>('');
   const [rpcError, setRpcError] = useState<string>();
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false);
+  const [isValidationLoading, setIsValidationLoading] = useState(false);
   const [confirmChangedChainIdPromise, setConfirmChangedChainIdPromise] = useState<
     PromiseWithResolvers<void> | undefined
   >();
@@ -56,6 +57,7 @@ export const useGrpcEndpointForm = () => {
       if (!isValidUrl(grpcEndpointInput)) return;
 
       try {
+        setIsValidationLoading(true);
         const trialClient = createPromiseClient(
           AppService,
           createGrpcWebTransport({ baseUrl: grpcEndpointInput }),
@@ -83,6 +85,8 @@ export const useGrpcEndpointForm = () => {
         } else {
           setRpcError('Could not connect to endpoint: ' + String(e));
         }
+      } finally {
+        setIsValidationLoading(false);
       }
     }, 400);
   }, []);
@@ -150,5 +154,6 @@ export const useGrpcEndpointForm = () => {
     onSubmit,
     isSubmitButtonEnabled,
     isCustomGrpcEndpoint,
+    isValidationLoading,
   };
 };

@@ -1,7 +1,7 @@
 import { FormEvent, useRef } from 'react';
 import { SelectList } from '@repo/ui/components/ui/select-list';
 import { Button } from '@repo/ui/components/ui/button';
-import { Network } from 'lucide-react';
+import { Network, Loader2 } from 'lucide-react';
 import { useGrpcEndpointForm } from './use-grpc-endpoint-form';
 import { ConfirmChangedChainIdDialog } from './confirm-changed-chain-id-dialog';
 import { ChainIdOrError } from './chain-id-or-error';
@@ -29,6 +29,7 @@ export const GrpcEndpointForm = ({
     rpcError,
     isSubmitButtonEnabled,
     isCustomGrpcEndpoint,
+    isValidationLoading,
   } = useGrpcEndpointForm();
   const customGrpcEndpointInput = useRef<HTMLInputElement | null>(null);
 
@@ -98,7 +99,14 @@ export const GrpcEndpointForm = ({
           </div>
 
           <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
-            {submitButtonLabel}
+            {isValidationLoading ? (
+              <>
+                <Loader2 className='mr-2 size-4 animate-spin' />
+                Validating RPC
+              </>
+            ) : (
+              submitButtonLabel
+            )}
           </Button>
         </form>
 
