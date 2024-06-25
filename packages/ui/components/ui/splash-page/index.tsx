@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../card';
 import { FadeTransition } from '../fade-transition';
-import { AnimatedPenumbra } from '../logo/animated-penumbra';
+import { AnimatedPenumbra } from './logo/animated-penumbra';
 
 export const SplashPage = ({
   title,

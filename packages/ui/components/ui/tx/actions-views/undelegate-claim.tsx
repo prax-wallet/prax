@@ -1,6 +1,6 @@
 import { UndelegateClaim } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ViewBox } from '../viewbox';
-import { IdentityKeyComponent } from '../../identity-key-component';
+import { IdentityKeyComponent } from './identity-key';
 import { ActionDetails } from './action-details';
 import {
   getUnbondingStartHeightFromUndelegateClaim,

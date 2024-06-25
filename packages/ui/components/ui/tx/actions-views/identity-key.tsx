@@ -1,5 +1,5 @@
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { CopyToClipboardIconButton } from '../copy-to-clipboard/copy-to-clipboard-icon-button';
+import { CopyToClipboardIconButton } from '../../copy-to-clipboard/copy-to-clipboard-icon-button';
 import {
   bech32mIdentityKey,
   PENUMBRA_BECH32M_IDENTITYKEY_PREFIX,
