@@ -1,5 +1,11 @@
 # @penumbra-zone/services
 
+## 4.0.0
+
+### Major Changes
+
+- e9b0d0d: use imported packages
+
 ## 3.3.0
 
 ### Minor Changes
