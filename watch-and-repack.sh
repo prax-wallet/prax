@@ -2,12 +2,14 @@
 
 # Check if `PENUMBRA_ZONE_WEB_PATH` is set and points to a valid directory
 if [ -z "$PENUMBRA_ZONE_WEB_PATH" ] || [ ! -d "$PENUMBRA_ZONE_WEB_PATH" ]; then
-  PENUMBRA_ZONE_WEB_PATH="../../web"
+    echo "Error: PENUMBRA_ZONE_WEB_PATH is not set or does not point to a valid directory."
+    exit 1
 fi
 
 # Check if `PRAX_REPO_PATH` is set and points to a valid directory
 if [ -z "$PRAX_REPO_PATH" ] || [ ! -d "$PRAX_REPO_PATH" ]; then
-  PRAX_REPO_PATH="."
+    echo "Error: PRAX_REPO_PATH is not set or does not point to a valid directory."
+    exit 1
 fi
 
 # Repack the packages in `penumbra-zone/web`
