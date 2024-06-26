@@ -4,11 +4,7 @@ export const isValidUrl = (url: string) => {
 
     // Security measure: allows us to guard against someone being deceived
     // into adding a url with chrome-extension:// in it with intentions to inject code
-    if (!['https:', 'http:'].includes(proposedUrl.protocol)) {
-      throw new Error(`protocol "${proposedUrl.protocol}" is not supported`);
-    }
-
-    return true;
+    return ['https:', 'http:'].includes(proposedUrl.protocol);
   } catch {
     return false;
   }
