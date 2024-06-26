@@ -71,7 +71,11 @@ export const Settings = () => {
             icon={<ExitIcon className='size-5 text-muted-foreground' />}
             onClick={() => {
               clearSessionPassword();
-              navigate(PopupPath.LOGIN);
+              // Normally we could do: navigate(PopupPath.LOGIN)
+              // However, for security reasons, we are reloading the window to guarantee
+              // the password does not remain in memory. Auditors have not trusted that even though
+              // it's cleared in Zustand that it could still be extracted somehow.
+              chrome.runtime.reload();
             }}
           />
         </div>
