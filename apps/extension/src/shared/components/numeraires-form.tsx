@@ -1,4 +1,3 @@
-import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AllSlices, useStore } from '../../state';
 import { useChainIdQuery } from '../../hooks/chain-id';
 import { useMemo, useState } from 'react';
@@ -7,14 +6,7 @@ import { SelectList } from '@repo/ui/components/ui/select';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { Button } from '@repo/ui/components/ui/button';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-
-const getNumeraireFromRegistry = (chainId?: string): Metadata[] => {
-  if (!chainId) return [];
-  const registryClient = new ChainRegistryClient();
-  const registry = registryClient.get(chainId);
-  return registry.numeraires.map(n => registry.getMetadata(n));
-};
+import { getNumeraireFromRegistry } from '../../utils/get-numeraires-from-registry';
 
 const useNumerairesSelector = (state: AllSlices) => {
   return {
@@ -40,6 +32,11 @@ export const NumeraireForm = ({
   // this forces you to use two sources to guarantee 'chainId' for both settings and onboarding
   const numeraires = useMemo(() => getNumeraireFromRegistry(chainId ?? networkChainId), [chainId]);
 
+  if (numeraires.length === 0) {
+    void (async function () {
+      await onSuccess();
+    })();
+  }
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {

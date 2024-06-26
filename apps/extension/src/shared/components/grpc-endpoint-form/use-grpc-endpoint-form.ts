@@ -18,9 +18,14 @@ const useSaveGrpcEndpointSelector = (state: AllSlices) => ({
 });
 
 const getRpcsFromRegistry = () => {
-  const registryClient = new ChainRegistryClient();
-  const { rpcs } = registryClient.globals();
-  return rpcs.toSorted(randomSort);
+  try {
+    const registryClient = new ChainRegistryClient();
+    const { rpcs } = registryClient.globals();
+    return rpcs.toSorted(randomSort);
+  } catch (e) {
+    console.error('Registry globals is not available', e);
+    return [];
+  }
 };
 
 export const useGrpcEndpointForm = (isOnboarding: boolean) => {

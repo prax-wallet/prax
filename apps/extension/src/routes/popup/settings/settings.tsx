@@ -13,6 +13,8 @@ import { passwordSelector } from '../../../state/password';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { SettingsScreen } from './settings-screen';
+import { useChainIdQuery } from '../../../hooks/chain-id';
+import { getNumeraireFromRegistry } from '../../../utils/get-numeraires-from-registry';
 
 const links = [
   {
@@ -39,6 +41,7 @@ const links = [
     title: 'Price denomination',
     icon: <BarChartIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_NUMERAIRES,
+    disabled: false,
   },
   {
     title: 'Advanced',
@@ -51,6 +54,11 @@ export const Settings = () => {
   const navigate = usePopupNav();
   const { clearSessionPassword } = useStore(passwordSelector);
 
+  const { chainId } = useChainIdQuery();
+  const numeraires = getNumeraireFromRegistry(chainId);
+
+  console.log(chainId, numeraires);
+
   return (
     <SettingsScreen title='Settings'>
       <div className='flex grow flex-col justify-between'>
@@ -61,6 +69,7 @@ export const Settings = () => {
               title={i.title}
               icon={i.icon}
               onClick={() => navigate(i.href)}
+              disabled={i.href === PopupPath.SETTINGS_NUMERAIRES && numeraires.length === 0}
             />
           ))}
         </div>
