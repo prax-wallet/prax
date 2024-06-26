@@ -38,19 +38,17 @@ export const startWalletServices = async () => {
  * local storage.
  */
 const getChainId = async (baseUrl: string) => {
-  const localChainId = await localExtStorage
-    .get('params')
-    .then(json => json && AppParameters.fromJsonString(json).chainId);
+  const params =
+    (await createPromiseClient(AppService, createGrpcWebTransport({ baseUrl })).appParameters({}))
+      .appParameters ??
+    (await localExtStorage
+      .get('params')
+      .then(jsonParams => (jsonParams ? AppParameters.fromJsonString(jsonParams) : undefined)));
 
-  if (localChainId) return localChainId;
+  if (params?.chainId) void localExtStorage.set('params', params.toJsonString());
+  else throw new Error('No chainId available');
 
-  const remoteChainId = (
-    await createPromiseClient(AppService, createGrpcWebTransport({ baseUrl })).appParameters({})
-  ).appParameters?.chainId;
-
-  if (remoteChainId) return remoteChainId;
-
-  throw new Error('No chainId available');
+  return params.chainId;
 };
 
 /**
