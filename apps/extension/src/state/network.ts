@@ -7,7 +7,7 @@ export interface NetworkSlice {
   fullSyncHeight?: number;
   chainId?: string;
   setGRPCEndpoint: (endpoint: string) => Promise<void>;
-  setChainId: (chainId: string) => void;
+  setChainId: (chainId: string) => Promise<void>;
 }
 
 export const createNetworkSlice =
@@ -24,10 +24,12 @@ export const createNetworkSlice =
 
         await local.set('grpcEndpoint', endpoint);
       },
-      setChainId: (chainId: string) => {
+      setChainId: async (chainId: string) => {
         set(state => {
           state.network.chainId = chainId;
         });
+
+        await local.set('chainId', chainId);
       },
     };
   };

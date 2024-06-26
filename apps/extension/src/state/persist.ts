@@ -7,7 +7,6 @@ import { LocalStorageState } from '../storage/types';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { StorageItem } from '../storage/base';
 import { walletsFromJson } from '@penumbra-zone/types/wallet';
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 
 export type Middleware = <
   T,
@@ -30,6 +29,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
     const passwordKey = await sessionExtStorage.get('passwordKey');
     const wallets = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+    const chainId = await localExtStorage.get('chainId');
     const knownSites = await localExtStorage.get('knownSites');
     const frontendUrl = await localExtStorage.get('frontendUrl');
     const numeraires = await localExtStorage.get('numeraires');
@@ -39,6 +39,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         state.password.key = passwordKey;
         state.wallets.all = walletsFromJson(wallets);
         state.network.grpcEndpoint = grpcEndpoint;
+        state.network.chainId = chainId;
         state.connectedSites.knownSites = knownSites;
         state.defaultFrontend.url = frontendUrl;
         state.numeraires.selectedNumeraires = numeraires;
@@ -122,15 +123,13 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
     );
   }
 
-  if (changes['params']) {
-    const stored = changes['params'].newValue as
-      | StorageItem<LocalStorageState['params']>
+  if (changes['chainId']) {
+    const stored = changes['chainId'].newValue as
+      | StorageItem<LocalStorageState['chainId']>
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.network.chainId = stored?.value
-          ? AppParameters.fromJsonString(stored.value).chainId
-          : state.network.chainId;
+        state.network.chainId = stored?.value ?? state.network.chainId;
       }),
     );
   }

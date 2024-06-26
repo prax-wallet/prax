@@ -66,7 +66,7 @@ export const useGrpcEndpointForm = () => {
         if (!appParameters?.chainId) throw new ConnectError('', Code.NotFound);
 
         setIsSubmitButtonEnabled(true);
-        setChainId(appParameters.chainId);
+        void setChainId(appParameters.chainId);
 
         // Only set the original chain ID the first time, so that we can compare
         // it on submit.

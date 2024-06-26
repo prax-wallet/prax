@@ -1,4 +1,3 @@
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createPromiseClient } from '@connectrpc/connect';
@@ -39,9 +38,7 @@ export const startWalletServices = async () => {
  * local storage.
  */
 const getChainId = async (baseUrl: string) => {
-  const localChainId = await localExtStorage
-    .get('params')
-    .then(json => json && AppParameters.fromJsonString(json).chainId);
+  const localChainId = await localExtStorage.get('chainId');
 
   if (localChainId) return localChainId;
 
@@ -87,7 +84,7 @@ const attachServiceControlListener = ({
       case ServicesMessage.ClearCache:
         void (async () => {
           blockProcessor.stop('clearCache');
-          await Promise.allSettled([localExtStorage.remove('params'), indexedDb.clear()]);
+          await Promise.allSettled([localExtStorage.remove('chainId'), indexedDb.clear()]);
         })()
           .then(() => respond())
           .finally(() => chrome.runtime.reload());

@@ -7,7 +7,7 @@ export const localDefaults: Required<LocalStorageState> = {
   fullSyncHeight: undefined,
   grpcEndpoint: undefined,
   knownSites: [],
-  params: undefined,
+  chainId: undefined,
   passwordKeyPrint: undefined,
   frontendUrl: undefined,
   numeraires: [],

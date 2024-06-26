@@ -29,4 +29,15 @@ describe('Network Slice', () => {
       expect(urlFromChromeStorage).toBe(testUrl);
     });
   });
+
+  describe('setChainId', () => {
+    test('grpc endpoint can be set', async () => {
+      const testChain = 'testnet-deimos-8';
+      await useStore.getState().network.setChainId(testChain);
+
+      expect(useStore.getState().network.chainId).toBe(testChain);
+      const idFromChromeStorage = await localStorage.get('chainId');
+      expect(idFromChromeStorage).toBe(testChain);
+    });
+  });
 });
