@@ -17,11 +17,12 @@ export const SettingsPassphrase = () => {
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
   const [phrase, setPhrase] = useState<string[]>([]);
 
-  const sumbit = (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     void (async function () {
       if (await isPassword(password)) {
+        setPassword(''); // Clearing so plaintext password does not hangout in memory
         setPhrase(await getSeedPhrase());
       } else {
         setEnteredIncorrect(true);
@@ -31,7 +32,7 @@ export const SettingsPassphrase = () => {
 
   return (
     <SettingsScreen title='Recovery passphrase' IconComponent={FileTextGradientIcon}>
-      <form className='flex flex-1 flex-col items-start justify-between' onSubmit={sumbit}>
+      <form className='flex flex-1 flex-col items-start justify-between' onSubmit={submit}>
         <div className='flex flex-col gap-3'>
           <p className='text-muted-foreground'>
             If you change browser or switch to another computer, you will need this recovery
