@@ -21,7 +21,6 @@ export const startWalletServices = async () => {
   const services = new Services({
     grpcEndpoint,
     chainId: await getChainId(grpcEndpoint),
-    idbVersion: IDB_VERSION,
     walletId: WalletId.fromJsonString(wallet.id),
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
     numeraires: numeraires.map(n => AssetId.fromJsonString(n)),

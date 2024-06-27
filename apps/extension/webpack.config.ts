@@ -21,7 +21,6 @@ const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbr
 const definitions = {
   PRAX: JSON.stringify(process.env['PRAX']),
   PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
-  IDB_VERSION: JSON.stringify(Number(process.env['IDB_VERSION'])),
   'globalThis.__DEV__': JSON.stringify(true),
   'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
 };

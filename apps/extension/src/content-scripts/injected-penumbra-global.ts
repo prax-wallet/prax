@@ -84,6 +84,7 @@ const postRequest = () => {
 const praxProvider: PenumbraInjection = Object.freeze({
   manifest: `${PRAX_ORIGIN}/manifest.json`,
   connect: () => connection.promise,
+  disconnect: () => Promise.resolve(), // TODO: PR in progress
   isConnected: () => connection.state,
   request: () => postRequest(),
 });
