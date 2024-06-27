@@ -13,7 +13,6 @@ import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/a
 
 export interface ServicesConfig {
   readonly chainId: string;
-  readonly idbVersion: number;
   readonly grpcEndpoint: string;
   readonly walletId: WalletId;
   readonly fullViewingKey: FullViewingKey;
@@ -84,12 +83,11 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { chainId, grpcEndpoint, walletId, fullViewingKey, idbVersion, numeraires } = this.config;
+    const { chainId, grpcEndpoint, walletId, fullViewingKey, numeraires } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const registryClient = new ChainRegistryClient();
     const indexedDb = await IndexedDb.initialize({
       chainId,
-      idbVersion,
       walletId,
       registryClient,
     });
