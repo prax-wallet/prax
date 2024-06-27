@@ -13,7 +13,7 @@ const initOnce = (
   // script in the same extension using chrome.tabs.sendMessage
   sender: chrome.runtime.MessageSender,
   // this handler will only ever send an empty response
-  emptyResponse: (no?: never) => void,
+  respond: (no?: never) => void,
 ) => {
   if (req !== PraxConnection.Init) {
     // boolean return in handlers signals intent to respond
@@ -31,7 +31,7 @@ const initOnce = (
   window.postMessage({ [PRAX]: port } satisfies PraxMessage<MessagePort>, '/', [port]);
 
   // handler is done
-  emptyResponse();
+  respond();
 
   // boolean return in handlers signals intent to respond
   return true;
