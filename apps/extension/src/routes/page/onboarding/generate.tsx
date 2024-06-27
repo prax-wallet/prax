@@ -2,7 +2,7 @@ import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { SeedPhraseLength } from '@penumbra-zone/crypto-web/mnemonic';
 import { useEffect, useState } from 'react';
 import { Button } from '@repo/ui/components/ui/button';
-import { BackIcon } from '@repo/ui/components/ui/back-icon';
+import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
 import { CopyToClipboard } from '@repo/ui/components/ui/copy-to-clipboard';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';

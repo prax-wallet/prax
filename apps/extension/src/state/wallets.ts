@@ -3,18 +3,12 @@ import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone
 import { Key } from '@penumbra-zone/crypto-web/encryption';
 import { ExtensionStorage } from '../storage/base';
 import { LocalStorageState } from '../storage/types';
-import {
-  FullViewingKey,
-  SpendKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Wallet, WalletCreate } from '@penumbra-zone/types/wallet';
 
 export interface WalletsSlice {
   all: Wallet[];
   addWallet: (toAdd: WalletCreate) => Promise<Wallet>;
   getSeedPhrase: () => Promise<string[]>;
-  getSpendKey: () => Promise<SpendKey>;
-  getFullViewingKey: () => Promise<FullViewingKey>;
 }
 
 export const createWalletsSlice =
@@ -60,17 +54,6 @@ export const createWalletsSlice =
         if (!decryptedSeedPhrase) throw new Error('Unable to decrypt seed phrase with password');
 
         return decryptedSeedPhrase.split(' ');
-      },
-      getSpendKey: async () => {
-        const seedPhrase = (await get().wallets.getSeedPhrase()).join(' ');
-
-        return generateSpendKey(seedPhrase);
-      },
-      getFullViewingKey: async () => {
-        const seedPhrase = (await get().wallets.getSeedPhrase()).join(' ');
-        const spendKey = generateSpendKey(seedPhrase);
-
-        return getFullViewingKey(spendKey);
       },
     };
   };

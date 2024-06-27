@@ -1,4 +1,4 @@
-import { BackIcon } from '@repo/ui/components/ui/back-icon';
+import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { Button } from '@repo/ui/components/ui/button';
 import {
   Card,
