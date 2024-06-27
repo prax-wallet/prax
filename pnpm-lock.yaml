@@ -56,11 +56,7 @@ importers:
         version: 8.1.1(encoding@0.1.13)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
       '@turbo/gen':
         specifier: ^1.13.4
-<<<<<<< HEAD
         version: 1.13.4(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2)
-=======
-        version: 1.13.4(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)
->>>>>>> main
       '@types/chrome':
         specifier: 0.0.268
         version: 0.0.268
@@ -69,11 +65,7 @@ importers:
         version: 20.14.9
       '@vitejs/plugin-react-swc':
         specifier: ^3.7.0
-<<<<<<< HEAD
         version: 3.7.0(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
-=======
-        version: 3.7.0(@swc/helpers@0.5.11)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
->>>>>>> main
       '@vitest/browser':
         specifier: ^1.6.0
         version: 1.6.0(playwright@1.45.0)(vitest@1.6.0)
@@ -91,11 +83,7 @@ importers:
         version: 12.3.3(typescript@5.5.2)
       tailwindcss:
         specifier: ^3.4.4
-<<<<<<< HEAD
         version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))
-=======
-        version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
->>>>>>> main
       turbo:
         specifier: ^1.13.4
         version: 1.13.4
@@ -107,21 +95,13 @@ importers:
         version: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
       vite-plugin-top-level-await:
         specifier: ^1.4.1
-<<<<<<< HEAD
         version: 1.4.1(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
-=======
-        version: 1.4.1(@swc/helpers@0.5.11)(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
->>>>>>> main
       vite-plugin-wasm:
         specifier: ^3.3.0
         version: 3.3.0(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
       vitest:
         specifier: ^1.6.0
-<<<<<<< HEAD
         version: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1)
-=======
-        version: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
->>>>>>> main
 
   apps/extension:
     dependencies:
@@ -147,46 +127,6 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0
       '@penumbra-zone/client':
-<<<<<<< HEAD
-        specifier: ^8.0.0
-        version: 8.0.0(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))(@penumbra-zone/transport-dom@7.2.0)
-      '@penumbra-zone/crypto-web':
-        specifier: ^5.0.0
-        version: 5.0.0(ns5vxf5vblylmof5uw57xsq2yq)
-      '@penumbra-zone/getters':
-        specifier: ^8.0.0
-        version: 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/keys':
-        specifier: ^4.1.0
-        version: 4.2.0
-      '@penumbra-zone/perspective':
-        specifier: ^6.0.0
-        version: 6.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy))
-      '@penumbra-zone/protobuf':
-        specifier: ^5.1.0
-        version: 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/query':
-        specifier: ^6.0.0
-        version: 6.0.0(46rtbjoofrel3ujd4yuqwnxwii)
-      '@penumbra-zone/services':
-        specifier: ^6.0.0
-        version: 6.0.0(xnmgwqv763iqbdgkcfsqn7ckva)
-      '@penumbra-zone/storage':
-        specifier: ^6.0.0
-        version: 6.0.0(bwcnhd6j5rrc7snefiwswyxu7u)
-      '@penumbra-zone/transport-chrome':
-        specifier: ^4.0.0
-        version: 4.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.2.0)
-      '@penumbra-zone/transport-dom':
-        specifier: ^7.1.0
-        version: 7.2.0
-      '@penumbra-zone/types':
-        specifier: ^9.0.0
-        version: 9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm':
-        specifier: ^9.0.0
-        version: 9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy)
-=======
         specifier: ^9.0.0
         version: 9.0.0(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))(@penumbra-zone/transport-dom@7.2.0)
       '@penumbra-zone/crypto-web':
@@ -225,7 +165,6 @@ importers:
       '@penumbra-zone/wasm':
         specifier: ^10.0.0
         version: 10.0.0(xoprfu4hokmyrwesqwwtd4wgyq)
->>>>>>> main
       '@repo/context':
         specifier: workspace:*
         version: link:../../packages/context
@@ -298,53 +237,33 @@ importers:
         version: 18.3.0
       '@types/webpack':
         specifier: ^5.28.5
-<<<<<<< HEAD
         version: 5.28.5(@swc/core@1.6.5)(webpack-cli@5.1.4(webpack@5.92.1))
-=======
-        version: 5.28.5(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4(webpack@5.92.1))
->>>>>>> main
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)
       copy-webpack-plugin:
         specifier: ^12.0.2
-<<<<<<< HEAD
         version: 12.0.2(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
       css-loader:
         specifier: ^7.1.1
         version: 7.1.2(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
-=======
-        version: 12.0.2(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
-      css-loader:
-        specifier: ^7.1.1
-        version: 7.1.2(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
->>>>>>> main
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
       html-webpack-plugin:
         specifier: ^5.6.0
-<<<<<<< HEAD
         version: 5.6.0(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
-=======
-        version: 5.6.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
->>>>>>> main
       postcss:
         specifier: ^8.4.38
         version: 8.4.38
       postcss-loader:
         specifier: ^8.1.1
-<<<<<<< HEAD
         version: 8.1.1(postcss@8.4.38)(typescript@5.5.2)(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
-=======
-        version: 8.1.1(postcss@8.4.38)(typescript@5.5.2)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
->>>>>>> main
       promise.withresolvers:
         specifier: ^1.0.3
         version: 1.0.3
       style-loader:
         specifier: ^4.0.0
-<<<<<<< HEAD
         version: 4.0.0(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
       tailwindcss:
         specifier: ^3.4.4
@@ -358,21 +277,6 @@ importers:
       webpack:
         specifier: ^5.91.0
         version: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-        version: 4.0.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
-      tailwindcss:
-        specifier: ^3.4.4
-        version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
-      ts-loader:
-        specifier: ^9.5.1
-        version: 9.5.1(typescript@5.5.2)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)
-      webpack:
-        specifier: ^5.91.0
-        version: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
       webpack-cli:
         specifier: ^5.1.4
         version: 5.1.4(webpack@5.92.1)
@@ -393,11 +297,7 @@ importers:
         version: 6.24.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwindcss:
         specifier: ^3.4.4
-<<<<<<< HEAD
         version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))
-=======
-        version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
->>>>>>> main
     devDependencies:
       '@types/react':
         specifier: ^18.3.2
@@ -410,11 +310,7 @@ importers:
         version: 10.4.19(postcss@8.4.38)
       firebase-tools:
         specifier: ^13.8.0
-<<<<<<< HEAD
         version: 13.12.0(encoding@0.1.13)
-=======
-        version: 13.12.0(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@6.0.4)
->>>>>>> main
       postcss:
         specifier: ^8.4.38
         version: 8.4.38
@@ -437,25 +333,6 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0
       '@penumbra-zone/crypto-web':
-<<<<<<< HEAD
-        specifier: ^5.0.0
-        version: 5.0.0(ns5vxf5vblylmof5uw57xsq2yq)
-      '@penumbra-zone/protobuf':
-        specifier: ^5.1.0
-        version: 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/query':
-        specifier: ^6.0.0
-        version: 6.0.0(46rtbjoofrel3ujd4yuqwnxwii)
-      '@penumbra-zone/storage':
-        specifier: ^6.0.0
-        version: 6.0.0(bwcnhd6j5rrc7snefiwswyxu7u)
-      '@penumbra-zone/types':
-        specifier: ^9.0.0
-        version: 9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm':
-        specifier: ^9.0.0
-        version: 9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy)
-=======
         specifier: ^6.0.0
         version: 6.0.0(dnzirz4g4b56ozzyef6n6yidqe)
       '@penumbra-zone/protobuf':
@@ -473,7 +350,6 @@ importers:
       '@penumbra-zone/wasm':
         specifier: ^10.0.0
         version: 10.0.0(xoprfu4hokmyrwesqwwtd4wgyq)
->>>>>>> main
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
@@ -512,21 +388,13 @@ importers:
         version: 0.8.0(eslint@9.5.0)(typescript@5.5.2)
       eslint-plugin-tailwindcss:
         specifier: ^3.15.2
-<<<<<<< HEAD
         version: 3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2)))
-=======
-        version: 3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)))
->>>>>>> main
       eslint-plugin-turbo:
         specifier: ^1.13.3
         version: 1.13.4(eslint@9.5.0)
       eslint-plugin-vitest:
         specifier: ^0.5.4
-<<<<<<< HEAD
         version: 0.5.4(eslint@9.5.0)(typescript@5.5.2)(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))
-=======
-        version: 0.5.4(eslint@9.5.0)(typescript@5.5.2)(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
->>>>>>> main
       typescript-eslint:
         specifier: ^7.10.0
         version: 7.14.1(eslint@9.5.0)(typescript@5.5.2)
@@ -535,17 +403,10 @@ importers:
     dependencies:
       tailwindcss:
         specifier: ^3.4.4
-<<<<<<< HEAD
         version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2)))
-=======
-        version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)))
->>>>>>> main
 
   packages/tsconfig: {}
 
@@ -564,19 +425,6 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0
       '@penumbra-zone/getters':
-<<<<<<< HEAD
-        specifier: ^8.0.0
-        version: 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/perspective':
-        specifier: ^6.0.0
-        version: 6.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy))
-      '@penumbra-zone/types':
-        specifier: ^9.0.0
-        version: 9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm':
-        specifier: ^9.0.0
-        version: 9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy)
-=======
         specifier: ^9.0.0
         version: 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/perspective':
@@ -588,7 +436,6 @@ importers:
       '@penumbra-zone/wasm':
         specifier: ^10.0.0
         version: 10.0.0(xoprfu4hokmyrwesqwwtd4wgyq)
->>>>>>> main
       '@radix-ui/react-avatar':
         specifier: ^1.0.4
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -636,11 +483,7 @@ importers:
         version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/jest-dom':
         specifier: ^6.4.5
-<<<<<<< HEAD
         version: 6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))
-=======
-        version: 6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
->>>>>>> main
       '@textea/json-viewer':
         specifier: ^3.4.1
         version: 3.4.1(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@mui/material@5.15.20(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.3)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -701,21 +544,13 @@ importers:
         version: 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(encoding@0.1.13)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/addon-interactions':
         specifier: ^8.1.1
-<<<<<<< HEAD
         version: 8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))
-=======
-        version: 8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
->>>>>>> main
       '@storybook/addon-links':
         specifier: ^8.1.1
         version: 8.1.11(react@18.3.1)
       '@storybook/addon-postcss':
         specifier: ^2.0.0
-<<<<<<< HEAD
         version: 2.0.0(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2))
-=======
-        version: 2.0.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2))
->>>>>>> main
       '@storybook/blocks':
         specifier: ^8.1.1
         version: 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(encoding@0.1.13)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -754,17 +589,10 @@ importers:
         version: 15.8.1
       storybook:
         specifier: ^8.1.1
-<<<<<<< HEAD
         version: 8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))
-=======
-        version: 8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)
-      tailwindcss:
-        specifier: ^3.4.4
-        version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
->>>>>>> main
 
 packages:
 
@@ -2346,17 +2174,8 @@ packages:
     resolution: {integrity: sha512-RT71LL7sohfWD8OAVNCCcXFJ6WYCxW731UpJel5QOXP3PrcmzHbwc5YRLRfTNqWY4GWdBiu2s/YifOiolfpgyg==}
     hasBin: true
 
-<<<<<<< HEAD
-  '@penumbra-zone/keys@4.2.0':
-    resolution: {integrity: sha512-RT71LL7sohfWD8OAVNCCcXFJ6WYCxW731UpJel5QOXP3PrcmzHbwc5YRLRfTNqWY4GWdBiu2s/YifOiolfpgyg==}
-    hasBin: true
-
-  '@penumbra-zone/perspective@6.0.0':
-    resolution: {integrity: sha512-r4mO0V/ugGTkkIldlVdZcLSJH3SzbXLa4delSgpCWhQrezCE1Mqj8JzlJw9sjRwIv2FA52mMyzHCGX8vReCuEQ==}
-=======
   '@penumbra-zone/perspective@7.0.0':
     resolution: {integrity: sha512-CwP7Hd4b5Qasorbl6hc0ajI6C29fWQVktnHSw8+uvpWwcqUrtda5O0s236e5VCpbn6y2JtFLUwlfBuL+xE8jKg==}
->>>>>>> main
     peerDependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@penumbra-zone/bech32m': 6.1.0
@@ -3594,12 +3413,6 @@ packages:
   '@swc/counter@0.1.3':
     resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
 
-<<<<<<< HEAD
-=======
-  '@swc/helpers@0.5.11':
-    resolution: {integrity: sha512-YNlnKRWF2sVojTpIyzwou9XoTNbzbzONwRhOoniEioF1AtaitTvVZblaQRrAzChWQ1bLYyYSWzM18y4WwgzJ+A==}
-
->>>>>>> main
   '@swc/types@0.1.9':
     resolution: {integrity: sha512-qKnCno++jzcJ4lM4NTfYifm1EFSCeIfKiAHAfkENZAV5Kl9PjJIyd2yeeVv6c/2CckuLyv2NmRC5pv6pm2WQBg==}
 
@@ -8989,19 +8802,17 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
+  use-sync-external-store@1.2.2:
+    resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+
   usehooks-ts@3.1.0:
     resolution: {integrity: sha512-bBIa7yUyPhE1BCc0GmR96VU/15l/9gP1Ch5mYdLcFBaFGQsdmXkvjV0TtOqW1yUd6VjIwDunm+flSciCQXujiw==}
     engines: {node: '>=16.15.0'}
     peerDependencies:
       react: ^16.8.0  || ^17 || ^18
 
-<<<<<<< HEAD
-=======
-  utf-8-validate@6.0.4:
-    resolution: {integrity: sha512-xu9GQDeFp+eZ6LnCywXN/zBancWvOpUMzgjLPSjy4BRHSmTelvn2E0DG0o1sTiw5hkCKBHo8rwSKncfRfv2EEQ==}
-    engines: {node: '>=6.14.2'}
-
->>>>>>> main
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -11231,20 +11042,6 @@ snapshots:
     dependencies:
       bech32: 2.0.0
 
-<<<<<<< HEAD
-  '@penumbra-zone/client@8.0.0(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))(@penumbra-zone/transport-dom@7.2.0)':
-    dependencies:
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/transport-dom': 7.2.0
-
-  '@penumbra-zone/crypto-web@5.0.0(ns5vxf5vblylmof5uw57xsq2yq)':
-    dependencies:
-      '@penumbra-zone/types': 9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      bip39: 3.1.0
-      crypto-js: 4.2.0
-
-  '@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))':
-=======
   '@penumbra-zone/client@9.0.0(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))(@penumbra-zone/transport-dom@7.2.0)':
     dependencies:
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
@@ -11258,34 +11055,15 @@ snapshots:
       crypto-js: 4.2.0
 
   '@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))':
->>>>>>> main
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-<<<<<<< HEAD
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-
-  '@penumbra-zone/keys@4.1.0':
-    optional: true
-
-  '@penumbra-zone/keys@4.2.0': {}
-
-  '@penumbra-zone/perspective@6.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy))':
-    dependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/wasm': 9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy)
-
-  '@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))':
-=======
       '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
 
   '@penumbra-zone/keys@4.2.0': {}
 
   '@penumbra-zone/perspective@7.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@10.0.0(xoprfu4hokmyrwesqwwtd4wgyq))':
->>>>>>> main
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/bech32m': 6.1.0
@@ -11300,58 +11078,14 @@ snapshots:
       '@buf/penumbra-zone_penumbra.connectrpc_es': 1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@bufbuild/protobuf': 1.10.0
 
-<<<<<<< HEAD
-  '@penumbra-zone/query@6.0.0(46rtbjoofrel3ujd4yuqwnxwii)':
-    dependencies:
-      '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0)
-      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0)
-=======
   '@penumbra-zone/query@7.0.0(g6h5hhoevneyhngsann4t53nzm)':
     dependencies:
       '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
->>>>>>> main
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
       '@connectrpc/connect-web': 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/bech32m': 6.1.0
-<<<<<<< HEAD
-      '@penumbra-zone/crypto-web': 5.0.0(ns5vxf5vblylmof5uw57xsq2yq)
-      '@penumbra-zone/getters': 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/types': 9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm': 9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy)
-      exponential-backoff: 3.1.1
-
-  '@penumbra-zone/services@6.0.0(xnmgwqv763iqbdgkcfsqn7ckva)':
-    dependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/crypto-web': 5.0.0(ns5vxf5vblylmof5uw57xsq2yq)
-      '@penumbra-zone/getters': 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/perspective': 6.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy))
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/query': 6.0.0(46rtbjoofrel3ujd4yuqwnxwii)
-      '@penumbra-zone/storage': 6.0.0(bwcnhd6j5rrc7snefiwswyxu7u)
-      '@penumbra-zone/transport-dom': 7.2.0
-      '@penumbra-zone/types': 9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm': 9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy)
-
-  '@penumbra-zone/storage@6.0.0(bwcnhd6j5rrc7snefiwswyxu7u)':
-    dependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-      '@penumbra-labs/registry': 8.0.1
-      '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/types': 9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm': 9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy)
-      idb: 8.0.0
-
-  '@penumbra-zone/transport-chrome@4.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.2.0)':
-=======
       '@penumbra-zone/crypto-web': 6.0.0(dnzirz4g4b56ozzyef6n6yidqe)
       '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
@@ -11387,7 +11121,6 @@ snapshots:
       idb: 8.0.0
 
   '@penumbra-zone/transport-chrome@5.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.2.0)':
->>>>>>> main
     dependencies:
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
@@ -11398,34 +11131,17 @@ snapshots:
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
 
-<<<<<<< HEAD
-  '@penumbra-zone/types@9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))':
-=======
   '@penumbra-zone/types@10.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))':
->>>>>>> main
     dependencies:
       '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-<<<<<<< HEAD
-      '@penumbra-zone/getters': 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-=======
       '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
->>>>>>> main
       bignumber.js: 9.1.2
       idb: 8.0.0
       zod: 3.23.8
 
-<<<<<<< HEAD
-  '@penumbra-zone/wasm@9.0.0(jqjj4xfjgg5rlks6u7rdqbebzy)':
-    dependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-      '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/types': 9.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240606104028-442292b00c16.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240606104028-442292b00c16.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240616005217-ca45ca80333e.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240616005217-ca45ca80333e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-=======
   '@penumbra-zone/wasm@10.0.0(xoprfu4hokmyrwesqwwtd4wgyq)':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
@@ -11433,7 +11149,6 @@ snapshots:
       '@penumbra-zone/bech32m': 6.1.0
       '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/types': 10.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
->>>>>>> main
     optionalDependencies:
       '@penumbra-zone/keys': 4.2.0
 
@@ -12327,19 +12042,11 @@ snapshots:
     dependencies:
       '@storybook/global': 5.0.0
 
-<<<<<<< HEAD
   '@storybook/addon-interactions@8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))':
     dependencies:
       '@storybook/global': 5.0.0
       '@storybook/instrumenter': 8.1.11
       '@storybook/test': 8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))
-=======
-  '@storybook/addon-interactions@8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))':
-    dependencies:
-      '@storybook/global': 5.0.0
-      '@storybook/instrumenter': 8.1.11
-      '@storybook/test': 8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
->>>>>>> main
       '@storybook/types': 8.1.11
       polished: 4.3.1
       ts-dedent: 2.2.0
@@ -12368,7 +12075,6 @@ snapshots:
       '@storybook/global': 5.0.0
       ts-dedent: 2.2.0
 
-<<<<<<< HEAD
   '@storybook/addon-postcss@2.0.0(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2))':
     dependencies:
       '@storybook/node-logger': 6.5.16
@@ -12376,15 +12082,6 @@ snapshots:
       postcss: 7.0.39
       postcss-loader: 4.3.0(postcss@7.0.39)(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2))
       style-loader: 1.3.0(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2))
-=======
-  '@storybook/addon-postcss@2.0.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2))':
-    dependencies:
-      '@storybook/node-logger': 6.5.16
-      css-loader: 3.6.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2))
-      postcss: 7.0.39
-      postcss-loader: 4.3.0(postcss@7.0.39)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2))
-      style-loader: 1.3.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2))
->>>>>>> main
     transitivePeerDependencies:
       - webpack
 
@@ -12494,11 +12191,7 @@ snapshots:
       telejson: 7.2.0
       tiny-invariant: 1.3.3
 
-<<<<<<< HEAD
   '@storybook/cli@8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-=======
-  '@storybook/cli@8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)':
->>>>>>> main
     dependencies:
       '@babel/core': 7.24.7
       '@babel/types': 7.24.7
@@ -12506,11 +12199,7 @@ snapshots:
       '@storybook/codemod': 8.1.11
       '@storybook/core-common': 8.1.11(encoding@0.1.13)(prettier@3.3.2)
       '@storybook/core-events': 8.1.11
-<<<<<<< HEAD
       '@storybook/core-server': 8.1.11(encoding@0.1.13)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-=======
-      '@storybook/core-server': 8.1.11(bufferutil@4.0.8)(encoding@0.1.13)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)
->>>>>>> main
       '@storybook/csf-tools': 8.1.11
       '@storybook/node-logger': 8.1.11
       '@storybook/telemetry': 8.1.11(encoding@0.1.13)(prettier@3.3.2)
@@ -12679,11 +12368,7 @@ snapshots:
       '@storybook/csf': 0.1.9
       ts-dedent: 2.2.0
 
-<<<<<<< HEAD
   '@storybook/core-server@8.1.11(encoding@0.1.13)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-=======
-  '@storybook/core-server@8.1.11(bufferutil@4.0.8)(encoding@0.1.13)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)':
->>>>>>> main
     dependencies:
       '@aw-web-design/x-default-browser': 1.4.126
       '@babel/core': 7.24.7
@@ -13029,22 +12714,14 @@ snapshots:
       - prettier
       - supports-color
 
-<<<<<<< HEAD
   '@storybook/test@8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))':
-=======
-  '@storybook/test@8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))':
->>>>>>> main
     dependencies:
       '@storybook/client-logger': 8.1.11
       '@storybook/core-events': 8.1.11
       '@storybook/instrumenter': 8.1.11
       '@storybook/preview-api': 8.1.11
       '@testing-library/dom': 10.1.0
-<<<<<<< HEAD
       '@testing-library/jest-dom': 6.4.5(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))
-=======
-      '@testing-library/jest-dom': 6.4.5(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
->>>>>>> main
       '@testing-library/user-event': 14.5.2(@testing-library/dom@10.1.0)
       '@vitest/expect': 1.6.0
       '@vitest/spy': 1.6.0
@@ -13108,11 +12785,7 @@ snapshots:
   '@swc/core-win32-x64-msvc@1.6.5':
     optional: true
 
-<<<<<<< HEAD
   '@swc/core@1.6.5':
-=======
-  '@swc/core@1.6.5(@swc/helpers@0.5.11)':
->>>>>>> main
     dependencies:
       '@swc/counter': 0.1.3
       '@swc/types': 0.1.9
@@ -13127,21 +12800,9 @@ snapshots:
       '@swc/core-win32-arm64-msvc': 1.6.5
       '@swc/core-win32-ia32-msvc': 1.6.5
       '@swc/core-win32-x64-msvc': 1.6.5
-<<<<<<< HEAD
 
   '@swc/counter@0.1.3': {}
 
-=======
-      '@swc/helpers': 0.5.11
-
-  '@swc/counter@0.1.3': {}
-
-  '@swc/helpers@0.5.11':
-    dependencies:
-      tslib: 2.6.3
-    optional: true
-
->>>>>>> main
   '@swc/types@0.1.9':
     dependencies:
       '@swc/counter': 0.1.3
@@ -13152,7 +12813,7 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 4.36.1
       react: 18.3.1
-      use-sync-external-store: 1.2.0(react@18.3.1)
+      use-sync-external-store: 1.2.2(react@18.3.1)
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
 
@@ -13178,11 +12839,7 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
-<<<<<<< HEAD
   '@testing-library/jest-dom@6.4.5(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))':
-=======
-  '@testing-library/jest-dom@6.4.5(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))':
->>>>>>> main
     dependencies:
       '@adobe/css-tools': 4.4.0
       '@babel/runtime': 7.24.7
@@ -13193,15 +12850,9 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-<<<<<<< HEAD
       vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1)
 
   '@testing-library/jest-dom@6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))':
-=======
-      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
-
-  '@testing-library/jest-dom@6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))':
->>>>>>> main
     dependencies:
       '@adobe/css-tools': 4.4.0
       '@babel/runtime': 7.24.7
@@ -13212,11 +12863,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-<<<<<<< HEAD
       vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1)
-=======
-      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
->>>>>>> main
 
   '@testing-library/react@15.0.7(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -13258,11 +12905,7 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
-<<<<<<< HEAD
   '@turbo/gen@1.13.4(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2)':
-=======
-  '@turbo/gen@1.13.4(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)':
->>>>>>> main
     dependencies:
       '@turbo/workspaces': 1.13.4
       chalk: 2.4.2
@@ -13272,11 +12915,7 @@ snapshots:
       minimatch: 9.0.5
       node-plop: 0.26.3
       proxy-agent: 6.4.0
-<<<<<<< HEAD
       ts-node: 10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2)
-=======
-      ts-node: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)
->>>>>>> main
       update-check: 1.5.4
       validate-npm-package-name: 5.0.1
     transitivePeerDependencies:
@@ -13509,19 +13148,11 @@ snapshots:
 
   '@types/uuid@9.0.8': {}
 
-<<<<<<< HEAD
   '@types/webpack@5.28.5(@swc/core@1.6.5)(webpack-cli@5.1.4(webpack@5.92.1))':
     dependencies:
       '@types/node': 20.14.9
       tapable: 2.2.1
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-  '@types/webpack@5.28.5(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4(webpack@5.92.1))':
-    dependencies:
-      '@types/node': 20.14.9
-      tapable: 2.2.1
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
@@ -13652,15 +13283,9 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-<<<<<<< HEAD
   '@vitejs/plugin-react-swc@3.7.0(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
     dependencies:
       '@swc/core': 1.6.5
-=======
-  '@vitejs/plugin-react-swc@3.7.0(@swc/helpers@0.5.11)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
-    dependencies:
-      '@swc/core': 1.6.5(@swc/helpers@0.5.11)
->>>>>>> main
       vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
     transitivePeerDependencies:
       - '@swc/helpers'
@@ -13670,11 +13295,7 @@ snapshots:
       '@vitest/utils': 1.6.0
       magic-string: 0.30.10
       sirv: 2.0.4
-<<<<<<< HEAD
       vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1)
-=======
-      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
->>>>>>> main
     optionalDependencies:
       playwright: 1.45.0
 
@@ -13783,7 +13404,6 @@ snapshots:
       '@webassemblyjs/ast': 1.12.1
       '@xtuc/long': 4.2.2
 
-<<<<<<< HEAD
   '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))':
     dependencies:
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
@@ -13797,21 +13417,6 @@ snapshots:
   '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))':
     dependencies:
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))':
-    dependencies:
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack@5.92.1)
-
-  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))':
-    dependencies:
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack@5.92.1)
-
-  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))':
-    dependencies:
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
       webpack-cli: 5.1.4(webpack@5.92.1)
 
   '@xtuc/ieee754@1.2.0': {}
@@ -14616,11 +14221,7 @@ snapshots:
     dependencies:
       toggle-selection: 1.0.6
 
-<<<<<<< HEAD
   copy-webpack-plugin@12.0.2(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)):
-=======
-  copy-webpack-plugin@12.0.2(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)):
->>>>>>> main
     dependencies:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
@@ -14628,11 +14229,7 @@ snapshots:
       normalize-path: 3.0.0
       schema-utils: 4.2.0
       serialize-javascript: 6.0.2
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
 
   core-js-compat@3.37.1:
     dependencies:
@@ -14709,11 +14306,7 @@ snapshots:
 
   css-color-keywords@1.0.0: {}
 
-<<<<<<< HEAD
   css-loader@3.6.0(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2)):
-=======
-  css-loader@3.6.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)):
->>>>>>> main
     dependencies:
       camelcase: 5.3.1
       cssesc: 3.0.0
@@ -14728,15 +14321,9 @@ snapshots:
       postcss-value-parser: 4.2.0
       schema-utils: 2.7.1
       semver: 6.3.1
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(esbuild@0.20.2)
 
   css-loader@7.1.2(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)):
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)
-
-  css-loader@7.1.2(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)):
->>>>>>> main
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.38)
       postcss: 8.4.38
@@ -14747,11 +14334,7 @@ snapshots:
       postcss-value-parser: 4.2.0
       semver: 7.6.2
     optionalDependencies:
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
 
   css-select@4.3.0:
     dependencies:
@@ -15360,39 +14943,23 @@ snapshots:
       - supports-color
       - typescript
 
-<<<<<<< HEAD
   eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))):
     dependencies:
       fast-glob: 3.3.2
       postcss: 8.4.38
       tailwindcss: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))
-=======
-  eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))):
-    dependencies:
-      fast-glob: 3.3.2
-      postcss: 8.4.38
-      tailwindcss: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
->>>>>>> main
 
   eslint-plugin-turbo@1.13.4(eslint@9.5.0):
     dependencies:
       dotenv: 16.0.3
       eslint: 9.5.0
 
-<<<<<<< HEAD
   eslint-plugin-vitest@0.5.4(eslint@9.5.0)(typescript@5.5.2)(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1)):
-=======
-  eslint-plugin-vitest@0.5.4(eslint@9.5.0)(typescript@5.5.2)(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)):
->>>>>>> main
     dependencies:
       '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
       eslint: 9.5.0
     optionalDependencies:
-<<<<<<< HEAD
       vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1)
-=======
-      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
->>>>>>> main
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -15707,11 +15274,7 @@ snapshots:
       micromatch: 4.0.7
       pkg-dir: 4.2.0
 
-<<<<<<< HEAD
   firebase-tools@13.12.0(encoding@0.1.13):
-=======
-  firebase-tools@13.12.0(bufferutil@4.0.8)(encoding@0.1.13)(utf-8-validate@6.0.4):
->>>>>>> main
     dependencies:
       '@google-cloud/cloud-sql-connector': 1.3.2(encoding@0.1.13)
       '@google-cloud/pubsub': 4.5.0(encoding@0.1.13)
@@ -15777,11 +15340,7 @@ snapshots:
       uuid: 8.3.2
       winston: 3.13.0
       winston-transport: 4.7.0
-<<<<<<< HEAD
       ws: 7.5.10
-=======
-      ws: 7.5.10(bufferutil@4.0.8)(utf-8-validate@6.0.4)
->>>>>>> main
       yaml: 2.4.5
     transitivePeerDependencies:
       - bufferutil
@@ -16232,11 +15791,7 @@ snapshots:
 
   html-tags@3.3.1: {}
 
-<<<<<<< HEAD
   html-webpack-plugin@5.6.0(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)):
-=======
-  html-webpack-plugin@5.6.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)):
->>>>>>> main
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -16244,11 +15799,7 @@ snapshots:
       pretty-error: 4.0.0
       tapable: 2.2.1
     optionalDependencies:
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
 
   htmlparser2@6.1.0:
     dependencies:
@@ -17316,7 +16867,7 @@ snapshots:
     dependencies:
       hosted-git-info: 7.0.2
       proc-log: 4.2.0
-      semver: 7.6.2
+      semver: 7.6.0
       validate-npm-package-name: 5.0.1
 
   npm-run-path@4.0.1:
@@ -17733,25 +17284,15 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.38
 
-<<<<<<< HEAD
   postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2)):
-=======
-  postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)):
->>>>>>> main
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.4.5
     optionalDependencies:
       postcss: 8.4.38
-<<<<<<< HEAD
       ts-node: 10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2)
 
   postcss-loader@4.3.0(postcss@7.0.39)(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2)):
-=======
-      ts-node: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)
-
-  postcss-loader@4.3.0(postcss@7.0.39)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)):
->>>>>>> main
     dependencies:
       cosmiconfig: 7.1.0
       klona: 2.0.6
@@ -17759,26 +17300,16 @@ snapshots:
       postcss: 7.0.39
       schema-utils: 3.3.0
       semver: 7.6.2
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(esbuild@0.20.2)
 
   postcss-loader@8.1.1(postcss@8.4.38)(typescript@5.5.2)(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)):
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)
-
-  postcss-loader@8.1.1(postcss@8.4.38)(typescript@5.5.2)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)):
->>>>>>> main
     dependencies:
       cosmiconfig: 9.0.0(typescript@5.5.2)
       jiti: 1.21.6
       postcss: 8.4.38
       semver: 7.6.2
     optionalDependencies:
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
     transitivePeerDependencies:
       - typescript
 
@@ -18735,15 +18266,9 @@ snapshots:
 
   store2@2.14.3: {}
 
-<<<<<<< HEAD
   storybook@8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@storybook/cli': 8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-=======
-  storybook@8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4):
-    dependencies:
-      '@storybook/cli': 8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)
->>>>>>> main
     transitivePeerDependencies:
       - '@babel/preset-env'
       - bufferutil
@@ -18867,7 +18392,6 @@ snapshots:
 
   stubs@3.0.0: {}
 
-<<<<<<< HEAD
   style-loader@1.3.0(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2)):
     dependencies:
       loader-utils: 2.0.4
@@ -18877,17 +18401,6 @@ snapshots:
   style-loader@4.0.0(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)):
     dependencies:
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-  style-loader@1.3.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)):
-    dependencies:
-      loader-utils: 2.0.4
-      schema-utils: 2.7.1
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)
-
-  style-loader@4.0.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)):
-    dependencies:
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
 
   styled-components@6.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
@@ -19000,19 +18513,11 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.24.7
 
-<<<<<<< HEAD
   tailwindcss-animate@1.0.7(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))):
     dependencies:
       tailwindcss: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))
 
   tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2)):
-=======
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))):
-    dependencies:
-      tailwindcss: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
-
-  tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)):
->>>>>>> main
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -19031,11 +18536,7 @@ snapshots:
       postcss: 8.4.38
       postcss-import: 15.1.0(postcss@8.4.38)
       postcss-js: 4.0.1(postcss@8.4.38)
-<<<<<<< HEAD
       postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2))
-=======
-      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
->>>>>>> main
       postcss-nested: 6.0.1(postcss@8.4.38)
       postcss-selector-parser: 6.1.0
       resolve: 1.22.8
@@ -19122,47 +18623,28 @@ snapshots:
 
   term-size@2.2.1: {}
 
-<<<<<<< HEAD
   terser-webpack-plugin@5.3.10(@swc/core@1.6.5)(esbuild@0.20.2)(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2)):
-=======
-  terser-webpack-plugin@5.3.10(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)):
->>>>>>> main
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
       terser: 5.31.1
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(esbuild@0.20.2)
     optionalDependencies:
       '@swc/core': 1.6.5
       esbuild: 0.20.2
 
   terser-webpack-plugin@5.3.10(@swc/core@1.6.5)(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)):
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)
-    optionalDependencies:
-      '@swc/core': 1.6.5(@swc/helpers@0.5.11)
-      esbuild: 0.20.2
-
-  terser-webpack-plugin@5.3.10(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)):
->>>>>>> main
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
       terser: 5.31.1
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
     optionalDependencies:
       '@swc/core': 1.6.5
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
-    optionalDependencies:
-      '@swc/core': 1.6.5(@swc/helpers@0.5.11)
->>>>>>> main
 
   terser@5.31.1:
     dependencies:
@@ -19263,11 +18745,7 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-<<<<<<< HEAD
   ts-loader@9.5.1(typescript@5.5.2)(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)):
-=======
-  ts-loader@9.5.1(typescript@5.5.2)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)):
->>>>>>> main
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.17.0
@@ -19275,15 +18753,9 @@ snapshots:
       semver: 7.6.2
       source-map: 0.7.4
       typescript: 5.5.2
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
 
   ts-node@10.9.2(@swc/core@1.6.5)(@types/node@20.14.9)(typescript@5.5.2):
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
-
-  ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2):
->>>>>>> main
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -19301,11 +18773,7 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optionalDependencies:
-<<<<<<< HEAD
       '@swc/core': 1.6.5
-=======
-      '@swc/core': 1.6.5(@swc/helpers@0.5.11)
->>>>>>> main
 
   ts-toolbelt@9.6.0: {}
 
@@ -19588,19 +19056,15 @@ snapshots:
     dependencies:
       react: 18.3.1
 
+  use-sync-external-store@1.2.2(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   usehooks-ts@3.1.0(react@18.3.1):
     dependencies:
       lodash.debounce: 4.0.8
       react: 18.3.1
 
-<<<<<<< HEAD
-=======
-  utf-8-validate@6.0.4:
-    dependencies:
-      node-gyp-build: 4.8.1
-    optional: true
-
->>>>>>> main
   util-deprecate@1.0.2: {}
 
   util@0.12.5:
@@ -19649,17 +19113,10 @@ snapshots:
       - supports-color
       - terser
 
-<<<<<<< HEAD
   vite-plugin-top-level-await@1.4.1(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1)):
     dependencies:
       '@rollup/plugin-virtual': 3.0.2(rollup@4.18.0)
       '@swc/core': 1.6.5
-=======
-  vite-plugin-top-level-await@1.4.1(@swc/helpers@0.5.11)(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1)):
-    dependencies:
-      '@rollup/plugin-virtual': 3.0.2(rollup@4.18.0)
-      '@swc/core': 1.6.5(@swc/helpers@0.5.11)
->>>>>>> main
       uuid: 9.0.1
       vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
     transitivePeerDependencies:
@@ -19680,11 +19137,7 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.31.1
 
-<<<<<<< HEAD
   vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1):
-=======
-  vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1):
->>>>>>> main
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
@@ -19709,11 +19162,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.14.9
       '@vitest/browser': 1.6.0(playwright@1.45.0)(vitest@1.6.0)
-<<<<<<< HEAD
       jsdom: 24.1.0
-=======
-      jsdom: 24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)
->>>>>>> main
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -19745,15 +19194,9 @@ snapshots:
   webpack-cli@5.1.4(webpack@5.92.1):
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
-<<<<<<< HEAD
       '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
       '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
       '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
-=======
-      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
-      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
-      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack@5.92.1))(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
->>>>>>> main
       colorette: 2.0.20
       commander: 10.0.1
       cross-spawn: 7.0.3
@@ -19762,11 +19205,7 @@ snapshots:
       import-local: 3.1.0
       interpret: 3.1.1
       rechoir: 0.8.0
-<<<<<<< HEAD
       webpack: 5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4)
-=======
-      webpack: 5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4)
->>>>>>> main
       webpack-merge: 5.10.0
 
   webpack-merge@5.10.0:
@@ -19779,11 +19218,7 @@ snapshots:
 
   webpack-virtual-modules@0.6.2: {}
 
-<<<<<<< HEAD
   webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2):
-=======
-  webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2):
->>>>>>> main
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.5
@@ -19806,11 +19241,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-<<<<<<< HEAD
       terser-webpack-plugin: 5.3.10(@swc/core@1.6.5)(esbuild@0.20.2)(webpack@5.92.1(@swc/core@1.6.5)(esbuild@0.20.2))
-=======
-      terser-webpack-plugin: 5.3.10(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2))
->>>>>>> main
       watchpack: 2.4.1
       webpack-sources: 3.2.3
     transitivePeerDependencies:
@@ -19818,11 +19249,7 @@ snapshots:
       - esbuild
       - uglify-js
 
-<<<<<<< HEAD
   webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4):
-=======
-  webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4):
->>>>>>> main
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.5
@@ -19845,11 +19272,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-<<<<<<< HEAD
       terser-webpack-plugin: 5.3.10(@swc/core@1.6.5)(webpack@5.92.1(@swc/core@1.6.5)(webpack-cli@5.1.4))
-=======
-      terser-webpack-plugin: 5.3.10(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(webpack-cli@5.1.4))
->>>>>>> main
       watchpack: 2.4.1
       webpack-sources: 3.2.3
     optionalDependencies:
@@ -20005,14 +19428,7 @@ snapshots:
       signal-exit: 3.0.7
       typedarray-to-buffer: 3.1.5
 
-<<<<<<< HEAD
   ws@7.5.10: {}
-=======
-  ws@7.5.10(bufferutil@4.0.8)(utf-8-validate@6.0.4):
-    optionalDependencies:
-      bufferutil: 4.0.8
-      utf-8-validate: 6.0.4
->>>>>>> main
 
   ws@8.17.1: {}
 
