@@ -24,7 +24,7 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-labs/registry": "9.1.0",
     "@penumbra-zone/crypto-web": "^8.0.0",
-    "@penumbra-zone/query": "^9.0.0",
+    "@penumbra-zone/query": "^10.0.0",
     "@penumbra-zone/storage": "^9.0.0",
     "@penumbra-zone/types": "^12.0.0",
     "@penumbra-zone/wasm": "^12.0.0",
