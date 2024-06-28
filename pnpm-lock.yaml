@@ -12,8 +12,8 @@ importers:
         specifier: 1.10.0-20240625204953-f66a294d94c4.1
         version: 1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0)
       '@buf/cosmos_ibc.connectrpc_es':
-        specifier: 1.4.0-20240628094046-a09922c14925.3
-        version: 1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+        specifier: 1.4.0-20240625204953-f66a294d94c4.3
+        version: 1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@buf/penumbra-zone_penumbra.bufbuild_es':
         specifier: 1.10.0-20240625233123-429cb316aa7c.1
         version: 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
@@ -121,38 +121,38 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-labs/registry':
-        specifier: 8.0.1
-        version: 8.0.1
+        specifier: 9.1.0
+        version: 9.1.0
       '@penumbra-zone/bech32m':
         specifier: ^6.1.0
         version: 6.1.0
       '@penumbra-zone/client':
-        specifier: ^9.0.1
-        version: 9.0.1(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))(@penumbra-zone/transport-dom@7.2.0)
+        specifier: ^10.0.0
+        version: 10.0.0(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))(@penumbra-zone/transport-dom@7.2.0)
       '@penumbra-zone/crypto-web':
-        specifier: ^7.0.0
-        version: 7.0.0(sxmb67az6fppzb63ycmn54fpdy)
+        specifier: ^8.0.0
+        version: 8.0.0(nig5kvh2wbkc5qvqoxetcts76e)
       '@penumbra-zone/getters':
-        specifier: ^9.0.0
-        version: 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+        specifier: ^10.0.0
+        version: 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/keys':
         specifier: ^4.2.0
         version: 4.2.0
       '@penumbra-zone/perspective':
-        specifier: ^8.0.0
-        version: 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@11.0.0(yvf7ssxyliz3eot5cp52eq2o3y))
-      '@penumbra-zone/protobuf':
-        specifier: ^5.2.0
-        version: 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/query':
-        specifier: ^8.0.0
-        version: 8.0.0(mxkzysfqfxwrq4uvzlil7ihnti)
-      '@penumbra-zone/services':
         specifier: ^9.0.0
-        version: 9.0.0(ogtgnfcna4hyj4wsi3xu23npiq)
+        version: 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@12.0.0(jburixdgywhuc4llu3weytedha))
+      '@penumbra-zone/protobuf':
+        specifier: ^5.3.0
+        version: 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/query':
+        specifier: ^9.0.0
+        version: 9.0.0(c5ekuuz6oe7u4atgpk7y4pkd2m)
+      '@penumbra-zone/services':
+        specifier: ^10.0.0
+        version: 10.0.0(tpwhssnqhdhbkc6acql5tdh6xi)
       '@penumbra-zone/storage':
-        specifier: ^8.0.0
-        version: 8.0.0(6vnwea57r3b7lrq3nypzvuwwwu)
+        specifier: ^9.0.0
+        version: 9.0.0(jvdqrviao44wsxs6jp4w3vf6re)
       '@penumbra-zone/transport-chrome':
         specifier: ^5.0.0
         version: 5.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.2.0)
@@ -160,11 +160,11 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       '@penumbra-zone/types':
-        specifier: ^11.0.0
-        version: 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+        specifier: ^12.0.0
+        version: 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
       '@penumbra-zone/wasm':
-        specifier: ^11.0.0
-        version: 11.0.0(yvf7ssxyliz3eot5cp52eq2o3y)
+        specifier: ^12.0.0
+        version: 12.0.0(jburixdgywhuc4llu3weytedha)
       '@repo/context':
         specifier: workspace:*
         version: link:../../packages/context
@@ -327,29 +327,29 @@ importers:
         specifier: ^1.10.0
         version: 1.10.0
       '@penumbra-labs/registry':
-        specifier: 8.0.1
-        version: 8.0.1
+        specifier: 9.1.0
+        version: 9.1.0
       '@penumbra-zone/bech32m':
         specifier: ^6.1.0
         version: 6.1.0
       '@penumbra-zone/crypto-web':
-        specifier: ^7.0.0
-        version: 7.0.0(sxmb67az6fppzb63ycmn54fpdy)
+        specifier: ^8.0.0
+        version: 8.0.0(nig5kvh2wbkc5qvqoxetcts76e)
       '@penumbra-zone/protobuf':
-        specifier: ^5.2.0
-        version: 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+        specifier: ^5.3.0
+        version: 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/query':
-        specifier: ^8.0.0
-        version: 8.0.0(mxkzysfqfxwrq4uvzlil7ihnti)
+        specifier: ^9.0.0
+        version: 9.0.0(c5ekuuz6oe7u4atgpk7y4pkd2m)
       '@penumbra-zone/storage':
-        specifier: ^8.0.0
-        version: 8.0.0(6vnwea57r3b7lrq3nypzvuwwwu)
+        specifier: ^9.0.0
+        version: 9.0.0(jvdqrviao44wsxs6jp4w3vf6re)
       '@penumbra-zone/types':
-        specifier: ^11.0.0
-        version: 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+        specifier: ^12.0.0
+        version: 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
       '@penumbra-zone/wasm':
-        specifier: ^11.0.0
-        version: 11.0.0(yvf7ssxyliz3eot5cp52eq2o3y)
+        specifier: ^12.0.0
+        version: 12.0.0(jburixdgywhuc4llu3weytedha)
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
@@ -419,29 +419,29 @@ importers:
         specifier: ^11.11.5
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: 8.0.1
-        version: 8.0.1
+        specifier: 9.1.0
+        version: 9.1.0
       '@penumbra-zone/bech32m':
         specifier: ^6.1.0
         version: 6.1.0
       '@penumbra-zone/getters':
-        specifier: ^9.0.0
-        version: 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+        specifier: ^10.0.0
+        version: 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/perspective':
-        specifier: ^8.0.0
-        version: 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@11.0.0(wewvptabbvtmaj75gp2thn5gi4))
+        specifier: ^9.0.0
+        version: 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@12.0.0(34gnq4yhbh5h6ouoygbf74myw4))
       '@penumbra-zone/types':
-        specifier: ^11.0.0
-        version: 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+        specifier: ^12.0.0
+        version: 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
       '@penumbra-zone/wasm':
-        specifier: ^11.0.0
-        version: 11.0.0(wewvptabbvtmaj75gp2thn5gi4)
+        specifier: ^12.0.0
+        version: 12.0.0(34gnq4yhbh5h6ouoygbf74myw4)
       '@radix-ui/react-avatar':
         specifier: ^1.0.4
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-checkbox':
         specifier: ^1.0.4
-        version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-dialog':
         specifier: 1.0.5
         version: 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -480,7 +480,7 @@ importers:
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
-        version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/jest-dom':
         specifier: ^6.4.5
         version: 6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0)(terser@5.31.1))
@@ -1345,8 +1345,8 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
 
-  '@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.10.0-20240628094046-a09922c14925.1.tgz}
+  '@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1':
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.10.0-20240628122020-f7eabaf7ca22.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
 
@@ -1355,8 +1355,13 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
 
-  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20240628094046-a09922c14925.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20240628094046-a09922c14925.2.tgz}
+  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20240625204953-f66a294d94c4.2':
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20240625204953-f66a294d94c4.2.tgz}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.7.2
+
+  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20240628122020-f7eabaf7ca22.2':
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20240628122020-f7eabaf7ca22.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
 
@@ -1365,8 +1370,13 @@ packages:
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
 
-  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20240628094046-a09922c14925.3.tgz}
+  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3':
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20240625204953-f66a294d94c4.3.tgz}
+    peerDependencies:
+      '@connectrpc/connect': ^1.4.0
+
+  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3':
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20240628122020-f7eabaf7ca22.3.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
 
@@ -2149,93 +2159,90 @@ packages:
     resolution: {integrity: sha512-lkC8kZYntxVKr7b8xmjCVUgE0a8xgDakPyDo9uSWavXPyYqLgYYGdEd2j8NxihRyb6UwpX3G/hFUF4/9q2V+/g==}
     engines: {node: '>=14'}
 
-  '@penumbra-labs/registry@8.0.1':
-    resolution: {integrity: sha512-wbnIhOL7zWUKRF0TGxSUwJpdnoT0jE/xuK8ce/OnUFxgcn8sgdL+Z+TgAx4JNicLuJftUmOm9ACtF86Lpv3zMw==}
-
   '@penumbra-labs/registry@9.1.0':
     resolution: {integrity: sha512-t6AQk0rWJMbyGpNxMWI8dQwSy0jl0mfrFMzwZBVn32tvaQcNbFsKiTn7C1q9l+mksrSdYwP2Q62iodJY0mWgBw==}
 
   '@penumbra-zone/bech32m@6.1.0':
     resolution: {integrity: sha512-XOMTRDbk+xioIY/p2nCQgBwlzut1Y+mKRO+u8SSNpW92BDX4fk8TXh6STzlTP1REN7UA+NdV/nUglLVBZutCow==}
 
-  '@penumbra-zone/client@9.0.1':
-    resolution: {integrity: sha512-+qQMzOVgJhOjIcHTFmYJXvOboz4IZVa34xrE3lN8vDZShAO3RndX4XKGsxol2CiQsDxN38OuZIVq1fPNPoko3A==}
+  '@penumbra-zone/client@10.0.0':
+    resolution: {integrity: sha512-edzEDsmeKwFGZm/kAb8AQltc79jBBv5CFUDPWUB+HOjagB3FqwoOe7PVwL21rkDOhlVsZ4xsry5RouhlXLzlwg==}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
-      '@penumbra-zone/protobuf': 5.2.0
+      '@penumbra-zone/protobuf': 5.3.0
       '@penumbra-zone/transport-dom': 7.2.0
 
-  '@penumbra-zone/crypto-web@7.0.0':
-    resolution: {integrity: sha512-+tpw5gyYy8SBMclQi0MJbaemytBuilfaW3ErvErZom5mAYkcaEcsqBoD/mL8Wt8CZ8Bo8LhxRA2vN33LvuumcA==}
+  '@penumbra-zone/crypto-web@8.0.0':
+    resolution: {integrity: sha512-qtqAmXKk2CYn+5yyltRk66T9CWJ9LvqCZIxA2KAAR/PLPpF47aps7Faf8s6+ANsACZBkhugBMwUF1IetyjioFw==}
     peerDependencies:
-      '@penumbra-zone/types': 11.0.0
+      '@penumbra-zone/types': 12.0.0
 
-  '@penumbra-zone/getters@9.0.0':
-    resolution: {integrity: sha512-xiVYvAcPeN75u7WsHnEvyU6WKPwHjKdA6DHyUUrqBlNG/Myl09+DqyLwJ/owDDxLyjglnvsGpLPtQo7f7m4cAQ==}
+  '@penumbra-zone/getters@10.0.0':
+    resolution: {integrity: sha512-C24d2jKhzmQpgTIlhIRvqMHGb72yMdgQLDV/N9rZDCz1WT5Tk4dPJiAJ8kymSsLy4qlDwht5UjtulIeZ8c1eIQ==}
     peerDependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@bufbuild/protobuf': ^1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/protobuf': 5.2.0
+      '@penumbra-zone/protobuf': 5.3.0
 
   '@penumbra-zone/keys@4.2.0':
     resolution: {integrity: sha512-RT71LL7sohfWD8OAVNCCcXFJ6WYCxW731UpJel5QOXP3PrcmzHbwc5YRLRfTNqWY4GWdBiu2s/YifOiolfpgyg==}
     hasBin: true
 
-  '@penumbra-zone/perspective@8.0.0':
-    resolution: {integrity: sha512-cyQrJXaaGTRWKC0aa+M88zs5R/UDzBCcb9OLk+Qy9LQ0AvjF1gfThpd1eADlUax8BzmWSKV106BgZrb5drLQRw==}
+  '@penumbra-zone/perspective@9.0.0':
+    resolution: {integrity: sha512-8Aq0YTmAgZLsq3+SyIdkqjEpE0HsjT6NTgv8fHnSMpgE88l0HVX64WdaaeV64MuZRn7qn8eezZFzYIh2sLuzdw==}
     peerDependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 9.0.0
-      '@penumbra-zone/wasm': 11.0.0
+      '@penumbra-zone/getters': 10.0.0
+      '@penumbra-zone/wasm': 12.0.0
 
-  '@penumbra-zone/protobuf@5.2.0':
-    resolution: {integrity: sha512-yAyaZ62dMqIxmvQRJ7zxC5BjuzJrn6i64WLD6qoA62RtXxMKhfmuFN7M2M6rW4+1dRyznOw3vRIkBzsGHrmOpQ==}
+  '@penumbra-zone/protobuf@5.3.0':
+    resolution: {integrity: sha512-57TCDMds2jDYu9VNKa10pZpg4Je/7+ldKnXAU/gWPopHtyuP+HHwZlbKf2aWLa8SNqDXiq7gXrnQ1ve1zN6APA==}
     peerDependencies:
       '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240625204953-f66a294d94c4.1
       '@buf/cosmos_ibc.connectrpc_es': 1.4.0-20240625204953-f66a294d94c4.3
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@buf/penumbra-zone_penumbra.connectrpc_es': 1.4.0-20240625233123-429cb316aa7c.3
 
-  '@penumbra-zone/query@8.0.0':
-    resolution: {integrity: sha512-xsUey/ltFBSTnetAfV3lSMPU0m6M2YeURGdcZxsag65QzAM2DuIPv3bN6Xvw9gamO8PUeywqYm3Rbd61AHTp9g==}
+  '@penumbra-zone/query@9.0.0':
+    resolution: {integrity: sha512-8al4BjYp8o+QNEqQNsyYuE6/puCVXadtaaMo8BGq2HHJteWG+RvTQ596Hzvyaz9WkANWbU6FRytOsZaijLzM/g==}
     peerDependencies:
       '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240625204953-f66a294d94c4.1
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/crypto-web': 7.0.0
-      '@penumbra-zone/getters': 9.0.0
-      '@penumbra-zone/protobuf': 5.2.0
-      '@penumbra-zone/types': 11.0.0
-      '@penumbra-zone/wasm': 11.0.0
+      '@penumbra-zone/crypto-web': 8.0.0
+      '@penumbra-zone/getters': 10.0.0
+      '@penumbra-zone/protobuf': 5.3.0
+      '@penumbra-zone/types': 12.0.0
+      '@penumbra-zone/wasm': 12.0.0
 
-  '@penumbra-zone/services@9.0.0':
-    resolution: {integrity: sha512-1LsgWDwpo4ufHUjlMrPC51gRuJh0PPJ2ijpM0ws7qm7sxONPsm3noXgRYteHgFzcUSq40I+sjek6G1W9xEQl2A==}
+  '@penumbra-zone/services@10.0.0':
+    resolution: {integrity: sha512-Vvry8BI0akfeUovpH55U/zE/59+t7oW2sTQUVkbVJmmO2XSofDpubg8FciodzzBKW1fDEntc5xyvHhfP1BLgDg==}
     peerDependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@bufbuild/protobuf': ^1.10.0
       '@connectrpc/connect': ^1.4.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/crypto-web': 7.0.0
-      '@penumbra-zone/getters': 9.0.0
-      '@penumbra-zone/perspective': 8.0.0
-      '@penumbra-zone/protobuf': 5.2.0
-      '@penumbra-zone/query': 8.0.0
-      '@penumbra-zone/storage': 8.0.0
+      '@penumbra-zone/crypto-web': 8.0.0
+      '@penumbra-zone/getters': 10.0.0
+      '@penumbra-zone/perspective': 9.0.0
+      '@penumbra-zone/protobuf': 5.3.0
+      '@penumbra-zone/query': 9.0.0
+      '@penumbra-zone/storage': 9.0.0
       '@penumbra-zone/transport-dom': 7.2.0
-      '@penumbra-zone/types': 11.0.0
-      '@penumbra-zone/wasm': 11.0.0
+      '@penumbra-zone/types': 12.0.0
+      '@penumbra-zone/wasm': 12.0.0
 
-  '@penumbra-zone/storage@8.0.0':
-    resolution: {integrity: sha512-Cgipd3EbBmPjy1GUHFQRuuW+uzOC75zd9eJutpG0FU4+B/fqnSZxEXTMDMaJE0mlEBVF2Vd72eONNjgCPcmh4Q==}
+  '@penumbra-zone/storage@9.0.0':
+    resolution: {integrity: sha512-W0DDXIJfRLpODLfEQ9vwuEyGRfRaaP7DgtcrdspA+zE1yP1751h0uvxgHgn06WQV0RZQBqE7ZNAM39gXAAM/8Q==}
     peerDependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@bufbuild/protobuf': ^1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 9.0.0
-      '@penumbra-zone/types': 11.0.0
-      '@penumbra-zone/wasm': 11.0.0
+      '@penumbra-zone/getters': 10.0.0
+      '@penumbra-zone/types': 12.0.0
+      '@penumbra-zone/wasm': 12.0.0
 
   '@penumbra-zone/transport-chrome@5.0.0':
     resolution: {integrity: sha512-HEQz2frOPXXG2fbGrawACdU0j4pVVN4VIIaN/PTwhCYutTUXlPaV8VYhYa0TCFLe9B7bcUTtE+3wwDHSR6MpRw==}
@@ -2247,23 +2254,23 @@ packages:
   '@penumbra-zone/transport-dom@7.2.0':
     resolution: {integrity: sha512-VAAU+YGwmKWNBwEUarWO2UpeKrLjlC8eaQXIAZXX+GDtY/vywmv0XmEVFz4+brQ38XseRnixtgCXfG+wVLqufw==}
 
-  '@penumbra-zone/types@11.0.0':
-    resolution: {integrity: sha512-umLgL1oIbKBPOD0qX8BMuFfGL+XLtUCv34C2d+sc2l/GY4u4qxk4Ht892Dw0NA6XLcNmfpWGy/zwXDTlCPCfwg==}
+  '@penumbra-zone/types@12.0.0':
+    resolution: {integrity: sha512-OfG+ZxgsbH8M9o9/tqO0ilZsrfv5cMbukHQGaZIf/Az3NovBhG2GVRTHrMeVHFFn5yOCAPUFcFPuNpR/Tvhlwg==}
     peerDependencies:
       '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240625204953-f66a294d94c4.1
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@bufbuild/protobuf': ^1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 9.0.0
+      '@penumbra-zone/getters': 10.0.0
 
-  '@penumbra-zone/wasm@11.0.0':
-    resolution: {integrity: sha512-VtylMIk3CVt23O4hvmmqhoHCgXCTdSDMho/bG+PVuYPGd4NrYa94pRGYil9nUW8l/7qPPgsy8wqagBEnGWgKtg==}
+  '@penumbra-zone/wasm@12.0.0':
+    resolution: {integrity: sha512-NZNPVL3x91aav+DSvpQirm0p0Oji4wnLvtwdVr87dNy6+puthmbouqUS93WLJ37Lnu4KGbSBFosTChayJTWCJA==}
     peerDependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1
       '@bufbuild/protobuf': ^1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/protobuf': 5.2.0
-      '@penumbra-zone/types': 11.0.0
+      '@penumbra-zone/protobuf': 5.3.0
+      '@penumbra-zone/types': 12.0.0
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -2359,8 +2366,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@radix-ui/react-checkbox@1.1.0':
-    resolution: {integrity: sha512-3+kSzVfMONtP3B6CvaOrXLVTyGYws7tGmG5kOY0AfyH9sexkLytIwciNwjZhY0RoGOEbxI7bMS21XYB8H5itWQ==}
+  '@radix-ui/react-checkbox@1.1.1':
+    resolution: {integrity: sha512-0i/EKJ222Afa1FE0C6pNJxDq1itzcl3HChE9DwskA4th4KRse8ojx8a1nVcOjwJdbpDLcz7uol77yYnQNMHdKw==}
     peerDependencies:
       '@types/react': '*'
       '@types/react-dom': '*'
@@ -2836,8 +2843,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@radix-ui/react-tooltip@1.1.1':
-    resolution: {integrity: sha512-LLE8nzNE4MzPMw3O2zlVlkLFid3y9hMUs7uCbSHyKSo+tCN4yMCf+ZCCcfrYgsOC0TiHBPQ1mtpJ2liY3ZT3SQ==}
+  '@radix-ui/react-tooltip@1.1.2':
+    resolution: {integrity: sha512-9XRsLwe6Yb9B/tlnYCPVUd/TFS4J7HuOZW345DCeC6vKIxQGMZdx21RK4VoZauPD5frgkXTYVS5y90L+3YBn4w==}
     peerDependencies:
       '@types/react': '*'
       '@types/react-dom': '*'
@@ -10172,7 +10179,7 @@ snapshots:
       '@buf/googleapis_googleapis.bufbuild_es': 1.10.0-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
 
-  '@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0)':
+  '@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@buf/cosmos_cosmos-proto.bufbuild_es': 1.10.0-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.10.0)
       '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.10.0-20230719110346-aa25660f4ff7.1(@bufbuild/protobuf@1.10.0)
@@ -10190,7 +10197,16 @@ snapshots:
       '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20220908150232-8d7204855ec1.2(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
 
-  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20240628094046-a09922c14925.2(@bufbuild/protobuf@1.10.0)':
+  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20240625204953-f66a294d94c4.2(@bufbuild/protobuf@1.10.0)':
+    dependencies:
+      '@buf/cosmos_cosmos-proto.bufbuild_es': 1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)
+      '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.7.2-20230719110346-aa25660f4ff7.2(@bufbuild/protobuf@1.10.0)
+      '@buf/cosmos_gogo-proto.bufbuild_es': 1.7.2-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.10.0)
+      '@buf/cosmos_ics23.bufbuild_es': 1.7.2-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.10.0)
+      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20220908150232-8d7204855ec1.2(@bufbuild/protobuf@1.10.0)
+      '@bufbuild/protobuf': 1.10.0
+
+  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20240628122020-f7eabaf7ca22.2(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@buf/cosmos_cosmos-proto.bufbuild_es': 1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)
       '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.7.2-20230719110346-aa25660f4ff7.2(@bufbuild/protobuf@1.10.0)
@@ -10211,12 +10227,24 @@ snapshots:
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
 
-  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
+  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20240625204953-f66a294d94c4.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
       '@buf/cosmos_cosmos-proto.connectrpc_es': 1.4.0-20211202220400-1935555c206d.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@buf/cosmos_cosmos-sdk.connectrpc_es': 1.4.0-20230719110346-aa25660f4ff7.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@buf/cosmos_gogo-proto.connectrpc_es': 1.4.0-20221020125208-34d970b699f8.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_ibc.bufbuild_es': 1.7.2-20240628094046-a09922c14925.2(@bufbuild/protobuf@1.10.0)
+      '@buf/cosmos_ibc.bufbuild_es': 1.7.2-20240625204953-f66a294d94c4.2(@bufbuild/protobuf@1.10.0)
+      '@buf/cosmos_ics23.connectrpc_es': 1.4.0-20221207100654-55085f7c710a.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20220908150232-8d7204855ec1.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
+    transitivePeerDependencies:
+      - '@bufbuild/protobuf'
+
+  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
+    dependencies:
+      '@buf/cosmos_cosmos-proto.connectrpc_es': 1.4.0-20211202220400-1935555c206d.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@buf/cosmos_cosmos-sdk.connectrpc_es': 1.4.0-20230719110346-aa25660f4ff7.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@buf/cosmos_gogo-proto.connectrpc_es': 1.4.0-20221020125208-34d970b699f8.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@buf/cosmos_ibc.bufbuild_es': 1.7.2-20240628122020-f7eabaf7ca22.2(@bufbuild/protobuf@1.10.0)
       '@buf/cosmos_ics23.connectrpc_es': 1.4.0-20221207100654-55085f7c710a.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20220908150232-8d7204855ec1.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
@@ -11052,73 +11080,71 @@ snapshots:
 
   '@opentelemetry/semantic-conventions@1.21.0': {}
 
-  '@penumbra-labs/registry@8.0.1': {}
-
   '@penumbra-labs/registry@9.1.0': {}
 
   '@penumbra-zone/bech32m@6.1.0':
     dependencies:
       bech32: 2.0.0
 
-  '@penumbra-zone/client@9.0.1(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))(@penumbra-zone/transport-dom@7.2.0)':
+  '@penumbra-zone/client@10.0.0(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))(@penumbra-zone/transport-dom@7.2.0)':
     dependencies:
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/protobuf': 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/transport-dom': 7.2.0
 
-  '@penumbra-zone/crypto-web@7.0.0(sxmb67az6fppzb63ycmn54fpdy)':
+  '@penumbra-zone/crypto-web@8.0.0(nig5kvh2wbkc5qvqoxetcts76e)':
     dependencies:
-      '@penumbra-zone/types': 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+      '@penumbra-zone/types': 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
       bip39: 3.1.0
       crypto-js: 4.2.0
 
-  '@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))':
+  '@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/protobuf': 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
 
-  '@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))':
+  '@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/protobuf': 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
 
   '@penumbra-zone/keys@4.2.0': {}
 
-  '@penumbra-zone/perspective@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@11.0.0(yvf7ssxyliz3eot5cp52eq2o3y))':
+  '@penumbra-zone/perspective@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@12.0.0(jburixdgywhuc4llu3weytedha))':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/wasm': 11.0.0(yvf7ssxyliz3eot5cp52eq2o3y)
+      '@penumbra-zone/getters': 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+      '@penumbra-zone/wasm': 12.0.0(jburixdgywhuc4llu3weytedha)
 
-  '@penumbra-zone/perspective@8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@11.0.0(wewvptabbvtmaj75gp2thn5gi4))':
+  '@penumbra-zone/perspective@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@12.0.0(34gnq4yhbh5h6ouoygbf74myw4))':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/wasm': 11.0.0(wewvptabbvtmaj75gp2thn5gi4)
+      '@penumbra-zone/getters': 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+      '@penumbra-zone/wasm': 12.0.0(34gnq4yhbh5h6ouoygbf74myw4)
 
-  '@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))':
+  '@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))':
     dependencies:
       '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ibc.connectrpc_es': 1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@buf/cosmos_ibc.connectrpc_es': 1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@buf/penumbra-zone_penumbra.connectrpc_es': 1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@bufbuild/protobuf': 1.10.0
 
-  '@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))':
+  '@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))':
     dependencies:
-      '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ibc.connectrpc_es': 1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0)
+      '@buf/cosmos_ibc.connectrpc_es': 1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@buf/penumbra-zone_penumbra.connectrpc_es': 1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@bufbuild/protobuf': 1.10.0
 
-  '@penumbra-zone/query@8.0.0(mxkzysfqfxwrq4uvzlil7ihnti)':
+  '@penumbra-zone/query@9.0.0(c5ekuuz6oe7u4atgpk7y4pkd2m)':
     dependencies:
       '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
@@ -11126,38 +11152,38 @@ snapshots:
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
       '@connectrpc/connect-web': 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/crypto-web': 7.0.0(sxmb67az6fppzb63ycmn54fpdy)
-      '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/types': 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm': 11.0.0(yvf7ssxyliz3eot5cp52eq2o3y)
+      '@penumbra-zone/crypto-web': 8.0.0(nig5kvh2wbkc5qvqoxetcts76e)
+      '@penumbra-zone/getters': 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+      '@penumbra-zone/protobuf': 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/types': 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+      '@penumbra-zone/wasm': 12.0.0(jburixdgywhuc4llu3weytedha)
       exponential-backoff: 3.1.1
 
-  '@penumbra-zone/services@9.0.0(ogtgnfcna4hyj4wsi3xu23npiq)':
+  '@penumbra-zone/services@10.0.0(tpwhssnqhdhbkc6acql5tdh6xi)':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/crypto-web': 7.0.0(sxmb67az6fppzb63ycmn54fpdy)
-      '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/perspective': 8.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@11.0.0(yvf7ssxyliz3eot5cp52eq2o3y))
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/query': 8.0.0(mxkzysfqfxwrq4uvzlil7ihnti)
-      '@penumbra-zone/storage': 8.0.0(6vnwea57r3b7lrq3nypzvuwwwu)
+      '@penumbra-zone/crypto-web': 8.0.0(nig5kvh2wbkc5qvqoxetcts76e)
+      '@penumbra-zone/getters': 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+      '@penumbra-zone/perspective': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))(@penumbra-zone/wasm@12.0.0(jburixdgywhuc4llu3weytedha))
+      '@penumbra-zone/protobuf': 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/query': 9.0.0(c5ekuuz6oe7u4atgpk7y4pkd2m)
+      '@penumbra-zone/storage': 9.0.0(jvdqrviao44wsxs6jp4w3vf6re)
       '@penumbra-zone/transport-dom': 7.2.0
-      '@penumbra-zone/types': 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm': 11.0.0(yvf7ssxyliz3eot5cp52eq2o3y)
+      '@penumbra-zone/types': 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+      '@penumbra-zone/wasm': 12.0.0(jburixdgywhuc4llu3weytedha)
 
-  '@penumbra-zone/storage@8.0.0(6vnwea57r3b7lrq3nypzvuwwwu)':
+  '@penumbra-zone/storage@9.0.0(jvdqrviao44wsxs6jp4w3vf6re)':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-labs/registry': 9.1.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/types': 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
-      '@penumbra-zone/wasm': 11.0.0(yvf7ssxyliz3eot5cp52eq2o3y)
+      '@penumbra-zone/getters': 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+      '@penumbra-zone/types': 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+      '@penumbra-zone/wasm': 12.0.0(jburixdgywhuc4llu3weytedha)
       idb: 8.0.0
 
   '@penumbra-zone/transport-chrome@5.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.2.0)':
@@ -11171,45 +11197,45 @@ snapshots:
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
 
-  '@penumbra-zone/types@11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))':
+  '@penumbra-zone/types@12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))':
     dependencies:
       '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+      '@penumbra-zone/getters': 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
       bignumber.js: 9.1.2
       idb: 8.0.0
       zod: 3.23.8
 
-  '@penumbra-zone/types@11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))':
+  '@penumbra-zone/types@12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))':
     dependencies:
-      '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0)
+      '@buf/cosmos_ibc.bufbuild_es': 1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/getters': 9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
+      '@penumbra-zone/getters': 10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))))
       bignumber.js: 9.1.2
       idb: 8.0.0
       zod: 3.23.8
 
-  '@penumbra-zone/wasm@11.0.0(wewvptabbvtmaj75gp2thn5gi4)':
+  '@penumbra-zone/wasm@12.0.0(34gnq4yhbh5h6ouoygbf74myw4)':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/types': 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628094046-a09922c14925.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+      '@penumbra-zone/protobuf': 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/types': 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240628122020-f7eabaf7ca22.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
     optionalDependencies:
       '@penumbra-zone/keys': 4.2.0
 
-  '@penumbra-zone/wasm@11.0.0(yvf7ssxyliz3eot5cp52eq2o3y)':
+  '@penumbra-zone/wasm@12.0.0(jburixdgywhuc4llu3weytedha)':
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 6.1.0
-      '@penumbra-zone/protobuf': 5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/types': 11.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@9.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.2.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628094046-a09922c14925.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
+      '@penumbra-zone/protobuf': 5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/types': 12.0.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/getters@10.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.0)(@penumbra-zone/protobuf@5.3.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240625204953-f66a294d94c4.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240628122020-f7eabaf7ca22.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240625233123-429cb316aa7c.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240625233123-429cb316aa7c.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))))
     optionalDependencies:
       '@penumbra-zone/keys': 4.2.0
 
@@ -11290,7 +11316,7 @@ snapshots:
       '@types/react': 18.3.3
       '@types/react-dom': 18.3.0
 
-  '@radix-ui/react-checkbox@1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@radix-ui/react-checkbox@1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@radix-ui/primitive': 1.1.0
       '@radix-ui/react-compose-refs': 1.1.0(@types/react@18.3.3)(react@18.3.1)
@@ -11821,7 +11847,7 @@ snapshots:
       '@types/react': 18.3.3
       '@types/react-dom': 18.3.0
 
-  '@radix-ui/react-tooltip@1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@radix-ui/react-tooltip@1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@radix-ui/primitive': 1.1.0
       '@radix-ui/react-compose-refs': 1.1.0(@types/react@18.3.3)(react@18.3.1)
