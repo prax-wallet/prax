@@ -104,11 +104,12 @@ export class Services implements ServicesInterface {
     });
 
     const registry = registryClient.get(chainId);
+    const { stakingAssetId } = registryClient.globals();
     const blockProcessor = new BlockProcessor({
       viewServer,
       querier,
       indexedDb,
-      stakingTokenMetadata: registry.getMetadata(registry.stakingAssetId),
+      stakingTokenMetadata: registry.getMetadata(stakingAssetId),
       numeraires: numeraires,
     });
 

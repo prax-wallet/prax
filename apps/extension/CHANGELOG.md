@@ -1,5 +1,24 @@
 # chrome-extension
 
+## 11.0.0
+
+### Major Changes
+
+- 200c492: Update to latest penumbra-zone packages
+
+### Minor Changes
+
+- 8b5a177: fulfill disconnect interface
+
+### Patch Changes
+
+- c04a858: Refactor UI package: sync it with the penumbra-zone/ui and remove unused components
+- bc51c5c: save app params
+- Updated dependencies [c04a858]
+- Updated dependencies [200c492]
+  - @repo/ui@5.0.0
+  - @repo/context@4.1.0
+
 ## 10.0.0
 
 ### Major Changes
