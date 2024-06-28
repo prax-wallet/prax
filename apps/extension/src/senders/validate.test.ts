@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { assertValidSender } from './valid-sender';
+import { assertValidSender } from './validate';
 
 describe('assertValidSender', () => {
   const mockValid: chrome.runtime.MessageSender = {

@@ -22,6 +22,7 @@ export interface LocalStorageState {
   frontendUrl: string | undefined;
   passwordKeyPrint: KeyPrintJson | undefined;
   fullSyncHeight: number | undefined;
+  // TODO: It's likely that an array is not the best data structure for this in storage. Should revisit later.
   knownSites: OriginRecord[];
   params: Stringified<AppParameters> | undefined;
   numeraires: Stringified<AssetId>[];

@@ -1,6 +1,6 @@
 import { PraxConnection } from '../message/prax';
-import { alreadyApprovedOrigin } from '../origins/approve-origin';
-import { assertValidSender } from '../origins/valid-sender';
+import { alreadyApprovedSender } from '../senders/approve';
+import { assertValidSender } from '../senders/validate';
 
 // listen for page init
 chrome.runtime.onMessage.addListener(
@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener(
     req,
     unvalidatedSender,
     // this handler will only ever send an empty response
-    emptyResponse: (no?: never) => void,
+    resepond: (no?: never) => void,
   ) => {
     if (req !== PraxConnection.Init) {
       // boolean return in handlers signals intent to respond
@@ -18,18 +18,17 @@ chrome.runtime.onMessage.addListener(
     const validSender = assertValidSender(unvalidatedSender);
 
     void (async () => {
-      const alreadyApproved = await alreadyApprovedOrigin(validSender.origin);
-      if (alreadyApproved) {
+      const alreadyApproved = await alreadyApprovedSender(validSender);
+      if (alreadyApproved)
         void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.Init, {
           // init only the specific document
           frameId: validSender.frameId,
           documentId: validSender.documentId,
         });
-      }
     })();
 
     // handler is done
-    emptyResponse();
+    resepond();
 
     // boolean return in handlers signals intent to respond
     return true;

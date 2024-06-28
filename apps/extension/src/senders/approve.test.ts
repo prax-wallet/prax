@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { approveOrigin } from './approve-origin';
+import { approveSender } from './approve';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { OriginRecord } from '../storage/types';
 import { PopupType } from '../message/popup';
@@ -25,7 +25,7 @@ describe('origin approvals', () => {
     vi.clearAllMocks();
   });
 
-  describe('approveOrigin', () => {
+  describe('approveSender', () => {
     it('prompts and stores choice for a new origin', async () => {
       mockLocalStorage.get.mockReturnValue(Promise.resolve([]));
       const messageSender = { origin: 'mock://unknown.example.com', tab: mockTab };
@@ -38,7 +38,7 @@ describe('origin approvals', () => {
 
       mockPopup.mockResolvedValue(newOriginRecord);
 
-      const choice = await approveOrigin(messageSender);
+      const choice = await approveSender(messageSender);
       expect(mockLocalStorage.set).toHaveBeenCalledWith('knownSites', [newOriginRecord]);
       expect(choice).toBe(UserChoice.Approved);
     });
@@ -49,7 +49,7 @@ describe('origin approvals', () => {
       );
       const messageSender = { origin: 'mock://ignored.example.com', tab: mockTab };
 
-      const choice = await approveOrigin(messageSender);
+      const choice = await approveSender(messageSender);
       expect(choice).toBe(UserChoice.Ignored);
     });
 
@@ -62,7 +62,7 @@ describe('origin approvals', () => {
       );
 
       const messageSender = { origin: 'mock://duplicate.example.com', tab: mockTab };
-      await expect(approveOrigin(messageSender)).rejects.toThrow(
+      await expect(approveSender(messageSender)).rejects.toThrow(
         'There are multiple records for origin',
       );
     });
@@ -72,7 +72,7 @@ describe('origin approvals', () => {
       const messageSender = { origin: 'mock://unknown.example.com', tab: mockTab };
       mockPopup.mockResolvedValue(undefined);
 
-      const choice = await approveOrigin(messageSender);
+      const choice = await approveSender(messageSender);
       expect(choice).toBe(UserChoice.Denied);
     });
 
@@ -85,7 +85,7 @@ describe('origin approvals', () => {
         origin: 'mock://unknown.example.com',
       } satisfies OriginRecord);
 
-      const choice = await approveOrigin(messageSender);
+      const choice = await approveSender(messageSender);
       expect(choice).toBe(UserChoice.Denied);
     });
 
@@ -103,7 +103,7 @@ describe('origin approvals', () => {
 
       mockPopup.mockResolvedValue(newOriginRecord);
 
-      const choice = await approveOrigin(messageSender);
+      const choice = await approveSender(messageSender);
       expect(mockLocalStorage.set).toHaveBeenCalledWith('knownSites', [newOriginRecord]);
       expect(choice).toBe(UserChoice.Approved);
     });
@@ -117,7 +117,7 @@ describe('origin approvals', () => {
         origin: 'mock://popuptest.example.com',
       } satisfies OriginRecord);
 
-      await approveOrigin(messageSender);
+      await approveSender(messageSender);
 
       expect(mockPopup).toHaveBeenCalledWith({
         type: PopupType.OriginApproval,
@@ -146,7 +146,7 @@ describe('origin approvals', () => {
       } satisfies OriginRecord;
       mockPopup.mockResolvedValue(newOriginRecord);
 
-      await approveOrigin(messageSender);
+      await approveSender(messageSender);
 
       expect(mockLocalStorage.set).toHaveBeenCalledWith('knownSites', [
         existingOriginRecord,

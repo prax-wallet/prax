@@ -2,8 +2,8 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { PraxConnection } from '../message/prax';
-import { approveOrigin } from '../origins/approve-origin';
-import { assertValidSender } from '../origins/valid-sender';
+import { approveSender } from '../senders/approve';
+import { assertValidSender } from '../senders/validate';
 
 // listen for page requests for approval
 chrome.runtime.onMessage.addListener(
@@ -20,17 +20,15 @@ chrome.runtime.onMessage.addListener(
 
     const validSender = assertValidSender(unvalidatedSender);
 
-    void approveOrigin(validSender).then(
+    void approveSender(validSender).then(
       status => {
         // origin is already known, or popup choice was made
         if (status === UserChoice.Approved) {
-          // approval will trigger init (separate message, not a response)
           void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.Init, {
             // init only the specific document
             frameId: validSender.frameId,
             documentId: validSender.documentId,
           });
-
           // handler is done
           respond();
         } else {
