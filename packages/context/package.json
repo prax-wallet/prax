@@ -23,11 +23,11 @@
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240625233123-429cb316aa7c.1",
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-labs/registry": "8.0.1",
-    "@penumbra-zone/crypto-web": "^6.0.0",
-    "@penumbra-zone/query": "^7.0.0",
-    "@penumbra-zone/storage": "^7.0.0",
-    "@penumbra-zone/types": "^10.0.0",
-    "@penumbra-zone/wasm": "^10.0.0",
+    "@penumbra-zone/crypto-web": "^7.0.0",
+    "@penumbra-zone/query": "^8.0.0",
+    "@penumbra-zone/storage": "^8.0.0",
+    "@penumbra-zone/types": "^11.0.0",
+    "@penumbra-zone/wasm": "^11.0.0",
     "exponential-backoff": "^3.1.1"
   }
 }
