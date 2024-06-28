@@ -23,7 +23,7 @@ const getRpcsFromRegistry = () => {
   return rpcs.toSorted(randomSort);
 };
 
-export const useGrpcEndpointForm = () => {
+export const useGrpcEndpointForm = (isOnboarding: boolean) => {
   const grpcEndpoints = useMemo(() => getRpcsFromRegistry(), []);
 
   // Get the rpc set in storage (if present)
@@ -105,7 +105,7 @@ export const useGrpcEndpointForm = () => {
     setIsSubmitButtonEnabled(false);
 
     // If the chain id has changed, our cache is invalid
-    if (chainIdChanged) {
+    if (!isOnboarding && chainIdChanged) {
       const promiseWithResolvers = Promise.withResolvers<void>();
       setConfirmChangedChainIdPromise(promiseWithResolvers);
 

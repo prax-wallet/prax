@@ -25,7 +25,7 @@ export const SetGrpcEndpoint = () => {
         </CardHeader>
 
         <div className='mt-6'>
-          <GrpcEndpointForm submitButtonLabel='Next' onSuccess={onSuccess} />
+          <GrpcEndpointForm submitButtonLabel='Next' isOnboarding={true} onSuccess={onSuccess} />
         </div>
       </Card>
     </FadeTransition>
