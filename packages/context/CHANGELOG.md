@@ -1,5 +1,11 @@
 # @penumbra-zone/services
 
+## 4.1.0
+
+### Minor Changes
+
+- 200c492: Update to latest penumbra-zone packages
+
 ## 4.0.0
 
 ### Major Changes

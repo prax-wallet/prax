@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 5.0.0
+
+### Major Changes
+
+- c04a858: Refactor UI package: sync it with the penumbra-zone/ui and remove unused components
+
+### Minor Changes
+
+- 200c492: Update to latest penumbra-zone packages
+
 ## 4.0.0
 
 ### Major Changes
