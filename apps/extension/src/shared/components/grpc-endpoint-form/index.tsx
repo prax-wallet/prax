@@ -12,9 +12,11 @@ import { ChainIdOrError } from './chain-id-or-error';
  */
 export const GrpcEndpointForm = ({
   submitButtonLabel,
+  isOnboarding,
   onSuccess,
 }: {
   submitButtonLabel: string;
+  isOnboarding: boolean;
   onSuccess: () => void | Promise<void>;
 }) => {
   const {
@@ -30,7 +32,7 @@ export const GrpcEndpointForm = ({
     isSubmitButtonEnabled,
     isCustomGrpcEndpoint,
     isValidationLoading,
-  } = useGrpcEndpointForm();
+  } = useGrpcEndpointForm(isOnboarding);
   const customGrpcEndpointInput = useRef<HTMLInputElement | null>(null);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {

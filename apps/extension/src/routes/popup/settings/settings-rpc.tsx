@@ -27,7 +27,11 @@ export const SettingsRPC = () => {
 
   return (
     <SettingsScreen title='RPC' IconComponent={ShareGradientIcon}>
-      <GrpcEndpointForm submitButtonLabel={submitButtonLabel} onSuccess={onSuccess} />
+      <GrpcEndpointForm
+        submitButtonLabel={submitButtonLabel}
+        isOnboarding={false}
+        onSuccess={onSuccess}
+      />
     </SettingsScreen>
   );
 };
