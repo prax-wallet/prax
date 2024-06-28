@@ -1,6 +1,6 @@
 import { AllSlices, useStore } from '../../state';
 import { useChainIdQuery } from '../../hooks/chain-id';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ServicesMessage } from '../../message/services';
 import { SelectList } from '@repo/ui/components/ui/select';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
@@ -32,14 +32,11 @@ export const NumeraireForm = ({
   // this forces you to use two sources to guarantee 'chainId' for both settings and onboarding
   const numeraires = useMemo(() => getNumeraireFromRegistry(chainId ?? networkChainId), [chainId]);
 
-
+  useEffect(() => {
     if (numeraires.length === 0) {
-      console.log("numeraires not found");
-      void (async function () {
-        await onSuccess();
-      })();
+      void onSuccess();
     }
-
+  }, [numeraires]);
 
   const [loading, setLoading] = useState(false);
 

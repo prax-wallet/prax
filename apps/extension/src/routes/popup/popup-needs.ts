@@ -15,7 +15,6 @@ export const needsOnboard = async () => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
   const frontendUrl = await localExtStorage.get('frontendUrl');
 
-  console.log(wallets.length, grpcEndpoint,frontendUrl)
   if (wallets.length && grpcEndpoint !== undefined && frontendUrl !== undefined) return null;
 
   void chrome.runtime.openOptionsPage();
