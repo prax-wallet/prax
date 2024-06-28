@@ -21,6 +21,8 @@ const getRpcsFromRegistry = () => {
   try {
     const registryClient = new ChainRegistryClient();
     const { rpcs } = registryClient.globals();
+    if (rpcs.length !== 0)
+    throw new Error();
     return rpcs.toSorted(randomSort);
   } catch (e) {
     console.error('Registry globals is not available', e);

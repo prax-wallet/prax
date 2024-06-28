@@ -32,11 +32,15 @@ export const NumeraireForm = ({
   // this forces you to use two sources to guarantee 'chainId' for both settings and onboarding
   const numeraires = useMemo(() => getNumeraireFromRegistry(chainId ?? networkChainId), [chainId]);
 
-  if (numeraires.length === 0) {
-    void (async function () {
-      await onSuccess();
-    })();
-  }
+
+    if (numeraires.length === 0) {
+      console.log("numeraires not found");
+      void (async function () {
+        await onSuccess();
+      })();
+    }
+
+
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {

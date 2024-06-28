@@ -22,6 +22,7 @@ const getFrontendsFromRegistry = (selectedRpc?: string): DisplayedFrontend[] => 
       title: extractDomain(frontend),
       url: frontend,
     }));
+    throw new Error();
   } catch (e) {
     console.error('Registry globals is not available', e);
   }

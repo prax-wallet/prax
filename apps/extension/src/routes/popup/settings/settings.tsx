@@ -57,8 +57,6 @@ export const Settings = () => {
   const { chainId } = useChainIdQuery();
   const numeraires = getNumeraireFromRegistry(chainId);
 
-  console.log(chainId, numeraires);
-
   return (
     <SettingsScreen title='Settings'>
       <div className='flex grow flex-col justify-between'>

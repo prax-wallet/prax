@@ -4,7 +4,7 @@ import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
 import { localExtStorage } from '../../../storage/local';
 import { getActiveWallet } from '../../../state/wallets';
-import { needsLogin } from '../popup-needs';
+import { needsLogin, needsOnboard } from '../popup-needs';
 import {
   Address,
   FullViewingKey,
@@ -22,6 +22,7 @@ export interface PopupLoaderData {
 // We need to manually check storage for accounts & password in the loader.
 // Will redirect to onboarding or password check if necessary.
 export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> => {
+  await needsOnboard();
   const redirect = await needsLogin();
   if (redirect) return redirect;
 

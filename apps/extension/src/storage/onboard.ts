@@ -9,8 +9,6 @@ import { LocalStorageState } from './types';
  * requests against it.
  */
 export const onboardGrpcEndpoint = async (): Promise<string> => {
-  await fixEmptyGrpcEndpointAfterOnboarding();
-
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
   if (grpcEndpoint) return grpcEndpoint;
 
@@ -46,15 +44,4 @@ export const onboardWallet = async (): Promise<WalletJson> => {
     };
     localExtStorage.addListener(storageListener);
   });
-};
-
-/**
- This fixes an issue where some users do not have 'grpcEndpoint' set after they have finished onboarding
- */
-export const fixEmptyGrpcEndpointAfterOnboarding = async () => {
-  //TODO change to mainnet default RPC
-  const DEFAULT_GRPC_URL = 'https://grpc.testnet.penumbra.zone';
-  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-  const wallets = await localExtStorage.get('wallets');
-  if (!grpcEndpoint && wallets[0]) await localExtStorage.set('grpcEndpoint', DEFAULT_GRPC_URL);
 };

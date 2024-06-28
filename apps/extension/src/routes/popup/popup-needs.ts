@@ -12,7 +12,11 @@ export const needsLogin = async (): Promise<Response | null> => {
 
 export const needsOnboard = async () => {
   const wallets = await localExtStorage.get('wallets');
-  if (wallets.length) return null;
+  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+  const frontendUrl = await localExtStorage.get('frontendUrl');
+
+  console.log(wallets.length, grpcEndpoint,frontendUrl)
+  if (wallets.length && grpcEndpoint !== undefined && frontendUrl !== undefined) return null;
 
   void chrome.runtime.openOptionsPage();
   window.close();
