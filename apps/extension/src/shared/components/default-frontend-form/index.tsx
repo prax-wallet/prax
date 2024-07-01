@@ -14,17 +14,12 @@ interface DisplayedFrontend {
 }
 
 const getFrontendsFromRegistry = (selectedRpc?: string): DisplayedFrontend[] => {
-  let registeredFrontends: DisplayedFrontend[] = [];
-  try {
-    const registryClient = new ChainRegistryClient();
-    const { frontends } = registryClient.globals();
-    registeredFrontends = frontends.map(frontend => ({
-      title: extractDomain(frontend),
-      url: frontend,
-    }));
-  } catch (e) {
-    console.error('Registry globals is not available', e);
-  }
+  const registryClient = new ChainRegistryClient();
+  const { frontends } = registryClient.globals();
+  const registeredFrontends = frontends.map(frontend => ({
+    title: extractDomain(frontend),
+    url: frontend,
+  }));
 
   if (selectedRpc) {
     registeredFrontends.push({ title: 'Embedded RPC frontend', url: `${selectedRpc}/app/` });
