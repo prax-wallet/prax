@@ -1,5 +1,11 @@
 # chrome-extension
 
+## 11.1.0
+
+### Minor Changes
+
+- No default setting of rpc in onboarding
+
 ## 11.0.0
 
 ### Major Changes
