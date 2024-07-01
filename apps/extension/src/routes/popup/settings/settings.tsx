@@ -41,7 +41,6 @@ const links = [
     title: 'Price denomination',
     icon: <BarChartIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_NUMERAIRES,
-    disabled: false,
   },
   {
     title: 'Advanced',
