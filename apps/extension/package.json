@@ -19,7 +19,7 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0",
-    "@penumbra-labs/registry": "9.1.0",
+    "@penumbra-labs/registry": "9.2.0",
     "@penumbra-zone/bech32m": "^6.1.0",
     "@penumbra-zone/client": "^10.0.0",
     "@penumbra-zone/crypto-web": "^8.0.0",

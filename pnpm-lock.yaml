@@ -121,8 +121,8 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-labs/registry':
-        specifier: 9.1.0
-        version: 9.1.0
+        specifier: 9.2.0
+        version: 9.2.0
       '@penumbra-zone/bech32m':
         specifier: ^6.1.0
         version: 6.1.0
@@ -327,8 +327,8 @@ importers:
         specifier: ^1.10.0
         version: 1.10.0
       '@penumbra-labs/registry':
-        specifier: 9.1.0
-        version: 9.1.0
+        specifier: 9.2.0
+        version: 9.2.0
       '@penumbra-zone/bech32m':
         specifier: ^6.1.0
         version: 6.1.0
@@ -419,8 +419,8 @@ importers:
         specifier: ^11.11.5
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: 9.1.0
-        version: 9.1.0
+        specifier: 9.2.0
+        version: 9.2.0
       '@penumbra-zone/bech32m':
         specifier: ^6.1.0
         version: 6.1.0
@@ -2146,6 +2146,9 @@ packages:
 
   '@penumbra-labs/registry@9.1.0':
     resolution: {integrity: sha512-t6AQk0rWJMbyGpNxMWI8dQwSy0jl0mfrFMzwZBVn32tvaQcNbFsKiTn7C1q9l+mksrSdYwP2Q62iodJY0mWgBw==}
+
+  '@penumbra-labs/registry@9.2.0':
+    resolution: {integrity: sha512-jbF2SYwmgF9uwCSBQ2CO5Ky1FVceEEqTSMjEuoGTovLL2iVPIXZVfy15M5sSxIa5Z3JzsLJXMsjO8vNRYZZHiQ==}
 
   '@penumbra-zone/bech32m@6.1.0':
     resolution: {integrity: sha512-XOMTRDbk+xioIY/p2nCQgBwlzut1Y+mKRO+u8SSNpW92BDX4fk8TXh6STzlTP1REN7UA+NdV/nUglLVBZutCow==}
@@ -11041,6 +11044,8 @@ snapshots:
   '@opentelemetry/semantic-conventions@1.21.0': {}
 
   '@penumbra-labs/registry@9.1.0': {}
+
+  '@penumbra-labs/registry@9.2.0': {}
 
   '@penumbra-zone/bech32m@6.1.0':
     dependencies:
