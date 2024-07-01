@@ -16,7 +16,6 @@ interface DisplayedFrontend {
 const getFrontendsFromRegistry = (selectedRpc?: string): DisplayedFrontend[] => {
   const registryClient = new ChainRegistryClient();
   const { frontends } = registryClient.globals();
-
   const registeredFrontends = frontends.map(frontend => ({
     title: extractDomain(frontend),
     url: frontend,
