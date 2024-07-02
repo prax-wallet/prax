@@ -11,15 +11,32 @@ import {
 } from '@penumbra-zone/getters/swap-view';
 import { ValueViewComponent } from '../../../value';
 import { ActionDetails } from '../action-details';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/fee';
 
-export const SwapViewComponent = ({ value }: { value: SwapView }) => {
+export const SwapViewComponent = ({
+  value,
+  feeValueView,
+}: {
+  value: SwapView;
+  feeValueView: ValueView;
+}) => {
   if (value.swapView.case === 'visible') {
     const claimFee = getClaimFeeFromSwapView(value);
     const claimTx = getClaimTx.optional()(value);
     const addressView = getAddressView.optional()(value);
     const oneWaySwap = isOneWaySwap(value) ? getOneWaySwapValues(value) : undefined;
+
+    // The 'Fee' protobuf definition does not include assetMetadata.
+    // Therefore, we manually construct it in the TransactionViewComponent
+    // and pass it to the ActionViewComponent for swaps to render the prepaid claim fee.
+    // A deep clone of the `feeValueView` object is necessary because objects in TypeScript
+    // are passed by reference, meaning they point to the same object in memory.
+    let prepaidClaimFee = structuredClone(feeValueView);
+    if (prepaidClaimFee.valueView && prepaidClaimFee.valueView.value) {
+      prepaidClaimFee.valueView.value.amount = claimFee.amount;
+    }
 
     return (
       <ViewBox
