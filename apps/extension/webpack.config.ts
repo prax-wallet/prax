@@ -10,7 +10,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import url from 'node:url';
-import { IExtensionRunner, cmd as WebExtCmd } from 'web-ext';
+import { type WebExtRunner, cmd as WebExtCmd } from 'web-ext';
 import webpack from 'webpack';
 import WatchExternalFilesPlugin from 'webpack-watch-external-files-plugin';
 
@@ -46,7 +46,7 @@ const DefinePlugin = new webpack.DefinePlugin({
 });
 
 const WebExtReloadPlugin = {
-  webExtRun: undefined as IExtensionRunner | undefined,
+  webExtRun: undefined as WebExtRunner | undefined,
   apply({ hooks }: webpack.Compiler) {
     hooks.afterEmit.tapPromise(
       { name: 'WebExt Reloader' },
@@ -54,8 +54,8 @@ const WebExtReloadPlugin = {
         await this.webExtRun?.reloadAllExtensions();
         this.webExtRun ??= await WebExtCmd.run({
           target: 'chromium',
-          keepProfileChanges: Boolean(CHROMIUM_PROFILE),
           chromiumProfile: CHROMIUM_PROFILE,
+          keepProfileChanges: Boolean(CHROMIUM_PROFILE),
           profileCreateIfMissing: Boolean(CHROMIUM_PROFILE),
           sourceDir: options.output.path,
           startUrl: 'https://localhost:5173/',
