@@ -33,12 +33,10 @@ const injectDir = path.join(srcDir, 'content-scripts');
  * - Replacement is literal, so the values must be stringified.
  */
 const DefinePlugin = new webpack.DefinePlugin({
-  definitions: {
-    PRAX: JSON.stringify(process.env['PRAX']),
-    PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
-    'globalThis.__DEV__': JSON.stringify(process.env['NODE_ENV'] !== 'production'),
-    'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
-  },
+  PRAX: JSON.stringify(process.env['PRAX']),
+  PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
+  'globalThis.__DEV__': JSON.stringify(process.env['NODE_ENV'] !== 'production'),
+  'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
 });
 
 /**
