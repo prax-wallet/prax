@@ -28,12 +28,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: lint
-        uses: buildjet/cache@v3
+        uses: buildjet/cache@v4
         with:
           path: .turbo
           key: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-lint
           restore-keys: ${{ hashFiles('pnpm-lock.yaml') }}
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
       - uses: buildjet/setup-node@v4
         with:
           node-version: '22'
@@ -47,12 +47,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: built
-        uses: buildjet/cache@v3
+        uses: buildjet/cache@v4
         with:
           path: .turbo
           key: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-built
           restore-keys: ${{ hashFiles('pnpm-lock.yaml') }}
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
       - uses: buildjet/setup-node@v4
         with:
           node-version: '22'
@@ -66,12 +66,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: tested
-        uses: buildjet/cache@v3
+        uses: buildjet/cache@v4
         with:
           path: .turbo
           key: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test
           restore-keys: ${{ hashFiles('pnpm-lock.yaml') }}
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
       - uses: buildjet/setup-node@v4
         with:
           node-version: '22'
