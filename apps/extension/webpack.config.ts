@@ -1,37 +1,82 @@
-import * as dotenv from 'dotenv';
-import path from 'path';
-import CopyPlugin from 'copy-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import url from 'url';
+// eslint-disable-next-line import/no-relative-packages
+import rootPackageJson from '../../package.json' with { type: 'json' };
 
+import CopyPlugin from 'copy-webpack-plugin';
+import dotenv from 'dotenv';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
+import url from 'node:url';
 import webpack from 'webpack';
+import WatchExternalFilesPlugin from 'webpack-watch-external-files-plugin';
 
 // Loads default vars from `.env` file in this directory.
 dotenv.config({ path: '.env' });
 
 const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
-/*
- * The DefinePlugin replaces the specified values in the code during the build process.
- * - These are also declared in `prax.d.ts` for TypeScript compatibility.
- * - `process.env.NODE_ENV` and other environment variables are provided by the DefinePlugin.
- * - Since the plugin performs a direct text replacement, the values must be stringified.
- *   This is why `JSON.stringify()` is used, to ensure the values include quotes in the final output.
- */
-const definitions = {
-  PRAX: JSON.stringify(process.env['PRAX']),
-  PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
-  'globalThis.__DEV__': JSON.stringify(true),
-  'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
-};
+const localPackages = Object.values(rootPackageJson.dependencies)
+  .filter(specifier => specifier.endsWith('.tgz'))
+  .map(tgzSpecifier =>
+    tgzSpecifier.startsWith('file:') ? url.fileURLToPath(tgzSpecifier) : tgzSpecifier,
+  );
 
 const __dirname = new URL('.', import.meta.url).pathname;
 const srcDir = path.join(__dirname, 'src');
-
 const entryDir = path.join(srcDir, 'entry');
 const injectDir = path.join(srcDir, 'content-scripts');
 
-const config: webpack.Configuration = {
+/*
+ * The DefinePlugin replaces specified tokens with specified values.
+ * - These should be declared in `prax.d.ts` for TypeScript awareness.
+ * - `process.env.NODE_ENV` and other env vars are implicitly defined.
+ * - Replacement is literal, so the values must be stringified.
+ */
+const DefinePlugin = new webpack.DefinePlugin({
+  definitions: {
+    PRAX: JSON.stringify(process.env['PRAX']),
+    PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
+    'globalThis.__DEV__': JSON.stringify(process.env['NODE_ENV'] !== 'production'),
+    'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
+  },
+});
+
+/**
+ * This custom plugin will run `pnpm install` before each watch-mode build. This
+ * combined with WatchExternalFilesPlugin will ensure that tarball dependencies
+ * are updated when they change.
+ */
+const PnpmInstallPlugin = {
+  apply: ({ hooks }: webpack.Compiler) =>
+    hooks.watchRun.tapPromise(
+      { name: 'CustomPnpmInstallPlugin' },
+      compiler =>
+        new Promise<void>((resolve, reject) => {
+          const pnpmInstall = spawn(
+            'pnpm',
+            // --ignore-scripts because syncpack doesn't like to run under
+            // webpack for some reason. watch out for post-install scripts that
+            // dependencies might need.
+            ['-w', 'install', '--ignore-scripts'],
+            { stdio: 'inherit' },
+          );
+          pnpmInstall.on('exit', code => {
+            if (code) reject(new Error(`pnpm install failed ${code}`));
+            else {
+              // clear webpack's cache to ensure new deps are used
+              compiler.purgeInputFileSystem();
+              resolve();
+            }
+          });
+        }),
+    ),
+};
+
+export default ({
+  WEBPACK_WATCH = false,
+}: {
+  ['WEBPACK_WATCH']?: boolean;
+}): webpack.Configuration => ({
   entry: {
     'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
     'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
@@ -117,7 +162,7 @@ const config: webpack.Configuration = {
         return /.*\/wordlists\/(?!english).*\.json/.test(resource);
       },
     }),
-    new webpack.DefinePlugin(definitions),
+    DefinePlugin,
     new CopyPlugin({
       patterns: [
         'public',
@@ -147,10 +192,11 @@ const config: webpack.Configuration = {
       filename: 'offscreen.html',
       chunks: ['offscreen-handler'],
     }),
+    // watch tarballs for changes
+    WEBPACK_WATCH && new WatchExternalFilesPlugin({ files: localPackages }),
+    WEBPACK_WATCH && PnpmInstallPlugin,
   ],
   experiments: {
     asyncWebAssembly: true,
   },
-};
-
-export default config;
+});

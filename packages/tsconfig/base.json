@@ -9,7 +9,6 @@
     "forceConsistentCasingInFileNames": true,
     "inlineSources": false,
     "isolatedModules": true,
-    "moduleResolution": "bundler",
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,7 +23,7 @@
     "noUnusedParameters": true,
     "resolveJsonModule": true,
     "target": "ESNext",
-    "module": "ES2022"
+    "module": "preserve"
   },
   "exclude": ["node_modules"]
 }
