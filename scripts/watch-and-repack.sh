@@ -35,7 +35,7 @@ reload_webpack() {
 }
 
 # Watch for changes in `penumbra-zone/web` and trigger repack and reload
-while true; do
+while sleep 1; do
   fswatch -1 -o "$PENUMBRA_ZONE_WEB_PATH/packages" | while read -r; do
     repack
     install_prax

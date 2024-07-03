@@ -47,6 +47,15 @@
       "snapTo": [
         "prax-wallet"
       ]
+    },
+    {
+      "label": "Control @penumbra-zone packages from root",
+      "dependencies": [
+        "@penumbra-zone/*"
+      ],
+      "snapTo": [
+        "prax-wallet"
+      ]
     }
   ]
 }
