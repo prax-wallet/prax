@@ -1,3 +1,4 @@
 bin
 auto-login.ts
 !.env
+chromium-profile
