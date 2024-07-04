@@ -55,9 +55,9 @@ export const SwapViewComponent = ({
                 </ActionDetails.Row>
               )}
 
-              <ActionDetails.Row label='Fee'>
+              <ActionDetails.Row label='Swap Claim Fee'>
                 <div className='font-mono'>
-                  {joinLoHiAmount(getAmount(claimFee)).toString()} upenumbra
+                  <ValueViewComponent view={prepaidClaimFee} />
                 </div>
               </ActionDetails.Row>
 
