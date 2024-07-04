@@ -12,8 +12,6 @@ import {
 import { ValueViewComponent } from '../../../value';
 import { ActionDetails } from '../action-details';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { getAmount } from '@penumbra-zone/getters/fee';
 
 export const SwapViewComponent = ({
   value,
@@ -33,8 +31,8 @@ export const SwapViewComponent = ({
     // and pass it to the ActionViewComponent for swaps to render the prepaid claim fee.
     // A deep clone of the `feeValueView` object is necessary because objects in TypeScript
     // are passed by reference, meaning they point to the same object in memory.
-    let prepaidClaimFee = structuredClone(feeValueView);
-    if (prepaidClaimFee.valueView && prepaidClaimFee.valueView.value) {
+    const prepaidClaimFee = structuredClone(feeValueView);
+    if (prepaidClaimFee.valueView.value) {
       prepaidClaimFee.valueView.value.amount = claimFee.amount;
     }
 

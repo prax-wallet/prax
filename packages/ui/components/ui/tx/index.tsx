@@ -43,7 +43,7 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
         <ViewBox
           label='Transaction Fee'
           visibleContent={
-            <div className='mono'>
+            <div className='font-mono'>
               <ValueViewComponent view={feeValueView} />
             </div>
           }
