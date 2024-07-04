@@ -18,7 +18,6 @@
   "dependencyTypes": [
     "dev",
     "peer",
-    "pnpmOverrides",
     "prod"
   ],
   "versionGroups": [
@@ -43,15 +42,6 @@
       "label": "Control @buf registry packages from root",
       "dependencies": [
         "@buf/*"
-      ],
-      "snapTo": [
-        "prax-wallet"
-      ]
-    },
-    {
-      "label": "Control @penumbra-zone packages from root",
-      "dependencies": [
-        "@penumbra-zone/*"
       ],
       "snapTo": [
         "prax-wallet"
