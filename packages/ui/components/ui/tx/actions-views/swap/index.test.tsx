@@ -42,7 +42,9 @@ describe('<SwapViewComponent />', () => {
     });
 
     it.skip('shows the correct fee in upenumbra', () => {
-      const { container } = render(<SwapViewComponent value={swapView} feeValueView={new ValueView} />);
+      const { container } = render(
+        <SwapViewComponent value={swapView} feeValueView={new ValueView()} />,
+      );
 
       expect(container).toHaveTextContent('123 upenumbra');
     });
