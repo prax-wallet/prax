@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 5.1.0
+
+### Minor Changes
+
+- f256d9b: Update to latest penumbra-zone pkgs
+
 ## 5.0.0
 
 ### Major Changes
