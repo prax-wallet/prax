@@ -1,5 +1,11 @@
 # @penumbra-zone/services
 
+## 4.2.0
+
+### Minor Changes
+
+- f256d9b: Update to latest penumbra-zone pkgs
+
 ## 4.1.0
 
 ### Minor Changes

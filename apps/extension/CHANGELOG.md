@@ -1,5 +1,17 @@
 # chrome-extension
 
+## 11.2.0
+
+### Minor Changes
+
+- f256d9b: Update to latest penumbra-zone pkgs
+
+### Patch Changes
+
+- Updated dependencies [f256d9b]
+  - @repo/context@4.2.0
+  - @repo/ui@5.1.0
+
 ## 11.1.0
 
 ### Minor Changes
