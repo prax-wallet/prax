@@ -1,5 +1,17 @@
 # chrome-extension
 
+## 11.3.0
+
+### Minor Changes
+
+- Update to latest penumbr-zone & registry deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @repo/context@4.3.0
+  - @repo/ui@5.2.0
+
 ## 11.2.0
 
 ### Minor Changes

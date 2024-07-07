@@ -1,5 +1,11 @@
 # @penumbra-zone/services
 
+## 4.3.0
+
+### Minor Changes
+
+- Update to latest penumbr-zone & registry deps
+
 ## 4.2.0
 
 ### Minor Changes

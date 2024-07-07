@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 5.2.0
+
+### Minor Changes
+
+- Update to latest penumbr-zone & registry deps
+
 ## 5.1.0
 
 ### Minor Changes
