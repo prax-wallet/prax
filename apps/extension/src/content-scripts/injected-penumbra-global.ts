@@ -52,6 +52,15 @@ class PraxInjection {
     isConnected: () => this.state(),
     request: () => this.postRequest(),
     manifest: String(this.manifestUrl),
+    state: () => {
+      throw new Error('not yet implemented');
+    },
+    addEventListener: () => {
+      throw new Error('not yet implemented');
+    },
+    removeEventListener: () => {
+      throw new Error('not yet implemented');
+    },
   });
 
   private constructor() {
