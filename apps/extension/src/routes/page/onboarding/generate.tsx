@@ -53,6 +53,7 @@ export const GenerateSeedPhrase = () => {
               ))}
             </div>
             <CopyToClipboard
+              disabled={!reveal}
               text={phrase.join(' ')}
               label={<span className='font-bold text-muted-foreground'>Copy to clipboard</span>}
               className='m-auto w-48'
