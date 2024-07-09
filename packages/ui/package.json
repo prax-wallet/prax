@@ -33,6 +33,7 @@
     "@penumbra-zone/bech32m": "^6.1.1",
     "@penumbra-zone/getters": "^11.0.0",
     "@penumbra-zone/perspective": "^13.0.0",
+    "@penumbra-zone/protobuf": "^5.4.0",
     "@penumbra-zone/types": "^15.0.0",
     "@penumbra-zone/wasm": "^16.0.0",
     "@radix-ui/react-avatar": "^1.0.4",
