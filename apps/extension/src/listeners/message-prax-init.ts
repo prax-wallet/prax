@@ -19,12 +19,13 @@ chrome.runtime.onMessage.addListener(
 
     void (async () => {
       const alreadyApproved = await alreadyApprovedSender(validSender);
-      if (alreadyApproved)
+      if (alreadyApproved) {
         void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.Init, {
           // init only the specific document
           frameId: validSender.frameId,
           documentId: validSender.documentId,
         });
+      }
     })();
 
     // handler is done

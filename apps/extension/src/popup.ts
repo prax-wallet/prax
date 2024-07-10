@@ -24,8 +24,11 @@ export const popup = async <M extends PopupMessage>(
   const response = await chrome.runtime
     .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
     .catch((e: unknown) => {
-      if (isChromeResponderDroppedError(e)) return null;
-      else throw e;
+      if (isChromeResponderDroppedError(e)) {
+        return null;
+      } else {
+        throw e;
+      }
     });
   if (response && 'error' in response) {
     throw errorFromJson(response.error, undefined, ConnectError.from(response));
@@ -58,7 +61,9 @@ const throwIfAlreadyOpen = (path: string) =>
       ],
     })
     .then(popupContexts => {
-      if (popupContexts.length) throw Error('Popup already open');
+      if (popupContexts.length) {
+        throw Error('Popup already open');
+      }
     });
 
 const throwIfNeedsLogin = async () => {

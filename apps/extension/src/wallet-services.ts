@@ -45,8 +45,11 @@ const getChainId = async (baseUrl: string) => {
       .get('params')
       .then(jsonParams => (jsonParams ? AppParameters.fromJsonString(jsonParams) : undefined)));
 
-  if (params?.chainId) void localExtStorage.set('params', params.toJsonString());
-  else throw new Error('No chainId available');
+  if (params?.chainId) {
+    void localExtStorage.set('params', params.toJsonString());
+  } else {
+    throw new Error('No chainId available');
+  }
 
   return params.chainId;
 };

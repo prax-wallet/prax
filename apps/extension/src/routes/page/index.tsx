@@ -14,9 +14,15 @@ export const pageIndexLoader = async () => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
   const frontendUrl = await localExtStorage.get('frontendUrl');
 
-  if (!wallets.length) return redirect(PagePath.WELCOME);
-  if (!grpcEndpoint) return redirect(PagePath.SET_GRPC_ENDPOINT);
-  if (!frontendUrl) return redirect(PagePath.SET_DEFAULT_FRONTEND);
+  if (!wallets.length) {
+    return redirect(PagePath.WELCOME);
+  }
+  if (!grpcEndpoint) {
+    return redirect(PagePath.SET_GRPC_ENDPOINT);
+  }
+  if (!frontendUrl) {
+    return redirect(PagePath.SET_DEFAULT_FRONTEND);
+  }
 
   return null;
 };

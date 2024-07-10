@@ -2,7 +2,9 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 export const getNumeraireFromRegistry = (chainId?: string): Metadata[] => {
-  if (!chainId) return [];
+  if (!chainId) {
+    return [];
+  }
   try {
     const registryClient = new ChainRegistryClient();
     const registry = registryClient.get(chainId);
