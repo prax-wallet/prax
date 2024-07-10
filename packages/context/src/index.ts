@@ -79,7 +79,9 @@ export class Services implements ServicesInterface {
     } else if (queriedParams?.chainId) {
       // none stored, but fetched are ok.
       return queriedParams;
-    } else throw new Error('No available chainId');
+    } else {
+      throw new Error('No available chainId');
+    }
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
@@ -93,8 +95,9 @@ export class Services implements ServicesInterface {
     });
 
     const { sctParams } = await this.getParams(indexedDb, querier);
-    if (!sctParams?.epochDuration)
+    if (!sctParams?.epochDuration) {
       throw new Error('Cannot initialize viewServer without epoch duration');
+    }
 
     const viewServer = await ViewServer.initialize({
       fullViewingKey,

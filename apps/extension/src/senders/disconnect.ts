@@ -13,6 +13,9 @@ import { removeOriginRecord } from '../storage/origin';
 
 export const disconnectSender = (disconnect: { origin: string }) =>
   void alreadyApprovedSender(disconnect).then(hasApproval => {
-    if (!hasApproval) throw new Error('Sender does not possess approval');
-    else void removeOriginRecord(disconnect.origin);
+    if (!hasApproval) {
+      throw new Error('Sender does not possess approval');
+    } else {
+      void removeOriginRecord(disconnect.origin);
+    }
   });

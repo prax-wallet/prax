@@ -14,8 +14,9 @@ const handleRequest = (ev: MessageEvent<unknown>) => {
         PraxConnection,
         undefined | PenumbraRequestFailure
       >(PraxConnection.Request);
-      if (failure)
+      if (failure) {
         window.postMessage({ [PRAX]: failure } satisfies PraxMessage<PenumbraRequestFailure>, '/');
+      }
     })();
   }
 };

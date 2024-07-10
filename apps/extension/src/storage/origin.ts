@@ -3,12 +3,15 @@ import { localExtStorage } from './local';
 import { OriginRecord } from './types';
 
 export const getOriginRecord = async (getOrigin?: string) => {
-  if (!getOrigin) return undefined;
+  if (!getOrigin) {
+    return undefined;
+  }
   const knownSites = await localExtStorage.get('knownSites');
 
   const matchRecords = knownSites.filter(r => r.origin === getOrigin);
-  if (matchRecords.length > 1)
+  if (matchRecords.length > 1) {
     throw new Error(`There are multiple records for origin: ${getOrigin}`);
+  }
 
   return matchRecords[0];
 };
@@ -36,7 +39,9 @@ export const removeOriginRecord = async (removeOrigin: string): Promise<void> =>
 
   const newKnownSites = produce(knownSites, allRecords => {
     const matchIndex = allRecords.findIndex(r => r.origin === removeOrigin);
-    if (matchIndex !== -1) allRecords.splice(matchIndex, 1);
+    if (matchIndex !== -1) {
+      allRecords.splice(matchIndex, 1);
+    }
   });
 
   await localExtStorage.set('knownSites', newKnownSites);

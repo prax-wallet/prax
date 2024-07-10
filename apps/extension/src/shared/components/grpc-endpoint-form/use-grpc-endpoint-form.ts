@@ -44,7 +44,9 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
     grpcEndpointInput !== '' && !grpcEndpoints.some(({ url }) => url === grpcEndpointInput);
 
   const setGrpcEndpointInputOnLoadFromState = useCallback(() => {
-    if (grpcEndpoint) setGrpcEndpointInput(grpcEndpoint);
+    if (grpcEndpoint) {
+      setGrpcEndpointInput(grpcEndpoint);
+    }
   }, [grpcEndpoint]);
 
   useEffect(setGrpcEndpointInputOnLoadFromState, [setGrpcEndpointInputOnLoadFromState]);
@@ -54,7 +56,9 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
       setIsSubmitButtonEnabled(false);
       setRpcError(undefined);
 
-      if (!isValidUrl(grpcEndpointInput)) return;
+      if (!isValidUrl(grpcEndpointInput)) {
+        return;
+      }
 
       try {
         setIsValidationLoading(true);
@@ -63,7 +67,9 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
           createGrpcWebTransport({ baseUrl: grpcEndpointInput }),
         );
         const { appParameters } = await trialClient.appParameters({});
-        if (!appParameters?.chainId) throw new ConnectError('', Code.NotFound);
+        if (!appParameters?.chainId) {
+          throw new ConnectError('', Code.NotFound);
+        }
 
         setIsSubmitButtonEnabled(true);
         setChainId(appParameters.chainId);

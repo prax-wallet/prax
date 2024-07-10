@@ -24,7 +24,9 @@ export interface PopupLoaderData {
 export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> => {
   await needsOnboard();
   const redirect = await needsLogin();
-  if (redirect) return redirect;
+  if (redirect) {
+    return redirect;
+  }
 
   return {
     fullSyncHeight: await localExtStorage.get('fullSyncHeight'),
@@ -34,7 +36,9 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 const getAddrByIndex =
   (wallet?: Wallet) =>
   (index: number, ephemeral: boolean): Address => {
-    if (!wallet) throw new Error('No active wallet');
+    if (!wallet) {
+      throw new Error('No active wallet');
+    }
 
     const fullViewingKey = FullViewingKey.fromJsonString(wallet.fullViewingKey);
     return ephemeral
