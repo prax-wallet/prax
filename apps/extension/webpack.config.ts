@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="web-ext.d.ts" />
+
 // eslint-disable-next-line import/no-relative-packages
 import rootPackageJson from '../../package.json' with { type: 'json' };
 
@@ -7,6 +10,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import url from 'node:url';
+import { type WebExtRunner, cmd as WebExtCmd } from 'web-ext';
 import webpack from 'webpack';
 import WatchExternalFilesPlugin from 'webpack-watch-external-files-plugin';
 
@@ -26,6 +30,8 @@ const srcDir = path.join(__dirname, 'src');
 const entryDir = path.join(srcDir, 'entry');
 const injectDir = path.join(srcDir, 'content-scripts');
 
+const CHROMIUM_PROFILE = process.env['CHROMIUM_PROFILE'];
+
 /*
  * The DefinePlugin replaces specified tokens with specified values.
  * - These should be declared in `prax.d.ts` for TypeScript awareness.
@@ -38,6 +44,27 @@ const DefinePlugin = new webpack.DefinePlugin({
   'globalThis.__DEV__': JSON.stringify(process.env['NODE_ENV'] !== 'production'),
   'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
 });
+
+const WebExtReloadPlugin = {
+  webExtRun: undefined as WebExtRunner | undefined,
+  apply({ hooks }: webpack.Compiler) {
+    hooks.afterEmit.tapPromise(
+      { name: 'WebExt Reloader' },
+      async ({ options }: webpack.Compilation) => {
+        await this.webExtRun?.reloadAllExtensions();
+        this.webExtRun ??= await WebExtCmd.run({
+          target: 'chromium',
+          chromiumProfile: CHROMIUM_PROFILE,
+          keepProfileChanges: Boolean(CHROMIUM_PROFILE),
+          profileCreateIfMissing: Boolean(CHROMIUM_PROFILE),
+          sourceDir: options.output.path,
+          startUrl: 'https://localhost:5173/',
+        });
+        this.webExtRun.registerCleanup(() => (this.webExtRun = undefined));
+      },
+    );
+  },
+};
 
 /**
  * This custom plugin will run `pnpm install` before each watch-mode build. This
@@ -193,6 +220,7 @@ export default ({
     // watch tarballs for changes
     WEBPACK_WATCH && new WatchExternalFilesPlugin({ files: localPackages }),
     WEBPACK_WATCH && PnpmInstallPlugin,
+    CHROMIUM_PROFILE && WebExtReloadPlugin,
   ],
   experiments: {
     asyncWebAssembly: true,

@@ -69,6 +69,7 @@
     "tailwindcss": "^3.4.4",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
+    "web-ext": "^8.2.0",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.10.0",
