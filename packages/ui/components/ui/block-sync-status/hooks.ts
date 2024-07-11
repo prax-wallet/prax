@@ -49,7 +49,9 @@ export const useSyncProgress = (
   const blocksRemaining = Number(latestKnownBlockHeight - fullSyncHeight);
   const timeRemaining = speed > 0 ? blocksRemaining / speed : Infinity;
   const formattedTimeRemaining =
-    timeRemaining === Infinity ? '' : humanizeDuration(timeRemaining * 1000, { round: true });
+    timeRemaining === Infinity
+      ? ''
+      : humanizeDuration(timeRemaining * 1000, { round: true, largest: 2 });
 
   return { formattedTimeRemaining, confident };
 };
