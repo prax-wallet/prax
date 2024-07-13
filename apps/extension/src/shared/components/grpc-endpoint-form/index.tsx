@@ -5,6 +5,7 @@ import { Network, Loader2 } from 'lucide-react';
 import { useGrpcEndpointForm } from './use-grpc-endpoint-form';
 import { ConfirmChangedChainIdDialog } from './confirm-changed-chain-id-dialog';
 import { ChainIdOrError } from './chain-id-or-error';
+import { LoadingList } from '../loading-list';
 
 /**
  * Renders all the parts of the gRPC endpoint form that are shared between the
@@ -24,7 +25,7 @@ export const GrpcEndpointForm = ({
     chainIdChanged,
     confirmChangedChainIdPromise,
     originalChainId,
-    grpcEndpoints,
+    grpcEndpointsQuery,
     grpcEndpointInput,
     setGrpcEndpointInput,
     onSubmit,
@@ -47,7 +48,7 @@ export const GrpcEndpointForm = ({
       <div className='flex flex-col gap-2'>
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
           <SelectList>
-            {grpcEndpoints.map(option => {
+            {grpcEndpointsQuery.rpcs.map(option => {
               const imageUrl = option.images[0]?.png ?? option.images[0]?.svg;
               return (
                 <SelectList.Option
@@ -93,16 +94,7 @@ export const GrpcEndpointForm = ({
             />
           </SelectList>
 
-          <div className='text-right'>
-            <a
-              href='https://github.com/prax-wallet/registry'
-              target='_blank'
-              rel='noreferrer'
-              className='text-xs text-muted-foreground'
-            >
-              Add to this list
-            </a>
-          </div>
+          <LoadingList isLoading={grpcEndpointsQuery.isLoading} />
 
           <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
             {isValidationLoading ? (
@@ -117,6 +109,9 @@ export const GrpcEndpointForm = ({
         </form>
 
         <ChainIdOrError chainId={chainId} chainIdChanged={chainIdChanged} error={rpcError} />
+        <div className='text-red-400'>
+          {grpcEndpointsQuery.error ? String(grpcEndpointsQuery.error) : null}
+        </div>
       </div>
 
       <ConfirmChangedChainIdDialog

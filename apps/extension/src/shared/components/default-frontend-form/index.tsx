@@ -1,5 +1,4 @@
 import { SelectList } from '@repo/ui/components/ui/select';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { useMemo, useRef } from 'react';
@@ -7,29 +6,31 @@ import { Button } from '@repo/ui/components/ui/button';
 import { NewFrontendInput } from './new-frontend-input';
 import { useIsFocus } from './use-is-focus';
 import { extractDomain } from './extract-domain';
+import { LoadingList } from '../loading-list';
+import { useRegistry } from '../registry';
 
 interface DisplayedFrontend {
   title: string;
   url: string;
 }
 
-const getFrontendsFromRegistry = (selectedRpc?: string): DisplayedFrontend[] => {
-  const registryClient = new ChainRegistryClient();
-  const { frontends } = registryClient.globals();
-  const registeredFrontends = frontends.map(frontend => ({
+const useFrontendsList = (selectedRpc?: string) => {
+  const { data, isLoading, error } = useRegistry();
+
+  const frontends = (data?.frontends ?? []).map(frontend => ({
     title: extractDomain(frontend),
     url: frontend,
   }));
 
   if (selectedRpc) {
-    registeredFrontends.push({
+    frontends.push({
       title: 'Embedded RPC frontend',
       /*NB: we merge using the variadic URL constructor here to avoid double-slashes*/
       url: new URL('/app/', selectedRpc).href,
     });
   }
 
-  return registeredFrontends;
+  return { frontends, isLoading, error };
 };
 
 const getIsCustomFrontendSelected = (frontends: DisplayedFrontend[], selected?: string) => {
@@ -46,7 +47,7 @@ const useDefaultFrontendSelector = (state: AllSlices) => {
 
 export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }) => {
   const { selectedFrontend, selectUrl, selectedRpc } = useStoreShallow(useDefaultFrontendSelector);
-  const frontends = useMemo(() => getFrontendsFromRegistry(selectedRpc), [selectedRpc]);
+  const { frontends, isLoading, error } = useFrontendsList(selectedRpc);
   const isCustomSelected = useMemo(
     () => getIsCustomFrontendSelected(frontends, selectedFrontend),
     [frontends, selectedFrontend],
@@ -76,16 +77,7 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
         onSelect={selectUrl}
       />
 
-      <div key='add-to-list' className='my-1 text-right'>
-        <a
-          href='https://github.com/prax-wallet/registry'
-          target='_blank'
-          rel='noreferrer'
-          className='text-xs text-muted-foreground'
-        >
-          Add to this list
-        </a>
-      </div>
+      <LoadingList isLoading={isLoading} />
 
       {(isOnboarding ?? isFocused) && (
         <Button
@@ -97,6 +89,7 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
           {isOnboarding ? 'Next' : 'Save'}
         </Button>
       )}
+      <div className='text-red-400'>{error ? String(error) : null}</div>
     </SelectList>
   );
 };

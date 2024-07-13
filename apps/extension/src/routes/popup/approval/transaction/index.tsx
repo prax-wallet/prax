@@ -1,4 +1,4 @@
-import { TransactionViewComponent } from '@repo/ui/components/ui/tx';
+import { MetadataFetchFn, TransactionViewComponent } from '@repo/ui/components/ui/tx';
 import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
@@ -9,6 +9,15 @@ import { ApproveDeny } from '../approve-deny';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { TransactionViewTab } from './types';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { viewClient } from '../../../../clients';
+
+const getMetadata: MetadataFetchFn = async ({ assetId }) => {
+  const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
+
+  const { denomMetadata } = await viewClient.assetMetadataById({ assetId: feeAssetId });
+  return denomMetadata;
+};
 
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
@@ -48,7 +57,7 @@ export const TransactionApproval = () => {
           onValueChange={setSelectedTransactionViewName}
         />
 
-        <TransactionViewComponent txv={selectedTransactionView} />
+        <TransactionViewComponent txv={selectedTransactionView} metadataFetcher={getMetadata} />
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
           <div className='mt-8'>
