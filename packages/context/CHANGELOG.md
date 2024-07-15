@@ -1,5 +1,11 @@
 # @penumbra-zone/services
 
+## 4.4.0
+
+### Minor Changes
+
+- f22eef4: Update to latest penumbra-zone packages (uses v10 registry's remote methods)
+
 ## 4.3.0
 
 ### Minor Changes

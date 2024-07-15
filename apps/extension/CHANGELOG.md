@@ -1,5 +1,18 @@
 # chrome-extension
 
+## 11.4.0
+
+### Minor Changes
+
+- f22eef4: Update to latest penumbra-zone packages (uses v10 registry's remote methods)
+
+### Patch Changes
+
+- 144c2fa: Disable the Copy button for the seed phrase until it's revealed
+- Updated dependencies [f22eef4]
+  - @repo/context@4.4.0
+  - @repo/ui@5.3.0
+
 ## 11.3.0
 
 ### Minor Changes
