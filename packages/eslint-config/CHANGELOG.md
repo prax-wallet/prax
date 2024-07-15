@@ -1,5 +1,11 @@
 # @penumbra-zone/eslint-config
 
+## 2.1.0
+
+### Minor Changes
+
+- 32ac0c1: add rule curly all
+
 ## 2.0.0
 
 ### Major Changes
