@@ -14,7 +14,7 @@ import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { SettingsScreen } from './settings-screen';
 import { useChainIdQuery } from '../../../hooks/chain-id';
-import { getNumeraireFromRegistry } from '../../../utils/get-numeraires-from-registry';
+import { useNumeraires } from '../../../hooks/numeraires-query';
 
 const links = [
   {
@@ -54,7 +54,7 @@ export const Settings = () => {
   const { clearSessionPassword } = useStore(passwordSelector);
 
   const { chainId } = useChainIdQuery();
-  const numeraires = getNumeraireFromRegistry(chainId);
+  const { numeraires } = useNumeraires(chainId);
 
   return (
     <SettingsScreen title='Settings'>

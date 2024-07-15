@@ -106,12 +106,11 @@ export class Services implements ServicesInterface {
       idbConstants: indexedDb.constants(),
     });
 
-    const { stakingAssetId } = registryClient.globals();
     const blockProcessor = new BlockProcessor({
       viewServer,
       querier,
       indexedDb,
-      stakingAssetId: stakingAssetId,
+      stakingAssetId: registryClient.bundled.globals().stakingAssetId,
       numeraires: numeraires,
     });
 

@@ -1,12 +1,12 @@
 import { AllSlices, useStore } from '../../state';
 import { useChainIdQuery } from '../../hooks/chain-id';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ServicesMessage } from '../../message/services';
 import { SelectList } from '@repo/ui/components/ui/select';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { Button } from '@repo/ui/components/ui/button';
-import { getNumeraireFromRegistry } from '../../utils/get-numeraires-from-registry';
+import { useNumeraires } from '../../hooks/numeraires-query';
 
 const useNumerairesSelector = (state: AllSlices) => {
   return {
@@ -30,7 +30,7 @@ export const NumeraireForm = ({
 
   // 'chainId' from 'useChainIdQuery' is not available during onboarding,
   // this forces you to use two sources to guarantee 'chainId' for both settings and onboarding
-  const numeraires = useMemo(() => getNumeraireFromRegistry(chainId ?? networkChainId), [chainId]);
+  const { numeraires } = useNumeraires(chainId ?? networkChainId);
 
   useEffect(() => {
     if (numeraires.length === 0) {
