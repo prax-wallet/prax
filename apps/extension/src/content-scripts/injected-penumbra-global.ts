@@ -4,7 +4,7 @@
  * to them.
  *
  * The global is identified by `Symbol.for('penumbra')` and consists of a record
- * with string keys referring to `PenumbraInjection` objects that contain a
+ * with string keys referring to `PenumbraProvider` objects that contain a
  * simple API. The identifiers on this record should be unique, and correspond
  * to a browser extension id. Providers should provide a link to their extension
  * manifest in their record entry.
@@ -17,16 +17,16 @@
  * connections.
  */
 
-import { PenumbraInjection, PenumbraSymbol } from '@penumbra-zone/client';
+import { PenumbraProvider, PenumbraState, PenumbraSymbol } from '@penumbra-zone/client';
+import { PenumbraStateEvent } from '@penumbra-zone/client/event';
 
+import { PraxConnection } from '../message/prax';
 import {
   isPraxFailureMessageEvent,
   isPraxPortMessageEvent,
   PraxMessage,
   unwrapPraxMessageEvent,
 } from './message-event';
-
-import { PraxConnection } from '../message/prax';
 
 type PromiseSettledResultStatus = PromiseSettledResult<unknown>['status'];
 
@@ -46,21 +46,41 @@ class PraxInjection {
   private requestState?: PromiseSettledResultStatus;
   private disconnectState?: PromiseSettledResultStatus;
 
-  private injection: Readonly<PenumbraInjection> = Object.freeze({
-    disconnect: () => this.endConnection(),
-    connect: () => (this.state() !== false ? this._connect.promise : this.connectionFailure),
-    isConnected: () => this.state(),
-    request: () => this.postRequest(),
+  private connectCalled = false;
+  private requestCalled = false;
+  private disconnectCalled = false;
+
+  private stateEvents = new EventTarget();
+
+  private injection: Readonly<PenumbraProvider> = Object.freeze({
+    connect: () => {
+      this.connectCalled = true;
+      return this.reduceConnectionState() !== false
+        ? this._connect.promise
+        : this.connectionFailure();
+    },
+
+    disconnect: () => {
+      this.disconnectCalled = true;
+      return this.endConnection();
+    },
+
+    request: () => {
+      this.requestCalled = true;
+      return this.postRequest();
+    },
+
+    isConnected: () => this.reduceConnectionState(),
+
+    state: () => this.reduceInjectionState(),
+
     manifest: String(this.manifestUrl),
-    state: () => {
-      throw new Error('not yet implemented');
-    },
-    addEventListener: () => {
-      throw new Error('not yet implemented');
-    },
-    removeEventListener: () => {
-      throw new Error('not yet implemented');
-    },
+
+    addEventListener: ((...params) =>
+      this.stateEvents.addEventListener(...params)) as EventTarget['addEventListener'],
+
+    removeEventListener: ((...params) =>
+      this.stateEvents.removeEventListener(...params)) as EventTarget['removeEventListener'],
   });
 
   private constructor() {
@@ -69,35 +89,45 @@ class PraxInjection {
     }
 
     window.addEventListener('message', this.connectionListener);
+    void this._connect.promise.finally(() =>
+      window.removeEventListener('message', this.connectionListener),
+    );
+
+    const dispatchStateEvent = () =>
+      this.stateEvents.dispatchEvent(
+        new PenumbraStateEvent(PRAX_ORIGIN, this.reduceInjectionState()),
+      );
 
     void this._connect.promise
       .then(
         () => (this.connectState ??= 'fulfilled'),
         () => (this.connectState ??= 'rejected'),
       )
-      .finally(() => window.removeEventListener('message', this.connectionListener));
+      .finally(dispatchStateEvent);
 
-    void this._disconnect.promise.then(
-      () => (this.disconnectState = 'fulfilled'),
-      () => (this.disconnectState = 'rejected'),
-    );
+    void this._disconnect.promise
+      .then(
+        () => (this.disconnectState ??= 'fulfilled'),
+        () => (this.disconnectState ??= 'rejected'),
+      )
+      .finally(dispatchStateEvent);
 
-    void this._request.promise.then(
-      () => (this.requestState = 'fulfilled'),
-      () => (this.requestState = 'rejected'),
-    );
+    void this._request.promise
+      .then(
+        () => (this.requestState ??= 'fulfilled'),
+        () => (this.requestState ??= 'rejected'),
+      )
+      .finally(dispatchStateEvent);
   }
 
-  /**
-   * Calling this function will synchronously return a unified
-   * true/false/undefined answer to the page connection state of this provider.
-   *
-   * `true` indicates active connection.
-   * `false` indicates connection is closed or rejected.
-   * `undefined` indicates connection may be attempted.
+  /** Synchronously return the true/false/undefined page connection state of this
+   * provider, without respect to what methods have been called.
+   * - `true` indicates active connection.
+   * - `false` indicates connection is closed or rejected.
+   * - `undefined` indicates connection may be attempted.
    */
-  private state(): boolean | undefined {
-    if (this.disconnectState !== undefined) {
+  private reduceConnectionState(): boolean | undefined {
+    if (this.disconnectState) {
       return false;
     }
     if (this.requestState === 'rejected') {
@@ -113,8 +143,42 @@ class PraxInjection {
     }
   }
 
-  // this listener will resolve the connection promise AND request promise when
-  // the isolated content script injected-connection-port sends a `MessagePort`
+  /** Returns a single overall injection state. */
+  private reduceInjectionState(): PenumbraState {
+    if (
+      this.disconnectState === 'rejected' ||
+      this.connectState === 'rejected' ||
+      this.requestState === 'rejected'
+    ) {
+      return PenumbraState.Failed;
+    }
+    switch (this.disconnectCalled && this.disconnectState) {
+      case false:
+        break;
+      default:
+        return PenumbraState.Disconnected;
+    }
+    switch (this.connectCalled && this.connectState) {
+      case false:
+        break;
+      case 'fulfilled':
+        return PenumbraState.Connected;
+      case undefined:
+        return PenumbraState.ConnectPending;
+    }
+    switch (this.requestCalled && this.requestState) {
+      case false:
+        break;
+      case 'fulfilled':
+        return PenumbraState.Requested;
+      case undefined:
+        return PenumbraState.RequestPending;
+    }
+    return PenumbraState.Present;
+  }
+
+  /** this listener will resolve the connection promise AND request promise when
+   * the isolated content script injected-connection-port sends a `MessagePort` */
   private connectionListener = (msg: MessageEvent<unknown>) => {
     if (msg.origin === window.origin && isPraxPortMessageEvent(msg)) {
       const praxPort = unwrapPraxMessageEvent(msg);
@@ -123,8 +187,9 @@ class PraxInjection {
     }
   };
 
-  // this listener only rejects the request promise. success of the request
-  // promise is indicated by the connection promise being resolved.
+  /** this listener only rejects the request promise. success of the request
+   * promise is indicated by the connection promise being resolved.
+   */
   private requestFailureListener = (msg: MessageEvent<unknown>) => {
     if (msg.origin === window.origin && isPraxFailureMessageEvent(msg)) {
       const cause = unwrapPraxMessageEvent(msg);
@@ -133,11 +198,12 @@ class PraxInjection {
     }
   };
 
-  // always reject with the most important reason at time of access
-  // 1. disconnect
-  // 2. connection failure
-  // 3. request
-  private get connectionFailure() {
+  /** rejects with the most relevant reason
+   * - disconnect
+   * - connection failure
+   * - request failure
+   */
+  private connectionFailure(): Promise<never> {
     // Promise.race checks in order of the list index. so if more than one
     // promise in the list is already settled, it responds with the result of
     // the earlier index
@@ -149,33 +215,29 @@ class PraxInjection {
       // rejects with previous failure, or 'Disconnected' if request was successful
       this._request.promise.then(() => Promise.reject(Error('Disconnected'))),
       // this should be unreachable
-      Promise.reject(Error('Unknown failure')),
+      Promise.resolve(null as never),
     ]);
   }
 
   private postRequest() {
-    const state = this.state();
-    if (state === true) {
-      // connection is already active
-      this._request.resolve();
-    } else if (state === false) {
-      // connection is already failed
-      const failure = this.connectionFailure;
-      failure.catch((u: unknown) => this._request.reject(u));
-      // a previous request may have succeeded, so return the failure directly
-      return failure;
-    } else {
-      // no request made yet. attach listener and emit
-      window.addEventListener('message', this.requestFailureListener);
-      void this._request.promise.finally(() =>
-        window.removeEventListener('message', this.requestFailureListener),
-      );
-      window.postMessage(
-        {
-          [PRAX]: PraxConnection.Request,
-        } satisfies PraxMessage<PraxConnection.Request>,
-        window.origin,
-      );
+    switch (this.reduceConnectionState()) {
+      case true: // connection is already active
+        this._request.resolve();
+        break;
+      case false: // connection is already failed
+        void this.connectionFailure().catch((u: unknown) => this._request.reject(u));
+        // a previous request may have succeeded, so also return the failure directly
+        return this.connectionFailure();
+      case undefined: // no request made yet. attach listener and emit
+        window.addEventListener('message', this.requestFailureListener);
+        void this._request.promise.finally(() =>
+          window.removeEventListener('message', this.requestFailureListener),
+        );
+        window.postMessage(
+          { [PRAX]: PraxConnection.Request } satisfies PraxMessage<PraxConnection.Request>,
+          window.origin,
+        );
+        break;
     }
 
     return this._request.promise;
@@ -198,13 +260,16 @@ class PraxInjection {
     );
 
     // resolve the promise by state
-    const state = this.state();
-    if (state === true) {
-      this._disconnect.resolve();
-    } else if (state === false) {
-      this._disconnect.reject(Error('Connection already inactive'));
-    } else {
-      this._disconnect.reject(Error('Connection not yet active'));
+    switch (this.reduceConnectionState()) {
+      case true: // connection was active, will now become now disconnected
+        this._disconnect.resolve();
+        break;
+      case false: // connection was already inactive. can't disconnect in this state
+        this._disconnect.reject(Error('Connection already inactive'));
+        break;
+      case undefined: // connection was never attempted. can't disconnect in this state
+        this._disconnect.reject(Error('Connection not yet active'));
+        break;
     }
 
     return this._disconnect.promise;
