@@ -1,58 +1,36 @@
 # Penumbra Web
 
-The [Penumbra](https://penumbra.zone/) monorepo for all things web.
+The [Prax Wallet](https://praxwallet.com/) monorepo for all things Prax.
 
-![ci status](https://github.com/penumbra-zone/web/actions/workflows/turbo-ci.yml/badge.svg?branch=main)
+![ci status](https://github.com/prax-wallet/web/actions/workflows/turbo-ci.yml/badge.svg?branch=main)
 
-This is a monolithic repository of Penumbra web code, a monorepo. Multiple apps,
-internal packages, and published packages are developed in this repository, to
+This is a monolithic repository of Prax code, a monorepo. Multiple apps and packages are developed in this repository, to
 simplify work and make broad cross-package changes more feasible.
 
-To participate in the test network, use the browser extension
+Install the Prax extension
 [Prax](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe)
 from the Chrome Web Store.
 
 You can talk to us on [Discord](https://discord.gg/hKvkrqa3zC).
 
-## You might be looking for examples
-
-### [`@penumbra-zone/client` nextjs example](https://github.com/penumbra-zone/nextjs-penumbra-client-example)
-
-### [`@penumbra-zone/wasm` nextjs example](https://github.com/penumbra-zone/nextjs-penumbra-wasm-example)
-
 ## What's in here
 
-### [Minifront](https://app.testnet.penumbra.zone/): Dapp to swap, stake, and send on the Penumbra testnet.
+### [Prax Extension](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe): Extension for Chrome that provides key custody, manages chain activity, and hosts services used by dapps.
 
-### [Prax](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe): Extension for Chrome that provides key custody, manages chain activity, and hosts services used by dapps.
+### [Prax Marketing Site](https://praxwallet.com/): Marketing site for the Prax wallet
 
-### [Status](https://grpc.testnet.penumbra.zone/): Public info dashboard for Penumbra nodes.
+###  Packages
 
-### Published Packages
-
-All have a `@penumbra-zone/` namespace prefix on npm.
-
-**🌘
-[bech32m](https://www.npmjs.com/package/@penumbra-zone/bech32m) 🌑
-[client](https://www.npmjs.com/package/@penumbra-zone/client) 🌑
-[constants](https://www.npmjs.com/package/@penumbra-zone/constants) 🌑
-[crypto](https://www.npmjs.com/package/@penumbra-zone/crypto) 🌑
-[getters](https://www.npmjs.com/package/@penumbra-zone/getters) 🌑
-[keys](https://www.npmjs.com/package/@penumbra-zone/keys) 🌑
-[perspective](https://www.npmjs.com/package/@penumbra-zone/perspective) 🌑
-[protobuf](https://www.npmjs.com/package/@penumbra-zone/protobuf) 🌑
-[services](https://www.npmjs.com/package/@penumbra-zone/services) 🌑
-[services-context](https://www.npmjs.com/package/@penumbra-zone/services-context) 🌑
-[storage](https://www.npmjs.com/package/@penumbra-zone/storage) 🌑
-[transport-chrome](https://www.npmjs.com/package/@penumbra-zone/transport-chrome) 🌑
-[transport-dom](https://www.npmjs.com/package/@penumbra-zone/transport-dom) 🌑
-[types](https://www.npmjs.com/package/@penumbra-zone/types) 🌑
-[wasm](https://www.npmjs.com/package/@penumbra-zone/wasm)
-🌒**
+- context
+- eslint-config
+- tailwind-config
+- tsconfig
+- ui
 
 ## Documentation
 
-General documentation is available in [docs/README.md](docs/README.md). Package-specific documentation is available in each respective package.
+General documentation is available in [docs/README.md](docs/README.md). Package-specific documentation is available in
+each respective package.
 
 ## Getting Started
 
@@ -70,18 +48,16 @@ General documentation is available in [docs/README.md](docs/README.md). Package-
 Once you have all these tools, you can
 
 ```sh
-git clone https://github.com/penumbra-zone/web
+git clone https://github.com/prax-wallet/web
 cd web
 pnpm i
 pnpm dev
 ```
 
-You now have a local copy of Minifront available at
-[`https://localhost:5173`](https://localhost:5173) and an unbundled Prax is
+You now have a local copy of the marketing site available at
+[`https://localhost:5175`](https://localhost:5173) and an unbundled Prax is
 available at [`apps/extension/dist`](apps/extension/dist), ready to be loaded
 into your browser.
-
-Minifront will hot-reload.
 
 If you're working on Prax, Chrome will show extension page changes after a
 manual refresh, but cannot reload the extension worker scripts or content
@@ -102,8 +78,8 @@ personal profile.
    repository. Select the extension's build output directory
    [`apps/extension/dist`](../apps/extension/dist).
 4. Activate the extension to enter onboarding.
-   - You may set a blank password.
-   - You can pin the Prax extension button to your toolbar for quick access.
+    - You may set a blank password.
+    - You can pin the Prax extension button to your toolbar for quick access.
 
 ## Security
 
