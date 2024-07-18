@@ -5,6 +5,7 @@ test coverage at the moment, but we should still strive to cover as
 much as we can. If we do, our app will be far more resilient to changes.
 
 Different kinds of testing examples:
+
 - Zustand store tests: [apps/extension/src/state/password.test.ts](../apps/extension/src/state/password.test.ts)
 
 ### Vitest

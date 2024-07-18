@@ -43,7 +43,7 @@ export const PageIndex = () => {
           window.close();
         }}
       >
-        Visit testnet web app
+        Visit web app
       </Button>
     </SplashPage>
   );

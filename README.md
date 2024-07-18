@@ -19,7 +19,7 @@ You can talk to us on [Discord](https://discord.gg/hKvkrqa3zC).
 
 ### [Prax Marketing Site](https://praxwallet.com/): Marketing site for the Prax wallet
 
-###  Packages
+### Packages
 
 - context
 - eslint-config
@@ -78,8 +78,8 @@ personal profile.
    repository. Select the extension's build output directory
    [`apps/extension/dist`](../apps/extension/dist).
 4. Activate the extension to enter onboarding.
-    - You may set a blank password.
-    - You can pin the Prax extension button to your toolbar for quick access.
+   - You may set a blank password.
+   - You can pin the Prax extension button to your toolbar for quick access.
 
 ## Security
 
