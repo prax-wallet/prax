@@ -22,7 +22,7 @@ export const OnboardingSuccess = () => {
           }}
           className='mt-4'
         >
-          Visit testnet web app
+          Visit web app
         </Button>
       </div>
     </SplashPage>
