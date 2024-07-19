@@ -74,11 +74,7 @@ export const Box = ({
         </div>
       )}
 
-      {children && (
-        <motion.div layout className='origin-top' animate={{ scaleY: 1 }} exit={{ scaleY: 0 }}>
-          {children}
-        </motion.div>
-      )}
+      {children && <motion.div className='origin-top'>{children}</motion.div>}
     </motion.div>
   );
 };
