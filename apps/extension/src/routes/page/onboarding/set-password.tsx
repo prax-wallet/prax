@@ -1,4 +1,4 @@
-import { FormEvent, MouseEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { Button } from '@repo/ui/components/ui/button';
 import {
@@ -20,7 +20,7 @@ export const SetPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
 
-  const handleSubmit = (event: FormEvent | MouseEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
     void (async () => {
@@ -32,7 +32,7 @@ export const SetPassword = () => {
   return (
     <FadeTransition>
       <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
-      <Card className='w-[400px]' gradient>
+      <Card className='flex w-[400px] flex-col gap-6' gradient>
         <CardHeader className='items-center'>
           <CardTitle>Create a password</CardTitle>
           <CardDescription className='text-center'>
@@ -41,7 +41,7 @@ export const SetPassword = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className='mt-6 grid gap-4' onSubmit={handleSubmit}>
+          <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
             <PasswordInput
               passwordValue={password}
               label='New password'
@@ -63,7 +63,7 @@ export const SetPassword = () => {
               variant='gradient'
               className='mt-2'
               disabled={password !== confirmation}
-              onClick={handleSubmit}
+              type='submit'
             >
               Next
             </Button>
