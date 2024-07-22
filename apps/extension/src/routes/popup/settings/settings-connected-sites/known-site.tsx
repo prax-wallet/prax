@@ -18,7 +18,7 @@ export const KnownSite = ({
           href={site.origin}
           target='_blank'
           rel='noreferrer'
-          className='decoration-green hover:underline'
+          className='truncate decoration-green hover:underline'
         >
           <DisplayOriginURL url={new URL(site.origin)} />
         </a>
