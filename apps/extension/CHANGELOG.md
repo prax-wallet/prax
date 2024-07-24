@@ -1,5 +1,11 @@
 # chrome-extension
 
+## 11.6.0
+
+### Minor Changes
+
+- Update penumbra-zone packages (fix timeouts for clients)
+
 ## 11.4.0
 
 ### Minor Changes
