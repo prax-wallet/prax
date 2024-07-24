@@ -58,11 +58,13 @@ const initHandler = async () => {
 
     // context so impls can access storage, ui, other services, etc
     createRequestContext: req => {
+      const directTransportOptions = { jsonOptions, defaultTimeoutMs: 0 };
+
       const contextValues = req.contextValues ?? createContextValues();
 
       // initialize or reuse context clients
-      custodyClient ??= createDirectClient(CustodyService, handler, { jsonOptions });
-      stakeClient ??= createDirectClient(StakeService, handler, { jsonOptions });
+      custodyClient ??= createDirectClient(CustodyService, handler, directTransportOptions);
+      stakeClient ??= createDirectClient(StakeService, handler, directTransportOptions);
       contextValues.set(custodyClientCtx, custodyClient);
       contextValues.set(stakeClientCtx, stakeClient);
 

@@ -9,6 +9,7 @@ const port = CRSessionClient.init(PRAX);
 const extensionPageTransport = createChannelTransport({
   jsonOptions,
   getPort: () => Promise.resolve(port),
+  defaultTimeoutMs: 0,
 });
 
 export const viewClient = createPromiseClient(ViewService, extensionPageTransport);
