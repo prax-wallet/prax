@@ -1,39 +1,39 @@
+import { useMemo, useRef } from 'react';
+import type { EntityMetadata } from '@penumbra-labs/registry';
 import { SelectList } from '@repo/ui/components/ui/select';
+import { Button } from '@repo/ui/components/ui/button';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { useMemo, useRef } from 'react';
-import { Button } from '@repo/ui/components/ui/button';
 import { NewFrontendInput } from './new-frontend-input';
 import { useIsFocus } from './use-is-focus';
-import { extractDomain } from './extract-domain';
 import { LoadingList } from '../loading-list';
 import { useRegistry } from '../registry';
-
-interface DisplayedFrontend {
-  title: string;
-  url: string;
-}
 
 const useFrontendsList = (selectedRpc?: string) => {
   const { data, isLoading, error } = useRegistry();
 
-  const frontends = (data?.frontends ?? []).map(frontend => ({
-    title: extractDomain(frontend),
-    url: frontend,
-  }));
+  const frontends = useMemo(() => {
+    const arr: EntityMetadata[] = data?.frontends ?? [];
 
-  if (selectedRpc) {
-    frontends.push({
-      title: 'Embedded RPC frontend',
-      /*NB: we merge using the variadic URL constructor here to avoid double-slashes*/
-      url: new URL('/app/', selectedRpc).href,
-    });
-  }
+    if (selectedRpc) {
+      return [
+        ...arr,
+        {
+          name: 'Embedded RPC frontend',
+          /* we merge using the variadic URL constructor here to avoid double-slashes*/
+          url: new URL('/app/', selectedRpc).href,
+          images: [],
+        },
+      ];
+    }
+
+    return arr;
+  }, [data]);
 
   return { frontends, isLoading, error };
 };
 
-const getIsCustomFrontendSelected = (frontends: DisplayedFrontend[], selected?: string) => {
+const getIsCustomFrontendSelected = (frontends: EntityMetadata[], selected?: string) => {
   return !!selected && !frontends.some(item => item.url === selected);
 };
 
@@ -58,16 +58,28 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
 
   return (
     <SelectList>
-      {frontends.map(option => (
-        <SelectList.Option
-          key={option.url}
-          value={option.url}
-          secondary={option.url}
-          label={option.title}
-          isSelected={option.url === selectedFrontend}
-          onSelect={selectUrl}
-        />
-      ))}
+      {frontends.map(option => {
+        const imageUrl = option.images[0]?.svg ?? option.images[0]?.png;
+        return (
+          <SelectList.Option
+            key={option.url}
+            value={option.url}
+            secondary={option.url}
+            label={option.name}
+            isSelected={option.url === selectedFrontend}
+            onSelect={selectUrl}
+            image={
+              !!imageUrl && (
+                <img
+                  src={imageUrl}
+                  className='size-full object-contain'
+                  alt='rpc endpoint brand image'
+                />
+              )
+            }
+          />
+        );
+      })}
 
       <NewFrontendInput
         key='custom-input'

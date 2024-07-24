@@ -49,7 +49,7 @@ export const GrpcEndpointForm = ({
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
           <SelectList>
             {grpcEndpointsQuery.rpcs.map(option => {
-              const imageUrl = option.images[0]?.png ?? option.images[0]?.svg;
+              const imageUrl = option.images[0]?.svg ?? option.images[0]?.png;
               return (
                 <SelectList.Option
                   key={option.url}
