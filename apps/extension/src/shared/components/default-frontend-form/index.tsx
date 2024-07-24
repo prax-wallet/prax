@@ -20,7 +20,7 @@ const useFrontendsList = (selectedRpc?: string) => {
         ...arr,
         {
           name: 'Embedded RPC frontend',
-          /*NB: we merge using the variadic URL constructor here to avoid double-slashes*/
+          /* we merge using the variadic URL constructor here to avoid double-slashes*/
           url: new URL('/app/', selectedRpc).href,
           images: [],
         },
@@ -59,7 +59,7 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
   return (
     <SelectList>
       {frontends.map(option => {
-        const imageUrl = option.images[0]?.png ?? option.images[0]?.svg;
+        const imageUrl = option.images[0]?.svg ?? option.images[0]?.png;
         return (
           <SelectList.Option
             key={option.url}
