@@ -19,7 +19,16 @@ dotenv.config({ path: '.env' });
 
 const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
-const localPackages = Object.values(rootPackageJson.dependencies)
+const localPackages = [
+  ...Object.values(rootPackageJson.dependencies),
+  ...Object.values(rootPackageJson.devDependencies),
+
+  /* eslint-disable */
+  // typescript and eslint will recognize the literal type of local json.
+  // this is the simplest way to shut them both up.
+  ...Object.values(((rootPackageJson as any).pnpm?.overrides ?? {}) as Record<string, string>),
+  /* eslint-enable */
+]
   .filter(specifier => specifier.endsWith('.tgz'))
   .map(tgzSpecifier =>
     tgzSpecifier.startsWith('file:') ? url.fileURLToPath(tgzSpecifier) : tgzSpecifier,
@@ -86,8 +95,9 @@ const PnpmInstallPlugin = {
             { stdio: 'inherit' },
           );
           pnpmInstall.on('exit', code => {
-            if (code) reject(new Error(`pnpm install failed ${code}`));
-            else {
+            if (code) {
+              reject(new Error(`pnpm install failed ${code}`));
+            } else {
               // clear webpack's cache to ensure new deps are used
               compiler.purgeInputFileSystem();
               resolve();
