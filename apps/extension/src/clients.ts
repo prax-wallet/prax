@@ -2,14 +2,13 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { createPromiseClient } from '@connectrpc/connect';
 import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
 import { CRSessionClient } from '@penumbra-zone/transport-chrome/session-client';
-import { jsonOptions } from '@penumbra-zone/protobuf';
+import { internalTransportOptions } from './transport-options';
 
 const port = CRSessionClient.init(PRAX);
 
 const extensionPageTransport = createChannelTransport({
-  jsonOptions,
+  ...internalTransportOptions,
   getPort: () => Promise.resolve(port),
-  defaultTimeoutMs: 0,
 });
 
 export const viewClient = createPromiseClient(ViewService, extensionPageTransport);
