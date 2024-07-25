@@ -27,6 +27,7 @@ export const createConnectedSitesSlice =
         known => known.origin !== siteToDiscard.origin,
       );
       await local.set('knownSites', knownSitesWithoutDiscardedSite);
+      void chrome.runtime.sendMessage({ revoke: siteToDiscard.origin });
     },
   });
 

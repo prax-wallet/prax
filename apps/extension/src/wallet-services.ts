@@ -12,6 +12,7 @@ import { Services } from '@repo/context';
 import { ServicesMessage } from './message/services';
 import { WalletServices } from '@penumbra-zone/types/services';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { isInternalSender } from './senders/internal';
 
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
@@ -77,13 +78,10 @@ const attachServiceControlListener = ({
   indexedDb,
 }: Pick<WalletServices, 'blockProcessor' | 'indexedDb'>) =>
   chrome.runtime.onMessage.addListener((req, sender, respond) => {
-    switch (
-      sender.origin === origin &&
-      req in ServicesMessage &&
-      ServicesMessage[req as keyof typeof ServicesMessage]
-    ) {
-      case false:
-        return false;
+    if (!isInternalSender(sender) || !(req in ServicesMessage)) {
+      return false;
+    }
+    switch (ServicesMessage[req as keyof typeof ServicesMessage]) {
       case ServicesMessage.ClearCache:
         void (async () => {
           blockProcessor.stop('clearCache');
@@ -91,7 +89,7 @@ const attachServiceControlListener = ({
         })()
           .then(() => respond())
           .finally(() => chrome.runtime.reload());
-        return true;
+        break;
       case ServicesMessage.ChangeNumeraires:
         void (async () => {
           const newNumeraires = await localExtStorage.get('numeraires');
@@ -103,6 +101,7 @@ const attachServiceControlListener = ({
            */
           await indexedDb.clearSwapBasedPrices();
         })().then(() => respond());
-        return true;
+        break;
     }
+    return true;
   });
