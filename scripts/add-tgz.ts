@@ -64,3 +64,5 @@ for (const [name, tarballUrl] of Object.entries(overrides)) {
   await cmd('pnpm', ['pkg', 'set', `pnpm.overrides.${name}=${tarballUrl}`]);
   await cmd('pnpm', ['pkg', 'set', `pnpm.peerDependencyRules.allowAny[].=${name}`]);
 }
+
+await cmd('pnpm', ['install']);

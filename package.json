@@ -22,7 +22,6 @@
     "lint:prettier": "prettier --check .",
     "lint:rust": "turbo lint:rust",
     "lint:syncpack": "syncpack lint",
-    "postadd:tgz": "$npm_execpath install",
     "postinstall": "syncpack list-mismatches",
     "pretest": "playwright install",
     "test": "turbo test",
