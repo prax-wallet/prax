@@ -20,6 +20,7 @@ global.chrome = {
     },
   },
   runtime: {
+    sendMessage: vi.fn(),
     connect: vi.fn().mockReturnValue({
       onMessage: {
         addListener: vi.fn(),
