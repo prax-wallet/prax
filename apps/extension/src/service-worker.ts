@@ -35,6 +35,7 @@ import { StakeService, CustodyService } from '@penumbra-zone/protobuf';
 import { custodyClientCtx } from '@penumbra-zone/services/ctx/custody-client';
 import { stakeClientCtx } from '@penumbra-zone/services/ctx/stake-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
+import { internalTransportOptions } from './transport-options';
 
 // idb, querier, block processor
 import { startWalletServices } from './wallet-services';
@@ -61,8 +62,8 @@ const initHandler = async () => {
       const contextValues = req.contextValues ?? createContextValues();
 
       // initialize or reuse context clients
-      custodyClient ??= createDirectClient(CustodyService, handler, { jsonOptions });
-      stakeClient ??= createDirectClient(StakeService, handler, { jsonOptions });
+      custodyClient ??= createDirectClient(CustodyService, handler, internalTransportOptions);
+      stakeClient ??= createDirectClient(StakeService, handler, internalTransportOptions);
       contextValues.set(custodyClientCtx, custodyClient);
       contextValues.set(stakeClientCtx, stakeClient);
 
