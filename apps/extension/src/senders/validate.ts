@@ -13,6 +13,10 @@ type ValidSender = chrome.runtime.MessageSender & {
   url: `${ValidProtocol}//${string}/${string}`;
 };
 
+const isException = (url: URL): boolean => {
+  return url.protocol === 'http:' && url.hostname === 'localhost';
+};
+
 export const assertValidSender = (sender?: chrome.runtime.MessageSender) => {
   if (!sender) {
     throw new Error('Sender undefined');
@@ -34,7 +38,8 @@ export const assertValidSender = (sender?: chrome.runtime.MessageSender) => {
   if (parsedOrigin.origin !== sender.origin) {
     throw new Error('Sender origin is invalid');
   }
-  if (!(parsedOrigin.protocol in ValidProtocol)) {
+
+  if (!(parsedOrigin.protocol in ValidProtocol || isException(parsedOrigin))) {
     throw new Error(`Sender protocol is not ${Object.values(ValidProtocol).join(',')}`);
   }
 
