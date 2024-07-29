@@ -6,16 +6,12 @@ type ValidSender = chrome.runtime.MessageSender & {
   frameId: 0;
   documentId: string;
   tab: chrome.tabs.Tab & { id: number };
-
-  // the relationship between origin and url is pretty complex.
-  // just rely on the browser's tools.
-  origin: `${ValidProtocol}//${string}`;
-  url: `${ValidProtocol}//${string}/${string}`;
+  origin: string;
+  url: string;
 };
 
-const isException = (url: URL): boolean => {
-  return url.protocol === 'http:' && url.hostname === 'localhost';
-};
+const isHttpLocalhost = (url: URL): boolean =>
+  url.protocol === 'http:' && url.hostname === 'localhost';
 
 export const assertValidSender = (sender?: chrome.runtime.MessageSender) => {
   if (!sender) {
@@ -39,7 +35,12 @@ export const assertValidSender = (sender?: chrome.runtime.MessageSender) => {
     throw new Error('Sender origin is invalid');
   }
 
-  if (!(parsedOrigin.protocol in ValidProtocol || isException(parsedOrigin))) {
+  if (
+    !(
+      parsedOrigin.protocol in ValidProtocol ||
+      (globalThis.__DEV__ && isHttpLocalhost(parsedOrigin))
+    )
+  ) {
     throw new Error(`Sender protocol is not ${Object.values(ValidProtocol).join(',')}`);
   }
 
