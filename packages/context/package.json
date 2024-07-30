@@ -23,10 +23,13 @@
     "@penumbra-zone/crypto-web": "^16.0.1",
     "@penumbra-zone/getters": "^12.1.0",
     "@penumbra-zone/protobuf": "^5.5.0",
-    "@penumbra-zone/query": "^19.0.0",
-    "@penumbra-zone/storage": "^18.0.0",
+    "@penumbra-zone/query": "^20.0.0",
+    "@penumbra-zone/services": "^23.0.0",
+    "@penumbra-zone/storage": "^19.0.0",
+    "@penumbra-zone/transport-chrome": "^7.0.0",
+    "@penumbra-zone/transport-dom": "^7.4.0",
     "@penumbra-zone/types": "^17.0.1",
-    "@penumbra-zone/wasm": "^20.1.0",
+    "@penumbra-zone/wasm": "^20.2.0",
     "exponential-backoff": "^3.1.1"
   }
 }
