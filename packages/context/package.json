@@ -20,16 +20,16 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-labs/registry": "11.0.0",
     "@penumbra-zone/bech32m": "^6.1.1",
-    "@penumbra-zone/crypto-web": "^17.0.0",
+    "@penumbra-zone/crypto-web": "^18.0.0",
     "@penumbra-zone/getters": "^13.0.0",
     "@penumbra-zone/protobuf": "^5.6.0",
-    "@penumbra-zone/query": "^21.0.0",
-    "@penumbra-zone/services": "^24.0.0",
-    "@penumbra-zone/storage": "^20.0.0",
-    "@penumbra-zone/transport-chrome": "^7.0.0",
+    "@penumbra-zone/query": "^22.0.0",
+    "@penumbra-zone/services": "^25.0.0",
+    "@penumbra-zone/storage": "^21.0.0",
+    "@penumbra-zone/transport-chrome": "^7.0.1",
     "@penumbra-zone/transport-dom": "^7.4.0",
-    "@penumbra-zone/types": "^18.0.0",
-    "@penumbra-zone/wasm": "^21.0.0",
+    "@penumbra-zone/types": "^18.1.0",
+    "@penumbra-zone/wasm": "^22.0.0",
     "exponential-backoff": "^3.1.1"
   }
 }
