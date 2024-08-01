@@ -37,9 +37,7 @@ export const praxRequestListener: ChromeExtensionMessageEventListener = (
     },
     e => {
       // something is wrong. user may not have seen a popup
-      if (globalThis.__DEV__) {
-        console.warn('Connection request listener failed:', e);
-      }
+      console.warn('Connection request listener failed:', e);
 
       if (e instanceof ConnectError && e.code === Code.Unauthenticated) {
         // the website should instruct the user to log in
