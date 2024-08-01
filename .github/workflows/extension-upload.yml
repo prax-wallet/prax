@@ -36,7 +36,7 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo build --cache-dir=.turbo
+      - run: NODE_ENV=production pnpm turbo build --cache-dir=.turbo
 
       # Outputs beta.zip and prod.zip
       - name: Zip extension versions
