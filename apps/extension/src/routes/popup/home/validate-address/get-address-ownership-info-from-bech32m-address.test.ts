@@ -1,6 +1,6 @@
 import { Mock, describe, expect, it, vi } from 'vitest';
 import { getAddressOwnershipInfoFromBech32mAddress } from './get-address-ownership-info-from-bech32m-address';
-import { IndexByAddressResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { IndexByAddressResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 const ADDRESS =
   'penumbra10t0nt9nfd40sgs7v6gshyescnh4j650vc255uwxmmtkt7fzmelmfxn0sqxjvde7xkhv3zr63sa2pja62kmyscw386lluvvkf2y3a8flf69mhg29zkyg7tg9ey8spqp5mw5uhl6';

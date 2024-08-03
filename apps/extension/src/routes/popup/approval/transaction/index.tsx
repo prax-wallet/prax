@@ -2,7 +2,7 @@ import { MetadataFetchFn, TransactionViewComponent } from '@repo/ui/components/u
 import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
 import { ApproveDeny } from '../approve-deny';

@@ -1,10 +1,7 @@
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { walletIdFromBech32m } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { LocalStorageState, LocalStorageVersion } from './types';
-import {
-  FullViewingKey,
-  WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export interface Migration {
   wallets: {

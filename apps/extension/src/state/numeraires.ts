@@ -2,7 +2,7 @@ import { LocalStorageState } from '../storage/types';
 import { AllSlices, SliceCreator } from '.';
 import { ExtensionStorage } from '../storage/base';
 import { Stringified } from '@penumbra-zone/types/jsonified';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export interface NumerairesSlice {
   selectedNumeraires: Stringified<AssetId>[];
