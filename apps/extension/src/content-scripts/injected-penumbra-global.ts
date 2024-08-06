@@ -41,6 +41,10 @@ const disconnectMessage = {
   [PRAX]: PraxConnection.Disconnect,
 } satisfies PraxMessage<PraxConnection.Disconnect>;
 
+const initMessage = {
+  [PRAX]: PraxConnection.Init,
+} satisfies PraxMessage<PraxConnection.Init>;
+
 class PraxInjection {
   private static singleton?: PraxInjection = new PraxInjection();
 
@@ -67,6 +71,8 @@ class PraxInjection {
     if (PraxInjection.singleton) {
       return PraxInjection.singleton;
     }
+    void this.listenPortMessage();
+    window.postMessage(initMessage, '/');
   }
 
   private setConnected(port: MessagePort) {
@@ -92,10 +98,18 @@ class PraxInjection {
 
   private postConnectRequest() {
     console.log('postConnectRequest');
+    const attempt = this.listenPortMessage();
+    window.postMessage(connectMessage, '/', []);
+    return attempt;
+  }
+
+  private listenPortMessage() {
+    console.log('listenPortMessage');
     this.setPending();
 
     const connection = Promise.withResolvers<MessagePort>();
     const listener = (msg: MessageEvent<unknown>) => {
+      console.log('listener', msg);
       if (msg.origin === window.origin) {
         if (isPraxPortMessageEvent(msg)) {
           connection.resolve(unwrapPraxMessageEvent(msg));
@@ -112,9 +126,6 @@ class PraxInjection {
       .catch(() => this.setDisconnected())
       .finally(() => window.removeEventListener('message', listener));
     window.addEventListener('message', listener);
-
-    console.log('window.postMessage', connectMessage);
-    window.postMessage(connectMessage, '/', []);
 
     return connection.promise;
   }
@@ -146,6 +157,7 @@ class PraxInjection {
 }
 
 // inject prax
+console.log('inject prax', window[PenumbraSymbol]);
 Object.defineProperty(
   window[PenumbraSymbol] ??
     // create the global if not present
@@ -157,3 +169,5 @@ Object.defineProperty(
     enumerable: true,
   },
 );
+
+console.log('injected prax', PenumbraSymbol, window[PenumbraSymbol]);

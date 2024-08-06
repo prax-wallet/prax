@@ -218,7 +218,7 @@ importers:
         version: 18.3.0
       '@types/webpack':
         specifier: ^5.28.5
-        version: 5.28.5(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4(webpack@5.93.0))
+        version: 5.28.5(@swc/core@1.7.3)(webpack-cli@5.1.4(webpack@5.93.0))
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.40)
@@ -227,31 +227,31 @@ importers:
         version: 6.0.3
       copy-webpack-plugin:
         specifier: ^12.0.2
-        version: 12.0.2(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 12.0.2(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
       css-loader:
         specifier: ^7.1.1
-        version: 7.1.2(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 7.1.2(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
       html-webpack-plugin:
         specifier: ^5.6.0
-        version: 5.6.0(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 5.6.0(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
       postcss:
         specifier: ^8.4.38
         version: 8.4.40
       postcss-loader:
         specifier: ^8.1.1
-        version: 8.1.1(postcss@8.4.40)(typescript@5.5.4)(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 8.1.1(postcss@8.4.40)(typescript@5.5.4)(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
       style-loader:
         specifier: ^4.0.0
-        version: 4.0.0(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 4.0.0(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.7(ts-node@10.9.2(@swc/core@1.7.3)(@types/node@20.14.13)(typescript@5.5.4))
       ts-loader:
         specifier: ^9.5.1
-        version: 9.5.1(typescript@5.5.4)(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 9.5.1(typescript@5.5.4)(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.7.3)(@types/node@20.14.13)(typescript@5.5.4)
@@ -260,7 +260,7 @@ importers:
         version: 8.2.0(body-parser@1.20.2)(express@4.19.2)
       webpack:
         specifier: ^5.91.0
-        version: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+        version: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
       webpack-cli:
         specifier: ^5.1.4
         version: 5.1.4(webpack@5.93.0)
@@ -269,7 +269,7 @@ importers:
         version: 5.10.0
       webpack-watch-external-files-plugin:
         specifier: ^3.1.0
-        version: 3.1.0(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 3.1.0(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
 
   apps/prax-marketing-site:
     dependencies:
@@ -312,7 +312,7 @@ importers:
     dependencies:
       '@buf/cosmos_ibc.bufbuild_es':
         specifier: 1.10.0-20230913112312-7ab44ae956a0.1
-        version: 1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0)
+        version: 1.10.0-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.10.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es':
         specifier: 1.10.0-20240804013626-f19a2ee01838.1
         version: 1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0)
@@ -330,13 +330,13 @@ importers:
         version: 20.0.0(@penumbra-zone/types@19.0.0(eiwzxrnbgqc6umuckvv7nbyyjy))
       '@penumbra-zone/getters':
         specifier: ^14.0.0
-        version: 14.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.1)(@penumbra-zone/protobuf@5.7.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240804013626-f19a2ee01838.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@bufbuild/protobuf@1.10.0))
+        version: 14.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.1)(@penumbra-zone/protobuf@5.7.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240804013626-f19a2ee01838.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/perspective':
         specifier: ^24.0.0
-        version: 24.0.0(5co63lcvwzn7tvnfehlccodyji)
+        version: 24.0.0(wbvvzgqxxv24jzyfekllrx7uqq)
       '@penumbra-zone/protobuf':
         specifier: ^5.7.0
-        version: 5.7.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240804013626-f19a2ee01838.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@bufbuild/protobuf@1.10.0)
+        version: 5.7.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240804013626-f19a2ee01838.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/query':
         specifier: ^25.0.0
         version: 25.0.0(ys6klfhcbewkdbkltn5s5fqzty)
@@ -354,10 +354,10 @@ importers:
         version: 7.5.0
       '@penumbra-zone/types':
         specifier: ^19.0.0
-        version: 19.0.0(kkhsewpjy3egvqla6mm5jaxjcu)
+        version: 19.0.0(eiwzxrnbgqc6umuckvv7nbyyjy)
       '@penumbra-zone/wasm':
         specifier: ^24.0.0
-        version: 24.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.1)(@penumbra-zone/protobuf@5.7.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240804013626-f19a2ee01838.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@19.0.0(kkhsewpjy3egvqla6mm5jaxjcu))
+        version: 24.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.1)(@penumbra-zone/protobuf@5.7.0(@buf/cosmos_ibc.bufbuild_es@1.10.0-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.10.0))(@buf/cosmos_ibc.connectrpc_es@1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240804013626-f19a2ee01838.1(@bufbuild/protobuf@1.10.0))(@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240804013626-f19a2ee01838.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)))(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@19.0.0(eiwzxrnbgqc6umuckvv7nbyyjy))
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
@@ -13439,11 +13439,11 @@ snapshots:
 
   '@types/uuid@9.0.8': {}
 
-  '@types/webpack@5.28.5(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4(webpack@5.93.0))':
+  '@types/webpack@5.28.5(@swc/core@1.7.3)(webpack-cli@5.1.4(webpack@5.93.0))':
     dependencies:
       '@types/node': 20.14.13
       tapable: 2.2.1
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
@@ -13699,19 +13699,19 @@ snapshots:
       '@webassemblyjs/ast': 1.12.1
       '@xtuc/long': 4.2.2
 
-  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))':
+  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.93.0)
 
-  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))':
+  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.93.0)
 
-  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))':
+  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.93.0)
 
   '@xtuc/ieee754@1.2.0': {}
@@ -14671,7 +14671,7 @@ snapshots:
     dependencies:
       toggle-selection: 1.0.6
 
-  copy-webpack-plugin@12.0.2(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  copy-webpack-plugin@12.0.2(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)):
     dependencies:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
@@ -14679,7 +14679,7 @@ snapshots:
       normalize-path: 3.0.0
       schema-utils: 4.2.0
       serialize-javascript: 6.0.2
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
 
   core-js-compat@3.37.1:
     dependencies:
@@ -14773,7 +14773,7 @@ snapshots:
       semver: 6.3.1
       webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.21.5)
 
-  css-loader@7.1.2(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  css-loader@7.1.2(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)):
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.40)
       postcss: 8.4.40
@@ -14784,7 +14784,7 @@ snapshots:
       postcss-value-parser: 4.2.0
       semver: 7.6.3
     optionalDependencies:
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
 
   css-select@4.3.0:
     dependencies:
@@ -16441,7 +16441,7 @@ snapshots:
 
   html-tags@3.3.1: {}
 
-  html-webpack-plugin@5.6.0(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  html-webpack-plugin@5.6.0(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)):
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -16449,7 +16449,7 @@ snapshots:
       pretty-error: 4.0.0
       tapable: 2.2.1
     optionalDependencies:
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
 
   htmlparser2@6.1.0:
     dependencies:
@@ -18136,14 +18136,14 @@ snapshots:
       semver: 7.6.3
       webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.21.5)
 
-  postcss-loader@8.1.1(postcss@8.4.40)(typescript@5.5.4)(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  postcss-loader@8.1.1(postcss@8.4.40)(typescript@5.5.4)(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)):
     dependencies:
       cosmiconfig: 9.0.0(typescript@5.5.4)
       jiti: 1.21.6
       postcss: 8.4.40
       semver: 7.6.3
     optionalDependencies:
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
     transitivePeerDependencies:
       - typescript
 
@@ -19294,9 +19294,9 @@ snapshots:
       schema-utils: 2.7.1
       webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.21.5)
 
-  style-loader@4.0.0(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  style-loader@4.0.0(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)):
     dependencies:
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
 
   styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
@@ -19502,18 +19502,6 @@ snapshots:
 
   term-size@2.2.1: {}
 
-  terser-webpack-plugin@5.3.10(@swc/core@1.7.3)(esbuild@0.20.2)(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)):
-    dependencies:
-      '@jridgewell/trace-mapping': 0.3.25
-      jest-worker: 27.5.1
-      schema-utils: 3.3.0
-      serialize-javascript: 6.0.2
-      terser: 5.31.3
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
-    optionalDependencies:
-      '@swc/core': 1.7.3
-      esbuild: 0.20.2
-
   terser-webpack-plugin@5.3.10(@swc/core@1.7.3)(esbuild@0.21.5)(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.21.5)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
@@ -19525,6 +19513,17 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.7.3
       esbuild: 0.21.5
+
+  terser-webpack-plugin@5.3.10(@swc/core@1.7.3)(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)):
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.25
+      jest-worker: 27.5.1
+      schema-utils: 3.3.0
+      serialize-javascript: 6.0.2
+      terser: 5.31.3
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
+    optionalDependencies:
+      '@swc/core': 1.7.3
 
   terser@5.31.3:
     dependencies:
@@ -19626,7 +19625,7 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-loader@9.5.1(typescript@5.5.4)(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  ts-loader@9.5.1(typescript@5.5.4)(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.17.1
@@ -19634,7 +19633,7 @@ snapshots:
       semver: 7.6.3
       source-map: 0.7.4
       typescript: 5.5.4
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
 
   ts-node@10.9.2(@swc/core@1.7.3)(@types/node@20.14.13)(typescript@5.5.4):
     dependencies:
@@ -20134,9 +20133,9 @@ snapshots:
   webpack-cli@5.1.4(webpack@5.93.0):
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
-      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
-      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
-      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
+      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
+      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
+      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack@5.93.0))(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
       colorette: 2.0.20
       commander: 10.0.1
       cross-spawn: 7.0.3
@@ -20145,7 +20144,7 @@ snapshots:
       import-local: 3.2.0
       interpret: 3.1.1
       rechoir: 0.8.0
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
       webpack-merge: 5.10.0
 
   webpack-merge@5.10.0:
@@ -20158,44 +20157,11 @@ snapshots:
 
   webpack-virtual-modules@0.6.2: {}
 
-  webpack-watch-external-files-plugin@3.1.0(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  webpack-watch-external-files-plugin@3.1.0(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)):
     dependencies:
       glob: 10.4.2
       path: 0.12.7
-      webpack: 5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4)
-
-  webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4):
-    dependencies:
-      '@types/eslint-scope': 3.7.7
-      '@types/estree': 1.0.5
-      '@webassemblyjs/ast': 1.12.1
-      '@webassemblyjs/wasm-edit': 1.12.1
-      '@webassemblyjs/wasm-parser': 1.12.1
-      acorn: 8.12.1
-      acorn-import-attributes: 1.9.5(acorn@8.12.1)
-      browserslist: 4.23.2
-      chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.17.1
-      es-module-lexer: 1.5.4
-      eslint-scope: 5.1.1
-      events: 3.3.0
-      glob-to-regexp: 0.4.1
-      graceful-fs: 4.2.11
-      json-parse-even-better-errors: 2.3.1
-      loader-runner: 4.3.0
-      mime-types: 2.1.35
-      neo-async: 2.6.2
-      schema-utils: 3.3.0
-      tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(@swc/core@1.7.3)(esbuild@0.20.2)(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.20.2)(webpack-cli@5.1.4))
-      watchpack: 2.4.1
-      webpack-sources: 3.2.3
-    optionalDependencies:
-      webpack-cli: 5.1.4(webpack@5.93.0)
-    transitivePeerDependencies:
-      - '@swc/core'
-      - esbuild
-      - uglify-js
+      webpack: 5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4)
 
   webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.21.5):
     dependencies:
@@ -20223,6 +20189,39 @@ snapshots:
       terser-webpack-plugin: 5.3.10(@swc/core@1.7.3)(esbuild@0.21.5)(webpack@5.93.0(@swc/core@1.7.3)(esbuild@0.21.5))
       watchpack: 2.4.1
       webpack-sources: 3.2.3
+    transitivePeerDependencies:
+      - '@swc/core'
+      - esbuild
+      - uglify-js
+
+  webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4):
+    dependencies:
+      '@types/eslint-scope': 3.7.7
+      '@types/estree': 1.0.5
+      '@webassemblyjs/ast': 1.12.1
+      '@webassemblyjs/wasm-edit': 1.12.1
+      '@webassemblyjs/wasm-parser': 1.12.1
+      acorn: 8.12.1
+      acorn-import-attributes: 1.9.5(acorn@8.12.1)
+      browserslist: 4.23.2
+      chrome-trace-event: 1.0.4
+      enhanced-resolve: 5.17.1
+      es-module-lexer: 1.5.4
+      eslint-scope: 5.1.1
+      events: 3.3.0
+      glob-to-regexp: 0.4.1
+      graceful-fs: 4.2.11
+      json-parse-even-better-errors: 2.3.1
+      loader-runner: 4.3.0
+      mime-types: 2.1.35
+      neo-async: 2.6.2
+      schema-utils: 3.3.0
+      tapable: 2.2.1
+      terser-webpack-plugin: 5.3.10(@swc/core@1.7.3)(webpack@5.93.0(@swc/core@1.7.3)(webpack-cli@5.1.4))
+      watchpack: 2.4.1
+      webpack-sources: 3.2.3
+    optionalDependencies:
+      webpack-cli: 5.1.4(webpack@5.93.0)
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild

@@ -17,7 +17,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*"],
-      "js": ["injected-page-listener.js"],
+      "js": ["injected-connection-port.js", "injected-request-listener.js"],
       "run_at": "document_start"
     },
     {

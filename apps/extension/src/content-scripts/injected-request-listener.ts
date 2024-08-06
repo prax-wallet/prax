@@ -5,11 +5,6 @@ import {
 } from './message-event';
 import { PraxConnection } from '../message/prax';
 import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
-import { CRSessionClient } from '@penumbra-zone/transport-chrome/session-client';
-
-const endMessage = { [PRAX]: PraxConnection.End } satisfies PraxMessage<PraxConnection.End>;
-
-let port: MessagePort | undefined;
 
 const failureMessage = (failure?: unknown): PraxMessage<PenumbraRequestFailure> => {
   if (typeof failure === 'string' && failure in PenumbraRequestFailure) {
@@ -33,23 +28,12 @@ window.addEventListener('message', (ev: MessageEvent<unknown>) => {
           console.error(e);
           failure = PenumbraRequestFailure.NotHandled;
         }
-
-        if (failure == null) {
-          port ??= CRSessionClient.init(PRAX);
-          window.postMessage({ [PRAX]: port } satisfies PraxMessage<MessagePort>, '/', [port]);
-        }
       } else if (isPraxDisconnectMessageEvent(ev)) {
-        port = undefined;
-
         try {
           failure = await chrome.runtime.sendMessage(PraxConnection.Disconnect);
         } catch (e) {
           console.error(e);
           failure = PenumbraRequestFailure.NotHandled;
-        }
-
-        if (failure == null) {
-          window.postMessage(endMessage, '/');
         }
       }
 

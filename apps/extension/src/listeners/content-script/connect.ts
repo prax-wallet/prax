@@ -23,6 +23,12 @@ export const praxConnectListener: ChromeExtensionMessageEventListener = (
     status => {
       // origin is already known, or popup choice was made
       if (status === UserChoice.Approved) {
+        void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.Init, {
+          // init only the specific document
+          frameId: validSender.frameId,
+          documentId: validSender.documentId,
+        });
+        // handler is done
         respond(/* no failure */);
       } else {
         // any other choice is a denial

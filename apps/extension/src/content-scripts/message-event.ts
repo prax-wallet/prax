@@ -23,6 +23,11 @@ export const isPraxConnectMessageEvent = (
 ): ev is PraxMessageEvent<PraxConnection.Connect> =>
   isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.Connect;
 
+export const isPraxInitMessageEvent = (
+  ev: MessageEvent<unknown>,
+): ev is PraxMessageEvent<PraxConnection.Init> =>
+  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.Init;
+
 export const isPraxEndMessageEvent = (
   ev: MessageEvent<unknown>,
 ): ev is PraxMessageEvent<PraxConnection.End> =>
