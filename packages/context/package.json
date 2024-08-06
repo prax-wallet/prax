@@ -22,6 +22,7 @@
     "@penumbra-zone/bech32m": "^6.1.1",
     "@penumbra-zone/crypto-web": "^20.0.0",
     "@penumbra-zone/getters": "^14.0.0",
+    "@penumbra-zone/perspective": "^24.0.0",
     "@penumbra-zone/protobuf": "^5.7.0",
     "@penumbra-zone/query": "^25.0.0",
     "@penumbra-zone/services": "^28.0.0",

@@ -59,3 +59,6 @@ lerna-debug.log*
 # pack outputs
 penumbra-zone-*.tgz
 packages/*/package
+
+apps/extension/chromium-profile
+

@@ -1,4 +1,4 @@
-import { PenumbraRequestFailure } from '@penumbra-zone/client';
+import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 import { PraxConnection } from '../message/prax';
 
 // @ts-expect-error - ts can't understand the injected string
@@ -18,12 +18,17 @@ export const isPraxPortMessageEvent = (
 ): ev is PraxMessageEvent<MessagePort> =>
   isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) instanceof MessagePort;
 
-export const isPraxRequestMessageEvent = (
+export const isPraxConnectMessageEvent = (
   ev: MessageEvent<unknown>,
-): ev is PraxMessageEvent<PraxConnection.Request> =>
-  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.Request;
+): ev is PraxMessageEvent<PraxConnection.Connect> =>
+  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.Connect;
 
 export const isPraxEndMessageEvent = (
+  ev: MessageEvent<unknown>,
+): ev is PraxMessageEvent<PraxConnection.End> =>
+  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.End;
+
+export const isPraxDisconnectMessageEvent = (
   ev: MessageEvent<unknown>,
 ): ev is PraxMessageEvent<PraxConnection.Disconnect> =>
   isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.Disconnect;

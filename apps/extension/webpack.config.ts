@@ -113,10 +113,8 @@ export default ({
   ['WEBPACK_WATCH']?: boolean;
 }): webpack.Configuration => ({
   entry: {
-    'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
+    'injected-page-listener': path.join(injectDir, 'injected-page-listener.ts'),
     'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
-    'injected-request-listener': path.join(injectDir, 'injected-request-listener.ts'),
-    'injected-disconnect-listener': path.join(injectDir, 'injected-disconnect-listener.ts'),
     'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
     'page-root': path.join(entryDir, 'page-root.tsx'),
     'popup-root': path.join(entryDir, 'popup-root.tsx'),
@@ -131,9 +129,8 @@ export default ({
     splitChunks: {
       chunks: chunk => {
         const filesNotToChunk = [
-          'injected-connection-port',
+          'injected-page-listener',
           'injected-penumbra-global',
-          'injected-request-listner',
           'service-worker',
           'wasm-build-action',
         ];
