@@ -20,6 +20,19 @@
     "peer",
     "prod"
   ],
+  "semverGroups": [
+    {
+      "range": "",
+      "dependencies": [
+        "@buf/*",
+        "@bufbuild/**",
+        "@connectrpc/**"
+      ],
+      "packages": [
+        "**"
+      ]
+    }
+  ],
   "versionGroups": [
     {
       "label": "Use workspace protocol for local packages",
