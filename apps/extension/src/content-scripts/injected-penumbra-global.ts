@@ -75,40 +75,34 @@ class PraxInjection {
   }
 
   private setConnected(port: MessagePort) {
-    console.log('setConnected', port);
     this.port = port;
     this.presentState = PenumbraState.Connected;
     this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private setDisconnected() {
-    console.log('setDisconnected');
     this.port = undefined;
     this.presentState = PenumbraState.Disconnected;
     this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private setPending() {
-    console.log('setPending');
     this.port = undefined;
     this.presentState = PenumbraState.Pending;
     this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private postConnectRequest() {
-    console.log('postConnectRequest');
     const attempt = this.listenPortMessage();
     window.postMessage(connectMessage, '/', []);
     return attempt;
   }
 
   private listenPortMessage() {
-    console.log('listenPortMessage');
     this.setPending();
 
     const connection = Promise.withResolvers<MessagePort>();
     const listener = (msg: MessageEvent<unknown>) => {
-      console.log('listener', msg);
       if (msg.origin === window.origin) {
         if (isPraxPortMessageEvent(msg)) {
           connection.resolve(unwrapPraxMessageEvent(msg));
@@ -130,7 +124,6 @@ class PraxInjection {
   }
 
   private postDisconnectRequest() {
-    console.log('postDisconnectRequest');
     const disconnection = Promise.withResolvers<void>();
     const listener = (msg: MessageEvent<unknown>) => {
       if (msg.origin === window.origin) {
@@ -148,7 +141,6 @@ class PraxInjection {
     void disconnection.promise.finally(() => window.removeEventListener('message', listener));
     window.addEventListener('message', listener);
 
-    console.log('window.postMessage', disconnectMessage);
     window.postMessage(disconnectMessage, '/');
 
     return disconnection.promise;
@@ -156,7 +148,6 @@ class PraxInjection {
 }
 
 // inject prax
-console.log('inject prax', window[PenumbraSymbol]);
 Object.defineProperty(
   window[PenumbraSymbol] ??
     // create the global if not present
@@ -168,5 +159,3 @@ Object.defineProperty(
     enumerable: true,
   },
 );
-
-console.log('injected prax', PenumbraSymbol, window[PenumbraSymbol]);
