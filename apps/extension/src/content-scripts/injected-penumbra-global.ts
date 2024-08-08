@@ -19,8 +19,7 @@
 
 import '@penumbra-zone/client/global';
 
-import { PenumbraStateEvent } from '@penumbra-zone/client/event';
-import { type PenumbraProvider } from '@penumbra-zone/client/provider';
+import { createPenumbraStateEvent, type PenumbraProvider } from '@penumbra-zone/client';
 import { PenumbraState } from '@penumbra-zone/client/state';
 import { PenumbraSymbol } from '@penumbra-zone/client/symbol';
 
@@ -79,21 +78,21 @@ class PraxInjection {
     console.log('setConnected', port);
     this.port = port;
     this.presentState = PenumbraState.Connected;
-    this.stateEvents.dispatchEvent(new PenumbraStateEvent(PRAX_ORIGIN, this.presentState));
+    this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private setDisconnected() {
     console.log('setDisconnected');
     this.port = undefined;
     this.presentState = PenumbraState.Disconnected;
-    this.stateEvents.dispatchEvent(new PenumbraStateEvent(PRAX_ORIGIN, this.presentState));
+    this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private setPending() {
     console.log('setPending');
     this.port = undefined;
     this.presentState = PenumbraState.Pending;
-    this.stateEvents.dispatchEvent(new PenumbraStateEvent(PRAX_ORIGIN, this.presentState));
+    this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private postConnectRequest() {
