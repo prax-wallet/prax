@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Prax wallet",
-  "version": "11.13.0",
+  "version": "11.13.1",
   "description": "For use in interacting with the Penumbra blockchain",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvnucOJi878TGZYnTNTrvXd9krAcpSDR/EgHcQhvjNZrKfRRsKA9O0DnbyM492c3hiicYPevRPLPoKsLgVghGDYPr8eNO7ee165keD5XLxq0wpWu14gHEPdQSRNZPLeawLp4s/rUwtzMcxhVIUYYaa2xZri4Tqx9wpR7YR1mQTAL8UsdjyitrnzTM20ciKXq1pd82MU74YaZzrcQCOmcjJtjHFdMEAYme+LuZuEugAgef9RiE/8kLQ6T7W9feYfQOky1OPjBkflpRXRgW6cACdl+MeYhKJCOHijglFsPOXX6AvnoJSeAJYRXOMVJi0ejLKEcrLpaeHgh+1WXUvc5G4wIDAQAB",
   "minimum_chrome_version": "119",
@@ -16,7 +16,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*/*", "http://localhost:*/*"],
+      "matches": ["https://*/*"],
       "js": [
         "injected-connection-port.js",
         "injected-disconnect-listener.js",
@@ -25,7 +25,7 @@
       "run_at": "document_start"
     },
     {
-      "matches": ["https://*/*", "http://localhost:*/*"],
+      "matches": ["https://*/*"],
       "js": ["injected-penumbra-global.js"],
       "run_at": "document_start",
       "world": "MAIN"
