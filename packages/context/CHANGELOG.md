@@ -1,5 +1,11 @@
 # @penumbra-zone/services
 
+## 4.6.0
+
+### Minor Changes
+
+- 3210b84: Update packages
+
 ## 4.5.0
 
 ### Minor Changes
