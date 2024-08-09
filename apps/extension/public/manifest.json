@@ -17,11 +17,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*"],
-      "js": [
-        "injected-connection-port.js",
-        "injected-disconnect-listener.js",
-        "injected-request-listener.js"
-      ],
+      "js": ["injected-connection-port.js", "injected-request-listener.js"],
       "run_at": "document_start"
     },
     {

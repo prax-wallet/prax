@@ -21,6 +21,11 @@ export const praxDisconnectListener: ChromeExtensionMessageEventListener = (
       throw new Error('Sender does not possess approval');
     }
     revokeOrigin(validSender.origin);
+    void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.End, {
+      // end only the specific document
+      frameId: validSender.frameId,
+      documentId: validSender.documentId,
+    });
   });
   respond();
 

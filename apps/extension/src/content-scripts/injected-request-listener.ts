@@ -1,24 +1,45 @@
-import { PraxMessage, isPraxRequestMessageEvent } from './message-event';
+import {
+  PraxMessage,
+  isPraxConnectMessageEvent,
+  isPraxDisconnectMessageEvent,
+} from './message-event';
 import { PraxConnection } from '../message/prax';
-import { PenumbraRequestFailure } from '@penumbra-zone/client';
+import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 
-const handleRequest = (ev: MessageEvent<unknown>) => {
-  if (ev.origin === window.origin && isPraxRequestMessageEvent(ev)) {
-    void (async () => {
-      window.removeEventListener('message', handleRequest);
-
-      // any response to this message only indicates failure.  success is
-      // resolved upon successful connection, and those messages are handled by
-      // the script in injected-connection-port
-      const failure = await chrome.runtime.sendMessage<
-        PraxConnection,
-        undefined | PenumbraRequestFailure
-      >(PraxConnection.Request);
-      if (failure) {
-        window.postMessage({ [PRAX]: failure } satisfies PraxMessage<PenumbraRequestFailure>, '/');
-      }
-    })();
+const failureMessage = (failure?: unknown): PraxMessage<PenumbraRequestFailure> => {
+  if (typeof failure === 'string' && failure in PenumbraRequestFailure) {
+    return { [PRAX]: failure };
+  } else {
+    console.error('Bad response', failure);
+    return { [PRAX]: PenumbraRequestFailure.BadResponse };
   }
 };
 
-window.addEventListener('message', handleRequest);
+window.addEventListener('message', (ev: MessageEvent<unknown>) => {
+  if (ev.origin === window.origin) {
+    void (async () => {
+      // any response to these messages only indicates failure.
+      let failure: PenumbraRequestFailure | undefined;
+
+      if (isPraxConnectMessageEvent(ev)) {
+        try {
+          failure = await chrome.runtime.sendMessage(PraxConnection.Connect);
+        } catch (e) {
+          console.error(e);
+          failure = PenumbraRequestFailure.NotHandled;
+        }
+      } else if (isPraxDisconnectMessageEvent(ev)) {
+        try {
+          failure = await chrome.runtime.sendMessage(PraxConnection.Disconnect);
+        } catch (e) {
+          console.error(e);
+          failure = PenumbraRequestFailure.NotHandled;
+        }
+      }
+
+      if (failure != null) {
+        window.postMessage(failureMessage(failure), '/');
+      }
+    })();
+  }
+});

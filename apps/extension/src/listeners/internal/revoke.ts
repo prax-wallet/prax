@@ -1,4 +1,4 @@
-import { isPraxRevoke } from '../../message/prax';
+import { isPraxRevoke } from '../../message/revoke';
 import { revokeOrigin } from '../../senders/revoke';
 import { isInternalSender } from '../../senders/internal';
 
