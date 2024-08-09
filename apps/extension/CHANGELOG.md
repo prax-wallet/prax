@@ -1,5 +1,16 @@
 # chrome-extension
 
+## 11.14.0
+
+### Minor Changes
+
+- 3210b84: Update packages
+
+### Patch Changes
+
+- Updated dependencies [3210b84]
+  - @repo/context@4.6.0
+
 ## 11.13.0
 
 ### Minor Changes
