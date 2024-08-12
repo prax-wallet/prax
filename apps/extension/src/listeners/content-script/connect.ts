@@ -6,13 +6,13 @@ import { approveSender } from '../../senders/approve';
 import { assertValidSender } from '../../senders/validate';
 
 // listen for page requests for approval
-export const praxRequestListener: ChromeExtensionMessageEventListener = (
+export const praxConnectListener: ChromeExtensionMessageEventListener = (
   req,
   unvalidatedSender,
   // this handler responds with nothing, or an enumerated failure reason
   respond: (failure?: PenumbraRequestFailure) => void,
 ) => {
-  if (req !== PraxConnection.Request) {
+  if (req !== PraxConnection.Connect) {
     // boolean return in handlers signals intent to respond
     return false;
   }
@@ -29,7 +29,7 @@ export const praxRequestListener: ChromeExtensionMessageEventListener = (
           documentId: validSender.documentId,
         });
         // handler is done
-        respond();
+        respond(/* no failure */);
       } else {
         // any other choice is a denial
         respond(PenumbraRequestFailure.Denied);

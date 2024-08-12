@@ -116,7 +116,6 @@ export default ({
     'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
     'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
     'injected-request-listener': path.join(injectDir, 'injected-request-listener.ts'),
-    'injected-disconnect-listener': path.join(injectDir, 'injected-disconnect-listener.ts'),
     'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
     'page-root': path.join(entryDir, 'page-root.tsx'),
     'popup-root': path.join(entryDir, 'popup-root.tsx'),

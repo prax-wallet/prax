@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 5.4.0
+
+### Minor Changes
+
+- ebef3a5: Update to v0.80.0 packages
+
 ## 5.3.0
 
 ### Minor Changes

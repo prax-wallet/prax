@@ -1,6 +1,6 @@
 {
   "name": "@repo/context",
-  "version": "4.4.0",
+  "version": "4.6.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
@@ -15,18 +15,22 @@
     ".": "./src/index.ts"
   },
   "peerDependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20240703151202-d7191877c701.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
-    "@bufbuild/protobuf": "^1.10.0",
+    "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20230913112312-7ab44ae956a0.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
+    "@bufbuild/protobuf": "1.10.0",
     "@penumbra-labs/registry": "11.0.0",
     "@penumbra-zone/bech32m": "^6.1.1",
-    "@penumbra-zone/crypto-web": "^16.0.1",
-    "@penumbra-zone/getters": "^12.1.0",
-    "@penumbra-zone/protobuf": "^5.5.0",
-    "@penumbra-zone/query": "^19.0.0",
-    "@penumbra-zone/storage": "^18.0.0",
-    "@penumbra-zone/types": "^17.0.1",
-    "@penumbra-zone/wasm": "^20.1.0",
+    "@penumbra-zone/crypto-web": "^20.0.0",
+    "@penumbra-zone/getters": "^14.0.0",
+    "@penumbra-zone/perspective": "^24.0.0",
+    "@penumbra-zone/protobuf": "^5.7.0",
+    "@penumbra-zone/query": "^25.0.0",
+    "@penumbra-zone/services": "^28.0.0",
+    "@penumbra-zone/storage": "^24.0.0",
+    "@penumbra-zone/transport-chrome": "^8.0.1",
+    "@penumbra-zone/transport-dom": "^7.5.0",
+    "@penumbra-zone/types": "^19.0.0",
+    "@penumbra-zone/wasm": "^24.0.0",
     "exponential-backoff": "^3.1.1"
   }
 }
