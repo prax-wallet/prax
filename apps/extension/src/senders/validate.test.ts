@@ -99,6 +99,36 @@ describe('assertValidSender', () => {
     expect(() => assertValidSender(invalidProtocol)).toThrow('Sender protocol is not');
   });
 
+  it(`throws if sender protocol is http and origin is localhost but not in dev mode`, () => {
+    globalThis.__DEV__ = true;
+    const localhostSender: chrome.runtime.MessageSender = {
+      ...mockValid,
+      origin: 'http://localhost:8000',
+      url: 'http://localhost:8000/index.html',
+    };
+    expect(assertValidSender(localhostSender)).toMatchObject(localhostSender);
+  });
+
+  it(`succeeds if sender protocol is http and origin is localhost in dev mode`, () => {
+    globalThis.__DEV__ = true;
+    const localhostSender: chrome.runtime.MessageSender = {
+      ...mockValid,
+      origin: 'http://localhost',
+      url: 'http://localhost/index.html',
+    };
+    expect(assertValidSender(localhostSender)).toMatchObject(localhostSender);
+  });
+
+  it(`succeeds if sender protocol is http and origin is localhost with port specified in dev mode`, () => {
+    globalThis.__DEV__ = true;
+    const localhostSender: chrome.runtime.MessageSender = {
+      ...mockValid,
+      origin: 'http://localhost:8000',
+      url: 'http://localhost:8000/index.html',
+    };
+    expect(assertValidSender(localhostSender)).toMatchObject(localhostSender);
+  });
+
   it('throws if sender has no URL', () => {
     const urlless: chrome.runtime.MessageSender = {
       ...mockValid,
