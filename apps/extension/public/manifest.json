@@ -16,12 +16,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*/*"],
+      "matches": ["https://*/*", "http://localhost/*"],
       "js": ["injected-connection-port.js", "injected-request-listener.js"],
       "run_at": "document_start"
     },
     {
-      "matches": ["https://*/*"],
+      "matches": ["https://*/*", "http://localhost/*"],
       "js": ["injected-penumbra-global.js"],
       "run_at": "document_start",
       "world": "MAIN"
