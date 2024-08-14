@@ -5,10 +5,7 @@ import { BlockSync } from './block-sync';
 import { localExtStorage } from '../../../storage/local';
 import { getActiveWallet } from '../../../state/wallets';
 import { needsLogin, needsOnboard } from '../popup-needs';
-import {
-  Address,
-  FullViewingKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { Wallet } from '@penumbra-zone/types/wallet';
 import { ValidateAddress } from './validate-address';

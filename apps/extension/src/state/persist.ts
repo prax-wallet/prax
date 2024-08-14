@@ -7,7 +7,7 @@ import { LocalStorageState } from '../storage/types';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { StorageItem } from '../storage/base';
 import { walletsFromJson } from '@penumbra-zone/types/wallet';
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 
 export type Middleware = <
   T,

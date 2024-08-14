@@ -1,4 +1,4 @@
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { PopupType, TxApproval } from './message/popup';

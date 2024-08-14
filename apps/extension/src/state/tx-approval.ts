@@ -1,10 +1,10 @@
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { AllSlices, SliceCreator } from '.';
 import { PopupType, TxApproval } from '../message/popup';
 import {
   TransactionPlan,
   TransactionView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { viewClient } from '../clients';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
@@ -18,12 +18,9 @@ import {
   asReceiverTransactionView,
 } from '@penumbra-zone/perspective/translators/transaction-view';
 import { localExtStorage } from '../storage/local';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export interface TxApprovalSlice {
   /**

@@ -1,4 +1,4 @@
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { localExtStorage } from '../storage/local';
 

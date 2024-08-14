@@ -3,10 +3,7 @@ import { MockStorageArea } from './mock';
 import { ExtensionStorage } from './base';
 import { v1Migrations } from './v1-migration';
 import { localDefaults } from './local';
-import {
-  FullViewingKey,
-  WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { walletIdFromBech32m } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { LocalStorageState, LocalStorageVersion } from './types';

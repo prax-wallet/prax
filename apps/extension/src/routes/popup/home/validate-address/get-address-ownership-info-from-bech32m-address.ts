@@ -1,6 +1,6 @@
 import { AddressOwnershipInfo } from './types';
 import { viewClient } from '../../../../clients';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const getAddressOwnershipInfoFromBech32mAddress = async (
   bech32mAddress: string,
