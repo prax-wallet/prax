@@ -7,6 +7,8 @@ import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import genesisBlock from '../../../apps/extension/public/genesis.json';
+import { JsonObject } from '@bufbuild/protobuf';
 
 export interface ServicesConfig {
   readonly chainId: string;
@@ -33,7 +35,9 @@ export class Services implements ServicesInterface {
         throw e;
       });
     }
-    void this.walletServicesPromise.then(({ blockProcessor }) => blockProcessor.sync());
+    void this.walletServicesPromise.then(({ blockProcessor }) =>
+      blockProcessor.sync(genesisBlock as JsonObject),
+    );
     return this.walletServicesPromise;
   }
 
