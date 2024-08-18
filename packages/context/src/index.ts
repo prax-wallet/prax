@@ -35,11 +35,15 @@ export class Services implements ServicesInterface {
         throw e;
       });
     }
-    void this.walletServicesPromise.then(({ blockProcessor }) =>
-      this.config.chainId === 'penumbra-1'
-        ? blockProcessor.sync(genesisBlock as JsonObject)
-        : blockProcessor.sync(),
-    );
+    void this.walletServicesPromise
+      .then(({ blockProcessor }) =>
+        this.config.chainId === 'penumbra-1'
+          ? blockProcessor.sync(genesisBlock as JsonObject)
+          : blockProcessor.sync(),
+      )
+      .catch((error: unknown) => {
+        console.error('Error during sync:', error);
+      });
     return this.walletServicesPromise;
   }
 
