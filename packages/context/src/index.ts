@@ -7,7 +7,7 @@ import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import genesisBlock from 'chrome-extension/public/genesis.json';
+import genesisBlock from 'shared-asset/genesis.json';
 import { JsonObject } from '@bufbuild/protobuf';
 
 export interface ServicesConfig {

@@ -1,5 +1,11 @@
 {
   "extends": "@repo/tsconfig/base.json",
   "include": ["."],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "shared-asset/*": ["../../apps/extension/public/*"]
+    }
+  }
 }

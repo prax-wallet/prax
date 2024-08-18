@@ -179,9 +179,10 @@ export default ({
     ],
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.json'],
     alias: {
       '@ui': path.resolve(__dirname, '../../packages/ui'),
+      'shared-asset': path.resolve(__dirname, 'public'),
     },
   },
   plugins: [
