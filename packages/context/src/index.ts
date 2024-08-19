@@ -15,12 +15,16 @@ export interface ServicesConfig {
   readonly walletId: WalletId;
   readonly fullViewingKey: FullViewingKey;
   readonly numeraires: AssetId[];
+  readonly walletCreationBlockHeight: number;
 }
 
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
 
-  constructor(private config: ServicesConfig) {}
+  constructor(
+    private config: ServicesConfig,
+    private isFreshWallet: boolean,
+  ) { }
 
   // If getWalletServices() is called multiple times concurrently, they'll all
   // wait for the same promise rather than each starting their own
@@ -28,13 +32,18 @@ export class Services implements ServicesInterface {
   public async getWalletServices(): Promise<WalletServices> {
     if (!this.walletServicesPromise) {
       this.walletServicesPromise = this.initializeWalletServices().catch((e: unknown) => {
-        // If promise rejected, reset promise to `undefined` so next caller can
-        // try again
+        // If promise rejected, reset promise to `undefined` so next caller can try again.
         this.walletServicesPromise = undefined;
         throw e;
       });
     }
-    void this.walletServicesPromise.then(({ blockProcessor }) => blockProcessor.sync());
+
+    void this.walletServicesPromise.then(({ blockProcessor }) =>
+      this.isFreshWallet && this.config.walletCreationBlockHeight
+        ? blockProcessor.sync(this.isFreshWallet, this.config.walletCreationBlockHeight)
+        : blockProcessor.sync(),
+    );
+
     return this.walletServicesPromise;
   }
 

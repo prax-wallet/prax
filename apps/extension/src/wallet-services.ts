@@ -16,13 +16,30 @@ export const startWalletServices = async () => {
   const grpcEndpoint = await onboardGrpcEndpoint();
   const numeraires = await localExtStorage.get('numeraires');
 
-  const services = new Services({
-    grpcEndpoint,
-    chainId: await getChainId(grpcEndpoint),
-    walletId: WalletId.fromJsonString(wallet.id),
-    fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
-    numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
-  });
+  // Retrieve the wallet flag from storage
+  const isFreshWallet = (await localExtStorage.get('isFreshWallet')) || false;
+
+  let walletCreationBlockHeight;
+
+  // Wait until walletCreationBlockHeight is set
+  while (!walletCreationBlockHeight) {
+    walletCreationBlockHeight = await localExtStorage.get('walletCreationBlockHeight');
+    if (!walletCreationBlockHeight) {
+      await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms before checking again
+    }
+  }
+
+  const services = new Services(
+    {
+      grpcEndpoint,
+      chainId: await getChainId(grpcEndpoint),
+      walletId: WalletId.fromJsonString(wallet.id),
+      fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
+      numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
+      walletCreationBlockHeight: walletCreationBlockHeight!,
+    },
+    isFreshWallet,
+  );
 
   const { blockProcessor, indexedDb } = await services.getWalletServices();
   void syncLastBlockToStorage({ indexedDb });

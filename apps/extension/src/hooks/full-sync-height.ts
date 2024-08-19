@@ -55,3 +55,14 @@ export const useSyncProgress = () => {
 
   return { latestBlockHeight, fullSyncHeight, error };
 };
+
+export const fetchBlockHeight = async (grpcEndpoint: string) => {
+  const tendermintClient = createPromiseClient(
+    TendermintProxyService,
+    createGrpcWebTransport({ baseUrl: grpcEndpoint }),
+  );
+  const blockHeight = (await tendermintClient.getStatus({}).catch(() => undefined))?.syncInfo
+    ?.latestBlockHeight;
+
+  return blockHeight ? Number(blockHeight) : undefined;
+};

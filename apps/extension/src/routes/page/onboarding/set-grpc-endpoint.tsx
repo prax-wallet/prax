@@ -3,11 +3,23 @@ import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { GrpcEndpointForm } from '../../../shared/components/grpc-endpoint-form';
+import { localExtStorage } from '../../../storage/local';
+import { fetchBlockHeight } from '../../../hooks/full-sync-height';
 
 export const SetGrpcEndpoint = () => {
   const navigate = usePageNav();
 
-  const onSuccess = (): void => {
+  const onSuccess = async (): Promise<void> => {
+    const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+
+    if (grpcEndpoint) {
+      // Fetch the block height after setting the gRPC endpoint
+      const walletCreationBlockHeight = await fetchBlockHeight(grpcEndpoint);
+
+      // Store the wallet creation block height in local storage
+      await localExtStorage.set('walletCreationBlockHeight', walletCreationBlockHeight!);
+    }
+
     navigate(PagePath.SET_DEFAULT_FRONTEND);
   };
 
