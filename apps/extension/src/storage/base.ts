@@ -73,7 +73,7 @@ export class ExtensionStorage<T> {
       const migrationFn = this.migrations[key]?.[item.version];
       if (migrationFn) {
         // Update the value to latest schema
-        const transformedVal = migrationFn(item.value) as T[K];
+        const transformedVal = (await migrationFn(item.value)) as T[K];
         await this.set(key, transformedVal);
         return transformedVal;
       } else {

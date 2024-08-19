@@ -1,5 +1,5 @@
 import { ExtensionStorage } from './base';
-import { v1Migrations } from './v1-migration';
+import { localMigrations } from './local-migrations';
 import { LocalStorageState, LocalStorageVersion } from './types';
 
 export const localDefaults: Required<LocalStorageState> = {
@@ -17,6 +17,6 @@ export const localDefaults: Required<LocalStorageState> = {
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   chrome.storage.local,
   localDefaults,
-  LocalStorageVersion.V2,
-  v1Migrations,
+  LocalStorageVersion.V3,
+  localMigrations,
 );

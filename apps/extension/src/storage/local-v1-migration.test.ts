@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { MockStorageArea } from './mock';
 import { ExtensionStorage } from './base';
-import { v1Migrations } from './v1-migration';
+import { localMigrations } from './local-migrations';
 import { localDefaults } from './local';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { walletIdFromBech32m } from '@penumbra-zone/bech32m/penumbrawalletid';
@@ -29,7 +29,7 @@ describe('migrate walletId and fullViewingKey from bech32 string to json stringi
       storageArea,
       localDefaults,
       LocalStorageVersion.V2,
-      v1Migrations,
+      localMigrations,
     );
   });
 

@@ -9,6 +9,7 @@ interface MockV1State {
     label: string;
     encryptedSeedPhrase: string;
   }[];
+  frontend: string | undefined;
 }
 
 interface MockV2State {
@@ -19,6 +20,7 @@ interface MockV2State {
     encryptedSeedPhrase: string; // stayed the same
     viewKey: string; // added new field
   }[];
+  frontend: string; // async set value
 }
 
 interface MockV3State {
@@ -29,6 +31,7 @@ interface MockV3State {
     viewKey: string; // added new field
     spendKey: string; // added new field
   }[];
+  frontend: string; // stayed the same
 }
 
 enum MockStorageVersion {
@@ -44,6 +47,9 @@ interface Migrations {
   accounts: {
     [MockStorageVersion.V1]: (old: MockV1State['accounts']) => MockV3State['accounts'];
     [MockStorageVersion.V2]: (old: MockV2State['accounts']) => MockV3State['accounts'];
+  };
+  frontend: {
+    [MockStorageVersion.V1]: (old: MockV1State['frontend']) => Promise<MockV3State['frontend']>;
   };
 }
 
@@ -69,6 +75,12 @@ const migrations: Migrations = {
         };
       }),
   },
+  frontend: {
+    [MockStorageVersion.V1]: async old => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      return !old ? 'https://pfrontend.void' : old;
+    },
+  },
 };
 
 describe('Storage migrations', () => {
@@ -84,6 +96,7 @@ describe('Storage migrations', () => {
         network: '',
         seedPhrase: '',
         accounts: [],
+        frontend: undefined,
       },
       MockStorageVersion.V1,
       migrations,
@@ -94,6 +107,7 @@ describe('Storage migrations', () => {
         network: '',
         accounts: [],
         seedPhrase: [],
+        frontend: 'http://default.com',
       },
       MockStorageVersion.V2,
       migrations,
@@ -104,6 +118,7 @@ describe('Storage migrations', () => {
         network: '',
         accounts: [],
         seedPhrase: [],
+        frontend: 'http://default.com',
       },
       MockStorageVersion.V3,
       migrations,
@@ -168,6 +183,20 @@ describe('Storage migrations', () => {
       expect(resultA).toEqual(resultB);
       expect(resultB).toEqual(resultC);
       expect(resultA).toEqual(resultC);
+    });
+
+    describe('async migrations', () => {
+      test('work with override', async () => {
+        await v1ExtStorage.set('frontend', undefined);
+        const result = await v3ExtStorage.get('frontend');
+        expect(result).toEqual('https://pfrontend.void');
+      });
+
+      test('work bringing over old', async () => {
+        await v1ExtStorage.set('frontend', 'http://mysite.com');
+        const result = await v3ExtStorage.get('frontend');
+        expect(result).toEqual('http://mysite.com');
+      });
     });
   });
 });
