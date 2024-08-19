@@ -15,6 +15,7 @@ on:
 
 env:
   DO_NOT_TRACK: 1
+  NODE_ENV: production
 
 jobs:
   publish:
@@ -40,7 +41,7 @@ jobs:
 
       # Outputs beta.zip and prod.zip
       - name: Zip extension versions
-        run: pnpm dlx tsx apps/extension/src/utils/zip-extension.ts
+        run: pnpm tsx apps/extension/src/utils/zip-extension.ts
 
       - name: Upload beta version
         uses: penumbra-zone/chrome-extension-upload@v1
