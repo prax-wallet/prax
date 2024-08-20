@@ -24,6 +24,7 @@ type Version = string;
 export type MigrationMap<OldState, NewState> = {
   [K in keyof OldState & keyof NewState]?: (
     prev: OldState[K],
+    get: <K extends keyof NewState>(key: K) => Promise<NewState[K]>,
   ) => NewState[K] | Promise<NewState[K]>;
 };
 
@@ -44,6 +45,16 @@ export class ExtensionStorage<T> {
   ) {}
 
   async get<K extends keyof T>(key: K): Promise<T[K]> {
+    return await this.getRaw({ key });
+  }
+
+  private async getRaw<K extends keyof T>({
+    key,
+    skipMigration = false,
+  }: {
+    key: K;
+    skipMigration?: boolean;
+  }): Promise<T[K]> {
     const result = (await this.storage.get(String(key))) as
       | Record<K, StorageItem<T[K]>>
       | EmptyObject;
@@ -51,7 +62,11 @@ export class ExtensionStorage<T> {
     if (isEmptyObj(result)) {
       return this.defaults[key];
     } else {
-      return await this.migrateIfNeeded(key, result[key]);
+      if (skipMigration) {
+        return result[key].value;
+      } else {
+        return await this.migrateIfNeeded(key, result[key]);
+      }
     }
   }
 
@@ -85,7 +100,9 @@ export class ExtensionStorage<T> {
     const migrationFn = this.migrations[item.version]?.[key];
 
     // Perform migration if available for version & field
-    const value = migrationFn ? ((await migrationFn(item.value)) as T[K]) : item.value;
+    const value = migrationFn
+      ? await migrationFn(item.value, key => this.getRaw({ key, skipMigration: true }))
+      : item.value;
     const nextVersion = this.versionSteps[item.version];
 
     // If the next step is not defined (bad config) or is the current version, save and exit

@@ -53,7 +53,6 @@ export const mockSessionExtStorage = () =>
     new MockStorageArea(),
     sessionDefaults,
     MockStorageVersion.V1,
-    {},
   );
 
 export const mockLocalExtStorage = () =>
@@ -61,5 +60,4 @@ export const mockLocalExtStorage = () =>
     new MockStorageArea(),
     localDefaults,
     MockStorageVersion.V1,
-    {},
   );

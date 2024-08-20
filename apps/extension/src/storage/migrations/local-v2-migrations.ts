@@ -1,40 +1,35 @@
 import { LocalStorageState } from '../types';
 import { MigrationMap } from '../base';
-import { localExtStorage } from '../local';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
 
 export const localV2Migrations: MigrationMap<LocalStorageState, LocalStorageState> = {
-  grpcEndpoint: async old => {
-    return await validateOrReplaceEndpoint(old);
+  grpcEndpoint: async (old, get) => {
+    return await validateOrReplaceEndpoint(old, get);
   },
   frontendUrl: old => {
     return validateOrReplaceFrontend(old);
   },
 };
 
-const isConnectedToMainnet = async (): Promise<boolean> => {
-  const chainId = await localExtStorage
-    .get('params')
-    .then(jsonParams =>
-      jsonParams ? AppParameters.fromJsonString(jsonParams).chainId : undefined,
-    );
-
-  // Ensure they are connected to mainnet
-  return chainId === 'penumbra-1';
-};
-
 // A one-time migration to suggested grpcUrls
 // Context: https://github.com/prax-wallet/web/issues/166
-const validateOrReplaceEndpoint = async (oldEndpoint?: string): Promise<string | undefined> => {
+const validateOrReplaceEndpoint = async (
+  oldEndpoint: string | undefined,
+  get: <K extends keyof LocalStorageState>(key: K) => Promise<LocalStorageState[K]>,
+): Promise<string | undefined> => {
   // If they don't have one set, it's likely they didn't go through onboarding
   if (!oldEndpoint) {
     return oldEndpoint;
   }
 
-  const connectedToMainnet = await isConnectedToMainnet();
-  if (!connectedToMainnet) {
+  // Ensure they are connected to mainnet
+  const chainId = await get('params').then(jsonParams =>
+    jsonParams ? AppParameters.fromJsonString(jsonParams).chainId : undefined,
+  );
+
+  if (chainId !== 'penumbra-1') {
     return oldEndpoint;
   }
 

@@ -7,7 +7,6 @@ global.chrome = {
     onChanged: {
       addListener: vi.fn(),
     },
-
     local: {
       set: vi.fn(),
       get: vi.fn().mockReturnValue({}),
