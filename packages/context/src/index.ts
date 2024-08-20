@@ -20,7 +20,7 @@ export interface ServicesConfig {
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
 
-  constructor(private config: ServicesConfig) { }
+  constructor(private config: ServicesConfig) {}
 
   // If getWalletServices() is called multiple times concurrently, they'll all
   // wait for the same promise rather than each starting their own

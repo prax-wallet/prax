@@ -1,10 +1,12 @@
 import { describe, test, expect } from 'vitest';
-import Penumbra1Genesis from './penumbra-1-genesis.json';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
-import { JsonValue } from '@bufbuild/protobuf';
+import { join } from 'path';
+import { readFileSync } from 'fs';
 
 describe('Genesis block type conversion', () => {
   test('penumbra-1 deserializes correctly', () => {
-    expect(() => CompactBlock.fromJson(Penumbra1Genesis as JsonValue)).not.toThrow();
+    const filePath = join(__dirname, '../../../apps/extension/public/penumbra-1-genesis.bin');
+    const genesisBinaryData = readFileSync(filePath);
+    expect(() => CompactBlock.fromBinary(new Uint8Array(genesisBinaryData))).not.toThrow();
   });
 });
