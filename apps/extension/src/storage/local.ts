@@ -1,6 +1,7 @@
 import { ExtensionStorage } from './base';
 import { LocalStorageState, LocalStorageVersion } from './types';
-import { localV1Migrations } from './local-v1-migrations';
+import { localV1Migrations } from './migrations/local-v1-migrations';
+import { localV2Migrations } from './migrations/local-v2-migrations';
 
 export const localDefaults: Required<LocalStorageState> = {
   wallets: [],
@@ -21,6 +22,7 @@ const migrationSteps: Record<LocalStorageVersion, LocalStorageVersion | undefine
 
 const localMigrations = {
   [LocalStorageVersion.V1]: localV1Migrations,
+  [LocalStorageVersion.V2]: localV2Migrations,
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.
