@@ -7,9 +7,7 @@ import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import Penumbra1Genesis from './penumbra-1-genesis.json';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
-import { JsonObject } from '@bufbuild/protobuf';
 
 export interface ServicesConfig {
   readonly chainId: string;
@@ -22,7 +20,7 @@ export interface ServicesConfig {
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
 
-  constructor(private config: ServicesConfig) {}
+  constructor(private config: ServicesConfig) { }
 
   // If getWalletServices() is called multiple times concurrently, they'll all
   // wait for the same promise rather than each starting their own
@@ -106,10 +104,14 @@ export class Services implements ServicesInterface {
       idbConstants: indexedDb.constants(),
     });
 
+    // Dynamically fetch binary file for genesis compact block
+    const response = await fetch('./penumbra-1-genesis.bin');
+    const genesisBinaryData = await response.arrayBuffer();
+
     const blockProcessor = new BlockProcessor({
       genesisBlock:
         chainId === 'penumbra-1'
-          ? CompactBlock.fromJson(Penumbra1Genesis as JsonObject)
+          ? CompactBlock.fromBinary(new Uint8Array(genesisBinaryData))
           : undefined,
       viewServer,
       querier,
