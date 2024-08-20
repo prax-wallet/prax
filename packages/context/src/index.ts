@@ -9,7 +9,7 @@ import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import Penumbra1Genesis from './penumbra-1-genesis.json';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
-import { JsonValue } from '@bufbuild/protobuf';
+import { JsonObject } from '@bufbuild/protobuf';
 
 export interface ServicesConfig {
   readonly chainId: string;
@@ -108,7 +108,9 @@ export class Services implements ServicesInterface {
 
     const blockProcessor = new BlockProcessor({
       genesisBlock:
-        chainId === 'penumbra-1' ? CompactBlock.fromJson(Penumbra1Genesis as JsonValue) : undefined,
+        chainId === 'penumbra-1'
+          ? CompactBlock.fromJson(Penumbra1Genesis as JsonObject)
+          : undefined,
       viewServer,
       querier,
       indexedDb,
