@@ -32,13 +32,15 @@ export type MigrationMap<OldState, NewState> = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Migrations<T> = Partial<Record<Version, MigrationMap<any, T>>>;
 
+export type VersionSteps = Record<Version, Version>;
+
 export class ExtensionStorage<T> {
   constructor(
     private storage: IStorage,
     private defaults: T,
     private version: Version,
     private migrations: Migrations<T> = {},
-    private migrationSteps: Record<Version, Version | undefined> = {},
+    private versionSteps: VersionSteps = {},
   ) {}
 
   async get<K extends keyof T>(key: K): Promise<T[K]> {
@@ -75,28 +77,27 @@ export class ExtensionStorage<T> {
   }
 
   private async migrateIfNeeded<K extends keyof T>(key: K, item: StorageItem<T[K]>): Promise<T[K]> {
-    // Version diff means a migration may be necessary
+    // The same version means no migrations are necessary
     if (item.version === this.version) {
       return item.value;
     }
 
     const migrationFn = this.migrations[item.version]?.[key];
-    // If there's no migration for this field, bump the version and return the current value
-    if (!migrationFn) {
-      await this.set(key, item.value);
-      return item.value;
-    }
 
-    // Perform migration
-    const transformedVal = (await migrationFn(item.value)) as T[K];
-    const nextMigrationStep = this.migrationSteps[item.version];
+    // Perform migration if available for version & field
+    const value = migrationFn ? ((await migrationFn(item.value)) as T[K]) : item.value;
+    const nextVersion = this.versionSteps[item.version];
+
+    // If the next step is not defined (bad config) or is the current version, save and exit
+    if (!nextVersion || nextVersion === this.version) {
+      await this.set(key, value);
+      return value;
+    }
 
     // Recurse further if there are more migration steps
     return await this.migrateIfNeeded(key, {
-      // If there are no further steps, the version of "" will result in an undefined
-      // and the `if (!migrationFn)` line will save the state at the current version
-      version: nextMigrationStep ?? '',
-      value: transformedVal,
+      version: nextVersion,
+      value,
     });
   }
 }

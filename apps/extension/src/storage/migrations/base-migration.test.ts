@@ -11,6 +11,7 @@ interface MockV1State {
   }[];
   frontend: string | undefined;
   grpcUrl: string | undefined;
+  fullSyncHeight: number;
 }
 
 interface MockV2State {
@@ -23,6 +24,7 @@ interface MockV2State {
   }[];
   frontend: string; // async set value
   grpcUrl: { url: string }; // changes data structure
+  fullSyncHeight: number; // Stays the same
 }
 
 interface MockV3State {
@@ -35,6 +37,7 @@ interface MockV3State {
   }[];
   frontend: string; // stayed the same
   grpcUrl: { url: string; image: string }; // adds new field within data structure
+  fullSyncHeight: bigint; // only in v3 does it change type
 }
 
 enum MockStorageVersion {
@@ -79,6 +82,9 @@ const v3Migrations: Migrations<MockV3State> = {
     grpcUrl: (old: MockV2State['grpcUrl']): MockV3State['grpcUrl'] => {
       return { url: old.url, image: `${old.url}/image` };
     },
+    fullSyncHeight: (old: MockV2State['fullSyncHeight']): MockV3State['fullSyncHeight'] => {
+      return BigInt(old);
+    },
   },
 };
 
@@ -97,6 +103,7 @@ describe('Storage migrations', () => {
         accounts: [],
         frontend: undefined,
         grpcUrl: undefined,
+        fullSyncHeight: 0,
       },
       MockStorageVersion.V1,
     );
@@ -108,6 +115,7 @@ describe('Storage migrations', () => {
         seedPhrase: [],
         frontend: 'http://default.com',
         grpcUrl: { url: '' },
+        fullSyncHeight: 0,
       },
       MockStorageVersion.V2,
       v2Migrations,
@@ -123,6 +131,7 @@ describe('Storage migrations', () => {
         seedPhrase: [],
         frontend: 'http://default.com',
         grpcUrl: { url: '', image: '' },
+        fullSyncHeight: 0n,
       },
       MockStorageVersion.V3,
       v3Migrations,
@@ -163,6 +172,12 @@ describe('Storage migrations', () => {
       await v1ExtStorage.set('grpcUrl', 'grpc.void.test');
       const result = await v3ExtStorage.get('grpcUrl');
       expect(result).toEqual({ url: 'grpc.void.test', image: 'grpc.void.test/image' });
+    });
+
+    test('get works when there is a migration only at the last step', async () => {
+      await v1ExtStorage.set('fullSyncHeight', 123);
+      const result = await v3ExtStorage.get('fullSyncHeight');
+      expect(typeof result).toEqual('bigint');
     });
 
     test('get works with removed/added fields', async () => {

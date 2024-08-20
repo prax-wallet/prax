@@ -1,4 +1,4 @@
-import { ExtensionStorage } from './base';
+import { ExtensionStorage, VersionSteps } from './base';
 import { LocalStorageState, LocalStorageVersion } from './types';
 import { localV1Migrations } from './migrations/local-v1-migrations';
 import { localV2Migrations } from './migrations/local-v2-migrations';
@@ -14,10 +14,9 @@ export const localDefaults: Required<LocalStorageState> = {
   numeraires: [],
 };
 
-const migrationSteps: Record<LocalStorageVersion, LocalStorageVersion | undefined> = {
+const versionSteps: VersionSteps = {
   [LocalStorageVersion.V1]: LocalStorageVersion.V2,
   [LocalStorageVersion.V2]: LocalStorageVersion.V3,
-  [LocalStorageVersion.V3]: undefined,
 };
 
 const localMigrations = {
@@ -31,5 +30,5 @@ export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   localDefaults,
   LocalStorageVersion.V3,
   localMigrations,
-  migrationSteps,
+  versionSteps,
 );
