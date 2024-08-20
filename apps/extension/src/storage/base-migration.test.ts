@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { MockStorageArea } from './mock';
-import { ExtensionStorage } from './base';
+import { ExtensionStorage, Migrations } from './base';
 
 interface MockV1State {
   network: string;
@@ -10,6 +10,7 @@ interface MockV1State {
     encryptedSeedPhrase: string;
   }[];
   frontend: string | undefined;
+  grpcUrl: string | undefined;
 }
 
 interface MockV2State {
@@ -21,6 +22,7 @@ interface MockV2State {
     viewKey: string; // added new field
   }[];
   frontend: string; // async set value
+  grpcUrl: { url: string }; // changes data structure
 }
 
 interface MockV3State {
@@ -32,6 +34,7 @@ interface MockV3State {
     spendKey: string; // added new field
   }[];
   frontend: string; // stayed the same
+  grpcUrl: { url: string; image: string }; // adds new field within data structure
 }
 
 enum MockStorageVersion {
@@ -40,25 +43,10 @@ enum MockStorageVersion {
   V3 = 'V3',
 }
 
-interface Migrations {
-  seedPhrase: {
-    [MockStorageVersion.V1]: (old: MockV1State['seedPhrase']) => MockV3State['seedPhrase'];
-  };
-  accounts: {
-    [MockStorageVersion.V1]: (old: MockV1State['accounts']) => MockV3State['accounts'];
-    [MockStorageVersion.V2]: (old: MockV2State['accounts']) => MockV3State['accounts'];
-  };
-  frontend: {
-    [MockStorageVersion.V1]: (old: MockV1State['frontend']) => Promise<MockV3State['frontend']>;
-  };
-}
-
-const migrations: Migrations = {
-  seedPhrase: {
-    [MockStorageVersion.V1]: old => old.split(' '),
-  },
-  accounts: {
-    [MockStorageVersion.V1]: old =>
+const v2Migrations: Migrations<MockV2State> = {
+  [MockStorageVersion.V1]: {
+    seedPhrase: (old: MockV1State['seedPhrase']): MockV2State['seedPhrase'] => old.split(' '),
+    accounts: (old: MockV1State['accounts']): MockV2State['accounts'] =>
       old.map(({ encryptedSeedPhrase }) => {
         return {
           encryptedSeedPhrase,
@@ -66,19 +54,30 @@ const migrations: Migrations = {
           spendKey: 'v3-view-key-xyz',
         };
       }),
-    [MockStorageVersion.V2]: old =>
-      old.map(({ encryptedSeedPhrase, viewKey }) => {
+    frontend: async (old: MockV1State['frontend']): Promise<MockV2State['frontend']> => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      return !old ? 'https://pfrontend.void' : old;
+    },
+    grpcUrl: (old: MockV1State['grpcUrl']): MockV2State['grpcUrl'] => {
+      return { url: old ?? '' };
+    },
+  },
+};
+
+const v3Migrations: Migrations<MockV3State> = {
+  ...v2Migrations,
+  [MockStorageVersion.V2]: {
+    accounts: (old: MockV2State['accounts']): MockV3State['accounts'] => {
+      return old.map(({ encryptedSeedPhrase, viewKey }) => {
         return {
           encryptedSeedPhrase,
           viewKey,
           spendKey: 'v3-spend-key-xyz',
         };
-      }),
-  },
-  frontend: {
-    [MockStorageVersion.V1]: async old => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-      return !old ? 'https://pfrontend.void' : old;
+      });
+    },
+    grpcUrl: (old: MockV2State['grpcUrl']): MockV3State['grpcUrl'] => {
+      return { url: old.url, image: `${old.url}/image` };
     },
   },
 };
@@ -97,9 +96,9 @@ describe('Storage migrations', () => {
         seedPhrase: '',
         accounts: [],
         frontend: undefined,
+        grpcUrl: undefined,
       },
       MockStorageVersion.V1,
-      migrations,
     );
     v2ExtStorage = new ExtensionStorage<MockV2State>(
       storageArea,
@@ -108,9 +107,13 @@ describe('Storage migrations', () => {
         accounts: [],
         seedPhrase: [],
         frontend: 'http://default.com',
+        grpcUrl: { url: '' },
       },
       MockStorageVersion.V2,
-      migrations,
+      v2Migrations,
+      {
+        [MockStorageVersion.V1]: MockStorageVersion.V2,
+      },
     );
     v3ExtStorage = new ExtensionStorage<MockV3State>(
       storageArea,
@@ -119,16 +122,21 @@ describe('Storage migrations', () => {
         accounts: [],
         seedPhrase: [],
         frontend: 'http://default.com',
+        grpcUrl: { url: '', image: '' },
       },
       MockStorageVersion.V3,
-      migrations,
+      v3Migrations,
+      {
+        [MockStorageVersion.V1]: MockStorageVersion.V2,
+        [MockStorageVersion.V2]: MockStorageVersion.V3,
+      },
     );
   });
 
   describe('no migrations available', () => {
     test('defaults work fine', async () => {
-      const result = await v3ExtStorage.get('network');
-      expect(result).toBe('');
+      const result = await v3ExtStorage.get('frontend');
+      expect(result).toBe('http://default.com');
     });
 
     test('gets work fine', async () => {
@@ -140,14 +148,21 @@ describe('Storage migrations', () => {
 
   describe('migrations available', () => {
     test('defaults work fine', async () => {
+      await v1ExtStorage.get('seedPhrase');
       const result = await v3ExtStorage.get('seedPhrase');
       expect(result).toStrictEqual([]);
     });
 
-    test('get works on a changed data structure', async () => {
+    test('get works on a changed data structure (one migration step over two versions)', async () => {
       await v1ExtStorage.set('seedPhrase', 'cat dog mouse horse');
       const result = await v3ExtStorage.get('seedPhrase');
       expect(result).toEqual(['cat', 'dog', 'mouse', 'horse']);
+    });
+
+    test('get works on a changed data structure (two migration steps over two versions)', async () => {
+      await v1ExtStorage.set('grpcUrl', 'grpc.void.test');
+      const result = await v3ExtStorage.get('grpcUrl');
+      expect(result).toEqual({ url: 'grpc.void.test', image: 'grpc.void.test/image' });
     });
 
     test('get works with removed/added fields', async () => {
@@ -157,7 +172,7 @@ describe('Storage migrations', () => {
         {
           encryptedSeedPhrase: '12345',
           viewKey: 'v3-view-key-abc',
-          spendKey: 'v3-view-key-xyz',
+          spendKey: 'v3-spend-key-xyz',
         },
       ]);
 

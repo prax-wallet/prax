@@ -47,4 +47,4 @@ If your persisted state changes in a breaking way, it's important to write a mig
   }
 ```
 
-3. See [apps/extension/src/storage/migration.test.ts](../apps/extension/src/storage/migration.test.ts) for an example. Make sure you add types to your migration function!
+3. See [apps/extension/src/storage/migration.test.ts](../apps/extension/src/storage/base-migration.test.ts) for an example. Make sure you add types to your migration function!

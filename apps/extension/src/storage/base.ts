@@ -20,19 +20,25 @@ export interface StorageItem<T> {
 }
 
 type Version = string;
+
+export type MigrationMap<OldState, NewState> = {
+  [K in keyof OldState & keyof NewState]?: (
+    prev: OldState[K],
+  ) => NewState[K] | Promise<NewState[K]>;
+};
+
 // It is quite difficult writing a generic that covers all migration function kinds.
 // Therefore, the writer of the migration should ensure it is typesafe when they define it.
-// See `migration.test.ts` for an example.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Migration = Record<Version, (a: any) => any>;
-type Migrations<K extends string | number | symbol> = Partial<Record<K, Migration>>;
+export type Migrations<T> = Partial<Record<Version, MigrationMap<any, T>>>;
 
 export class ExtensionStorage<T> {
   constructor(
     private storage: IStorage,
     private defaults: T,
     private version: Version,
-    private migrations: Migrations<keyof T>,
+    private migrations: Migrations<T> = {},
+    private migrationSteps: Record<Version, Version | undefined> = {},
   ) {}
 
   async get<K extends keyof T>(key: K): Promise<T[K]> {
@@ -69,18 +75,28 @@ export class ExtensionStorage<T> {
   }
 
   private async migrateIfNeeded<K extends keyof T>(key: K, item: StorageItem<T[K]>): Promise<T[K]> {
-    if (item.version !== this.version) {
-      const migrationFn = this.migrations[key]?.[item.version];
-      if (migrationFn) {
-        // Update the value to latest schema
-        const transformedVal = (await migrationFn(item.value)) as T[K];
-        await this.set(key, transformedVal);
-        return transformedVal;
-      } else {
-        // If there's no migration function, handle it appropriately, possibly by just returning the current value
-        return item.value;
-      }
+    // Version diff means a migration may be necessary
+    if (item.version === this.version) {
+      return item.value;
     }
-    return item.value;
+
+    const migrationFn = this.migrations[item.version]?.[key];
+    // If there's no migration for this field, bump the version and return the current value
+    if (!migrationFn) {
+      await this.set(key, item.value);
+      return item.value;
+    }
+
+    // Perform migration
+    const transformedVal = (await migrationFn(item.value)) as T[K];
+    const nextMigrationStep = this.migrationSteps[item.version];
+
+    // Recurse further if there are more migration steps
+    return await this.migrateIfNeeded(key, {
+      // If there are no further steps, the version of "" will result in an undefined
+      // and the `if (!migrationFn)` line will save the state at the current version
+      version: nextMigrationStep ?? '',
+      value: transformedVal,
+    });
   }
 }

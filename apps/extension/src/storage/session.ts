@@ -18,5 +18,4 @@ export const sessionExtStorage = new ExtensionStorage<SessionStorageState>(
   chrome.storage.session,
   sessionDefaults,
   SessionStorageVersion.V1,
-  {},
 );
