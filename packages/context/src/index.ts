@@ -7,6 +7,7 @@ import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
 
 export interface ServicesConfig {
   readonly chainId: string;
@@ -103,7 +104,15 @@ export class Services implements ServicesInterface {
       idbConstants: indexedDb.constants(),
     });
 
+    // Dynamically fetch binary file for genesis compact block
+    const response = await fetch('./penumbra-1-genesis.bin');
+    const genesisBinaryData = await response.arrayBuffer();
+
     const blockProcessor = new BlockProcessor({
+      genesisBlock:
+        chainId === 'penumbra-1'
+          ? CompactBlock.fromBinary(new Uint8Array(genesisBinaryData))
+          : undefined,
       viewServer,
       querier,
       indexedDb,
