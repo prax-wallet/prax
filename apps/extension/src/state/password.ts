@@ -16,7 +16,7 @@ export interface PasswordSlice {
 
 export const createPasswordSlice =
   (
-    session: ExtensionStorage<Partial<SessionStorageState>>,
+    session: ExtensionStorage<SessionStorageState>,
     local: ExtensionStorage<LocalStorageState>,
   ): SliceCreator<PasswordSlice> =>
   set => {

@@ -36,6 +36,8 @@ export type Migrations<T> = Partial<Record<Version, MigrationMap<any, T>>>;
 export type VersionSteps = Record<Version, Version>;
 
 export class ExtensionStorage<T> {
+  private migrationLocks: Record<string, Promise<T[keyof T]>> = {};
+
   constructor(
     private storage: IStorage,
     private defaults: T,
@@ -97,9 +99,27 @@ export class ExtensionStorage<T> {
       return item.value;
     }
 
-    const migrationFn = this.migrations[item.version]?.[key];
+    // Check for an ongoing migration, if exists, return the result of that
+    const ongoingMigration = this.migrationLocks[String(key)] as Promise<T[K]> | undefined;
+    if (ongoingMigration) {
+      return ongoingMigration;
+    }
 
-    // Perform migration if available for version & field
+    // Store the promise in the lock map. Ensures multiple callers don't run migrations multiple times.
+    const migrationPromise = this.migrateField(key, item);
+    this.migrationLocks[String(key)] = migrationPromise;
+
+    try {
+      return await migrationPromise;
+    } finally {
+      // Release the lock once migration is complete
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete this.migrationLocks[String(key)];
+    }
+  }
+
+  private async migrateField<K extends keyof T>(key: K, item: StorageItem<T[K]>): Promise<T[K]> {
+    const migrationFn = this.migrations[item.version]?.[key];
     const value = migrationFn
       ? await migrationFn(item.value, key => this.getRaw({ key, skipMigration: true }))
       : item.value;
@@ -112,7 +132,7 @@ export class ExtensionStorage<T> {
     }
 
     // Recurse further if there are more migration steps
-    return await this.migrateIfNeeded(key, {
+    return await this.migrateField(key, {
       version: nextVersion,
       value,
     });
