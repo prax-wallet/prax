@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { ExtensionStorage, Migrations } from '../base';
 import { MockStorageArea } from '../mock';
 
@@ -213,6 +213,32 @@ describe('Storage migrations', () => {
       expect(resultA).toEqual(resultB);
       expect(resultB).toEqual(resultC);
       expect(resultA).toEqual(resultC);
+    });
+
+    test('should handle concurrent migration accesses correctly', async () => {
+      await v1ExtStorage.set('fullSyncHeight', 123);
+
+      const migrationSpy = vi.spyOn(
+        v3Migrations[MockStorageVersion.V2] as { fullSyncHeight: () => bigint },
+        'fullSyncHeight',
+      );
+
+      // Trigger two concurrent accesses
+      const promise1 = v3ExtStorage.get('fullSyncHeight');
+      const promise2 = v3ExtStorage.get('fullSyncHeight');
+      const promise3 = v3ExtStorage.get('fullSyncHeight');
+
+      // Both should resolve to the same migrated value
+      const result1 = await promise1;
+      const result2 = await promise2;
+      const result3 = await promise3;
+
+      expect(result1).toBe(123n);
+      expect(result2).toBe(123n);
+      expect(result3).toBe(123n);
+
+      // Ensure the migration function is called only once (properly uses locks)
+      expect(migrationSpy).toHaveBeenCalledOnce();
     });
 
     describe('async migrations', () => {
