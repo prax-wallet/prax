@@ -57,6 +57,7 @@ class PraxInjection {
   private stateEvents = new EventTarget();
 
   private injection: Readonly<PenumbraProvider> = Object.freeze({
+    request: () => this.postConnectRequest().then(() => Promise.resolve()),
     connect: () => Promise.resolve(this.port ?? this.postConnectRequest()),
     disconnect: () => this.postDisconnectRequest(),
     isConnected: () => Boolean(this.port && this.presentState === PenumbraState.Connected),
