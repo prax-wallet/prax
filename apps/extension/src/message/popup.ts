@@ -13,13 +13,18 @@ export enum PopupType {
   OriginApproval = 'OriginApproval',
 }
 
+export interface PopupReadyMessage {
+  popupReady: boolean;
+  popupId: string;
+}
+
 export type PopupMessage = TxApproval | OriginApproval;
 export type PopupRequest<T extends PopupMessage = PopupMessage> = InternalRequest<T>;
 export type PopupResponse<T extends PopupMessage = PopupMessage> = InternalResponse<T>;
 
 export type OriginApproval = InternalMessage<
   PopupType.OriginApproval,
-  { origin: string; favIconUrl?: string; title?: string; lastRequest?: number },
+  { id: string; origin: string; favIconUrl?: string; title?: string; lastRequest?: number },
   null | OriginRecord
 >;
 

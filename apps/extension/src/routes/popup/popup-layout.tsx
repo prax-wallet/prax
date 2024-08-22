@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import { usePopupReady } from '../../hooks/popup-ready';
 
 /**
  * @todo: Fix the issue where the detached popup isn't sized correctly. This
@@ -11,8 +12,12 @@ import { Outlet } from 'react-router-dom';
  * routes here in `PopupLayout`, and using a different root class name for each,
  * then removing the hard-coded width from `globals.css`.
  */
-export const PopupLayout = () => (
-  <div className='flex grow flex-col bg-card-radial'>
-    <Outlet />
-  </div>
-);
+export const PopupLayout = () => {
+  usePopupReady();
+
+  return (
+    <div className='flex grow flex-col bg-card-radial'>
+      <Outlet />
+    </div>
+  );
+}

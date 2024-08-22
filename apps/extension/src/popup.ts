@@ -1,5 +1,5 @@
 import { sessionExtStorage } from './storage/session';
-import { PopupMessage, PopupRequest, PopupType } from './message/popup';
+import { PopupMessage, PopupRequest, PopupType, PopupReadyMessage } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
@@ -18,23 +18,36 @@ const isChromeResponderDroppedError = (
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
 ): Promise<M['response']> => {
-  await spawnPopup(req.type);
-  // We have to wait for React to bootup, navigate to the page, and render the components
-  await new Promise(resolve => setTimeout(resolve, 800));
-  const response = await chrome.runtime
-    .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
-    .catch((e: unknown) => {
-      if (isChromeResponderDroppedError(e)) {
-        return null;
-      } else {
-        throw e;
+  console.log('TCL: req', req);
+  const popupId = crypto.randomUUID();
+  await spawnPopup(req.type, popupId);
+
+  return new Promise((resolve, reject) => {
+    chrome.runtime.onMessage.addListener(async function handleReactReady(
+      res: PopupReadyMessage,
+    ): void {
+      console.log('TCL: res', res);
+      if (res.popupReady && res.popupId === popupId) {
+        console.log('TCL: res.popupReady', res.popupReady);
+        chrome.runtime.onMessage.removeListener(handleReactReady);
+
+        const response = await chrome.runtime
+          .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
+          .catch((e: unknown) => {
+            if (isChromeResponderDroppedError(e)) {
+              return null;
+            } else {
+              throw e;
+            }
+          });
+        if (response && 'error' in response) {
+          reject(errorFromJson(response.error, undefined, ConnectError.from(response)));
+        } else {
+          resolve(response && response.data);
+        }
       }
     });
-  if (response && 'error' in response) {
-    throw errorFromJson(response.error, undefined, ConnectError.from(response));
-  } else {
-    return response && response.data;
-  }
+  });
 };
 
 const spawnDetachedPopup = async (path: string) => {
@@ -73,8 +86,8 @@ const throwIfNeedsLogin = async () => {
   }
 };
 
-const spawnPopup = async (pop: PopupType) => {
-  const popUrl = new URL(chrome.runtime.getURL('popup.html'));
+const spawnPopup = async (pop: PopupType, popupId: string) => {
+  const popUrl = new URL(chrome.runtime.getURL(`popup.html?popupId=${popupId}`));
 
   await throwIfNeedsLogin();
 
