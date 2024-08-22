@@ -9,13 +9,15 @@ global.chrome = {
     },
     local: {
       set: vi.fn(),
-      get: vi.fn().mockReturnValue({}),
+      get: vi.fn().mockReturnValue({ wallets: [] }),
+      getBytesInUse: vi.fn().mockReturnValue(0),
       remove: vi.fn(),
     },
     session: {
       set: vi.fn(),
       get: vi.fn().mockReturnValue({}),
       remove: vi.fn(),
+      getBytesInUse: vi.fn().mockReturnValue(0),
     },
   },
   runtime: {

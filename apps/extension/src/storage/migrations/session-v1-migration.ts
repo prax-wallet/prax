@@ -2,7 +2,7 @@ import { MigrationFn } from '../base';
 import { KeyJson } from '@penumbra-zone/crypto-web/encryption';
 import { SessionStorageState } from '../session';
 
-enum V0SessionStorageVersion {
+export enum V0SessionStorageVersion {
   V1 = 'V1',
 }
 
@@ -12,7 +12,7 @@ interface StorageItem<T> {
 }
 
 // Note: previous session storage used to key a version on each individual field
-interface V0SessionStorageState {
+export interface V0SessionStorageState {
   passwordKey: StorageItem<KeyJson | undefined>;
 }
 

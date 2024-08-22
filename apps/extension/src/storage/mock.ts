@@ -2,6 +2,8 @@ import { ExtensionStorage, IStorage } from './base';
 import { localDefaults } from './local';
 import { sessionDefaults, SessionStorageState } from './session';
 import { LocalStorageState } from './types';
+import { sessionV0Migration } from './migrations/session-v1-migration';
+import { localV0Migration } from './migrations/local-v1-migration';
 
 // Helpful for testing interactions with session & local storage
 export class MockStorageArea implements IStorage {
@@ -76,12 +78,22 @@ export const mockSessionExtStorage = () =>
   new ExtensionStorage<SessionStorageState>({
     storage: new MockStorageArea(),
     defaults: sessionDefaults,
-    version: { current: 1 },
+    version: {
+      current: 1,
+      migrations: {
+        0: sessionV0Migration,
+      },
+    },
   });
 
 export const mockLocalExtStorage = () =>
   new ExtensionStorage<LocalStorageState>({
     storage: new MockStorageArea(),
     defaults: localDefaults,
-    version: { current: 1 },
+    version: {
+      current: 1,
+      migrations: {
+        0: localV0Migration,
+      },
+    },
   });
