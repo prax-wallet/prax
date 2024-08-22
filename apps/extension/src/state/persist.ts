@@ -5,7 +5,6 @@ import { produce } from 'immer';
 import { localExtStorage } from '../storage/local';
 import { LocalStorageState } from '../storage/types';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
-import { StorageItem } from '../storage/base';
 import { walletsFromJson } from '@penumbra-zone/types/wallet';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 
@@ -61,79 +60,69 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
 
 function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
   if (changes['wallets']) {
-    const wallets = changes['wallets'].newValue as
-      | StorageItem<LocalStorageState['wallets']>
-      | undefined;
+    const wallets = changes['wallets'].newValue as LocalStorageState['wallets'] | undefined;
     set(
       produce((state: AllSlices) => {
-        state.wallets.all = wallets ? walletsFromJson(wallets.value) : [];
+        state.wallets.all = wallets ? walletsFromJson(wallets) : [];
       }),
     );
   }
 
   if (changes['fullSyncHeight']) {
     const stored = changes['fullSyncHeight'].newValue as
-      | StorageItem<LocalStorageState['fullSyncHeight']>
+      | LocalStorageState['fullSyncHeight']
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.network.fullSyncHeight = stored?.value ?? 0;
+        state.network.fullSyncHeight = stored ?? 0;
       }),
     );
   }
 
   if (changes['grpcEndpoint']) {
     const stored = changes['grpcEndpoint'].newValue as
-      | StorageItem<LocalStorageState['grpcEndpoint']>
+      | LocalStorageState['grpcEndpoint']
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.network.grpcEndpoint = stored?.value ?? state.network.grpcEndpoint;
+        state.network.grpcEndpoint = stored ?? state.network.grpcEndpoint;
       }),
     );
   }
 
   if (changes['knownSites']) {
-    const stored = changes['knownSites'].newValue as
-      | StorageItem<LocalStorageState['knownSites']>
-      | undefined;
+    const stored = changes['knownSites'].newValue as LocalStorageState['knownSites'] | undefined;
     set(
       produce((state: AllSlices) => {
-        state.connectedSites.knownSites = stored?.value ?? state.connectedSites.knownSites;
+        state.connectedSites.knownSites = stored ?? state.connectedSites.knownSites;
       }),
     );
   }
 
   if (changes['frontendUrl']) {
-    const stored = changes['frontendUrl'].newValue as
-      | StorageItem<LocalStorageState['frontendUrl']>
-      | undefined;
+    const stored = changes['frontendUrl'].newValue as LocalStorageState['frontendUrl'] | undefined;
     set(
       produce((state: AllSlices) => {
-        state.defaultFrontend.url = stored?.value ?? state.defaultFrontend.url;
+        state.defaultFrontend.url = stored ?? state.defaultFrontend.url;
       }),
     );
   }
 
   if (changes['numeraires']) {
-    const stored = changes['numeraires'].newValue as
-      | StorageItem<LocalStorageState['numeraires']>
-      | undefined;
+    const stored = changes['numeraires'].newValue as LocalStorageState['numeraires'] | undefined;
     set(
       produce((state: AllSlices) => {
-        state.numeraires.selectedNumeraires = stored?.value ?? state.numeraires.selectedNumeraires;
+        state.numeraires.selectedNumeraires = stored ?? state.numeraires.selectedNumeraires;
       }),
     );
   }
 
   if (changes['params']) {
-    const stored = changes['params'].newValue as
-      | StorageItem<LocalStorageState['params']>
-      | undefined;
+    const stored = changes['params'].newValue as LocalStorageState['params'] | undefined;
     set(
       produce((state: AllSlices) => {
-        state.network.chainId = stored?.value
-          ? AppParameters.fromJsonString(stored.value).chainId
+        state.network.chainId = stored
+          ? AppParameters.fromJsonString(stored).chainId
           : state.network.chainId;
       }),
     );
@@ -143,11 +132,11 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
 function syncSession(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
   if (changes['hashedPassword']) {
     const item = changes['hashedPassword'].newValue as
-      | StorageItem<SessionStorageState['passwordKey']>
+      | SessionStorageState['passwordKey']
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.password.key = item ? item.value : undefined;
+        state.password.key = item ? item : undefined;
       }),
     );
   }

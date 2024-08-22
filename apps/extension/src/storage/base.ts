@@ -5,7 +5,8 @@ export type Listener = (
 ) => void;
 
 export interface IStorage {
-  get(key: string): Promise<Record<string, unknown>>;
+  get(keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>>;
+  getBytesInUse(keys?: string | string[] | null): Promise<number>;
   set(items: Record<string, unknown>): Promise<void>;
   remove(key: string): Promise<void>;
   onChanged: {
@@ -14,75 +15,71 @@ export interface IStorage {
   };
 }
 
-export interface StorageItem<T> {
-  version: string;
-  value: T;
+export type MigrationFn<OldState, NewState> = (prev: OldState) => NewState | Promise<NewState>;
+
+export type ExtensionStorageDefaults<T extends { dbVersion: number }> = Required<
+  Omit<T, 'dbVersion'>
+>;
+
+export interface RequiredMigrations {
+  // Explicitly require key '0' representing...
+  // It is quite difficult writing a generic that covers all migration function kinds.
+  // Therefore, the writer of the migration should ensure it is typesafe when they define it.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  0: MigrationFn<any, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: number]: MigrationFn<any, any>; // Additional numeric keys
 }
 
-type Version = string;
+export interface Version {
+  current: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10; // and so on, just not zero
+  migrations: RequiredMigrations;
+}
 
-export type MigrationMap<OldState, NewState> = {
-  [K in keyof OldState & keyof NewState]?: (
-    prev: OldState[K],
-    get: <K extends keyof NewState>(key: K) => Promise<NewState[K]>,
-  ) => NewState[K] | Promise<NewState[K]>;
-};
+export interface ExtensionStorageProps<T extends { dbVersion: number }> {
+  storage: IStorage;
+  defaults: ExtensionStorageDefaults<T>;
+  version: Version;
+}
 
-// It is quite difficult writing a generic that covers all migration function kinds.
-// Therefore, the writer of the migration should ensure it is typesafe when they define it.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Migrations<T> = Partial<Record<Version, MigrationMap<any, T>>>;
+export class ExtensionStorage<T extends { dbVersion: number }> {
+  private readonly storage: IStorage;
+  private readonly defaults: ExtensionStorageDefaults<T>;
+  private readonly version: Version;
+  private dbLock: Promise<void> | undefined = undefined;
 
-export type VersionSteps = Record<Version, Version>;
-
-export class ExtensionStorage<T> {
-  private migrationLocks: Record<string, Promise<T[keyof T]>> = {};
-
-  constructor(
-    private storage: IStorage,
-    private defaults: T,
-    private version: Version,
-    private migrations: Migrations<T> = {},
-    private versionSteps: VersionSteps = {},
-  ) {}
+  constructor({ storage, defaults, version }: ExtensionStorageProps<T>) {
+    this.storage = storage;
+    this.defaults = defaults;
+    this.version = version;
+  }
 
   async get<K extends keyof T>(key: K): Promise<T[K]> {
-    return await this.getRaw({ key });
-  }
-
-  private async getRaw<K extends keyof T>({
-    key,
-    skipMigration = false,
-  }: {
-    key: K;
-    skipMigration?: boolean;
-  }): Promise<T[K]> {
-    const result = (await this.storage.get(String(key))) as
-      | Record<K, StorageItem<T[K]>>
-      | EmptyObject;
-
-    if (isEmptyObj(result)) {
-      return this.defaults[key];
-    } else {
-      if (skipMigration) {
-        return result[key].value;
-      } else {
-        return await this.migrateIfNeeded(key, result[key]);
-      }
-    }
-  }
-
-  async set<K extends keyof T>(key: K, value: T[K]): Promise<void> {
-    await this.storage.set({
-      [String(key)]: {
-        version: this.version,
-        value,
-      },
+    return this.withDbLock(() => {
+      return this._get(key) as Promise<T[K]>;
     });
   }
 
+  // TODO: Retrieving will return either... document
+  private async _get<K extends keyof T>(key: K): Promise<T[K] | undefined> {
+    const result = (await this.storage.get(String(key))) as Record<K, T[K]> | EmptyObject;
+    return isEmptyObj(result) ? undefined : result[key];
+  }
+
+  async set<K extends Exclude<keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
+    await this.withDbLock(async () => {
+      await this._set({ [key]: value } as Record<K, T[K]>);
+    });
+  }
+
+  private async _set<K extends keyof T>(keys: Record<K, T[K]>): Promise<void> {
+    await this.storage.set(keys);
+  }
+
   async remove<K extends keyof T>(key: K): Promise<void> {
-    await this.storage.remove(String(key));
+    await this.withDbLock(async () => {
+      await this.storage.remove(String(key));
+    });
   }
 
   addListener(listener: Listener) {
@@ -93,48 +90,52 @@ export class ExtensionStorage<T> {
     this.storage.onChanged.removeListener(listener);
   }
 
-  private async migrateIfNeeded<K extends keyof T>(key: K, item: StorageItem<T[K]>): Promise<T[K]> {
-    // The same version means no migrations are necessary
-    if (item.version === this.version) {
-      return item.value;
+  private async withDbLock<R>(fn: () => Promise<R>): Promise<R> {
+    if (this.dbLock) {
+      await this.dbLock;
     }
 
-    // Check for an ongoing migration, if exists, return the result of that
-    const ongoingMigration = this.migrationLocks[String(key)] as Promise<T[K]> | undefined;
-    if (ongoingMigration) {
-      return ongoingMigration;
-    }
-
-    // Store the promise in the lock map. Ensures multiple callers don't run migrations multiple times.
-    const migrationPromise = this.migrateField(key, item);
-    this.migrationLocks[String(key)] = migrationPromise;
+    this.dbLock = this.migrateOrInitializeIfNeeded();
 
     try {
-      return await migrationPromise;
+      await this.dbLock;
+      return await fn();
     } finally {
-      // Release the lock once migration is complete
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete this.migrationLocks[String(key)];
+      this.dbLock = undefined;
     }
   }
 
-  private async migrateField<K extends keyof T>(key: K, item: StorageItem<T[K]>): Promise<T[K]> {
-    const migrationFn = this.migrations[item.version]?.[key];
-    const value = migrationFn
-      ? await migrationFn(item.value, key => this.getRaw({ key, skipMigration: true }))
-      : item.value;
-    const nextVersion = this.versionSteps[item.version];
+  private async migrateAllFields(storedVersion: number): Promise<number> {
+    const migrationFn = this.version.migrations[storedVersion];
 
-    // If the next step is not defined (bad config) or is the current version, save and exit
-    if (!nextVersion || nextVersion === this.version) {
-      await this.set(key, value);
-      return value;
+    if (!migrationFn) {
+      throw new Error(`No migration function provided for version: ${storedVersion}`);
     }
 
-    // Recurse further if there are more migration steps
-    return await this.migrateField(key, {
-      version: nextVersion,
-      value,
-    });
+    const currentDbState = await this.storage.get();
+    // Migrations save the database intermediate states hard to type
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const nextState = await migrationFn(currentDbState);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    await this._set(nextState);
+
+    return storedVersion + 1;
+  }
+
+  private async migrateOrInitializeIfNeeded(): Promise<void> {
+    // If db is empty, initialize it with defaults.
+    const bytesInUse = await this.storage.getBytesInUse();
+    if (bytesInUse === 0) {
+      const allDefaults = { ...this.defaults, dbVersion: this.version.current };
+      // @ts-expect-error Typescript does not know how to combine the above types
+      await this._set(allDefaults);
+      return;
+    }
+
+    let storedVersion = (await this._get('dbVersion')) ?? 0; // default to zero
+    // If stored version is not the same, keep migrating versions until current
+    while (storedVersion !== this.version.current) {
+      storedVersion = await this.migrateAllFields(storedVersion);
+    }
   }
 }

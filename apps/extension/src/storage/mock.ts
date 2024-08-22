@@ -7,14 +7,38 @@ import { LocalStorageState } from './types';
 export class MockStorageArea implements IStorage {
   private store = new Map<string, unknown>();
 
-  async get(key: string): Promise<Record<string, unknown>> {
+  async get(
+    keys?: string | string[] | Record<string, unknown> | null,
+  ): Promise<Record<string, unknown>> {
     return new Promise(resolve => {
-      const value = this.store.get(key);
-      if (value !== undefined) {
-        resolve({ [key]: value });
-      } else {
-        resolve({});
+      const result: Record<string, unknown> = {};
+
+      const toCheck: string[] = [];
+      if (typeof keys === 'string') {
+        toCheck.push(keys);
+      } else if (Array.isArray(keys)) {
+        toCheck.push(...keys);
+      } else if (keys && typeof keys === 'object' && !Array.isArray(keys)) {
+        toCheck.push(...Object.keys(keys));
+      } else if (!keys) {
+        // If no keys provided, get all keys from the store
+        toCheck.push(...this.store.keys());
       }
+
+      toCheck.forEach(key => {
+        const value = this.store.get(key);
+        if (value !== undefined) {
+          result[key] = value;
+        }
+      });
+
+      resolve(result);
+    });
+  }
+
+  async getBytesInUse(): Promise<number> {
+    return new Promise(resolve => {
+      resolve(this.store.size);
     });
   }
 
@@ -28,6 +52,10 @@ export class MockStorageArea implements IStorage {
   async set(items: Record<string, unknown>): Promise<void> {
     return new Promise(resolve => {
       for (const key in items) {
+        // In chrome storage, setting undefined values removes them from the store
+        if (items[key] === undefined) {
+          this.store.delete(key);
+        }
         this.store.set(key, items[key]);
       }
       resolve();
@@ -44,20 +72,16 @@ export class MockStorageArea implements IStorage {
   };
 }
 
-enum MockStorageVersion {
-  V1 = 'V1',
-}
-
 export const mockSessionExtStorage = () =>
-  new ExtensionStorage<SessionStorageState>(
-    new MockStorageArea(),
-    sessionDefaults,
-    MockStorageVersion.V1,
-  );
+  new ExtensionStorage<SessionStorageState>({
+    storage: new MockStorageArea(),
+    defaults: sessionDefaults,
+    version: { current: 1 },
+  });
 
 export const mockLocalExtStorage = () =>
-  new ExtensionStorage<LocalStorageState>(
-    new MockStorageArea(),
-    localDefaults,
-    MockStorageVersion.V1,
-  );
+  new ExtensionStorage<LocalStorageState>({
+    storage: new MockStorageArea(),
+    defaults: localDefaults,
+    version: { current: 1 },
+  });

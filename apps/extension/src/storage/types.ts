@@ -5,19 +5,17 @@ import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { WalletJson } from '@penumbra-zone/types/wallet';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
-export enum LocalStorageVersion {
-  V1 = 'V1',
-  V2 = 'V2',
-  V3 = 'V3',
-}
-
 export interface OriginRecord {
   origin: string;
   choice: UserChoice;
   date: number;
 }
 
+// If one adds an optional field (newField: string | undefined), a migration is not necessary.
+// If one adds a new required field (newField: string[]), a migration is necessary
+// to have the default value in the database.
 export interface LocalStorageState {
+  dbVersion: number;
   wallets: WalletJson[];
   grpcEndpoint: string | undefined;
   frontendUrl: string | undefined;
