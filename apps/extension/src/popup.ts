@@ -1,5 +1,6 @@
 import { sessionExtStorage } from './storage/session';
 import { PopupMessage, PopupRequest, PopupType, PopupReadyResponse } from './message/popup';
+// import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
@@ -76,9 +77,7 @@ const throwIfNeedsLogin = async () => {
 };
 
 const spawnPopup = async (pop: PopupType, popupId: string) => {
-  const popUrl = new URL(
-    chrome.runtime.getURL(`popup.html?popupId=${encodeURIComponent(popupId)}`),
-  );
+  const popUrl = new URL(chrome.runtime.getURL(`popup.html?popupId=${popupId}`));
 
   await throwIfNeedsLogin();
 

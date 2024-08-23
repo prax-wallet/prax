@@ -20,4 +20,4 @@ export const PopupLayout = () => {
       <Outlet />
     </div>
   );
-}
+};

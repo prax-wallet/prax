@@ -21,7 +21,7 @@ export type PopupReadyResponse<T extends Ready = Ready> = InternalResponse<T>;
 
 export type OriginApproval = InternalMessage<
   PopupType.OriginApproval,
-  { id: string; origin: string; favIconUrl?: string; title?: string; lastRequest?: number },
+  { origin: string; favIconUrl?: string; title?: string; lastRequest?: number },
   null | OriginRecord
 >;
 
