@@ -1,5 +1,5 @@
 import { sessionExtStorage } from './storage/session';
-import { PopupMessage, PopupRequest, PopupType, PopupReadyMessage } from './message/popup';
+import { PopupMessage, PopupRequest, PopupType, PopupReadyResponse } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
@@ -18,36 +18,25 @@ const isChromeResponderDroppedError = (
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
 ): Promise<M['response']> => {
-  console.log('TCL: req', req);
   const popupId = crypto.randomUUID();
   await spawnPopup(req.type, popupId);
+  await popupReady(popupId);
 
-  return new Promise((resolve, reject) => {
-    chrome.runtime.onMessage.addListener(async function handleReactReady(
-      res: PopupReadyMessage,
-    ): void {
-      console.log('TCL: res', res);
-      if (res.popupReady && res.popupId === popupId) {
-        console.log('TCL: res.popupReady', res.popupReady);
-        chrome.runtime.onMessage.removeListener(handleReactReady);
-
-        const response = await chrome.runtime
-          .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
-          .catch((e: unknown) => {
-            if (isChromeResponderDroppedError(e)) {
-              return null;
-            } else {
-              throw e;
-            }
-          });
-        if (response && 'error' in response) {
-          reject(errorFromJson(response.error, undefined, ConnectError.from(response)));
-        } else {
-          resolve(response && response.data);
-        }
+  const response = await chrome.runtime
+    .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
+    .catch((e: unknown) => {
+      if (isChromeResponderDroppedError(e)) {
+        return null;
+      } else {
+        throw e;
       }
     });
-  });
+
+  if (response && 'error' in response) {
+    throw errorFromJson(response.error, undefined, ConnectError.from(response));
+  } else {
+    return response && response.data;
+  }
 };
 
 const spawnDetachedPopup = async (path: string) => {
@@ -87,7 +76,9 @@ const throwIfNeedsLogin = async () => {
 };
 
 const spawnPopup = async (pop: PopupType, popupId: string) => {
-  const popUrl = new URL(chrome.runtime.getURL(`popup.html?popupId=${popupId}`));
+  const popUrl = new URL(
+    chrome.runtime.getURL(`popup.html?popupId=${encodeURIComponent(popupId)}`),
+  );
 
   await throwIfNeedsLogin();
 
@@ -101,4 +92,23 @@ const spawnPopup = async (pop: PopupType, popupId: string) => {
     default:
       throw Error('Unknown popup type');
   }
+};
+
+const POPUP_READY_TIMEOUT = 60 * 1000;
+
+const popupReady = async (popupId: string): Promise<void> => {
+  return new Promise((resolve, reject): void => {
+    setTimeout(() => {
+      reject(new Error('Popup ready timed out'));
+    }, POPUP_READY_TIMEOUT);
+
+    const handlePopupReady = (res: PopupReadyResponse): void => {
+      if (res.type === PopupType.Ready && res.data.popupId === popupId) {
+        chrome.runtime.onMessage.removeListener(handlePopupReady);
+        resolve();
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(handlePopupReady);
+  });
 };

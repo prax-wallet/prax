@@ -1,23 +1,24 @@
-import { useEffect } from 'react';
-import { useSearchParams, URLSearchParams, SetURLSearchParams } from 'react-router-dom';
-import { PopupReadyMessage } from '../message/popup';
+import { useEffect, useRef } from 'react';
+import { PopupType, PopupReadyResponse } from '../message/popup';
 
 type IsReady = boolean | undefined;
 
-interface PopupURLSearchParams extends URLSearchParams {
-  popupId?: string;
-}
-
 // signals that react is ready (mounted) to service worker
 export const usePopupReady = (isReady: IsReady = undefined) => {
-  const [searchParams] = useSearchParams() as [PopupURLSearchParams, SetURLSearchParams];
+  const sentMessagedRef = useRef(new Set());
+  const searchParams = new URLSearchParams(window.location.search);
+  const popupId = searchParams.get('popupId');
 
   useEffect(() => {
-    if (searchParams.popupId && (isReady === undefined || isReady)) {
+    if (popupId && (isReady === undefined || isReady) && !sentMessagedRef.current.has(popupId)) {
+      sentMessagedRef.current.add(popupId);
+
       void chrome.runtime.sendMessage({
-        popupReady: true,
-        popupId: searchParams.popupId,
-      } as PopupReadyMessage);
+        type: PopupType.Ready,
+        data: {
+          popupId,
+        },
+      } as PopupReadyResponse);
     }
-  }, [searchParams.popupId, isReady]);
+  }, [popupId, isReady]);
 };

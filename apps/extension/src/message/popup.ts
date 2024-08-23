@@ -11,16 +11,13 @@ import { OriginRecord } from '../storage/types';
 export enum PopupType {
   TxApproval = 'TxApproval',
   OriginApproval = 'OriginApproval',
-}
-
-export interface PopupReadyMessage {
-  popupReady: boolean;
-  popupId: string;
+  Ready = 'PopupReady',
 }
 
 export type PopupMessage = TxApproval | OriginApproval;
 export type PopupRequest<T extends PopupMessage = PopupMessage> = InternalRequest<T>;
 export type PopupResponse<T extends PopupMessage = PopupMessage> = InternalResponse<T>;
+export type PopupReadyResponse<T extends Ready = Ready> = InternalResponse<T>;
 
 export type OriginApproval = InternalMessage<
   PopupType.OriginApproval,
@@ -36,6 +33,14 @@ export type TxApproval = InternalMessage<
   null | {
     authorizeRequest: Jsonified<AuthorizeRequest>;
     choice: UserChoice;
+  }
+>;
+
+export type Ready = InternalMessage<
+  PopupType.Ready,
+  null,
+  {
+    popupId: string;
   }
 >;
 
