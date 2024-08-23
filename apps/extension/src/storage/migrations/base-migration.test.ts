@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { MockStorageArea } from '../mock';
 import { ExtensionStorage, RequiredMigrations } from '../base';
+import { localV0Migration } from './local-v1-migration';
 
 interface MockV0State {
   network: string;
@@ -294,6 +295,158 @@ describe('Storage migrations', () => {
       // @ts-expect-error testing adding a new field
       const result = await v2ExtStorage.get('newField');
       expect(result).toBeUndefined();
+    });
+
+    test('error during migration from v0 to v1', async () => {
+      const faultyMigration = new ExtensionStorage<MockV1State>({
+        storage: rawStorage,
+        defaults: {
+          network: '',
+          accounts: [],
+          seedPhrase: [],
+          frontend: 'http://default.com',
+          grpcUrl: { url: '' },
+          fullSyncHeight: 0,
+        },
+        version: {
+          current: 1,
+          migrations: {
+            0: () => {
+              throw new Error('network request error 404');
+            },
+          },
+        },
+      });
+
+      const mock0StorageState: Record<string, unknown> = {
+        network: '',
+        accounts: [],
+        seedPhrase: 'cat dog mouse horse',
+        frontend: 'http://default.com',
+        grpcUrl: 'grpc.void.test',
+        fullSyncHeight: 0,
+      } satisfies MockV0State;
+      await rawStorage.set(mock0StorageState);
+
+      await expect(faultyMigration.get('network')).rejects.toThrow(
+        'There was an error with migrating the database: Error: network request error 404',
+      );
+    });
+
+    test('error during migration from v1 to v2', async () => {
+      const mock1Storage = new ExtensionStorage<MockV1State>({
+        storage: rawStorage,
+        defaults: {
+          network: '',
+          accounts: [],
+          seedPhrase: [],
+          frontend: 'http://default.com',
+          grpcUrl: { url: '' },
+          fullSyncHeight: 0,
+        },
+        version: {
+          current: 1,
+          migrations: {
+            0: localV0Migration,
+          },
+        },
+      });
+
+      await mock1Storage.set('fullSyncHeight', 123);
+      const height = await mock1Storage.get('fullSyncHeight');
+      expect(height).toEqual(123);
+
+      const faultyMigration = new ExtensionStorage<MockV2State>({
+        storage: rawStorage,
+        defaults: {
+          network: '',
+          accounts: [],
+          seedPhrase: [],
+          frontend: 'http://default.com',
+          grpcUrl: { url: '', image: '' },
+          fullSyncHeight: 0n,
+        },
+        version: {
+          current: 2,
+          migrations: {
+            0: localV0Migration,
+            1: () => {
+              throw new Error('network request error 502');
+            },
+          },
+        },
+      });
+
+      await expect(faultyMigration.get('network')).rejects.toThrow(
+        'There was an error with migrating the database: Error: network request error 502',
+      );
+    });
+
+    test('error during migration propagates to multiple callers', async () => {
+      const originalNetworkVal = 'original.void.zone';
+      const mock1Storage = new ExtensionStorage<MockV1State>({
+        storage: rawStorage,
+        defaults: {
+          network: originalNetworkVal,
+          accounts: [],
+          seedPhrase: [],
+          frontend: 'http://default.com',
+          grpcUrl: { url: '' },
+          fullSyncHeight: 0,
+        },
+        version: {
+          current: 1,
+          migrations: {
+            0: localV0Migration,
+          },
+        },
+      });
+
+      await mock1Storage.set('fullSyncHeight', 123);
+      const height = await mock1Storage.get('fullSyncHeight');
+      expect(height).toEqual(123);
+
+      const faultyMigration = new ExtensionStorage<MockV2State>({
+        storage: rawStorage,
+        defaults: {
+          network: '',
+          accounts: [],
+          seedPhrase: [],
+          frontend: 'http://default.com',
+          grpcUrl: { url: '', image: '' },
+          fullSyncHeight: 0n,
+        },
+        version: {
+          current: 2,
+          migrations: {
+            0: localV0Migration,
+            1: () => {
+              throw new Error('network request error 502');
+            },
+          },
+        },
+      });
+
+      const expectedError =
+        'There was an error with migrating the database: Error: network request error 502';
+
+      const callA = faultyMigration.get('network');
+      await expect(callA).rejects.toThrow(expectedError);
+      const rawValueA = await rawStorage.get('network');
+      expect(rawValueA).toStrictEqual({ network: originalNetworkVal });
+
+      const callB = faultyMigration.set('network', 'xyz');
+      await expect(callB).rejects.toThrow(expectedError);
+      const rawValueB = await rawStorage.get('network');
+      expect(rawValueB).toStrictEqual({ network: originalNetworkVal });
+
+      const callC = faultyMigration.get('network');
+      await expect(callC).rejects.toThrow(expectedError);
+      const rawValueC = await rawStorage.get('network');
+      expect(rawValueC).toStrictEqual({ network: originalNetworkVal });
+
+      const callD = faultyMigration.get('accounts');
+      await expect(callD).rejects.toThrow(expectedError);
     });
   });
 });

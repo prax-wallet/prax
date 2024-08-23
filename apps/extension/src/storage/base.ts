@@ -184,19 +184,23 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * Initializes the database with defaults or performs migrations (multiple possible if a sequence is needed).
    */
   private async migrateOrInitializeIfNeeded(): Promise<void> {
-    // If db is empty, initialize it with defaults.
-    const bytesInUse = await this.storage.getBytesInUse();
-    if (bytesInUse === 0) {
-      const allDefaults = { ...this.defaults, dbVersion: this.version.current };
-      // @ts-expect-error Typescript does not know how to combine the above types
-      await this._set(allDefaults);
-      return;
-    }
+    try {
+      // If db is empty, initialize it with defaults.
+      const bytesInUse = await this.storage.getBytesInUse();
+      if (bytesInUse === 0) {
+        const allDefaults = { ...this.defaults, dbVersion: this.version.current };
+        // @ts-expect-error Typescript does not know how to combine the above types
+        await this._set(allDefaults);
+        return;
+      }
 
-    let storedVersion = (await this._get('dbVersion')) ?? 0; // default to zero
-    // If stored version is not the same, keep migrating versions until current
-    while (storedVersion !== this.version.current) {
-      storedVersion = await this.migrateAllFields(storedVersion);
+      let storedVersion = (await this._get('dbVersion')) ?? 0; // default to zero
+      // If stored version is not the same, keep migrating versions until current
+      while (storedVersion !== this.version.current) {
+        storedVersion = await this.migrateAllFields(storedVersion);
+      }
+    } catch (e) {
+      throw new Error(`There was an error with migrating the database: ${String(e)}`);
     }
   }
 }
