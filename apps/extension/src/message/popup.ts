@@ -51,11 +51,19 @@ export const isPopupRequest = (req: unknown): req is PopupRequest =>
   typeof req.type === 'string' &&
   req.type in PopupType;
 
+export const isPopupResponse = (res: unknown): res is PopupResponse =>
+  res != null &&
+  typeof res === 'object' &&
+  ('data' in res || 'error' in res) &&
+  'type' in res &&
+  typeof res.type === 'string' &&
+  res.type in PopupType;
+
 export const isOriginApprovalRequest = (req: unknown): req is InternalRequest<OriginApproval> =>
   isPopupRequest(req) && req.type === PopupType.OriginApproval;
 
 export const isTxApprovalRequest = (req: unknown): req is InternalRequest<TxApproval> =>
   isPopupRequest(req) && req.type === PopupType.TxApproval;
 
-export const isPopupReadyResponse = (req: unknown): req is InternalResponse<Ready> =>
-  isPopupRequest(req) && req.type === PopupType.Ready;
+export const isPopupReadyResponse = (res: unknown): res is InternalResponse<Ready> =>
+  isPopupResponse(res) && res.type === PopupType.Ready;
