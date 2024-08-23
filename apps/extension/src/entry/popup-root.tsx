@@ -21,6 +21,7 @@ chrome.runtime.onMessage.addListener(
         if (isTxApprovalRequest(req)) {
           void txApprovalSelector(useStore.getState()).acceptRequest(req, responder);
         } else if (isOriginApprovalRequest(req)) {
+          req.request.origin;
           originApprovalSelector(useStore.getState()).acceptRequest(req, responder);
         } else {
           throw new Error('Unknown popup request');

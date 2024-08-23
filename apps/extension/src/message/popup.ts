@@ -14,10 +14,9 @@ export enum PopupType {
   Ready = 'PopupReady',
 }
 
-export type PopupMessage = TxApproval | OriginApproval;
+export type PopupMessage = TxApproval | OriginApproval | Ready;
 export type PopupRequest<T extends PopupMessage = PopupMessage> = InternalRequest<T>;
 export type PopupResponse<T extends PopupMessage = PopupMessage> = InternalResponse<T>;
-export type PopupReadyResponse<T extends Ready = Ready> = InternalResponse<T>;
 
 export type OriginApproval = InternalMessage<
   PopupType.OriginApproval,
@@ -53,7 +52,10 @@ export const isPopupRequest = (req: unknown): req is PopupRequest =>
   req.type in PopupType;
 
 export const isOriginApprovalRequest = (req: unknown): req is InternalRequest<OriginApproval> =>
-  isPopupRequest(req) && req.type === PopupType.OriginApproval && 'origin' in req.request;
+  isPopupRequest(req) && req.type === PopupType.OriginApproval;
 
 export const isTxApprovalRequest = (req: unknown): req is InternalRequest<TxApproval> =>
-  isPopupRequest(req) && req.type === PopupType.TxApproval && 'authorizeRequest' in req.request;
+  isPopupRequest(req) && req.type === PopupType.TxApproval;
+
+export const isPopupReadyResponse = (req: unknown): req is InternalResponse<Ready> =>
+  isPopupRequest(req) && req.type === PopupType.Ready;

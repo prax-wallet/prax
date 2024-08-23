@@ -1,6 +1,11 @@
 import { sessionExtStorage } from './storage/session';
-import { PopupMessage, PopupRequest, PopupType, PopupReadyResponse } from './message/popup';
-// import { PopupMessage, PopupRequest, PopupType } from './message/popup';
+import {
+  isPopupReadyResponse,
+  PopupMessage,
+  PopupRequest,
+  PopupResponse,
+  PopupType,
+} from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
@@ -101,8 +106,12 @@ const popupReady = async (popupId: string): Promise<void> => {
       reject(new Error('Popup ready timed out'));
     }, POPUP_READY_TIMEOUT);
 
-    const handlePopupReady = (res: PopupReadyResponse): void => {
-      if (res.type === PopupType.Ready && res.data.popupId === popupId) {
+    const handlePopupReady = (res: PopupResponse): void => {
+      if (!isPopupReadyResponse(res)) {
+        return;
+      }
+
+      if ('data' in res && res.data.popupId === popupId) {
         chrome.runtime.onMessage.removeListener(handlePopupReady);
         resolve();
       }

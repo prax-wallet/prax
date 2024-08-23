@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { PopupType, PopupReadyResponse } from '../message/popup';
+import { PopupResponse, PopupType, Ready } from '../message/popup';
 
 type IsReady = boolean | undefined;
 
@@ -18,7 +18,7 @@ export const usePopupReady = (isReady: IsReady = undefined) => {
         data: {
           popupId,
         },
-      } as PopupReadyResponse);
+      } as PopupResponse<Ready>);
     }
   }, [popupId, isReady]);
 };
