@@ -1,8 +1,8 @@
-import { ExtensionStorage } from './base';
-import { v1Migrations } from './v1-migration';
-import { LocalStorageState, LocalStorageVersion } from './types';
+import { ExtensionStorage, ExtensionStorageDefaults } from './base';
+import { LocalStorageState } from './types';
+import { localV0Migration } from './migrations/local-v1-migration';
 
-export const localDefaults: Required<LocalStorageState> = {
+export const localDefaults: ExtensionStorageDefaults<LocalStorageState> = {
   wallets: [],
   fullSyncHeight: undefined,
   grpcEndpoint: undefined,
@@ -14,9 +14,13 @@ export const localDefaults: Required<LocalStorageState> = {
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.
-export const localExtStorage = new ExtensionStorage<LocalStorageState>(
-  chrome.storage.local,
-  localDefaults,
-  LocalStorageVersion.V2,
-  v1Migrations,
-);
+export const localExtStorage = new ExtensionStorage<LocalStorageState>({
+  storage: chrome.storage.local,
+  defaults: localDefaults,
+  version: {
+    current: 1,
+    migrations: {
+      0: localV0Migration,
+    },
+  },
+});

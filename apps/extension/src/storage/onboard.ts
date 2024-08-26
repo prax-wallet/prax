@@ -1,4 +1,4 @@
-import { Listener, StorageItem } from './base';
+import { Listener } from './base';
 import { localExtStorage } from './local';
 import { WalletJson } from '@penumbra-zone/types/wallet';
 import { LocalStorageState } from './types';
@@ -16,10 +16,9 @@ export const onboardGrpcEndpoint = async (): Promise<string> => {
 
   return new Promise(resolve => {
     const storageListener = (changes: Record<string, { newValue?: unknown }>) => {
-      const storageItem = changes['grpcEndpoint']?.newValue as
-        | StorageItem<LocalStorageState['grpcEndpoint']>
+      const rpcEndpoint = changes['grpcEndpoint']?.newValue as
+        | LocalStorageState['grpcEndpoint']
         | undefined;
-      const rpcEndpoint = storageItem?.value;
       if (rpcEndpoint) {
         resolve(rpcEndpoint);
         localExtStorage.removeListener(storageListener);
@@ -37,10 +36,8 @@ export const onboardWallet = async (): Promise<WalletJson> => {
 
   return new Promise(resolve => {
     const storageListener: Listener = changes => {
-      const storageItem = changes['wallets']?.newValue as
-        | StorageItem<LocalStorageState['wallets']>
-        | undefined;
-      const initialWallet = storageItem?.value[0];
+      const wallets = changes['wallets']?.newValue as LocalStorageState['wallets'] | undefined;
+      const initialWallet = wallets?.[0];
       if (initialWallet) {
         resolve(initialWallet);
         localExtStorage.removeListener(storageListener);
