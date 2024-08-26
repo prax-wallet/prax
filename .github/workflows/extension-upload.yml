@@ -36,7 +36,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --prod false # will install devDeps as well
       - run: pnpm turbo build --cache-dir=.turbo
 
       # Outputs beta.zip and prod.zip
