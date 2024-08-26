@@ -57,6 +57,14 @@ class PraxInjection {
   private stateEvents = new EventTarget();
 
   private injection: Readonly<PenumbraProvider> = Object.freeze({
+    /**
+     * Meet the 'request' method of the old page API to mitigate incompatibility
+     * with pd v0.80.0's bundled minifront. This prevents connection failure.
+     * @todo Remove when bundled frontends are updated beyond `a31d54a`
+     * @issue https://github.com/prax-wallet/web/issues/175
+     */
+    request: () => this.postConnectRequest().then(() => Promise.resolve()),
+
     connect: () => Promise.resolve(this.port ?? this.postConnectRequest()),
     disconnect: () => this.postDisconnectRequest(),
     isConnected: () => Boolean(this.port && this.presentState === PenumbraState.Connected),
