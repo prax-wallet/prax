@@ -150,9 +150,8 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
       await this.dbLock;
     }
 
-    this.dbLock = this.migrateOrInitializeIfNeeded();
-
     try {
+      this.dbLock = this.migrateOrInitializeIfNeeded();
       await this.dbLock;
       return await fn();
     } finally {
