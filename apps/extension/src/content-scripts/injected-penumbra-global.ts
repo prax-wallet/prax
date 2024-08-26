@@ -63,7 +63,9 @@ class PraxInjection {
      * @todo Remove when bundled frontends are updated beyond `a31d54a`
      * @issue https://github.com/prax-wallet/web/issues/175
      */
-    request: () => this.postConnectRequest().then(() => Promise.resolve()),
+    request: async () => {
+      await Promise.resolve(this.port ?? this.postConnectRequest());
+    },
 
     connect: () => Promise.resolve(this.port ?? this.postConnectRequest()),
     disconnect: () => this.postDisconnectRequest(),
