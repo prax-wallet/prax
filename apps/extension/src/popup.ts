@@ -1,11 +1,5 @@
 import { sessionExtStorage } from './storage/session';
-import {
-  isPopupReadyResponse,
-  PopupMessage,
-  PopupRequest,
-  PopupResponse,
-  PopupType,
-} from './message/popup';
+import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
@@ -82,16 +76,16 @@ const throwIfNeedsLogin = async () => {
 };
 
 const spawnPopup = async (pop: PopupType, popupId: string) => {
-  const popUrl = new URL(chrome.runtime.getURL(`popup.html?popupId=${popupId}`));
+  const popUrl = new URL(chrome.runtime.getURL('popup.html'));
 
   await throwIfNeedsLogin();
 
   switch (pop) {
     case PopupType.OriginApproval:
-      popUrl.hash = PopupPath.ORIGIN_APPROVAL;
+      popUrl.hash = `${PopupPath.ORIGIN_APPROVAL}?popupId=${popupId}`;
       return spawnDetachedPopup(popUrl.href);
     case PopupType.TxApproval:
-      popUrl.hash = PopupPath.TRANSACTION_APPROVAL;
+      popUrl.hash = `${PopupPath.TRANSACTION_APPROVAL}?popupId=${popupId}`;
       return spawnDetachedPopup(popUrl.href);
     default:
       throw Error('Unknown popup type');
@@ -100,23 +94,17 @@ const spawnPopup = async (pop: PopupType, popupId: string) => {
 
 const POPUP_READY_TIMEOUT = 60 * 1000;
 
-const popupReady = async (popupId: string): Promise<void> => {
-  return new Promise((resolve, reject): void => {
-    setTimeout(() => {
-      reject(new Error('Popup ready timed out'));
-    }, POPUP_READY_TIMEOUT);
+const popupReady = (popupId: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    AbortSignal.timeout(POPUP_READY_TIMEOUT).onabort = reject;
 
-    const handlePopupReady = (res: PopupResponse): void => {
-      if (!isPopupReadyResponse(res)) {
-        return;
-      }
-
-      if ('data' in res && res.data.popupId === popupId) {
-        chrome.runtime.onMessage.removeListener(handlePopupReady);
+    const idListen = (msg: unknown, _: chrome.runtime.MessageSender, respond: () => void) => {
+      if (msg === popupId) {
         resolve();
+        chrome.runtime.onMessage.removeListener(idListen);
+        respond();
       }
     };
 
-    chrome.runtime.onMessage.addListener(handlePopupReady);
+    chrome.runtime.onMessage.addListener(idListen);
   });
-};

@@ -11,10 +11,9 @@ import { OriginRecord } from '../storage/types';
 export enum PopupType {
   TxApproval = 'TxApproval',
   OriginApproval = 'OriginApproval',
-  Ready = 'PopupReady',
 }
 
-export type PopupMessage = TxApproval | OriginApproval | Ready;
+export type PopupMessage = TxApproval | OriginApproval;
 export type PopupRequest<T extends PopupMessage = PopupMessage> = InternalRequest<T>;
 export type PopupResponse<T extends PopupMessage = PopupMessage> = InternalResponse<T>;
 
@@ -35,14 +34,6 @@ export type TxApproval = InternalMessage<
   }
 >;
 
-export type Ready = InternalMessage<
-  PopupType.Ready,
-  null,
-  {
-    popupId: string;
-  }
->;
-
 export const isPopupRequest = (req: unknown): req is PopupRequest =>
   req != null &&
   typeof req === 'object' &&
@@ -51,19 +42,8 @@ export const isPopupRequest = (req: unknown): req is PopupRequest =>
   typeof req.type === 'string' &&
   req.type in PopupType;
 
-export const isPopupResponse = (res: unknown): res is PopupResponse =>
-  res != null &&
-  typeof res === 'object' &&
-  ('data' in res || 'error' in res) &&
-  'type' in res &&
-  typeof res.type === 'string' &&
-  res.type in PopupType;
-
 export const isOriginApprovalRequest = (req: unknown): req is InternalRequest<OriginApproval> =>
-  isPopupRequest(req) && req.type === PopupType.OriginApproval;
+  isPopupRequest(req) && req.type === PopupType.OriginApproval && 'origin' in req.request;
 
 export const isTxApprovalRequest = (req: unknown): req is InternalRequest<TxApproval> =>
-  isPopupRequest(req) && req.type === PopupType.TxApproval;
-
-export const isPopupReadyResponse = (res: unknown): res is InternalResponse<Ready> =>
-  isPopupResponse(res) && res.type === PopupType.Ready;
+  isPopupRequest(req) && req.type === PopupType.TxApproval && 'authorizeRequest' in req.request;
