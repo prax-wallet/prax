@@ -20,6 +20,9 @@ export const popup = async <M extends PopupMessage>(
 ): Promise<M['response']> => {
   const popupId = crypto.randomUUID();
   await spawnPopup(req.type, popupId);
+
+  // this is necessary given it takes a bit of time for the popup
+  // to be ready to accept messages from the service worker.
   await popupReady(popupId);
 
   const response = await chrome.runtime
