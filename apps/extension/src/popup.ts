@@ -43,7 +43,8 @@ export const popup = async <M extends PopupMessage>(
 };
 
 const spawnDetachedPopup = async (url: URL) => {
-  await throwIfAlreadyOpen(url.pathname);
+  const [hashPath] = url.hash.split('?');
+  await throwIfAlreadyOpen(hashPath!);
 
   const { top, left, width } = await chrome.windows.getLastFocused();
 
@@ -80,10 +81,10 @@ const throwIfNeedsLogin = async () => {
 
 const spawnPopup = async (pop: PopupType, popupId: string) => {
   const popUrl = new URL(chrome.runtime.getURL('popup.html'));
-
   await throwIfNeedsLogin();
 
   switch (pop) {
+    // set path as hash since we use a hash router within the popup
     case PopupType.OriginApproval:
       popUrl.hash = `${PopupPath.ORIGIN_APPROVAL}?popupId=${popupId}`;
       return spawnDetachedPopup(popUrl);
