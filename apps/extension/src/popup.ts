@@ -18,9 +18,13 @@ const isChromeResponderDroppedError = (
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
 ): Promise<M['response']> => {
-  await spawnPopup(req.type);
-  // We have to wait for React to bootup, navigate to the page, and render the components
-  await new Promise(resolve => setTimeout(resolve, 800));
+  const popupId = crypto.randomUUID();
+  await spawnPopup(req.type, popupId);
+
+  // this is necessary given it takes a bit of time for the popup
+  // to be ready to accept messages from the service worker.
+  await popupReady(popupId);
+
   const response = await chrome.runtime
     .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
     .catch((e: unknown) => {
@@ -30,6 +34,7 @@ export const popup = async <M extends PopupMessage>(
         throw e;
       }
     });
+
   if (response && 'error' in response) {
     throw errorFromJson(response.error, undefined, ConnectError.from(response));
   } else {
@@ -37,13 +42,14 @@ export const popup = async <M extends PopupMessage>(
   }
 };
 
-const spawnDetachedPopup = async (path: string) => {
-  await throwIfAlreadyOpen(path);
+const spawnDetachedPopup = async (url: URL) => {
+  const [hashPath] = url.hash.split('?');
+  await throwIfAlreadyOpen(hashPath!);
 
   const { top, left, width } = await chrome.windows.getLastFocused();
 
   await chrome.windows.create({
-    url: path,
+    url: url.href,
     type: 'popup',
     width: 400,
     height: 628,
@@ -73,19 +79,36 @@ const throwIfNeedsLogin = async () => {
   }
 };
 
-const spawnPopup = async (pop: PopupType) => {
+const spawnPopup = async (pop: PopupType, popupId: string) => {
   const popUrl = new URL(chrome.runtime.getURL('popup.html'));
-
   await throwIfNeedsLogin();
 
   switch (pop) {
+    // set path as hash since we use a hash router within the popup
     case PopupType.OriginApproval:
-      popUrl.hash = PopupPath.ORIGIN_APPROVAL;
-      return spawnDetachedPopup(popUrl.href);
+      popUrl.hash = `${PopupPath.ORIGIN_APPROVAL}?popupId=${popupId}`;
+      return spawnDetachedPopup(popUrl);
     case PopupType.TxApproval:
-      popUrl.hash = PopupPath.TRANSACTION_APPROVAL;
-      return spawnDetachedPopup(popUrl.href);
+      popUrl.hash = `${PopupPath.TRANSACTION_APPROVAL}?popupId=${popupId}`;
+      return spawnDetachedPopup(popUrl);
     default:
       throw Error('Unknown popup type');
   }
 };
+
+const POPUP_READY_TIMEOUT = 60 * 1000;
+
+const popupReady = (popupId: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    AbortSignal.timeout(POPUP_READY_TIMEOUT).onabort = reject;
+
+    const idListen = (msg: unknown, _: chrome.runtime.MessageSender, respond: () => void) => {
+      if (msg === popupId) {
+        resolve();
+        chrome.runtime.onMessage.removeListener(idListen);
+        respond();
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(idListen);
+  });
