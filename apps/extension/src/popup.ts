@@ -42,13 +42,13 @@ export const popup = async <M extends PopupMessage>(
   }
 };
 
-const spawnDetachedPopup = async (path: string) => {
-  await throwIfAlreadyOpen(path);
+const spawnDetachedPopup = async (url: URL) => {
+  await throwIfAlreadyOpen(url.pathname);
 
   const { top, left, width } = await chrome.windows.getLastFocused();
 
   await chrome.windows.create({
-    url: path,
+    url: url.href,
     type: 'popup',
     width: 400,
     height: 628,
@@ -86,10 +86,10 @@ const spawnPopup = async (pop: PopupType, popupId: string) => {
   switch (pop) {
     case PopupType.OriginApproval:
       popUrl.hash = `${PopupPath.ORIGIN_APPROVAL}?popupId=${popupId}`;
-      return spawnDetachedPopup(popUrl.href);
+      return spawnDetachedPopup(popUrl);
     case PopupType.TxApproval:
       popUrl.hash = `${PopupPath.TRANSACTION_APPROVAL}?popupId=${popupId}`;
-      return spawnDetachedPopup(popUrl.href);
+      return spawnDetachedPopup(popUrl);
     default:
       throw Error('Unknown popup type');
   }
