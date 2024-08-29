@@ -63,10 +63,10 @@ export const GenerateSeedPhrase = () => {
         const chainRegistryClient = new ChainRegistryClient();
         const { rpcs } = chainRegistryClient.bundled.globals();
 
-        const suggestedEndpoints = rpcs.map(i => i!.url);
+        const suggestedEndpoints = rpcs.map(i => i.url);
         const blockHeight = await fetchBlockHeightWithFallback(suggestedEndpoints);
-        localExtStorage.set('walletCreationBlockHeight', blockHeight);
-        setBlockHeight(blockHeight ?? null);
+        await localExtStorage.set('walletCreationBlockHeight', blockHeight);
+        setBlockHeight(blockHeight);
 
         isFetchedRef.current = true;
       } catch (error) {
@@ -80,7 +80,7 @@ export const GenerateSeedPhrase = () => {
     startCountdown();
 
     // Fetch RPCs and block height asynchronously
-    fetchData();
+    void fetchData();
   }, [phrase.length, generateRandomSeedPhrase, startCountdown]);
 
   return (
@@ -116,13 +116,11 @@ export const GenerateSeedPhrase = () => {
           </div>
 
           {reveal && (
-            <div className='mt-4 p-4 border border-gray-500 rounded-lg bg-gray-800 shadow-sm'>
+            <div className='mt-4 rounded-lg border border-gray-500 bg-gray-800 p-4 shadow-sm'>
               <h4 className='text-lg font-semibold text-gray-200'>Important!</h4>
               <p className='mt-2 text-gray-300'>
                 Block Height:{' '}
-                <span className='font-bold text-gray-100'>
-                  {blockHeight !== null ? blockHeight : 'Loading...'}
-                </span>
+                <span className='font-bold text-gray-100'>{blockHeight ?? 'Loading...'}</span>
               </p>
               <p className='mt-2 text-sm text-gray-400'>
                 Please save the wallet creation height along with your recovery passphrase. It will

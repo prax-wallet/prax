@@ -23,29 +23,38 @@ export const ImportWalletCreationHeight = () => {
 
     if (blockHeight) {
       // Save the block height to local extension storage
-      localExtStorage.set('walletCreationBlockHeight', Number(blockHeight));
+      await localExtStorage.set('walletCreationBlockHeight', Number(blockHeight));
     }
 
-    // Proceed to the next step in the onboarding process
     navigate(PagePath.SET_PASSWORD);
+  };
+
+  const handleClick = (event: MouseEvent | FormEvent) => {
+    handleSubmit(event).catch((error: unknown) => {
+      if (error instanceof Error) {
+        console.error('Error during submission:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    });
   };
 
   return (
     <FadeTransition>
       <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
-      <Card className='p-6 w-[600px]' gradient>
+      <Card className='w-[600px] p-6' gradient>
         <CardHeader className='items-center'>
           <CardTitle className='font-semibold'>
             Enter Block Height When the Wallet Was Created (Optional)
           </CardTitle>
           <CardDescription>
-            This step is optional. Providing your wallet's block creation height can help speed up
-            the synchronization process, but it's not required. If you don't have this information,
-            you can safely skip this step.
+            This step is optional. Providing your wallet&apos;s block creation height can help speed
+            up the synchronization process, but it&apos;s not required. If you don&apos;t have this
+            information, you can safely skip this step.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className='mt-6 grid gap-4' onSubmit={handleSubmit}>
+          <form className='mt-6 grid gap-4' onSubmit={handleClick}>
             <Input
               type='text'
               placeholder=''
@@ -53,7 +62,7 @@ export const ImportWalletCreationHeight = () => {
               onChange={e => setBlockHeight(e.target.value)}
               className='text-[15px] font-normal leading-[22px]'
             />
-            <Button className='mt-4' variant='gradient' onClick={handleSubmit}>
+            <Button className='mt-4' variant='gradient' onClick={handleClick}>
               Continue
             </Button>
           </form>

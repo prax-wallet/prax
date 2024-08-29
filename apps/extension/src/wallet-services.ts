@@ -17,7 +17,7 @@ export const startWalletServices = async () => {
   const numeraires = await localExtStorage.get('numeraires');
 
   // Retrieve the wallet creation height flag from storage
-  let walletCreationBlockHeight = await localExtStorage.get('walletCreationBlockHeight');
+  const walletCreationBlockHeight = await localExtStorage.get('walletCreationBlockHeight');
 
   const services = new Services({
     grpcEndpoint,
