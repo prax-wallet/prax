@@ -21,10 +21,7 @@ export interface ServicesConfig {
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
 
-  constructor(
-    private config: ServicesConfig,
-    private isFreshWallet: boolean,
-  ) { }
+  constructor(private config: ServicesConfig) {}
 
   // If getWalletServices() is called multiple times concurrently, they'll all
   // wait for the same promise rather than each starting their own
@@ -38,12 +35,7 @@ export class Services implements ServicesInterface {
       });
     }
 
-    void this.walletServicesPromise.then(({ blockProcessor }) =>
-      this.isFreshWallet && this.config.walletCreationBlockHeight
-        ? blockProcessor.sync(this.isFreshWallet, this.config.walletCreationBlockHeight)
-        : blockProcessor.sync(),
-    );
-
+    void this.walletServicesPromise.then(({ blockProcessor }) => blockProcessor.sync());
     return this.walletServicesPromise;
   }
 
@@ -92,7 +84,14 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { chainId, grpcEndpoint, walletId, fullViewingKey, numeraires } = this.config;
+    const {
+      chainId,
+      grpcEndpoint,
+      walletId,
+      fullViewingKey,
+      numeraires,
+      walletCreationBlockHeight,
+    } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const registryClient = new ChainRegistryClient();
     const indexedDb = await IndexedDb.initialize({
@@ -127,6 +126,7 @@ export class Services implements ServicesInterface {
       indexedDb,
       stakingAssetId: registryClient.bundled.globals().stakingAssetId,
       numeraires: numeraires,
+      walletCreationBlockHeight: walletCreationBlockHeight,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };

@@ -9,6 +9,7 @@ import { pageIndexLoader } from '..';
 import { SetGrpcEndpoint } from './set-grpc-endpoint';
 import { SetDefaultFrontendPage } from './default-frontend';
 import { SetNumerairesPage } from './set-numeraire';
+import { ImportWalletCreationHeight } from './height';
 
 export const onboardingRoutes = [
   {
@@ -26,6 +27,10 @@ export const onboardingRoutes = [
   {
     path: PagePath.IMPORT_SEED_PHRASE,
     element: <ImportSeedPhrase />,
+  },
+  {
+    path: PagePath.IMPORT_WALLET_CREATION_HEIGHT,
+    element: <ImportWalletCreationHeight />,
   },
   {
     path: PagePath.SET_PASSWORD,

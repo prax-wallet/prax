@@ -9,7 +9,6 @@ import {
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { localExtStorage } from '../../../storage/local';
 
 export const OnboardingStart = () => {
   const navigate = usePageNav();
@@ -29,22 +28,14 @@ export const OnboardingStart = () => {
           <Button
             variant='gradient'
             className='w-full'
-            onClick={() => {
-              // set flag in local extension storage during onboarding process to
-              // indicate fresh wallet creation.
-              localExtStorage.set('isFreshWallet', true);
-              navigate(PagePath.GENERATE_SEED_PHRASE);
-            }}
+            onClick={() => navigate(PagePath.GENERATE_SEED_PHRASE)}
           >
             Create a new wallet
           </Button>
           <Button
             variant='secondary'
             className='w-full'
-            onClick={() => {
-              localExtStorage.set('isFreshWallet', false);
-              navigate(PagePath.IMPORT_SEED_PHRASE);
-            }}
+            onClick={() => navigate(PagePath.IMPORT_SEED_PHRASE)}
           >
             Import existing wallet
           </Button>

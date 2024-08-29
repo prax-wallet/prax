@@ -1,6 +1,6 @@
 import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { SeedPhraseLength } from '@penumbra-zone/crypto-web/mnemonic';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@repo/ui/components/ui/button';
 import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
@@ -14,20 +14,74 @@ import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { fetchBlockHeight } from '../../../hooks/full-sync-height';
+import { localExtStorage } from '../../../storage/local';
+import { sample } from 'lodash';
+
+const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number> => {
+  if (endpoints.length === 0) {
+    throw new Error('All RPC endpoints failed to fetch the block height.');
+  }
+
+  // Randomly select an rpc endpoint from the chain registry
+  const randomEndpoint = sample(endpoints);
+
+  try {
+    const walletCreationBlockHeight = await fetchBlockHeight(randomEndpoint!);
+    if (walletCreationBlockHeight !== undefined) {
+      return walletCreationBlockHeight;
+    } else {
+      // Remove the current endpoint from the list and try again
+      const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomEndpoint);
+      return fetchBlockHeightWithFallback(remainingEndpoints);
+    }
+  } catch (error) {
+    const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomEndpoint);
+    return fetchBlockHeightWithFallback(remainingEndpoints);
+  }
+};
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
   const { phrase, generateRandomSeedPhrase } = useStore(generateSelector);
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
+  const [blockHeight, setBlockHeight] = useState<number | null>(null);
 
-  // On render, generate a new seed phrase
+  // On render, generate a new seed phrase.
+  // Fetch data only once on the initial render.
+  const isFetchedRef = useRef(false);
+
   useEffect(() => {
+    const fetchData = async () => {
+      if (isFetchedRef.current) {
+        return;
+      }
+
+      try {
+        const chainRegistryClient = new ChainRegistryClient();
+        const { rpcs } = chainRegistryClient.bundled.globals();
+
+        const suggestedEndpoints = rpcs.map(i => i!.url);
+        const blockHeight = await fetchBlockHeightWithFallback(suggestedEndpoints);
+        localExtStorage.set('walletCreationBlockHeight', blockHeight);
+        setBlockHeight(blockHeight ?? null);
+
+        isFetchedRef.current = true;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
     if (!phrase.length) {
       generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
     }
     startCountdown();
-  }, [generateRandomSeedPhrase, phrase.length, startCountdown]);
+
+    // Fetch RPCs and block height asynchronously
+    fetchData();
+  }, [phrase.length, generateRandomSeedPhrase, startCountdown]);
 
   return (
     <FadeTransition>
@@ -60,6 +114,23 @@ export const GenerateSeedPhrase = () => {
               isSuccessCopyText
             />
           </div>
+
+          {reveal && (
+            <div className='mt-4 p-4 border border-gray-500 rounded-lg bg-gray-800 shadow-sm'>
+              <h4 className='text-lg font-semibold text-gray-200'>Important!</h4>
+              <p className='mt-2 text-gray-300'>
+                Block Height:{' '}
+                <span className='font-bold text-gray-100'>
+                  {blockHeight !== null ? blockHeight : 'Loading...'}
+                </span>
+              </p>
+              <p className='mt-2 text-sm text-gray-400'>
+                Please save the wallet creation height along with your recovery passphrase. It will
+                help you restore your wallet more quickly!
+              </p>
+            </div>
+          )}
+
           <div className='mt-2 flex flex-col justify-center gap-4'>
             <div className='flex flex-col gap-1'>
               <p className='flex items-center gap-2 text-rust'>
@@ -80,6 +151,7 @@ export const GenerateSeedPhrase = () => {
               </p>
             </div>
           </div>
+
           {reveal ? (
             <Button
               className='mt-4'

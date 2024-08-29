@@ -11,7 +11,6 @@ export const localDefaults: ExtensionStorageDefaults<LocalStorageState> = {
   passwordKeyPrint: undefined,
   frontendUrl: undefined,
   numeraires: [],
-  isFreshWallet: false,
   walletCreationBlockHeight: 0,
 };
 
