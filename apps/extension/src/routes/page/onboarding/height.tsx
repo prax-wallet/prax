@@ -45,12 +45,12 @@ export const ImportWalletCreationHeight = () => {
       <Card className='w-[600px] p-6' gradient>
         <CardHeader className='items-center'>
           <CardTitle className='font-semibold'>
-            Enter Block Height When the Wallet Was Created (Optional)
+            Enter block height when the wallet was created (optional)
           </CardTitle>
           <CardDescription>
-            This step is optional. Providing your wallet&apos;s block creation height can help speed
-            up the synchronization process, but it&apos;s not required. If you don&apos;t have this
-            information, you can safely skip this step.
+            Providing your wallet&apos;s block creation height can help speed up the synchronization
+            process, but it&apos;s not required. If you don&apos;t have this information, you can
+            safely skip this step.
           </CardDescription>
         </CardHeader>
         <CardContent>

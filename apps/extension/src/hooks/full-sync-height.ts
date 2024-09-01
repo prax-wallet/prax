@@ -3,9 +3,7 @@ import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 import { useLoaderData } from 'react-router-dom';
-import { TendermintProxyService } from '@penumbra-zone/protobuf';
-import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { createPromiseClient } from '@connectrpc/connect';
+import { fetchBlockHeight } from '../state/block-height';
 
 const tryGetMax = (a?: number, b?: number): number | undefined => {
   // Height can be 0n which is falsy, so should compare to undefined state
@@ -38,13 +36,7 @@ export const useSyncProgress = () => {
       if (!grpcEndpoint) {
         return;
       }
-      const tendermintClient = createPromiseClient(
-        TendermintProxyService,
-        createGrpcWebTransport({ baseUrl: grpcEndpoint }),
-      );
-      const blockHeight = (await tendermintClient.getStatus({}).catch(() => undefined))?.syncInfo
-        ?.latestBlockHeight;
-      return Number(blockHeight);
+      return await fetchBlockHeight(grpcEndpoint);
     },
     enabled: Boolean(grpcEndpoint),
   });
@@ -54,15 +46,4 @@ export const useSyncProgress = () => {
   const latestBlockHeight = queriedLatest ? tryGetMax(queriedLatest, fullSyncHeight) : undefined;
 
   return { latestBlockHeight, fullSyncHeight, error };
-};
-
-export const fetchBlockHeight = async (grpcEndpoint: string) => {
-  const tendermintClient = createPromiseClient(
-    TendermintProxyService,
-    createGrpcWebTransport({ baseUrl: grpcEndpoint }),
-  );
-  const blockHeight = (await tendermintClient.getStatus({}).catch(() => undefined))?.syncInfo
-    ?.latestBlockHeight;
-
-  return blockHeight ? Number(blockHeight) : undefined;
 };

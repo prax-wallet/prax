@@ -14,74 +14,37 @@ import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { fetchBlockHeight } from '../../../hooks/full-sync-height';
-import { localExtStorage } from '../../../storage/local';
-import { sample } from 'lodash';
-
-const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number> => {
-  if (endpoints.length === 0) {
-    throw new Error('All RPC endpoints failed to fetch the block height.');
-  }
-
-  // Randomly select an rpc endpoint from the chain registry
-  const randomEndpoint = sample(endpoints);
-
-  try {
-    const walletCreationBlockHeight = await fetchBlockHeight(randomEndpoint!);
-    if (walletCreationBlockHeight !== undefined) {
-      return walletCreationBlockHeight;
-    } else {
-      // Remove the current endpoint from the list and try again
-      const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomEndpoint);
-      return fetchBlockHeightWithFallback(remainingEndpoints);
-    }
-  } catch (error) {
-    const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomEndpoint);
-    return fetchBlockHeightWithFallback(remainingEndpoints);
-  }
-};
+import { generateBlockHeightSelector } from '../../../state/block-height';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
   const { phrase, generateRandomSeedPhrase } = useStore(generateSelector);
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
-  const [blockHeight, setBlockHeight] = useState<number | null>(null);
+  const blockHeight = useStore(generateBlockHeightSelector);
+  const initializeBlockHeight = useStore(
+    state => state.walletCreationBlockHeight.initializeBlockHeight,
+  );
 
-  // On render, generate a new seed phrase.
-  // Fetch data only once on the initial render.
-  const isFetchedRef = useRef(false);
+  // Track if the block height has been initialized to avoid multiple fetch attempts
+  const isInitialized = useRef(false);
 
+  // On render, generate a new seed phrase and initialize the wallet creation block height
   useEffect(() => {
-    const fetchData = async () => {
-      if (isFetchedRef.current) {
-        return;
+    const initialize = async () => {
+      if (!phrase.length) {
+        generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
       }
+      startCountdown();
 
-      try {
-        const chainRegistryClient = new ChainRegistryClient();
-        const { rpcs } = chainRegistryClient.bundled.globals();
-
-        const suggestedEndpoints = rpcs.map(i => i.url);
-        const blockHeight = await fetchBlockHeightWithFallback(suggestedEndpoints);
-        await localExtStorage.set('walletCreationBlockHeight', blockHeight);
-        setBlockHeight(blockHeight);
-
-        isFetchedRef.current = true;
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      if (!isInitialized.current && blockHeight === 0) {
+        await initializeBlockHeight();
+        isInitialized.current = true;
       }
     };
 
-    if (!phrase.length) {
-      generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-    }
-    startCountdown();
-
-    // Fetch RPCs and block height asynchronously
-    void fetchData();
-  }, [phrase.length, generateRandomSeedPhrase, startCountdown]);
+    void initialize();
+  }, [generateRandomSeedPhrase, phrase.length, startCountdown, blockHeight, initializeBlockHeight]);
 
   return (
     <FadeTransition>
@@ -117,14 +80,17 @@ export const GenerateSeedPhrase = () => {
 
           {reveal && (
             <div className='mt-4 rounded-lg border border-gray-500 bg-gray-800 p-4 shadow-sm'>
-              <h4 className='text-lg font-semibold text-gray-200'>Important!</h4>
+              <h4 className='text-lg font-semibold text-gray-200'>Wallet Birthday</h4>
               <p className='mt-2 text-gray-300'>
                 Block Height:{' '}
-                <span className='font-bold text-gray-100'>{blockHeight ?? 'Loading...'}</span>
+                <span className='font-bold text-gray-100'>
+                  {isInitialized.current ? Number(blockHeight) : 'Loading...'}
+                </span>
               </p>
               <p className='mt-2 text-sm text-gray-400'>
-                Please save the wallet creation height along with your recovery passphrase. It will
-                help you restore your wallet more quickly!
+                Please save the wallet creation height along with your recovery passphrase.
+                It`&apos;`s not required, but will help you restore your wallet quicker on a fresh
+                Prax install next time.
               </p>
             </div>
           )}
