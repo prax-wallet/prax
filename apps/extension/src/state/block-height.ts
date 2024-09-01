@@ -27,16 +27,12 @@ const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number
     throw new Error('No RPC endpoints found.');
   }
 
-  try {
-    const walletCreationBlockHeight = await fetchBlockHeight(randomGrpcEndpoint);
-    if (walletCreationBlockHeight !== undefined) {
-      return walletCreationBlockHeight;
-    } else {
-      // Remove the current endpoint from the list and retry with remaining endpoints
-      const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
-      return fetchBlockHeightWithFallback(remainingEndpoints);
-    }
-  } catch (error) {
+  const walletCreationBlockHeight = await fetchBlockHeight(randomGrpcEndpoint);
+
+  if (walletCreationBlockHeight !== undefined) {
+    return walletCreationBlockHeight;
+  } else {
+    // Remove the current endpoint from the list and retry with remaining endpoints
     const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
     return fetchBlockHeightWithFallback(remainingEndpoints);
   }
@@ -63,19 +59,15 @@ export const createWalletCreationBlockHeightSlice =
   set => ({
     blockHeight: 0,
     initializeBlockHeight: async () => {
-      try {
-        const chainRegistryClient = new ChainRegistryClient();
-        const { rpcs } = chainRegistryClient.bundled.globals();
-        const suggestedEndpoints = rpcs.map(i => i.url);
+      const chainRegistryClient = new ChainRegistryClient();
+      const { rpcs } = chainRegistryClient.bundled.globals();
+      const suggestedEndpoints = rpcs.map(i => i.url);
 
-        const blockHeight = await fetchBlockHeightWithFallback(suggestedEndpoints);
-        await local.set('walletCreationBlockHeight', blockHeight);
-        set(state => {
-          state.walletCreationBlockHeight.blockHeight = blockHeight;
-        });
-      } catch (error) {
-        console.error('Error fetching block height:', error);
-      }
+      const blockHeight = await fetchBlockHeightWithFallback(suggestedEndpoints);
+      await local.set('walletCreationBlockHeight', blockHeight);
+      set(state => {
+        state.walletCreationBlockHeight.blockHeight = blockHeight;
+      });
     },
   });
 

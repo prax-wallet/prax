@@ -21,6 +21,7 @@ export const GenerateSeedPhrase = () => {
   const { phrase, generateRandomSeedPhrase } = useStore(generateSelector);
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const blockHeight = useStore(generateBlockHeightSelector);
   const initializeBlockHeight = useStore(
     state => state.walletCreationBlockHeight.initializeBlockHeight,
@@ -29,21 +30,23 @@ export const GenerateSeedPhrase = () => {
   // Track if the block height has been initialized to avoid multiple fetch attempts
   const isInitialized = useRef(false);
 
-  // On render, generate a new seed phrase and initialize the wallet creation block height
+  // On render, asynchronously generate a new seed phrase and initialize the wallet creation block height
   useEffect(() => {
-    const initialize = async () => {
-      if (!phrase.length) {
-        generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-      }
-      startCountdown();
+    void (async () => {
+      try {
+        if (!phrase.length) {
+          generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
+        }
+        startCountdown();
 
-      if (!isInitialized.current && blockHeight === 0) {
-        await initializeBlockHeight();
-        isInitialized.current = true;
+        if (!isInitialized.current && blockHeight === 0) {
+          await initializeBlockHeight();
+          isInitialized.current = true;
+        }
+      } catch (error) {
+        setError('Failed to fetch block height. Please try again later');
       }
-    };
-
-    void initialize();
+    })();
   }, [generateRandomSeedPhrase, phrase.length, startCountdown, blockHeight, initializeBlockHeight]);
 
   return (
@@ -84,12 +87,18 @@ export const GenerateSeedPhrase = () => {
               <p className='mt-2 text-gray-300'>
                 Block Height:{' '}
                 <span className='font-bold text-gray-100'>
-                  {isInitialized.current ? Number(blockHeight) : 'Loading...'}
+                  {error ? (
+                    <span className='text-red-500'>{error}</span>
+                  ) : isInitialized.current ? (
+                    Number(blockHeight)
+                  ) : (
+                    'Loading...'
+                  )}
                 </span>
               </p>
               <p className='mt-2 text-sm text-gray-400'>
                 Please save the wallet creation height along with your recovery passphrase.
-                It`&apos;`s not required, but will help you restore your wallet quicker on a fresh
+                It&apos;s not required, but will help you restore your wallet quicker on a fresh
                 Prax install next time.
               </p>
             </div>
