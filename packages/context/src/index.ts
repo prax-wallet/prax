@@ -15,7 +15,7 @@ export interface ServicesConfig {
   readonly walletId: WalletId;
   readonly fullViewingKey: FullViewingKey;
   readonly numeraires: AssetId[];
-  readonly walletCreationBlockHeight: number;
+  readonly walletCreationBlockHeight: number | undefined;
 }
 
 export class Services implements ServicesInterface {
