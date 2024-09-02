@@ -81,22 +81,22 @@ export const GenerateSeedPhrase = () => {
 
           {reveal && (
             <div className='mt-4 rounded-lg border border-gray-500 bg-gray-800 p-4 shadow-sm'>
-              <h4 className='text-lg font-semibold text-gray-200'>Wallet Birthday Height</h4>
-              <p className='mt-2 text-gray-300'>
+              <h4 className='text-center text-lg font-semibold text-gray-200'>Wallet Birthday</h4>
+              <p className='mt-2 text-center text-gray-300'>
                 <span className='font-bold text-gray-100'>
                   {error ? (
                     <span className='text-red-500'>{error}</span>
                   ) : isInitialized.current ? (
-                    Number(blockHeight)
+                    Number(blockHeight).toLocaleString()
                   ) : (
                     'Loading...'
                   )}
                 </span>
               </p>
               <p className='mt-2 text-sm text-gray-400'>
-                Please save the wallet creation height along with your recovery passphrase.
-                It&apos;s not required, but will help you restore your wallet quicker on a fresh
-                Prax install next time.
+                This is the block height at the time your wallet was created. Please save the block
+                height along with your recovery passphrase. It&apos;s not required, but will help
+                you restore your wallet quicker on a fresh Prax install next time.
               </p>
             </div>
           )}

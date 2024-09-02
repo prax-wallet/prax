@@ -31,28 +31,28 @@ export const ImportWalletCreationHeight = () => {
   return (
     <FadeTransition>
       <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
-      <Card className='w-[600px] p-6' gradient>
-        <CardHeader className='items-center'>
-          <CardTitle className='font-semibold'>
-            Enter the block height at the time your wallet was created. This is your wallet&apos;s
-            birthday height (Optional)
+      <Card className='w-[600px] p-8' gradient>
+        <CardHeader className='items-center text-center'>
+          <CardTitle className='text-xl font-semibold'>
+            Enter your wallet&apos;s birthday (Optional)
           </CardTitle>
-          <CardDescription>
-            Providing your wallet&apos;s block creation height can help speed up the synchronization
-            process, but it&apos;s not required. If you don&apos;t have this information, you can
-            safely skip this step.
+          <CardDescription className='mt-2 text-sm'>
+            This is the block height at the time your wallet was created. Providing your
+            wallet&apos;s block creation height can help speed up the synchronization process, but
+            it&apos;s not required. If you don&apos;t have this information, you can safely skip
+            this step.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form className='mt-6 grid gap-4' onSubmit={handleSubmit}>
+        <CardContent className='mt-8'>
+          <form className='grid gap-6' onSubmit={handleSubmit}>
             <Input
               type='text'
-              placeholder=''
+              placeholder='Enter block height'
               value={blockHeight}
               onChange={e => setBlockHeight(e.target.value)}
-              className='text-[15px] font-normal leading-[22px]'
+              className='rounded-md border border-gray-700 p-3 text-[16px] font-normal leading-[24px]'
             />
-            <Button className='mt-4' variant='gradient' onClick={handleSubmit}>
+            <Button className='mt-6 w-full' variant='gradient' onClick={handleSubmit}>
               Continue
             </Button>
           </form>
