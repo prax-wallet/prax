@@ -15,8 +15,10 @@ import { ConnectedSitesSlice, createConnectedSitesSlice } from './connected-site
 import { createDefaultFrontendSlice, DefaultFrontendSlice } from './default-frontend';
 import { createNumerairesSlice, NumerairesSlice } from './numeraires';
 import {
-  walletCreationBlockHeightSlice,
-  createWalletCreationBlockHeightSlice,
+  freshWalletCreationBlockHeightSlice,
+  createFreshWalletCreationBlockHeightSlice,
+  existingWalletCreationBlockHeightSlice,
+  createExistingWalletCreationBlockHeightSlice,
 } from './block-height';
 
 export interface AllSlices {
@@ -29,7 +31,8 @@ export interface AllSlices {
   originApproval: OriginApprovalSlice;
   connectedSites: ConnectedSitesSlice;
   defaultFrontend: DefaultFrontendSlice;
-  walletCreationBlockHeight: walletCreationBlockHeightSlice;
+  freshWalletCreationBlockHeight: freshWalletCreationBlockHeightSlice;
+  existingWalletCreationBlockHeight: existingWalletCreationBlockHeightSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -53,7 +56,12 @@ export const initializeStore = (
     txApproval: createTxApprovalSlice()(setState, getState, store),
     originApproval: createOriginApprovalSlice()(setState, getState, store),
     defaultFrontend: createDefaultFrontendSlice(local)(setState, getState, store),
-    walletCreationBlockHeight: createWalletCreationBlockHeightSlice(local)(
+    freshWalletCreationBlockHeight: createFreshWalletCreationBlockHeightSlice(local)(
+      setState,
+      getState,
+      store,
+    ),
+    existingWalletCreationBlockHeight: createExistingWalletCreationBlockHeightSlice(local)(
       setState,
       getState,
       store,

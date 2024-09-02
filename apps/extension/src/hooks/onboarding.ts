@@ -1,4 +1,5 @@
 import { useStore } from '../state';
+// import { existingWalletBlockHeightSelector } from '../state/block-height';
 import { passwordSelector } from '../state/password';
 import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
@@ -16,7 +17,14 @@ export const useOnboardingSave = () => {
     // Determine which routes it came through to get here
     const seedPhrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
     await setPassword(plaintextPassword);
-
     await addWallet({ label: 'Wallet #1', seedPhrase });
+  };
+};
+
+export const useOnboardingSaveOptional = () => {
+  const { setBlockHeight } = useStore(state => state.existingWalletCreationBlockHeight);
+
+  return async (walletBlockHeight: number) => {
+    await setBlockHeight(walletBlockHeight);
   };
 };

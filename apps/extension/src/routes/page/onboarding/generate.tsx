@@ -14,7 +14,7 @@ import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
-import { generateBlockHeightSelector } from '../../../state/block-height';
+import { freshWalletBlockHeightSelector } from '../../../state/block-height';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
@@ -22,10 +22,8 @@ export const GenerateSeedPhrase = () => {
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const blockHeight = useStore(generateBlockHeightSelector);
-  const initializeBlockHeight = useStore(
-    state => state.walletCreationBlockHeight.initializeBlockHeight,
-  );
+  const blockHeight = useStore(freshWalletBlockHeightSelector);
+  const setBlockHeight = useStore(state => state.freshWalletCreationBlockHeight.setBlockHeight);
 
   // Track if the block height has been initialized to avoid multiple fetch attempts
   const isInitialized = useRef(false);
@@ -40,14 +38,14 @@ export const GenerateSeedPhrase = () => {
         startCountdown();
 
         if (!isInitialized.current && blockHeight === 0) {
-          await initializeBlockHeight();
+          await setBlockHeight();
           isInitialized.current = true;
         }
       } catch (error) {
         setError('Failed to fetch block height. Please try again later');
       }
     })();
-  }, [generateRandomSeedPhrase, phrase.length, startCountdown, blockHeight, initializeBlockHeight]);
+  }, [generateRandomSeedPhrase, phrase.length, startCountdown, blockHeight, setBlockHeight]);
 
   return (
     <FadeTransition>
@@ -83,9 +81,8 @@ export const GenerateSeedPhrase = () => {
 
           {reveal && (
             <div className='mt-4 rounded-lg border border-gray-500 bg-gray-800 p-4 shadow-sm'>
-              <h4 className='text-lg font-semibold text-gray-200'>Wallet Birthday</h4>
+              <h4 className='text-lg font-semibold text-gray-200'>Wallet Birthday Height</h4>
               <p className='mt-2 text-gray-300'>
-                Block Height:{' '}
                 <span className='font-bold text-gray-100'>
                   {error ? (
                     <span className='text-red-500'>{error}</span>
