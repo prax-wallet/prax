@@ -22,7 +22,7 @@ export const useAddWallet = () => {
 };
 
 export const useOnboardingSaveOptional = () => {
-  const { setBlockHeight } = useStore(state => state.existingWalletCreationBlockHeight);
+  const { setBlockHeight } = useStore(state => state.walletHeight);
 
   return async (walletBlockHeight: number) => {
     await setBlockHeight(walletBlockHeight);

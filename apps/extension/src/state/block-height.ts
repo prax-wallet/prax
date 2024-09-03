@@ -7,14 +7,9 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createPromiseClient } from '@connectrpc/connect';
 import { sample } from 'lodash';
 
-export interface freshWalletCreationBlockHeightSlice {
+export interface walletHeightSlice {
   blockHeight: number;
-  setBlockHeight: () => Promise<void>;
-}
-
-export interface existingWalletCreationBlockHeightSlice {
-  blockHeight: number;
-  setBlockHeight: (height: number) => Promise<void>;
+  setBlockHeight: (blockHeight?: number, isFreshWallet?: boolean) => Promise<void>;
 }
 
 // Utility function to fetch the block height by randomly querying one of the RPC endpoints
@@ -58,43 +53,30 @@ export const fetchBlockHeight = async (grpcEndpoint: string): Promise<number | u
   return Number(blockHeight);
 };
 
-// Fresh wallets: zustand slice that initializes and stores the block height in both Zustand state and local storage.
-export const createFreshWalletCreationBlockHeightSlice =
-  (local: ExtensionStorage<LocalStorageState>): SliceCreator<freshWalletCreationBlockHeightSlice> =>
+// Zustand slice that initializes and stores the block height in both Zustand state and local storage
+export const createWalletCreationBlockHeightSlice =
+  (local: ExtensionStorage<LocalStorageState>): SliceCreator<walletHeightSlice> =>
   set => ({
     blockHeight: 0,
-    setBlockHeight: async () => {
-      const chainRegistryClient = new ChainRegistryClient();
-      const { rpcs } = chainRegistryClient.bundled.globals();
-      const suggestedEndpoints = rpcs.map(i => i.url);
+    setBlockHeight: async (walletHeight?: number, isFreshWallet?: boolean) => {
+      if (!isFreshWallet) {
+        await local.set('walletCreationBlockHeight', walletHeight);
+        set(state => {
+          state.walletHeight.blockHeight = walletHeight!;
+        });
+      } else {
+        const chainRegistryClient = new ChainRegistryClient();
+        const { rpcs } = chainRegistryClient.bundled.globals();
+        const suggestedEndpoints = rpcs.map(i => i.url);
 
-      const blockHeight = await fetchBlockHeightWithFallback(suggestedEndpoints);
-      await local.set('walletCreationBlockHeight', blockHeight);
-      set(state => {
-        state.freshWalletCreationBlockHeight.blockHeight = blockHeight;
-      });
+        const blockHeight = await fetchBlockHeightWithFallback(suggestedEndpoints);
+        await local.set('walletCreationBlockHeight', blockHeight);
+        set(state => {
+          state.walletHeight.blockHeight = blockHeight;
+        });
+      }
     },
   });
 
-// Existing wallets: zustand slice that initializes and stores the block height in both Zustand state and local storage.
-export const createExistingWalletCreationBlockHeightSlice =
-  (
-    local: ExtensionStorage<LocalStorageState>,
-  ): SliceCreator<existingWalletCreationBlockHeightSlice> =>
-  set => ({
-    blockHeight: 0,
-    setBlockHeight: async (blockHeight: number) => {
-      await local.set('walletCreationBlockHeight', blockHeight);
-      set(state => {
-        state.existingWalletCreationBlockHeight.blockHeight = blockHeight;
-      });
-    },
-  });
-
-// Selector to retrieve the block height from the Zustand store for fresh wallets
-export const freshWalletBlockHeightSelector = (state: AllSlices) =>
-  state.freshWalletCreationBlockHeight.blockHeight;
-
-// Selector to retrieve the block height from the Zustand store for existing wallets
-export const existingWalletBlockHeightSelector = (state: AllSlices) =>
-  state.existingWalletCreationBlockHeight.blockHeight;
+// Selector to retrieve the wallet block height from the Zustand store
+export const walletBlockHeightSelector = (state: AllSlices) => state.walletHeight.blockHeight;

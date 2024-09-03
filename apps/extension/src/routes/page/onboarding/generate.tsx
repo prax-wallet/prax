@@ -14,7 +14,7 @@ import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
-import { freshWalletBlockHeightSelector } from '../../../state/block-height';
+import { walletBlockHeightSelector } from '../../../state/block-height';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
@@ -22,8 +22,8 @@ export const GenerateSeedPhrase = () => {
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const blockHeight = useStore(freshWalletBlockHeightSelector);
-  const setBlockHeight = useStore(state => state.freshWalletCreationBlockHeight.setBlockHeight);
+  const blockHeight = useStore(walletBlockHeightSelector);
+  const setBlockHeight = useStore(state => state.walletHeight.setBlockHeight);
 
   // Track if the block height has been initialized to avoid multiple fetch attempts
   const isInitialized = useRef(false);
@@ -38,7 +38,7 @@ export const GenerateSeedPhrase = () => {
         startCountdown();
 
         if (!isInitialized.current && blockHeight === 0) {
-          await setBlockHeight();
+          await setBlockHeight(0, true);
           isInitialized.current = true;
         }
       } catch (error) {
