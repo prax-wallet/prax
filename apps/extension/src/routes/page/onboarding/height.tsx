@@ -46,7 +46,7 @@ export const ImportWalletCreationHeight = () => {
         <CardContent className='mt-8'>
           <form className='grid gap-6' onSubmit={handleSubmit}>
             <Input
-              type='text'
+              type='number'
               placeholder='Enter block height'
               value={blockHeight}
               onChange={e => setBlockHeight(e.target.value)}

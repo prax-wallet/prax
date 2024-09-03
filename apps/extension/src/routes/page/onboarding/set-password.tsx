@@ -9,14 +9,14 @@ import {
   CardTitle,
 } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
-import { useOnboardingSave } from '../../../hooks/onboarding';
+import { useAddWallet } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { PasswordInput } from '../../../shared/components/password-input';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
-  const onboardingSave = useOnboardingSave();
+  const onboardingSave = useAddWallet();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
 
