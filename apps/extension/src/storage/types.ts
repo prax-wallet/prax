@@ -25,5 +25,5 @@ export interface LocalStorageState {
   knownSites: OriginRecord[];
   params: Stringified<AppParameters> | undefined;
   numeraires: Stringified<AssetId>[];
-  walletCreationBlockHeight?: number;
+  walletCreationBlockHeight: number | undefined;
 }

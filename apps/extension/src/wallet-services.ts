@@ -25,7 +25,7 @@ export const startWalletServices = async () => {
     walletId: WalletId.fromJsonString(wallet.id),
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
     numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
-    walletCreationBlockHeight: walletCreationBlockHeight,
+    walletCreationBlockHeight,
   });
 
   const { blockProcessor, indexedDb } = await services.getWalletServices();

@@ -12,18 +12,17 @@ import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { FormEvent, useState } from 'react';
 import { Input } from '@repo/ui/components/ui/input';
-import { useOnboardingSaveOptional } from '../../../hooks/onboarding';
+import { localExtStorage } from '../../../storage/local';
 
 export const ImportWalletCreationHeight = () => {
   const navigate = usePageNav();
-  const [blockHeight, setBlockHeight] = useState('');
-  const onboardingSave = useOnboardingSaveOptional();
+  const [blockHeight, setBlockHeight] = useState<number>();
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
     void (async () => {
-      await onboardingSave(Number(blockHeight));
+      await localExtStorage.set('walletCreationBlockHeight', blockHeight);
       navigate(PagePath.SET_PASSWORD);
     })();
   };
@@ -49,7 +48,7 @@ export const ImportWalletCreationHeight = () => {
               type='number'
               placeholder='Enter block height'
               value={blockHeight}
-              onChange={e => setBlockHeight(e.target.value)}
+              onChange={e => setBlockHeight(Number(e.target.value))}
               className='rounded-md border border-gray-700 p-3 text-[16px] font-normal leading-[24px]'
             />
             <Button className='mt-6 w-full' variant='gradient' onClick={handleSubmit}>

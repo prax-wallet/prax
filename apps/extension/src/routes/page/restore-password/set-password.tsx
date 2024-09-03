@@ -16,14 +16,14 @@ import { PasswordInput } from '../../../shared/components/password-input';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
-  const finalOnboardingSave = useAddWallet();
+  const addWallet = useAddWallet();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     void (async function () {
-      await finalOnboardingSave(password);
+      await addWallet(password);
       navigate(PagePath.ONBOARDING_SUCCESS);
     })();
   };

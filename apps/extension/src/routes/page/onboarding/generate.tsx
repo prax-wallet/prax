@@ -1,6 +1,6 @@
 import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { SeedPhraseLength } from '@penumbra-zone/crypto-web/mnemonic';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@repo/ui/components/ui/button';
 import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
@@ -14,38 +14,29 @@ import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
-import { walletBlockHeightSelector } from '../../../state/block-height';
+import { useLatestBlockHeightWithFallback } from '../../../hooks/latest-block-height';
+import { localExtStorage } from '../../../storage/local';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
   const { phrase, generateRandomSeedPhrase } = useStore(generateSelector);
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const blockHeight = useStore(walletBlockHeightSelector);
-  const setBlockHeight = useStore(state => state.walletHeight.setBlockHeight);
 
-  // Track if the block height has been initialized to avoid multiple fetch attempts
-  const isInitialized = useRef(false);
+  const { data: latestBlockHeight, isLoading, error } = useLatestBlockHeightWithFallback();
+
+  const onSubmit = async () => {
+    await localExtStorage.set('walletCreationBlockHeight', latestBlockHeight);
+    navigate(PagePath.CONFIRM_BACKUP);
+  };
 
   // On render, asynchronously generate a new seed phrase and initialize the wallet creation block height
   useEffect(() => {
-    void (async () => {
-      try {
-        if (!phrase.length) {
-          generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-        }
-        startCountdown();
-
-        if (!isInitialized.current && blockHeight === 0) {
-          await setBlockHeight(0, true);
-          isInitialized.current = true;
-        }
-      } catch (error) {
-        setError('Failed to fetch block height. Please try again later');
-      }
-    })();
-  }, [generateRandomSeedPhrase, phrase.length, startCountdown, blockHeight, setBlockHeight]);
+    if (!phrase.length) {
+      generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
+    }
+    startCountdown();
+  }, [generateRandomSeedPhrase, phrase.length, startCountdown]);
 
   return (
     <FadeTransition>
@@ -84,13 +75,9 @@ export const GenerateSeedPhrase = () => {
               <h4 className='text-center text-lg font-semibold text-gray-200'>Wallet Birthday</h4>
               <p className='mt-2 text-center text-gray-300'>
                 <span className='font-bold text-gray-100'>
-                  {error ? (
-                    <span className='text-red-500'>{error}</span>
-                  ) : isInitialized.current ? (
-                    Number(blockHeight).toLocaleString()
-                  ) : (
-                    'Loading...'
-                  )}
+                  {Boolean(error) && <span className='text-red-500'>{String(error)}</span>}
+                  {isLoading && 'Loading...'}
+                  {latestBlockHeight && Number(latestBlockHeight).toLocaleString()}
                 </span>
               </p>
               <p className='mt-2 text-sm text-gray-400'>
@@ -126,7 +113,7 @@ export const GenerateSeedPhrase = () => {
             <Button
               className='mt-4'
               variant='gradient'
-              onClick={() => navigate(PagePath.CONFIRM_BACKUP)}
+              onClick={() => void onSubmit()}
               disabled={count !== 0}
             >
               I have backed this up

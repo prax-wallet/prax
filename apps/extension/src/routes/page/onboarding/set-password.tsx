@@ -16,7 +16,7 @@ import { PasswordInput } from '../../../shared/components/password-input';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
-  const onboardingSave = useAddWallet();
+  const addWallet = useAddWallet();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
 
@@ -24,7 +24,7 @@ export const SetPassword = () => {
     event.preventDefault();
 
     void (async () => {
-      await onboardingSave(password);
+      await addWallet(password);
       navigate(PagePath.SET_GRPC_ENDPOINT);
     })();
   };

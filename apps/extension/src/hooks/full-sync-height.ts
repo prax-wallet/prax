@@ -1,9 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
 import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 import { useLoaderData } from 'react-router-dom';
-import { fetchBlockHeight } from '../state/block-height';
+import { useLatestBlockHeight } from './latest-block-height';
 
 const tryGetMax = (a?: number, b?: number): number | undefined => {
   // Height can be 0n which is falsy, so should compare to undefined state
@@ -28,18 +27,7 @@ const useFullSyncHeight = (): number | undefined => {
 
 export const useSyncProgress = () => {
   const fullSyncHeight = useFullSyncHeight();
-  const { grpcEndpoint } = useStore(networkSelector);
-
-  const { data: queriedLatest, error } = useQuery({
-    queryKey: ['latestBlockHeight'],
-    queryFn: async () => {
-      if (!grpcEndpoint) {
-        return;
-      }
-      return await fetchBlockHeight(grpcEndpoint);
-    },
-    enabled: Boolean(grpcEndpoint),
-  });
+  const { data: queriedLatest, error } = useLatestBlockHeight();
 
   // If we have a queried sync height and it's ahead of our block-height query,
   // use the sync value instead
