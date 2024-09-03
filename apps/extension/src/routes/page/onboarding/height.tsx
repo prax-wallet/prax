@@ -22,7 +22,7 @@ export const ImportWalletCreationHeight = () => {
     event.preventDefault();
 
     void (async () => {
-      await localExtStorage.set('walletCreationBlockHeight', blockHeight);
+      await localExtStorage.set('walletCreationBlockHeight', blockHeight ? blockHeight : 0);
       navigate(PagePath.SET_PASSWORD);
     })();
   };
@@ -47,7 +47,7 @@ export const ImportWalletCreationHeight = () => {
             <Input
               type='number'
               placeholder='Enter block height'
-              value={blockHeight}
+              value={blockHeight ? blockHeight : ''} // prevents uncontrolled form react err
               onChange={e => setBlockHeight(Number(e.target.value))}
               className='rounded-md border border-gray-700 p-3 text-[16px] font-normal leading-[24px]'
             />
