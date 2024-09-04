@@ -77,7 +77,7 @@ export const GenerateSeedPhrase = () => {
                 <span className='font-bold text-gray-100'>
                   {Boolean(error) && <span className='text-red-500'>{String(error)}</span>}
                   {isLoading && 'Loading...'}
-                  {latestBlockHeight && Number(latestBlockHeight).toLocaleString()}
+                  {latestBlockHeight && Number(latestBlockHeight)}
                 </span>
               </p>
               <p className='mt-2 text-sm text-gray-400'>
@@ -85,6 +85,13 @@ export const GenerateSeedPhrase = () => {
                 height along with your recovery passphrase. It&apos;s not required, but will help
                 you restore your wallet quicker on a fresh Prax install next time.
               </p>
+              <CopyToClipboard
+                disabled={!reveal}
+                text={Number(latestBlockHeight).toString()}
+                label={<span className='font-bold text-muted-foreground'>Copy to clipboard</span>}
+                className='m-auto mt-4 w-48'
+                isSuccessCopyText
+              />
             </div>
           )}
 

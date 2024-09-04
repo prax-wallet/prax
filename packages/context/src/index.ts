@@ -125,8 +125,8 @@ export class Services implements ServicesInterface {
       querier,
       indexedDb,
       stakingAssetId: registryClient.bundled.globals().stakingAssetId,
-      numeraires: numeraires,
-      walletCreationBlockHeight: walletCreationBlockHeight,
+      numeraires,
+      walletCreationBlockHeight,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };
