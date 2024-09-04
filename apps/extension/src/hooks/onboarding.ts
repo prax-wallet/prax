@@ -6,7 +6,7 @@ import { walletsSelector } from '../state/wallets';
 
 // Saves hashed password, uses that hash to encrypt the seed phrase
 // and then saves that to session + local storage
-export const useOnboardingSave = () => {
+export const useAddWallet = () => {
   const { setPassword } = useStore(passwordSelector);
   const { phrase: generatedPhrase } = useStore(generateSelector);
   const { phrase: importedPhrase } = useStore(importSelector);
@@ -16,7 +16,6 @@ export const useOnboardingSave = () => {
     // Determine which routes it came through to get here
     const seedPhrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
     await setPassword(plaintextPassword);
-
     await addWallet({ label: 'Wallet #1', seedPhrase });
   };
 };

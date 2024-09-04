@@ -9,21 +9,21 @@ import {
   CardTitle,
 } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
-import { useOnboardingSave } from '../../../hooks/onboarding';
+import { useAddWallet } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { PasswordInput } from '../../../shared/components/password-input';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
-  const finalOnboardingSave = useOnboardingSave();
+  const addWallet = useAddWallet();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     void (async function () {
-      await finalOnboardingSave(password);
+      await addWallet(password);
       navigate(PagePath.ONBOARDING_SUCCESS);
     })();
   };

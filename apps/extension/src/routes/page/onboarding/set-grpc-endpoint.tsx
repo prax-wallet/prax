@@ -16,7 +16,6 @@ export const SetGrpcEndpoint = () => {
       <Card className='w-[400px]' gradient>
         <CardHeader>
           <CardTitle>Select your preferred RPC endpoint</CardTitle>
-
           <CardDescription>
             The requests you make may reveal your intentions about transactions you wish to make, so
             select an RPC node that you trust. If you&apos;re unsure which one to choose, leave this

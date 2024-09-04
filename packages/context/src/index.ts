@@ -15,6 +15,7 @@ export interface ServicesConfig {
   readonly walletId: WalletId;
   readonly fullViewingKey: FullViewingKey;
   readonly numeraires: AssetId[];
+  readonly walletCreationBlockHeight: number | undefined;
 }
 
 export class Services implements ServicesInterface {
@@ -28,12 +29,12 @@ export class Services implements ServicesInterface {
   public async getWalletServices(): Promise<WalletServices> {
     if (!this.walletServicesPromise) {
       this.walletServicesPromise = this.initializeWalletServices().catch((e: unknown) => {
-        // If promise rejected, reset promise to `undefined` so next caller can
-        // try again
+        // If promise rejected, reset promise to `undefined` so next caller can try again.
         this.walletServicesPromise = undefined;
         throw e;
       });
     }
+
     void this.walletServicesPromise.then(({ blockProcessor }) => blockProcessor.sync());
     return this.walletServicesPromise;
   }
@@ -83,7 +84,14 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { chainId, grpcEndpoint, walletId, fullViewingKey, numeraires } = this.config;
+    const {
+      chainId,
+      grpcEndpoint,
+      walletId,
+      fullViewingKey,
+      numeraires,
+      walletCreationBlockHeight,
+    } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const registryClient = new ChainRegistryClient();
     const indexedDb = await IndexedDb.initialize({
@@ -117,7 +125,8 @@ export class Services implements ServicesInterface {
       querier,
       indexedDb,
       stakingAssetId: registryClient.bundled.globals().stakingAssetId,
-      numeraires: numeraires,
+      numeraires,
+      walletCreationBlockHeight,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };

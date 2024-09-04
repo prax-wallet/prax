@@ -22,7 +22,7 @@ export const ImportSeedPhrase = () => {
 
   const handleSubmit = (event: MouseEvent | FormEvent) => {
     event.preventDefault();
-    navigate(PagePath.SET_PASSWORD);
+    navigate(PagePath.IMPORT_WALLET_CREATION_HEIGHT);
   };
 
   return (

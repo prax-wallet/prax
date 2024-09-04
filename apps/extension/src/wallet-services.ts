@@ -16,12 +16,16 @@ export const startWalletServices = async () => {
   const grpcEndpoint = await onboardGrpcEndpoint();
   const numeraires = await localExtStorage.get('numeraires');
 
+  // Retrieve the wallet creation height flag from storage
+  const walletCreationBlockHeight = await localExtStorage.get('walletCreationBlockHeight');
+
   const services = new Services({
     grpcEndpoint,
     chainId: await getChainId(grpcEndpoint),
     walletId: WalletId.fromJsonString(wallet.id),
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
     numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
+    walletCreationBlockHeight,
   });
 
   const { blockProcessor, indexedDb } = await services.getWalletServices();
