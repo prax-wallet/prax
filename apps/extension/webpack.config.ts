@@ -17,7 +17,8 @@ import WatchExternalFilesPlugin from 'webpack-watch-external-files-plugin';
 // Loads default vars from `.env` file in this directory.
 dotenv.config({ path: '.env' });
 
-const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
+//const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
+//const servicesPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/services')));
 
 const localPackages = [
   ...Object.values(rootPackageJson.dependencies),
@@ -120,24 +121,29 @@ export default ({
     'page-root': path.join(entryDir, 'page-root.tsx'),
     'popup-root': path.join(entryDir, 'popup-root.tsx'),
     'service-worker': path.join(srcDir, 'service-worker.ts'),
-    'wasm-build-action': path.join(srcDir, 'wasm-build-action.ts'),
   },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js',
+    module: true,
+    chunkFormat: 'module',
+    scriptType: 'module',
   },
   optimization: {
     splitChunks: {
+      chunks: 'async',
+
+      /*
       chunks: chunk => {
         const filesNotToChunk = [
           'injected-connection-port',
           'injected-penumbra-global',
           'injected-request-listner',
           'service-worker',
-          'wasm-build-action',
         ];
         return chunk.name ? !filesNotToChunk.includes(chunk.name) : false;
       },
+      */
     },
   },
   module: {
@@ -176,13 +182,17 @@ export default ({
           filename: 'videos/[hash][ext][query]',
         },
       },
+      /*
+      {
+        test: /\.bin$/,
+        type: 'asset/resource',
+        generator: { filename: 'keys/[name][ext]' },
+      },
+      */
     ],
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
-    alias: {
-      '@ui': path.resolve(__dirname, '../../packages/ui'),
-    },
   },
   plugins: [
     new webpack.CleanPlugin(),
@@ -197,15 +207,7 @@ export default ({
       },
     }),
     DefinePlugin,
-    new CopyPlugin({
-      patterns: [
-        'public',
-        {
-          from: path.join(keysPackage, 'keys', '*_pk.bin'),
-          to: 'keys/[name][ext]',
-        },
-      ],
-    }),
+    new CopyPlugin({ patterns: ['public'] }),
     // html entry points
     new HtmlWebpackPlugin({
       favicon: 'public/favicon/icon128.png',
@@ -213,6 +215,7 @@ export default ({
       template: 'react-root.html',
       filename: 'page.html',
       chunks: ['page-root'],
+      scriptLoading: 'module',
     }),
     new HtmlWebpackPlugin({
       title: 'Prax Wallet',
@@ -220,11 +223,13 @@ export default ({
       rootId: 'popup-root',
       filename: 'popup.html',
       chunks: ['popup-root'],
+      scriptLoading: 'module',
     }),
     new HtmlWebpackPlugin({
       title: 'Penumbra Offscreen',
       filename: 'offscreen.html',
       chunks: ['offscreen-handler'],
+      scriptLoading: 'module',
     }),
     // watch tarballs for changes
     WEBPACK_WATCH && new WatchExternalFilesPlugin({ files: localPackages }),
@@ -232,6 +237,7 @@ export default ({
     CHROMIUM_PROFILE && WebExtReloadPlugin,
   ],
   experiments: {
+    outputModule: true,
     asyncWebAssembly: true,
   },
 });

@@ -43,6 +43,15 @@ import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
 
 import { backOff } from 'exponential-backoff';
 
+import { OffscreenWorker } from '@repo/chrome-offscreen-worker/worker';
+
+globalThis.Worker = OffscreenWorker;
+OffscreenWorker.configure(
+  chrome.runtime.getURL(
+    'offscreen.html',
+  ) as `chrome-extension://${typeof chrome.runtime.id}/${'offscreen.html'}`,
+);
+
 const initHandler = async () => {
   const walletServices = startWalletServices();
   const rpcImpls = await getRpcImpls();
