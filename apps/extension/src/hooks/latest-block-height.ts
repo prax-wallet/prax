@@ -23,7 +23,7 @@ const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number
   }
 
   try {
-    return await fetchBlockHeight(randomGrpcEndpoint);
+    return await fetchBlockHeightWithTimeout(randomGrpcEndpoint);
   } catch (e) {
     // Remove the current endpoint from the list and retry with remaining endpoints
     const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
@@ -31,11 +31,43 @@ const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number
   }
 };
 
-// Fetch the block height from a specific RPC endpoint with a timeout to prevent hanging requests.
+// Fetch the block height from a specific RPC endpoint with a request-level timeout that superceeds
+// the channel transport-level timeout to prevent hanging requests.
+export const fetchBlockHeightWithTimeout = async (
+  grpcEndpoint: string,
+  timeoutMs = 5000,
+): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error('Request timed out'));
+    }, timeoutMs);
+
+    const tendermintClient = createPromiseClient(
+      TendermintProxyService,
+      createGrpcWebTransport({ baseUrl: grpcEndpoint }),
+    );
+
+    tendermintClient
+      .getStatus({})
+      .then(result => {
+        if (!result.syncInfo) {
+          reject(new Error('No syncInfo in getStatus result'));
+        }
+        clearTimeout(timeout);
+        resolve(Number(result.syncInfo?.latestBlockHeight));
+      })
+      .catch(() => {
+        clearTimeout(timeout);
+        reject(new Error('RPC request timed out while fetching block height'));
+      });
+  });
+};
+
+// Fetch the block height from a specific RPC endpoint.
 export const fetchBlockHeight = async (grpcEndpoint: string): Promise<number> => {
   const tendermintClient = createPromiseClient(
     TendermintProxyService,
-    createGrpcWebTransport({ baseUrl: grpcEndpoint, defaultTimeoutMs: 2000 }),
+    createGrpcWebTransport({ baseUrl: grpcEndpoint }),
   );
 
   const result = await tendermintClient.getStatus({});
