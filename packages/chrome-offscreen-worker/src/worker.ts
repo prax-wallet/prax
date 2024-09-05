@@ -2,7 +2,6 @@ import { OffscreenControl } from './control';
 import {
   isOffscreenWorkerEvent,
   isOffscreenWorkerEventMessage,
-  type OffscreenWorkerEvent,
   type OffscreenWorkerPort,
 } from './messages/worker-event';
 import type { WorkerConstructorParamsPrimitive } from './messages/root-control';
@@ -72,16 +71,19 @@ export class OffscreenWorker implements Worker {
   }
 
   private workerListener = (json: unknown, port: chrome.runtime.Port) => {
-    console.debug(this.params[1].name, 'workerListener', json, port.name);
+    console.debug('worker workerListener', json, port.name);
     if (isOffscreenWorkerEventMessage(json) && isOffscreenWorkerEvent(json.init, json.type)) {
       switch (json.type) {
         case 'error':
-          this.internalTarget.dispatchEvent(new ErrorEvent(json.type, json.init));
+          this.externalTarget.dispatchEvent(new ErrorEvent(json.type, { ...json.init }));
           return;
         case 'message':
-        case 'messageerror':
-          this.internalTarget.dispatchEvent(new MessageEvent(json.type, json.init));
+          this.internalTarget.postMessage(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            new MessageEvent(json.type, { data: (json.init as MessageEventInit).data }),
+          );
           return;
+        case 'messageerror':
         default:
           //console.warn('Dispatching unknown event', json);
           //this.internalTarget.dispatchEvent(new Event(json.type, json.init));
@@ -93,14 +95,38 @@ export class OffscreenWorker implements Worker {
   };
 
   private parentListener = (evt: Event) => {
-    console.debug(this.params[1].name, 'parentListener', [evt]);
-    const unknownMessage = { type: evt.type, init: { ...evt } };
+    console.debug('worker parentListener', [evt]);
     switch (evt.type) {
       case 'error':
+        void this.workerPort.then(port =>
+          port.postMessage({
+            type: 'error',
+            init: {
+              message: (evt as ErrorEvent).message,
+              filename: (evt as ErrorEvent).filename,
+              lineno: (evt as ErrorEvent).lineno,
+              colno: (evt as ErrorEvent).colno,
+              //error: (evt as ErrorEvent).error,
+            },
+          }),
+        );
+        break;
       case 'message':
+        void this.workerPort.then(port =>
+          port.postMessage({
+            type: 'message',
+            init: { data: (evt as MessageEvent).data as unknown },
+          }),
+        );
+        break;
       case 'messageerror':
-        void this.workerPort.then(port => port.postMessage(unknownMessage as OffscreenWorkerEvent));
-        return;
+        void this.workerPort.then(port =>
+          port.postMessage({
+            type: 'messageerror',
+            init: { data: (evt as MessageEvent).data as unknown },
+          }),
+        );
+        break;
       default:
         throw new Error('Unknown event from parent', { cause: evt });
     }

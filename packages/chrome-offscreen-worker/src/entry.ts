@@ -20,14 +20,8 @@ const persist = () => {
 const sessionId = location.hash.slice(1);
 
 chrome.runtime.onConnect.addListener(newSessionPort => {
-  console.log(
-    'offscreen entry onConnect with hash',
-    location.hash,
-    'handling port',
-    newSessionPort.name,
-  );
   if (newSessionPort.name === sessionId) {
-    console.log('offscreen accepting session', sessionId);
+    console.log('entry accepting', sessionId);
     persist();
     attachSession(newSessionPort);
   }
@@ -47,9 +41,19 @@ const attachSession = (sessionPort: chrome.runtime.Port) => {
     });
     const workerPort = chrome.runtime.connect({ name: workerId }) as OffscreenWorkerPort;
 
+    worker.addEventListener('error', event =>
+      workerPort.postMessage({ type: 'error', init: event }),
+    );
+    worker.addEventListener('messageerror', event =>
+      workerPort.postMessage({ type: 'messageerror', init: { ...event, ports: undefined } }),
+    );
+    worker.addEventListener('message', event =>
+      workerPort.postMessage({ type: 'message', init: { ...event, ports: undefined } }),
+    );
+
     // setup disconnect handler
     workerPort.onDisconnect.addListener(() => {
-      console.log('workerPort onDisconnect', workerId);
+      console.log('entry workerPort onDisconnect', workerId);
       workers.delete(workerId);
       if (!workers.size) {
         contemplate('no workers');
@@ -61,18 +65,16 @@ const attachSession = (sessionPort: chrome.runtime.Port) => {
     workers.set(workerId, { worker, workerPort });
 
     const workerListener = (json: unknown) => {
-      console.log('workerListener', json, workerId);
+      console.log('entry workerListener', json, workerId);
       if (isOffscreenWorkerEventMessage(json)) {
         if (isOffscreenWorkerEvent(json.init, json.type)) {
           persist();
           switch (json.type) {
-            case 'error':
-              worker.dispatchEvent(new ErrorEvent(json.type, json.init));
-              return;
             case 'message':
+              worker.postMessage((json.init as MessageEventInit)?.data);
+              break;
+            case 'error':
             case 'messageerror':
-              worker.dispatchEvent(new MessageEvent(json.type, json.init));
-              return;
             default:
               throw new Error('Unknown message in worker input', {
                 cause: { message: json, workerId },
@@ -87,7 +89,7 @@ const attachSession = (sessionPort: chrome.runtime.Port) => {
   };
 
   sessionPort.onMessage.addListener((json: unknown) => {
-    console.log('offscreen control message', json, sessionId);
+    console.log('entry control', json, sessionId);
     if (isOffscreenRootControlMessage(json)) {
       switch (json.type) {
         case 'new': {

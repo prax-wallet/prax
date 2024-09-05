@@ -24,9 +24,9 @@ export const isOffscreenWorkerEventMessage = (message: unknown): message is Offs
   message != null &&
   'type' in message &&
   typeof message.type === 'string' &&
-  'event' in message &&
-  typeof message.event === 'object' &&
-  message.event != null;
+  'init' in message &&
+  typeof message.init === 'object' &&
+  message.init != null;
 
 export const isOffscreenWorkerEvent = <T extends OffscreenWorkerEventType>(
   init: unknown,
