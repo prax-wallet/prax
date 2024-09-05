@@ -1,9 +1,5 @@
 import type { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
-import type {
-  InternalMessage,
-  InternalRequest,
-  InternalResponse,
-} from '@penumbra-zone/types/internal-msg/shared';
+import type { InternalMessage, InternalRequest, InternalResponse } from './internal';
 import type { UserChoice } from '@penumbra-zone/types/user-choice';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { OriginRecord } from '../storage/types';

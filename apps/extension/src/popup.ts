@@ -1,7 +1,7 @@
 import { sessionExtStorage } from './storage/session';
 import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import type { InternalRequest, InternalResponse } from './message/internal';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 

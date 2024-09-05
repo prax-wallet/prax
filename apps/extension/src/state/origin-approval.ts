@@ -2,7 +2,7 @@ import { ConnectError } from '@connectrpc/connect';
 import { OriginApproval, PopupType } from '../message/popup';
 import { AllSlices, SliceCreator } from '.';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import type { InternalRequest, InternalResponse } from '../message/internal';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export interface OriginApprovalSlice {

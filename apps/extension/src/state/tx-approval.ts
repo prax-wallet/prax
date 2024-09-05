@@ -8,7 +8,7 @@ import {
 import { viewClient } from '../clients';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import type { InternalRequest, InternalResponse } from '../message/internal';
 import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
