@@ -3,13 +3,17 @@
 import { OffscreenWorkerPort } from './messages/worker-event.js';
 import { OffscreenRootPort, WorkerConstructorParamsPrimitive } from './messages/root-control.js';
 
-const attempts: string[] = [];
-
 export class OffscreenControl {
-  private session?: OffscreenRootPort;
+  private sessionPort?: Promise<OffscreenRootPort>;
+  private sessionId = crypto.randomUUID();
   private workers = new Map<string, OffscreenWorkerPort>();
 
   private offscreenPath: string;
+
+  private activeWorkers = 0;
+
+  private justification =
+    'Manages workers for parallelizing heavy computation outside of the service worker thread';
 
   /**
    * This class manages the offscreen document and worker connections. Your
@@ -21,10 +25,9 @@ export class OffscreenControl {
    * @param timeout wait for the offscreen document to connect to this controller, upon first worker init (10s default)
    */
   constructor(
-    offscreenUrl: `chrome-extension://${string}/${string}`,
+    offscreen: URL,
     private timeout = 10_000,
   ) {
-    const offscreen = new URL(offscreenUrl);
     if (
       offscreen.hash !== '' ||
       offscreen.protocol !== 'chrome-extension:' ||
@@ -37,83 +40,56 @@ export class OffscreenControl {
     this.offscreenPath = offscreen.href;
   }
 
-  private async createOffscreen(): Promise<OffscreenRootPort> {
-    const {
-      promise: offscreenConnection,
-      resolve: resolveConnection,
-      reject: rejectConnection,
-    } = Promise.withResolvers<chrome.runtime.Port>();
-
-    const hasOffscreen = async () => {
-      console.log('hasOffscreen');
-      const contexts = await chrome.runtime.getContexts({
+  private async activateOffscreen() {
+    const noOffscreen = chrome.runtime
+      .getContexts({
         contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
-      });
-      console.log('hasOffscreen contexts', contexts);
-      const found = contexts.find(ctx => {
-        console.log('contexts.find', ctx.documentUrl, this.offscreenPath);
-        return ctx.documentUrl?.startsWith(this.offscreenPath);
-      });
-      console.log('hasOffscreen found', found);
-      return found;
-    };
+      })
+      .then(offscreenContexts => !offscreenContexts.length);
 
-    let offscreenHash: string | undefined;
-    try {
-      const offscreenContext = await hasOffscreen();
-      if (!offscreenContext?.documentUrl) {
-        console.log('createOffscreen !offscreenContext');
-        const offscreenInitUrl = new URL(`#${crypto.randomUUID()}`, this.offscreenPath);
-        console.log('initting', offscreenInitUrl.href);
-        await chrome.offscreen.createDocument({
-          url: offscreenInitUrl.href,
+    if (!this.activeWorkers || (await noOffscreen)) {
+      await chrome.offscreen
+        .createDocument({
+          url: new URL(`#${this.sessionId}`, this.offscreenPath).href,
           reasons: [chrome.offscreen.Reason.WORKERS],
-          justification:
-            'Manages workers for parallelizing heavy computation outside of the service worker thread',
+          justification: this.justification,
+        })
+        .catch((e: unknown) => {
+          // the offscreen window might have been created since we checked
+          console.warn('Failed to create offscreen window', e);
         });
-        offscreenHash = offscreenInitUrl.hash;
-        console.log('createOffscreen created offscreenHash', offscreenInitUrl, offscreenHash);
-      } else {
-        offscreenHash = new URL(offscreenContext.documentUrl).hash;
-        console.log('createOffscreen located offscreenHash', offscreenHash);
-      }
-    } catch (creationFailure) {
-      console.warn(
-        "Failed to create offscreen document, you'll probably time out now",
-        creationFailure,
-        globalThis.location,
-      );
-      const offscreenContext = offscreenHash ? undefined : await hasOffscreen();
-      if (offscreenContext?.documentUrl) {
-        console.warn('Found offscreen context after failure', offscreenContext.documentUrl);
-        if (offscreenHash) {
-          console.warn('Discarding due to present', offscreenHash);
-        }
-        offscreenHash ??= new URL(offscreenContext.documentUrl).hash;
-      }
-    } finally {
-      const attempt = offscreenHash ?? 'no hash';
-      attempts.push(attempt);
-      console.warn('attempt', attempts.length, attempt);
     }
+  }
 
-    if (!offscreenHash) {
-      rejectConnection('No offscreen context');
-    } else {
-      const sessionPort = chrome.runtime.connect({ name: offscreenHash });
-      sessionPort.onDisconnect.addListener(() => {
+  private async releaseOffscreen() {
+    if (!this.activeWorkers) {
+      this.sessionPort = undefined;
+      await chrome.offscreen.closeDocument();
+    }
+  }
+
+  private async createOffscreen(): Promise<OffscreenRootPort> {
+    this.sessionPort ??= this.activateOffscreen().then(() => {
+      const offscreenPort = chrome.runtime.connect({ name: this.sessionId });
+
+      offscreenPort.onDisconnect.addListener(() => {
+        void this.releaseOffscreen();
         this.workers.forEach(p => p.disconnect());
         this.workers.clear();
       });
-      resolveConnection(sessionPort);
-    }
 
-    return offscreenConnection;
+      return offscreenPort;
+    });
+
+    return this.sessionPort;
   }
 
   public async constructWorker(
     ...init: WorkerConstructorParamsPrimitive
   ): Promise<OffscreenWorkerPort> {
+    this.activeWorkers++;
+    const session = this.createOffscreen();
+
     const workerId = crypto.randomUUID();
 
     const {
@@ -122,8 +98,6 @@ export class OffscreenControl {
       reject: rejectConnection,
     } = Promise.withResolvers<chrome.runtime.Port>();
 
-    this.session ??= await this.createOffscreen();
-
     const workerConnect = (port: chrome.runtime.Port): void => {
       if (port.name === workerId) {
         resolveConnection(port);
@@ -131,15 +105,14 @@ export class OffscreenControl {
       }
     };
 
-    const signal = AbortSignal.timeout(this.timeout);
-    signal.onabort = () => {
-      rejectConnection(signal.reason);
+    AbortSignal.timeout(this.timeout).onabort = function (this: AbortSignal) {
+      rejectConnection(this.reason);
       chrome.runtime.onConnect.removeListener(workerConnect);
     };
 
     chrome.runtime.onConnect.addListener(workerConnect);
 
-    this.session.postMessage({
+    (await session).postMessage({
       type: 'new',
       control: { workerId, init },
     });
@@ -148,9 +121,10 @@ export class OffscreenControl {
       this.workers.set(workerId, workerPort);
 
       workerPort.onDisconnect.addListener(() => {
+        this.activeWorkers--;
         this.workers.delete(workerId);
-        if (!this.workers.size) {
-          this.session?.disconnect();
+        if (!this.activeWorkers) {
+          void session.then(p => p.disconnect());
         }
       });
     });

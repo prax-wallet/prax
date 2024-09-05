@@ -5,8 +5,6 @@ import {
   type OffscreenWorkerPort,
 } from './messages/worker-event';
 
-const sessions = new Map<string, chrome.runtime.Port>();
-
 let unalive = setTimeout(() => window.close(), 60_000);
 
 const contemplate = (reason?: string) => {
@@ -19,7 +17,7 @@ const persist = () => {
   clearTimeout(unalive);
 };
 
-console.log('offscreen entry at init with hash', location.hash);
+const sessionId = location.hash.slice(1);
 
 chrome.runtime.onConnect.addListener(newSessionPort => {
   console.log(
@@ -28,31 +26,19 @@ chrome.runtime.onConnect.addListener(newSessionPort => {
     'handling port',
     newSessionPort.name,
   );
-  const sessionId = location.hash;
   if (newSessionPort.name === sessionId) {
     console.log('offscreen accepting session', sessionId);
     persist();
-    sessions.set(sessionId, newSessionPort);
     attachSession(newSessionPort);
-
-    newSessionPort.onDisconnect.addListener(() => {
-      console.log('port onDisconnect', sessionId);
-      sessions.delete(sessionId);
-      if (!sessions.size) {
-        contemplate();
-      }
-    });
-
-    location.hash = crypto.randomUUID();
   }
 });
 
 const attachSession = (sessionPort: chrome.runtime.Port) => {
   console.log('attachSession', sessionPort.name);
-  //const sessionId = port.name;
   const workers = new Map<string, { worker: Worker; workerPort: chrome.runtime.Port }>();
 
   const constructWorker = ({ workerId, init }: OffscreenRootControl<'new'>['control']) => {
+    persist();
     console.log('constructWorker', workerId, ...init);
     const [workerUrl, workerOptions] = init;
     const worker = new Worker(workerUrl, {
@@ -65,16 +51,20 @@ const attachSession = (sessionPort: chrome.runtime.Port) => {
     workerPort.onDisconnect.addListener(() => {
       console.log('workerPort onDisconnect', workerId);
       workers.delete(workerId);
+      if (!workers.size) {
+        contemplate('no workers');
+      }
       worker.terminate();
     });
 
     // track worker
     workers.set(workerId, { worker, workerPort });
 
-    const workerListener = (json: unknown, _p: chrome.runtime.Port) => {
-      console.log('workerListener', json, _p.name);
+    const workerListener = (json: unknown) => {
+      console.log('workerListener', json, workerId);
       if (isOffscreenWorkerEventMessage(json)) {
         if (isOffscreenWorkerEvent(json.init, json.type)) {
+          persist();
           switch (json.type) {
             case 'error':
               worker.dispatchEvent(new ErrorEvent(json.type, json.init));
@@ -85,7 +75,7 @@ const attachSession = (sessionPort: chrome.runtime.Port) => {
               return;
             default:
               throw new Error('Unknown message in worker input', {
-                cause: { message: json, port: _p.name },
+                cause: { message: json, workerId },
               });
           }
         }
@@ -96,8 +86,8 @@ const attachSession = (sessionPort: chrome.runtime.Port) => {
     workerPort.onMessage.addListener(workerListener);
   };
 
-  sessionPort.onMessage.addListener((json: unknown, _p: chrome.runtime.Port) => {
-    console.log('offscreen control message', json, _p.name);
+  sessionPort.onMessage.addListener((json: unknown) => {
+    console.log('offscreen control message', json, sessionId);
     if (isOffscreenRootControlMessage(json)) {
       switch (json.type) {
         case 'new': {
@@ -106,13 +96,14 @@ const attachSession = (sessionPort: chrome.runtime.Port) => {
         }
         default:
           throw new Error('Unknown message in offscreen control', {
-            cause: { message: json, port: _p.name },
+            cause: { message: json },
           });
       }
     }
   });
 
   sessionPort.onDisconnect.addListener(() => {
+    contemplate('session disconnect');
     workers.forEach(({ worker, workerPort }) => {
       worker.terminate();
       workerPort.disconnect();
