@@ -46,11 +46,7 @@ import { backOff } from 'exponential-backoff';
 import { OffscreenWorker } from '@repo/chrome-offscreen-worker/worker';
 
 globalThis.Worker = OffscreenWorker;
-OffscreenWorker.configure(
-  chrome.runtime.getURL(
-    'offscreen.html',
-  ) as `chrome-extension://${typeof chrome.runtime.id}/${'offscreen.html'}`,
-);
+OffscreenWorker.configure(new URL(chrome.runtime.getURL('offscreen.html')));
 
 const initHandler = async () => {
   const walletServices = startWalletServices();
