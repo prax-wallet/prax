@@ -75,24 +75,24 @@ export class OffscreenWorker implements Worker {
 
   private workerOutputListener = (json: unknown) => {
     console.debug('worker workerOutputListener', json);
-    if (isOffscreenWorkerEventMessage(json) && isOffscreenWorkerEvent(json.init, json.type)) {
-      switch (json.type) {
+    if (isOffscreenWorkerEventMessage(json) && isOffscreenWorkerEvent(json.init, json.event)) {
+      switch (json.event) {
         case 'error': {
           const { colno, error, filename, lineno, message } = json.init as ErrorEventInitUnknown;
           this.outgoing.dispatchEvent(
-            new ErrorEvent(json.type, { colno, error, filename, lineno, message }),
+            new ErrorEvent(json.event, { colno, error, filename, lineno, message }),
           );
           return;
         }
         case 'message':
         case 'messageerror': {
           const { data } = json.init as { data: unknown };
-          this.outgoing.dispatchEvent(new MessageEvent(json.type, { data }));
+          this.outgoing.dispatchEvent(new MessageEvent(json.event, { data }));
           return;
         }
         default:
-          console.warn('Dispatching unknown event from worker', json.type, json);
-          this.outgoing.dispatchEvent(new Event(json.type, json.init));
+          console.warn('Dispatching unknown event from worker', json.event, json);
+          this.outgoing.dispatchEvent(new Event(json.event, json.init));
           throw new Error('Unknown event from worker', { cause: json });
       }
     }
@@ -104,19 +104,19 @@ export class OffscreenWorker implements Worker {
       case 'error': {
         const { message, filename, lineno, colno, error } = evt as ErrorEventInitUnknown;
         void this.workerPort.then(port =>
-          port.postMessage({ type: 'error', init: { message, filename, lineno, colno, error } }),
+          port.postMessage({ event: 'error', init: { message, filename, lineno, colno, error } }),
         );
         return;
       }
       case 'message': {
         const { data } = evt as MessageEventInitUnknown;
-        void this.workerPort.then(port => port.postMessage({ type: 'message', init: { data } }));
+        void this.workerPort.then(port => port.postMessage({ event: 'message', init: { data } }));
         return;
       }
       case 'messageerror': {
         const { data } = evt as MessageEventInitUnknown;
         void this.workerPort.then(port =>
-          port.postMessage({ type: 'messageerror', init: { data } }),
+          port.postMessage({ event: 'messageerror', init: { data } }),
         );
         return;
       }

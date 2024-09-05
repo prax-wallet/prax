@@ -113,8 +113,8 @@ export class OffscreenControl {
     chrome.runtime.onConnect.addListener(workerConnect);
 
     (await session).postMessage({
-      type: 'new',
-      control: { workerId, init },
+      control: 'new',
+      data: { workerId, init },
     });
 
     void workerConnection.then(workerPort => {

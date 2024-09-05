@@ -6,7 +6,7 @@ export type WorkerConstructorParamsPrimitive =
     : never;
 
 interface OffscreenControlMap {
-  new: {
+  'new-Worker': {
     workerId: string;
     init: WorkerConstructorParamsPrimitive;
   };
@@ -17,41 +17,61 @@ export type OffscreenRootControlType = keyof OffscreenControlMap;
 export interface OffscreenRootControl<
   T extends OffscreenRootControlType = OffscreenRootControlType,
 > {
-  type: T;
-  control: OffscreenControlMap[T];
-}
-
-export interface OffscreenRootPort extends chrome.runtime.Port {
-  postMessage<T extends OffscreenRootControlType>(message: OffscreenRootControl<T>): void;
+  control: T;
+  data: OffscreenControlMap[T];
 }
 
 export const isOffscreenRootControlMessage = (message: unknown): message is OffscreenRootControl =>
   typeof message === 'object' &&
   message != null &&
-  'type' in message &&
-  typeof message.type === 'string' &&
   'control' in message &&
-  typeof message.control === 'object' &&
-  message.control != null &&
-  isOffscreenRootControl(message.control, message.type);
+  typeof message.control === 'string' &&
+  'data' in message &&
+  typeof message.data === 'object' &&
+  message.data != null &&
+  isOffscreenRootControlMessageWithData(message as OffscreenRootControl);
 
-export const isOffscreenRootControl = <T extends OffscreenRootControlType>(
-  control: unknown,
-  controlType: T | string,
-): control is OffscreenRootControl<T>['control'] => {
-  switch (controlType as T) {
-    case 'new':
+export const isOffscreenRootControlMessageWithData = <T extends OffscreenRootControlType>(message: {
+  control: T | string;
+  data: NonNullable<object>;
+}): message is OffscreenRootControl<T> => {
+  const { control, data } = message;
+  switch (control) {
+    case 'new-Worker':
       return (
-        typeof control === 'object' &&
-        control != null &&
-        'workerId' in control &&
-        typeof control.workerId === 'string' &&
-        'init' in control &&
-        Array.isArray(control.init) &&
-        typeof control.init[0] === 'string' &&
-        (control.init[1] == null || typeof control.init[1] === 'object')
+        'workerId' in data &&
+        typeof data.workerId === 'string' &&
+        'init' in data &&
+        isOffscreenRootControlNewWorkerInit(data.init)
       );
+    default:
+      console.warn(
+        `Type guard rejected OffscreenRootControl containing ${control} control.`,
+        message,
+      );
+      return false;
   }
-
-  return false;
 };
+
+export const isOffscreenRootControlNewWorkerInit = (
+  init?: unknown,
+): init is WorkerConstructorParamsPrimitive =>
+  Array.isArray(init) &&
+  typeof init[0] === 'string' &&
+  typeof init[1] === 'object' &&
+  isWorkerOptions((init[1] as object | null) ?? {});
+
+export const isWorkerOptions = (opt: NonNullable<object>): opt is WorkerOptions =>
+  Object.entries(opt).every(([key, value]) => {
+    switch (key as keyof WorkerOptions) {
+      case 'credentials':
+        return value == null || ['include', 'omit', 'same-origin'].includes(value as string);
+      case 'name':
+        return value == null || typeof value === 'string';
+      case 'type':
+        return value == null || ['classic', 'module'].includes(value as string);
+      default:
+        console.warn(`Type guard rejected WorkerOptions containing ${key} key.`, opt);
+        return false;
+    }
+  });

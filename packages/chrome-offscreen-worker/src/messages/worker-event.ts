@@ -4,41 +4,36 @@ type OffscreenWorkerEventType = keyof WorkerEventMap;
 
 interface OffscreenWorkerEventInitMap {
   error: ErrorEventInit;
-  message: MessageEventInit;
-  messageerror: MessageEventInit;
+  message: MessageEventInit<unknown>;
+  messageerror: MessageEventInit<unknown>;
 }
 
 export interface OffscreenWorkerEvent<
   T extends OffscreenWorkerEventType = OffscreenWorkerEventType,
 > {
-  type: T;
+  event: T;
   init: OffscreenWorkerEventInitMap[T];
-}
-
-export interface OffscreenWorkerPort extends chrome.runtime.Port {
-  postMessage<T extends OffscreenWorkerEventType>(message: OffscreenWorkerEvent<T>): void;
 }
 
 export const isOffscreenWorkerEventMessage = (message: unknown): message is OffscreenWorkerEvent =>
   typeof message === 'object' &&
   message != null &&
-  'type' in message &&
-  typeof message.type === 'string' &&
+  'event' in message &&
+  typeof message.event === 'string' &&
   'init' in message &&
   typeof message.init === 'object' &&
-  message.init != null;
+  message.init != null &&
+  isOffscreenWorkerEventInit(message);
 
-export const isOffscreenWorkerEvent = <T extends OffscreenWorkerEventType>(
-  init: unknown,
-  eventType: T | string,
-): init is OffscreenWorkerEvent<T>['init'] => {
-  switch (eventType as T) {
+export const isOffscreenWorkerEventInit = <T extends OffscreenWorkerEventType>(
+  message: OffscreenWorkerEvent | { event: string; init: NonNullable<object> },
+): message is OffscreenWorkerEvent<T> => {
+  const { event, init } = message;
+  switch (event) {
     case 'error':
       return (
-        typeof init === 'object' &&
-        init != null &&
         'message' in init &&
-        (typeof init.message === 'string' || init.message == null) &&
+        (init.message == null || typeof init.message === 'string') &&
         'filename' in init &&
         (typeof init.filename === 'string' || init.filename == null) &&
         'lineno' in init &&
@@ -48,7 +43,7 @@ export const isOffscreenWorkerEvent = <T extends OffscreenWorkerEventType>(
       );
     case 'message':
     case 'messageerror':
-      return typeof init === 'object' && init != null && 'data' in init && init.data != null;
+      return typeof init === 'object' && 'data' in init && init.data != null;
   }
 
   return false;
