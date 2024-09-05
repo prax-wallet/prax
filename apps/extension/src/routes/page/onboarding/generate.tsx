@@ -14,7 +14,7 @@ import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
-import { useLatestBlockHeightWithFallback } from '../../../hooks/latest-block-height';
+import { useRemoteLatestBlockHeightWithFallback } from '../../../hooks/latest-block-height';
 import { localExtStorage } from '../../../storage/local';
 
 export const GenerateSeedPhrase = () => {
@@ -23,10 +23,10 @@ export const GenerateSeedPhrase = () => {
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
 
-  const { data: latestBlockHeight, isLoading, error } = useLatestBlockHeightWithFallback();
+  const { data: latestBlockHeight, isLoading, error } = useRemoteLatestBlockHeightWithFallback();
 
   const onSubmit = async () => {
-    await localExtStorage.set('walletCreationBlockHeight', latestBlockHeight);
+    await localExtStorage.set('walletCreationBlockHeight', Number(latestBlockHeight));
     navigate(PagePath.CONFIRM_BACKUP);
   };
 
@@ -77,7 +77,7 @@ export const GenerateSeedPhrase = () => {
                 <span className='font-bold text-gray-100'>
                   {Boolean(error) && <span className='text-red-500'>{String(error)}</span>}
                   {isLoading && 'Loading...'}
-                  {latestBlockHeight && Number(latestBlockHeight)}
+                  {!!latestBlockHeight && `${latestBlockHeight}`}
                 </span>
               </p>
               <p className='mt-2 text-sm text-gray-400'>

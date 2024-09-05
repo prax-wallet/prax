@@ -2,7 +2,7 @@ import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 import { useLoaderData } from 'react-router-dom';
-import { useLatestBlockHeight } from './latest-block-height';
+import { useRemoteLatestBlockHeight } from './latest-block-height';
 
 const tryGetMax = (a?: number, b?: number): number | undefined => {
   // Height can be 0n which is falsy, so should compare to undefined state
@@ -27,11 +27,13 @@ const useFullSyncHeight = (): number | undefined => {
 
 export const useSyncProgress = () => {
   const fullSyncHeight = useFullSyncHeight();
-  const { data: queriedLatest, error } = useLatestBlockHeight();
+  const { data: queriedLatest, error } = useRemoteLatestBlockHeight();
 
   // If we have a queried sync height and it's ahead of our block-height query,
   // use the sync value instead
-  const latestBlockHeight = queriedLatest ? tryGetMax(queriedLatest, fullSyncHeight) : undefined;
+  const latestBlockHeight = queriedLatest
+    ? tryGetMax(Number(queriedLatest), fullSyncHeight)
+    : undefined;
 
   return { latestBlockHeight, fullSyncHeight, error };
 };

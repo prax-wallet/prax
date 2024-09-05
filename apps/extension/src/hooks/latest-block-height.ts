@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { sample } from 'lodash';
 import { createPromiseClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
@@ -7,100 +6,58 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 
-// Utility function to fetch the block height by randomly querying one of the RPC endpoints
-// from the chain registry, using a recursive callback to try another endpoint if the current
-// one fails. Additionally, this implements a timeout mechanism at the request level to avoid
-// hanging from stalled requests.
-const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number> => {
-  if (endpoints.length === 0) {
-    throw new Error('All RPC endpoints failed to fetch the block height.');
-  }
-
-  // Randomly select an RPC endpoint from the chain registry
-  const randomGrpcEndpoint = sample(endpoints);
-  if (!randomGrpcEndpoint) {
-    throw new Error('No RPC endpoints found.');
-  }
-
-  try {
-    return await fetchBlockHeightWithTimeout(randomGrpcEndpoint);
-  } catch (e) {
-    // Remove the current endpoint from the list and retry with remaining endpoints
-    const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
-    return fetchBlockHeightWithFallback(remainingEndpoints);
-  }
-};
-
-// Fetch the block height from a specific RPC endpoint with a request-level timeout that superceeds
-// the channel transport-level timeout to prevent hanging requests.
-export const fetchBlockHeightWithTimeout = async (
-  grpcEndpoint: string,
-  timeoutMs = 5000,
-): Promise<number> => {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error('Request timed out'));
-    }, timeoutMs);
-
+const fetchRemoteLatestBlockHeight = async (rpcUrls: string[], timeoutMs = 5000) => {
+  for (const baseUrl of rpcUrls) {
     const tendermintClient = createPromiseClient(
       TendermintProxyService,
-      createGrpcWebTransport({ baseUrl: grpcEndpoint }),
+      createGrpcWebTransport({ baseUrl }),
     );
 
-    tendermintClient
-      .getStatus({})
-      .then(result => {
-        if (!result.syncInfo) {
-          reject(new Error('No syncInfo in getStatus result'));
-        }
-        clearTimeout(timeout);
-        resolve(Number(result.syncInfo?.latestBlockHeight));
-      })
-      .catch(() => {
-        clearTimeout(timeout);
-        reject(new Error('RPC request timed out while fetching block height'));
-      });
-  });
-};
+    const latestBlockHeight = await tendermintClient
+      .getStatus({}, { signal: AbortSignal.timeout(timeoutMs) })
+      .then(
+        status => status.syncInfo?.latestBlockHeight,
+        () => undefined,
+      );
 
-// Fetch the block height from a specific RPC endpoint.
-export const fetchBlockHeight = async (grpcEndpoint: string): Promise<number> => {
-  const tendermintClient = createPromiseClient(
-    TendermintProxyService,
-    createGrpcWebTransport({ baseUrl: grpcEndpoint }),
-  );
-
-  const result = await tendermintClient.getStatus({});
-  if (!result.syncInfo) {
-    throw new Error('No syncInfo in getStatus result');
+    if (latestBlockHeight) {
+      return latestBlockHeight;
+    }
   }
-  return Number(result.syncInfo.latestBlockHeight);
+
+  throw new Error('Remote endpoint(s) failed to return block height.');
 };
 
-export const useLatestBlockHeightWithFallback = () => {
+export const useRemoteLatestBlockHeightWithFallback = () => {
+  const { grpcEndpoint } = useStore(networkSelector);
+
   return useQuery({
     queryKey: ['latestBlockHeightWithFallback'],
-    queryFn: async () => {
-      const chainRegistryClient = new ChainRegistryClient();
-      const { rpcs } = chainRegistryClient.bundled.globals();
-      const suggestedEndpoints = rpcs.map(i => i.url);
-      return await fetchBlockHeightWithFallback(suggestedEndpoints);
+    queryFn: () => {
+      const registryRpcUrls = new ChainRegistryClient().bundled
+        .globals()
+        .rpcs.map(({ url }) => url);
+
+      // random order fallbacks
+      const fallbackUrls = registryRpcUrls.sort(() => Math.random() - 0.5);
+
+      // but try any deliberately selected endpoint first
+      const rpcUrls = grpcEndpoint
+        ? [grpcEndpoint, ...fallbackUrls.filter(url => url !== grpcEndpoint)]
+        : fallbackUrls;
+
+      return fetchRemoteLatestBlockHeight(rpcUrls);
     },
     retry: false,
   });
 };
 
-export const useLatestBlockHeight = () => {
+export const useRemoteLatestBlockHeight = () => {
   const { grpcEndpoint } = useStore(networkSelector);
 
   return useQuery({
     queryKey: ['latestBlockHeight'],
-    queryFn: async () => {
-      if (!grpcEndpoint) {
-        return;
-      }
-      return await fetchBlockHeight(grpcEndpoint);
-    },
+    queryFn: () => (grpcEndpoint ? fetchRemoteLatestBlockHeight([grpcEndpoint]) : undefined),
     enabled: Boolean(grpcEndpoint),
   });
 };
