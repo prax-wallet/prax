@@ -1,10 +1,5 @@
-import { isOffscreenRootControlMessage, OffscreenRootControl } from './messages/root-control';
-import {
-  isOffscreenWorkerEvent,
-  isOffscreenWorkerEventMessage,
-  OffscreenWorkerEvent,
-  type OffscreenWorkerPort,
-} from './messages/worker-event';
+import { isOffscreenControl, validOffscreenControlData } from './messages/offscreen-control';
+import { isWorkerEvent, validWorkerEventInit } from './messages/worker-event';
 import { toErrorEventInit, toMessageEventInit } from './to-init';
 
 declare global {
@@ -37,80 +32,78 @@ chrome.runtime.onConnect.addListener(newSessionPort => {
   }
 });
 
+const constructWorker = ({
+  workerId,
+  init,
+}: {
+  workerId: string;
+  init: Required<ConstructorParameters<typeof Worker>>;
+}) => {
+  persist();
+  console.log('constructWorker', workerId, ...init);
+  const [workerUrl, workerOptions] = init;
+  const worker = new Worker(workerUrl, {
+    ...workerOptions,
+    name: workerOptions.name ?? workerId,
+  });
+  const caller = chrome.runtime.connect({ name: workerId });
+
+  worker.addEventListener('error', event =>
+    caller.postMessage({ event: 'error', init: toErrorEventInit(event) }),
+  );
+  worker.addEventListener('messageerror', event =>
+    caller.postMessage({ event: 'messageerror', init: toMessageEventInit(event) }),
+  );
+  worker.addEventListener('message', event =>
+    caller.postMessage({ event: 'message', init: toMessageEventInit(event) }),
+  );
+
+  // setup disconnect handler
+  caller.onDisconnect.addListener(() => {
+    console.log('entry workerPort onDisconnect', workerId);
+    worker.terminate();
+  });
+
+  // begin event dispatch
+  caller.onMessage.addListener((json: unknown) => {
+    console.log('entry callerInputListener', json, workerId);
+    if (isWorkerEvent(json)) {
+      switch (json.event) {
+        case 'message': {
+          const { data } = validWorkerEventInit('message', json);
+          worker.postMessage(data);
+          return;
+        }
+        default:
+          throw new Error('Unexpected event from caller', {
+            cause: { json, workerId },
+          });
+      }
+    }
+  });
+
+  return { workerId, caller };
+};
+
 const attachSession = (sessionPort: chrome.runtime.Port) => {
   console.log('attachSession', sessionPort.name);
-  const workers = new Map<string, { worker: Worker; workerPort: chrome.runtime.Port }>();
-
-  const constructWorker = ({ workerId, init }: OffscreenRootControl<'new'>['data']) => {
-    persist();
-    console.log('constructWorker', workerId, ...init);
-    const [workerUrl, workerOptions] = init;
-    const worker = new Worker(workerUrl, {
-      ...workerOptions,
-      name: workerOptions.name ?? workerId,
-    });
-    const incoming = chrome.runtime.connect({ name: workerId }) as OffscreenWorkerPort;
-
-    worker.addEventListener('error', event =>
-      incoming.postMessage({ event: 'error', init: toErrorEventInit(event) }),
-    );
-    worker.addEventListener('messageerror', event =>
-      incoming.postMessage({ event: 'messageerror', init: toMessageEventInit(event) }),
-    );
-    worker.addEventListener('message', event =>
-      incoming.postMessage({ event: 'message', init: toMessageEventInit(event) }),
-    );
-
-    // setup disconnect handler
-    incoming.onDisconnect.addListener(() => {
-      console.log('entry workerPort onDisconnect', workerId);
-      workers.delete(workerId);
-      if (!workers.size) {
-        contemplate('no workers');
-      }
-      worker.terminate();
-    });
-
-    // track worker
-    workers.set(workerId, { worker, workerPort: incoming });
-
-    const workerListener = (json: unknown) => {
-      console.log('entry workerListener', json, workerId);
-      if (isOffscreenWorkerEventMessage(json)) {
-        switch (json.event) {
-          case 'error': {
-            const init = validateEventInitJson(json.init, 'error');
-            // TODO: does this activate callbacks inside the worker, or on this side?
-            worker.dispatchEvent(new ErrorEvent('error', init));
-            return;
-          }
-          case 'messageerror': {
-            const init = validateEventInitJson(json.init, 'messageerror');
-            throw new Error('Worker messageerror', { cause: init.data });
-          }
-          case 'message': {
-            const init = validateEventInitJson(json.init, 'message');
-            worker.postMessage(init.data);
-            return;
-          }
-          default:
-            throw new Error('Unknown message in worker input', {
-              cause: { message: json, workerId },
-            });
-        }
-      }
-    };
-
-    // begin event dispatch
-    incoming.onMessage.addListener(workerListener);
-  };
+  const workers = new Map<string, chrome.runtime.Port>();
 
   sessionPort.onMessage.addListener((json: unknown) => {
     console.log('entry control', json, sessionId);
-    if (isOffscreenRootControlMessage(json)) {
+    if (isOffscreenControl(json)) {
       switch (json.control) {
-        case 'new': {
-          constructWorker(json.data);
+        case 'new-Worker': {
+          const { workerId, caller } = constructWorker(
+            validOffscreenControlData('new-Worker', json),
+          );
+          workers.set(workerId, caller);
+          caller.onDisconnect.addListener(() => {
+            workers.delete(workerId);
+            if (!workers.size) {
+              contemplate('no workers');
+            }
+          });
           return;
         }
         default:
@@ -123,19 +116,6 @@ const attachSession = (sessionPort: chrome.runtime.Port) => {
 
   sessionPort.onDisconnect.addListener(() => {
     contemplate('session disconnect');
-    workers.forEach(({ worker, workerPort }) => {
-      worker.terminate();
-      workerPort.disconnect();
-    });
+    workers.forEach(caller => caller.disconnect());
   });
-};
-
-const validateEventInitJson = <T extends keyof WorkerEventMap>(
-  init: unknown,
-  type: T,
-): OffscreenWorkerEvent<T>['init'] => {
-  if (!isOffscreenWorkerEvent(init, type)) {
-    throw new Error('Invalid event init', { cause: { init, type } });
-  }
-  return init;
 };

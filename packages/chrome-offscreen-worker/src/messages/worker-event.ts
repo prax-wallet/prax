@@ -1,50 +1,55 @@
 /* These messages appear only in the individual offscreen worker control channels. */
 
-type OffscreenWorkerEventType = keyof WorkerEventMap;
+import { isErrorEventInitPrimitive, isMessageEventInitPrimitive } from './primitive';
 
-interface OffscreenWorkerEventInitMap {
+interface WorkerEventInitMap extends Required<Record<WorkerEventType, EventInit>> {
   error: ErrorEventInit;
   message: MessageEventInit<unknown>;
   messageerror: MessageEventInit<unknown>;
 }
 
-export interface OffscreenWorkerEvent<
-  T extends OffscreenWorkerEventType = OffscreenWorkerEventType,
-> {
+export type WorkerEventType = keyof WorkerEventMap;
+
+export interface WorkerEvent<T extends string = WorkerEventType> {
   event: T;
-  init: OffscreenWorkerEventInitMap[T];
+  init: T extends WorkerEventType ? WorkerEventInitMap[T] : unknown;
 }
 
-export const isOffscreenWorkerEventMessage = (message: unknown): message is OffscreenWorkerEvent =>
+export const isWorkerEvent = (message: unknown): message is WorkerEvent =>
   typeof message === 'object' &&
   message != null &&
   'event' in message &&
   typeof message.event === 'string' &&
   'init' in message &&
   typeof message.init === 'object' &&
-  message.init != null &&
-  isOffscreenWorkerEventInit(message);
+  message.init != null;
 
-export const isOffscreenWorkerEventInit = <T extends OffscreenWorkerEventType>(
-  message: OffscreenWorkerEvent | { event: string; init: NonNullable<object> },
-): message is OffscreenWorkerEvent<T> => {
+export const hasValidWorkerEventInit = <T extends WorkerEventType>(message: {
+  event: string | T;
+  init: unknown;
+}): message is WorkerEvent<T> => {
+  if (typeof message.init !== 'object' || message.init == null) {
+    return false;
+  }
+
   const { event, init } = message;
   switch (event) {
     case 'error':
-      return (
-        'message' in init &&
-        (init.message == null || typeof init.message === 'string') &&
-        'filename' in init &&
-        (typeof init.filename === 'string' || init.filename == null) &&
-        'lineno' in init &&
-        (typeof init.lineno === 'number' || init.lineno == null) &&
-        'colno' in init &&
-        (typeof init.colno === 'number' || init.colno == null)
-      );
+      return isErrorEventInitPrimitive(init);
     case 'message':
     case 'messageerror':
-      return typeof init === 'object' && 'data' in init && init.data != null;
+      return isMessageEventInitPrimitive(init);
+    default:
+      return false;
   }
+};
 
-  return false;
+export const validWorkerEventInit = <T extends WorkerEventType>(
+  type: T,
+  message: WorkerEvent<string>,
+): WorkerEvent<T>['init'] => {
+  if (message.event !== type || !hasValidWorkerEventInit<T>(message)) {
+    throw new TypeError('invalid WorkerEvent');
+  }
+  return message.init;
 };

@@ -1,12 +1,11 @@
 /// <reference types="chrome" />
 
-import { OffscreenWorkerPort } from './messages/worker-event.js';
-import { OffscreenRootPort, WorkerConstructorParamsPrimitive } from './messages/root-control.js';
+import { WorkerConstructorParamsPrimitive } from './messages/primitive.js';
 
-export class OffscreenControl {
-  private sessionPort?: Promise<OffscreenRootPort>;
+export class OffscreenController {
+  private sessionPort?: Promise<chrome.runtime.Port>;
   private sessionId = crypto.randomUUID();
-  private workers = new Map<string, OffscreenWorkerPort>();
+  private workers = new Map<string, chrome.runtime.Port>();
 
   private offscreenPath: string;
 
@@ -68,7 +67,7 @@ export class OffscreenControl {
     }
   }
 
-  private async createOffscreen(): Promise<OffscreenRootPort> {
+  private async createOffscreen(): Promise<chrome.runtime.Port> {
     this.sessionPort ??= this.activateOffscreen().then(() => {
       const offscreenPort = chrome.runtime.connect({ name: this.sessionId });
 
@@ -86,7 +85,7 @@ export class OffscreenControl {
 
   public async constructWorker(
     ...init: WorkerConstructorParamsPrimitive
-  ): Promise<OffscreenWorkerPort> {
+  ): Promise<chrome.runtime.Port> {
     this.activeWorkers++;
     const session = this.createOffscreen();
 

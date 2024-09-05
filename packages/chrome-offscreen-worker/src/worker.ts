@@ -1,26 +1,27 @@
-import { OffscreenControl } from './control';
+import { OffscreenController } from './controller';
+import type { WorkerConstructorParamsPrimitive } from './messages/primitive';
 import {
-  isOffscreenWorkerEvent,
-  isOffscreenWorkerEventMessage,
-  type OffscreenWorkerPort,
+  hasValidWorkerEventInit,
+  isWorkerEvent,
+  WorkerEvent,
+  WorkerEventType,
 } from './messages/worker-event';
-import type { WorkerConstructorParamsPrimitive } from './messages/root-control';
 
 type ErrorEventInitUnknown = Omit<ErrorEventInit, 'error'> & { error?: unknown };
 type MessageEventInitUnknown = Omit<MessageEventInit, 'data'> & { data?: unknown };
 
 export class OffscreenWorker implements Worker {
-  private static control?: OffscreenControl;
+  private static control?: OffscreenController;
 
-  public static configure(...params: ConstructorParameters<typeof OffscreenControl>) {
-    OffscreenWorker.control = new OffscreenControl(...params);
+  public static configure(...params: ConstructorParameters<typeof OffscreenController>) {
+    OffscreenWorker.control = new OffscreenController(...params);
   }
 
   private params: WorkerConstructorParamsPrimitive;
 
   private outgoing = new EventTarget();
   private incoming = new EventTarget();
-  private workerPort: Promise<OffscreenWorkerPort>;
+  private workerPort: Promise<chrome.runtime.Port>;
 
   // user-assignable callback properties
   onerror: Worker['onerror'] = null;
@@ -75,25 +76,29 @@ export class OffscreenWorker implements Worker {
 
   private workerOutputListener = (json: unknown) => {
     console.debug('worker workerOutputListener', json);
-    if (isOffscreenWorkerEventMessage(json) && isOffscreenWorkerEvent(json.init, json.event)) {
+    debugger;
+    if (isWorkerEvent(json)) {
       switch (json.event) {
         case 'error': {
-          const { colno, error, filename, lineno, message } = json.init as ErrorEventInitUnknown;
+          const { colno, filename, lineno, message } = validateEventInit<'error'>(json);
           this.outgoing.dispatchEvent(
-            new ErrorEvent(json.event, { colno, error, filename, lineno, message }),
+            new ErrorEvent(json.event, { colno, filename, lineno, message }),
           );
           return;
         }
-        case 'message':
+        case 'message': {
+          const { data } = validateEventInit<'message'>(json);
+          this.outgoing.dispatchEvent(new MessageEvent(json.event, { data }));
+          return;
+        }
         case 'messageerror': {
-          const { data } = json.init as { data: unknown };
+          const { data } = validateEventInit<'messageerror'>(json);
           this.outgoing.dispatchEvent(new MessageEvent(json.event, { data }));
           return;
         }
         default:
-          console.warn('Dispatching unknown event from worker', json.event, json);
-          this.outgoing.dispatchEvent(new Event(json.event, json.init));
           throw new Error('Unknown event from worker', { cause: json });
+        //this.outgoing.dispatchEvent(new Event(json.event, json.init));
       }
     }
   };
@@ -101,27 +106,13 @@ export class OffscreenWorker implements Worker {
   private callerInputListener = (evt: Event) => {
     console.debug('worker callerInputListener', [evt]);
     switch (evt.type) {
-      case 'error': {
-        const { message, filename, lineno, colno, error } = evt as ErrorEventInitUnknown;
-        void this.workerPort.then(port =>
-          port.postMessage({ event: 'error', init: { message, filename, lineno, colno, error } }),
-        );
-        return;
-      }
       case 'message': {
-        const { data } = evt as MessageEventInitUnknown;
+        const { data } = evt as MessageEvent<unknown>;
         void this.workerPort.then(port => port.postMessage({ event: 'message', init: { data } }));
         return;
       }
-      case 'messageerror': {
-        const { data } = evt as MessageEventInitUnknown;
-        void this.workerPort.then(port =>
-          port.postMessage({ event: 'messageerror', init: { data } }),
-        );
-        return;
-      }
       default:
-        throw new Error('Unknown event from caller', { cause: evt });
+        throw new Error('Unexpected event from caller', { cause: evt });
     }
   };
 
@@ -164,3 +155,13 @@ export class OffscreenWorker implements Worker {
     this.outgoing.removeEventListener(...args);
   };
 }
+
+const validateEventInit = <T extends WorkerEventType>(message: {
+  event: T | string;
+  init: NonNullable<object>;
+}): WorkerEvent<T>['init'] => {
+  if (!hasValidWorkerEventInit(message)) {
+    throw new TypeError('Invalid event init', { cause: message });
+  }
+  return message.init;
+};
