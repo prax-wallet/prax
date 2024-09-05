@@ -6,6 +6,9 @@ import {
 } from './messages/worker-event';
 import type { WorkerConstructorParamsPrimitive } from './messages/root-control';
 
+type ErrorEventInitUnknown = Omit<ErrorEventInit, 'error'> & { error?: unknown };
+type MessageEventInitUnknown = Omit<MessageEventInit, 'data'> & { data?: unknown };
+
 export class OffscreenWorker implements Worker {
   private static control?: OffscreenControl;
 
@@ -15,8 +18,8 @@ export class OffscreenWorker implements Worker {
 
   private params: WorkerConstructorParamsPrimitive;
 
-  private internalTarget: MessagePort & EventTarget;
-  private externalTarget: MessagePort & EventTarget;
+  private outgoing = new EventTarget();
+  private incoming = new EventTarget();
   private workerPort: Promise<OffscreenWorkerPort>;
 
   // user-assignable callback properties
@@ -41,131 +44,123 @@ export class OffscreenWorker implements Worker {
 
     this.workerPort = OffscreenWorker.control.constructWorker(...this.params);
 
-    const { port1, port2 } = new MessageChannel();
-    this.internalTarget = port1;
-    this.externalTarget = port2;
-
-    this.externalTarget.addEventListener(
+    this.outgoing.addEventListener(
       'error',
       evt => void this.onerror?.call(this, evt as ErrorEvent),
     );
-    this.externalTarget.addEventListener('message', evt => void this.onmessage?.call(this, evt));
-    this.externalTarget.addEventListener(
+    this.outgoing.addEventListener(
+      'message',
+      evt => void this.onmessage?.call(this, evt as MessageEvent),
+    );
+    this.outgoing.addEventListener(
       'messageerror',
-      evt => void this.onmessageerror?.call(this, evt),
+      evt => void this.onmessageerror?.call(this, evt as MessageEvent),
     );
 
     void this.workerPort.then(
       port => {
         console.log(this.params[1].name, 'got chromePort');
-        port.onMessage.addListener(this.workerListener);
+        port.onMessage.addListener(this.workerOutputListener);
 
-        this.internalTarget.addEventListener('error', this.parentListener);
-        this.internalTarget.addEventListener('message', this.parentListener);
-        this.internalTarget.addEventListener('messageerror', this.parentListener);
-
-        this.internalTarget.start();
+        this.incoming.addEventListener('error', this.callerInputListener);
+        this.incoming.addEventListener('message', this.callerInputListener);
+        this.incoming.addEventListener('messageerror', this.callerInputListener);
       },
-      (error: unknown) => this.internalTarget.dispatchEvent(new ErrorEvent('error', { error })),
+      (error: unknown) => {
+        this.outgoing.dispatchEvent(new ErrorEvent('error', { error }));
+        throw new Error('Failed to attach worker port', { cause: error });
+      },
     );
   }
 
-  private workerListener = (json: unknown, port: chrome.runtime.Port) => {
-    console.debug('worker workerListener', json, port.name);
+  private workerOutputListener = (json: unknown) => {
+    console.debug('worker workerOutputListener', json);
     if (isOffscreenWorkerEventMessage(json) && isOffscreenWorkerEvent(json.init, json.type)) {
       switch (json.type) {
-        case 'error':
-          this.externalTarget.dispatchEvent(new ErrorEvent(json.type, { ...json.init }));
-          return;
-        case 'message':
-          this.internalTarget.postMessage(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            new MessageEvent(json.type, { data: (json.init as MessageEventInit).data }),
+        case 'error': {
+          const { colno, error, filename, lineno, message } = json.init as ErrorEventInitUnknown;
+          this.outgoing.dispatchEvent(
+            new ErrorEvent(json.type, { colno, error, filename, lineno, message }),
           );
           return;
-        case 'messageerror':
+        }
+        case 'message':
+        case 'messageerror': {
+          const { data } = json.init as { data: unknown };
+          this.outgoing.dispatchEvent(new MessageEvent(json.type, { data }));
+          return;
+        }
         default:
-          //console.warn('Dispatching unknown event', json);
-          //this.internalTarget.dispatchEvent(new Event(json.type, json.init));
-          throw new Error('Unknown event in worker output', {
-            cause: { type: Boolean(json) && json.type, message: json, port: port.name },
-          });
+          console.warn('Dispatching unknown event from worker', json.type, json);
+          this.outgoing.dispatchEvent(new Event(json.type, json.init));
+          throw new Error('Unknown event from worker', { cause: json });
       }
     }
   };
 
-  private parentListener = (evt: Event) => {
-    console.debug('worker parentListener', [evt]);
+  private callerInputListener = (evt: Event) => {
+    console.debug('worker callerInputListener', [evt]);
     switch (evt.type) {
-      case 'error':
+      case 'error': {
+        const { message, filename, lineno, colno, error } = evt as ErrorEventInitUnknown;
         void this.workerPort.then(port =>
-          port.postMessage({
-            type: 'error',
-            init: {
-              message: (evt as ErrorEvent).message,
-              filename: (evt as ErrorEvent).filename,
-              lineno: (evt as ErrorEvent).lineno,
-              colno: (evt as ErrorEvent).colno,
-              //error: (evt as ErrorEvent).error,
-            },
-          }),
+          port.postMessage({ type: 'error', init: { message, filename, lineno, colno, error } }),
         );
-        break;
-      case 'message':
+        return;
+      }
+      case 'message': {
+        const { data } = evt as MessageEventInitUnknown;
+        void this.workerPort.then(port => port.postMessage({ type: 'message', init: { data } }));
+        return;
+      }
+      case 'messageerror': {
+        const { data } = evt as MessageEventInitUnknown;
         void this.workerPort.then(port =>
-          port.postMessage({
-            type: 'message',
-            init: { data: (evt as MessageEvent).data as unknown },
-          }),
+          port.postMessage({ type: 'messageerror', init: { data } }),
         );
-        break;
-      case 'messageerror':
-        void this.workerPort.then(port =>
-          port.postMessage({
-            type: 'messageerror',
-            init: { data: (evt as MessageEvent).data as unknown },
-          }),
-        );
-        break;
+        return;
+      }
       default:
-        throw new Error('Unknown event from parent', { cause: evt });
+        throw new Error('Unknown event from caller', { cause: evt });
     }
   };
 
   terminate: Worker['terminate'] = () => {
-    console.warn(this.params[1].name, 'terminate', []);
+    console.warn('worker terminate', this.params[1].name);
     void this.workerPort.then(port => port.disconnect());
   };
 
   postMessage: Worker['postMessage'] = (...args) => {
-    console.debug(this.params[1].name, 'postMessage', args);
+    console.debug('worker postMessage', this.params[1].name, args);
     // typescript doesn't handle the overloaded signature very well
     const data: unknown = args[0];
-    const { transfer } = Array.isArray(args[1]) ? { transfer: args[1] } : { ...args[1] };
 
-    this.externalTarget.postMessage(data, { transfer });
+    const { transfer } = Array.isArray(args[1]) ? { transfer: args[1] } : { ...args[1] };
+    if (transfer?.length) {
+      throw new Error('Transferable unimplemented', { cause: args });
+    }
+
+    const messageEvent = new MessageEvent('message', { data });
+
+    this.incoming.dispatchEvent(messageEvent);
   };
 
   dispatchEvent: Worker['dispatchEvent'] = event => {
-    console.debug(this.params[1].name, 'dispatchEvent', [event]);
-    // if this is a novel event type, it will break the listener.
-    this.internalTarget.addEventListener(event.type, this.parentListener);
-
-    return this.externalTarget.dispatchEvent(event);
+    console.debug('worker dispatchEvent', this.params[1].name, [event]);
+    return this.incoming.dispatchEvent(event);
   };
 
   addEventListener: Worker['addEventListener'] = (
     ...args: Parameters<Worker['addEventListener']>
   ) => {
-    console.debug(this.params[1].name, 'addEventListener', args);
-    this.externalTarget.addEventListener(...args);
+    console.debug('worker addEventListener', this.params[1].name, args);
+    this.outgoing.addEventListener(...args);
   };
 
   removeEventListener: Worker['removeEventListener'] = (
     ...args: Parameters<Worker['removeEventListener']>
   ) => {
-    console.debug(this.params[1].name, 'removeEventListener', args);
-    this.externalTarget.addEventListener(...args);
-    this.externalTarget.removeEventListener(...args);
+    console.debug('worker removeEventListener', this.params[1].name, args);
+    this.outgoing.removeEventListener(...args);
   };
 }
