@@ -10,29 +10,26 @@ interface WorkerEventInitMap extends Required<Record<WorkerEventType, EventInit>
 
 export type WorkerEventType = keyof WorkerEventMap;
 
-export interface WorkerEvent<T extends string = WorkerEventType> {
-  event: T;
-  init: T extends WorkerEventType ? WorkerEventInitMap[T] : unknown;
-}
+export type WorkerEvent<T extends string = WorkerEventType> = [
+  T,
+  T extends WorkerEventType ? WorkerEventInitMap[T] : unknown,
+];
 
-export const isWorkerEvent = (message: unknown): message is WorkerEvent =>
-  typeof message === 'object' &&
-  message != null &&
-  'event' in message &&
-  typeof message.event === 'string' &&
-  'init' in message &&
-  typeof message.init === 'object' &&
-  message.init != null;
+export const isWorkerEvent = (message: unknown): message is WorkerEvent => {
+  if (Array.isArray(message) && message.length === 2) {
+    const [event, init] = message as [unknown, unknown];
+    return typeof event === 'string' && typeof init === 'object' && init != null;
+  }
+  return false;
+};
 
-export const hasValidWorkerEventInit = <T extends WorkerEventType>(message: {
-  event: string | T;
-  init: unknown;
-}): message is WorkerEvent<T> => {
-  if (typeof message.init !== 'object' || message.init == null) {
+export const hasValidWorkerEventInit = <T extends WorkerEventType>(
+  params: WorkerEvent<T | string>,
+): params is WorkerEvent<T> => {
+  const [event, init] = params;
+  if (typeof init !== 'object' || init == null) {
     return false;
   }
-
-  const { event, init } = message;
   switch (event) {
     case 'error':
       return isErrorEventInitPrimitive(init);
@@ -45,11 +42,12 @@ export const hasValidWorkerEventInit = <T extends WorkerEventType>(message: {
 };
 
 export const validWorkerEventInit = <T extends WorkerEventType>(
-  type: T,
-  message: WorkerEvent<string>,
-): WorkerEvent<T>['init'] => {
-  if (message.event !== type || !hasValidWorkerEventInit<T>(message)) {
+  event: T,
+  init: unknown,
+): WorkerEvent<T>[1] => {
+  const message = [event, init] satisfies WorkerEvent<string>;
+  if (!hasValidWorkerEventInit<T>(message)) {
     throw new TypeError('invalid WorkerEvent');
   }
-  return message.init;
+  return message[1];
 };

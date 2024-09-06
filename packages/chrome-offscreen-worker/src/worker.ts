@@ -1,16 +1,8 @@
 import { OffscreenController } from './controller';
 import type { WorkerConstructorParamsPrimitive } from './messages/primitive';
-import {
-  hasValidWorkerEventInit,
-  isWorkerEvent,
-  WorkerEvent,
-  WorkerEventType,
-} from './messages/worker-event';
+import { isWorkerEvent, validWorkerEventInit, WorkerEvent } from './messages/worker-event';
 
-type ErrorEventInitUnknown = Omit<ErrorEventInit, 'error'> & { error?: unknown };
-type MessageEventInitUnknown = Omit<MessageEventInit, 'data'> & { data?: unknown };
-
-export class OffscreenWorker implements Worker {
+export class OffscreenWorker extends EventTarget implements Worker {
   private static control?: OffscreenController;
 
   public static configure(...params: ConstructorParameters<typeof OffscreenController>) {
@@ -19,9 +11,7 @@ export class OffscreenWorker implements Worker {
 
   private params: WorkerConstructorParamsPrimitive;
 
-  private outgoing = new EventTarget();
-  private incoming = new EventTarget();
-  private workerPort: Promise<chrome.runtime.Port>;
+  private worker: Promise<chrome.runtime.Port>;
 
   // user-assignable callback properties
   onerror: Worker['onerror'] = null;
@@ -29,96 +19,91 @@ export class OffscreenWorker implements Worker {
   onmessageerror: Worker['onmessageerror'] = null;
 
   constructor(...[scriptURL, options]: ConstructorParameters<typeof Worker>) {
-    this.params = [
-      String(scriptURL),
-      {
-        name: `${this.constructor.name} ${Date.now()} ${String(scriptURL)}`,
-        ...options,
-      },
-    ];
-
     if (!OffscreenWorker.control) {
       throw new Error(
-        `${this.constructor.name + '.configure'} must be called before constructing ${this.constructor.name}`,
+        'The static configure method must be called before constructing an instance of this class.',
       );
     }
 
-    this.workerPort = OffscreenWorker.control.constructWorker(...this.params);
+    console.log('offscreen worker super');
+    super();
 
-    this.outgoing.addEventListener(
-      'error',
-      evt => void this.onerror?.call(this, evt as ErrorEvent),
-    );
-    this.outgoing.addEventListener(
-      'message',
-      evt => void this.onmessage?.call(this, evt as MessageEvent),
-    );
-    this.outgoing.addEventListener(
-      'messageerror',
-      evt => void this.onmessageerror?.call(this, evt as MessageEvent),
-    );
+    this.params = [
+      String(scriptURL),
+      { name: `${this.constructor.name} ${Date.now()} ${String(scriptURL)}`, ...options },
+    ];
 
-    void this.workerPort.then(
-      port => {
-        console.log(this.params[1].name, 'got chromePort');
-        port.onMessage.addListener(this.workerOutputListener);
+    console.log('calling offscreen worker construct', this.params[1].name);
+    this.worker = OffscreenWorker.control.constructWorker(...this.params);
 
-        this.incoming.addEventListener('error', this.callerInputListener);
-        this.incoming.addEventListener('message', this.callerInputListener);
-        this.incoming.addEventListener('messageerror', this.callerInputListener);
-      },
-      (error: unknown) => {
-        this.outgoing.dispatchEvent(new ErrorEvent('error', { error }));
-        throw new Error('Failed to attach worker port', { cause: error });
-      },
-    );
+    void this.worker
+      .then(
+        workerPort => {
+          console.log('got worker port', this.params[1].name);
+          workerPort.onMessage.addListener((...params) => {
+            console.log('activated worker output listener in background', ...params);
+            this.workerDispatch(...params);
+          });
+        },
+        (error: unknown) => {
+          this.dispatchEvent(new ErrorEvent('error', { error }));
+          throw new Error('Failed to attach worker port', { cause: error });
+        },
+      )
+      .finally(() => {
+        console.log('worker promise settled', this.params[1].name, this.worker);
+      });
+
+    console.log('exit constructor');
   }
 
-  private workerOutputListener = (json: unknown) => {
-    console.debug('worker workerOutputListener', json);
-    debugger;
+  private workerDispatch = (...[json]: [unknown, chrome.runtime.Port]) => {
+    console.debug('worker output', json);
     if (isWorkerEvent(json)) {
-      switch (json.event) {
+      const [event, init] = json;
+      switch (event) {
         case 'error': {
-          const { colno, filename, lineno, message } = validateEventInit<'error'>(json);
-          this.outgoing.dispatchEvent(
-            new ErrorEvent(json.event, { colno, filename, lineno, message }),
-          );
-          return;
+          const { colno, filename, lineno, message } = validWorkerEventInit(event, init);
+          const dispatch = new ErrorEvent(event, { colno, filename, lineno, message });
+          this.dispatchEvent(dispatch);
+          this.onerror?.(dispatch);
+          break;
         }
-        case 'message': {
-          const { data } = validateEventInit<'message'>(json);
-          this.outgoing.dispatchEvent(new MessageEvent(json.event, { data }));
-          return;
-        }
+        case 'message':
         case 'messageerror': {
-          const { data } = validateEventInit<'messageerror'>(json);
-          this.outgoing.dispatchEvent(new MessageEvent(json.event, { data }));
-          return;
+          const { data } = validWorkerEventInit(event, init);
+          const dispatch = new MessageEvent(event, { data });
+          this.dispatchEvent(dispatch);
+          this[`on${event}`]?.(dispatch);
+          break;
         }
         default:
           throw new Error('Unknown event from worker', { cause: json });
-        //this.outgoing.dispatchEvent(new Event(json.event, json.init));
       }
     }
   };
 
-  private callerInputListener = (evt: Event) => {
-    console.debug('worker callerInputListener', [evt]);
+  private callerDispatch = (evt: Event) => {
+    console.debug('worker callerInputListener', evt.type);
     switch (evt.type) {
       case 'message': {
         const { data } = evt as MessageEvent<unknown>;
-        void this.workerPort.then(port => port.postMessage({ event: 'message', init: { data } }));
+        const workerEventMessage: WorkerEvent<'message'> = ['message', { data }];
+        void this.worker.then(port => port.postMessage(workerEventMessage));
         return;
       }
-      default:
+      case 'error':
+      case 'messageerror':
         throw new Error('Unexpected event from caller', { cause: evt });
+      default:
+        throw new Error('Unknown event from caller', { cause: evt });
     }
   };
 
   terminate: Worker['terminate'] = () => {
     console.warn('worker terminate', this.params[1].name);
-    void this.workerPort.then(port => port.disconnect());
+    void this.worker.then(port => port.disconnect());
+    this.postMessage = () => void 0;
   };
 
   postMessage: Worker['postMessage'] = (...args) => {
@@ -133,35 +118,6 @@ export class OffscreenWorker implements Worker {
 
     const messageEvent = new MessageEvent('message', { data });
 
-    this.incoming.dispatchEvent(messageEvent);
-  };
-
-  dispatchEvent: Worker['dispatchEvent'] = event => {
-    console.debug('worker dispatchEvent', this.params[1].name, [event]);
-    return this.incoming.dispatchEvent(event);
-  };
-
-  addEventListener: Worker['addEventListener'] = (
-    ...args: Parameters<Worker['addEventListener']>
-  ) => {
-    console.debug('worker addEventListener', this.params[1].name, args);
-    this.outgoing.addEventListener(...args);
-  };
-
-  removeEventListener: Worker['removeEventListener'] = (
-    ...args: Parameters<Worker['removeEventListener']>
-  ) => {
-    console.debug('worker removeEventListener', this.params[1].name, args);
-    this.outgoing.removeEventListener(...args);
+    this.callerDispatch(messageEvent);
   };
 }
-
-const validateEventInit = <T extends WorkerEventType>(message: {
-  event: T | string;
-  init: NonNullable<object>;
-}): WorkerEvent<T>['init'] => {
-  if (!hasValidWorkerEventInit(message)) {
-    throw new TypeError('Invalid event init', { cause: message });
-  }
-  return message.init;
-};

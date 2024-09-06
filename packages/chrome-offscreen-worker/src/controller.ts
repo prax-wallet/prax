@@ -1,5 +1,6 @@
 /// <reference types="chrome" />
 
+import { OffscreenControl } from './messages/offscreen-control.js';
 import { WorkerConstructorParamsPrimitive } from './messages/primitive.js';
 
 export class OffscreenController {
@@ -91,6 +92,11 @@ export class OffscreenController {
 
     const workerId = crypto.randomUUID();
 
+    const newWorker: OffscreenControl<'new-Worker'> = {
+      control: 'new-Worker',
+      data: { workerId, init },
+    };
+
     const {
       promise: workerConnection,
       resolve: resolveConnection,
@@ -111,10 +117,7 @@ export class OffscreenController {
 
     chrome.runtime.onConnect.addListener(workerConnect);
 
-    (await session).postMessage({
-      control: 'new',
-      data: { workerId, init },
-    });
+    (await session).postMessage(newWorker);
 
     void workerConnection.then(workerPort => {
       this.workers.set(workerId, workerPort);

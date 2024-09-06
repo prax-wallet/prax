@@ -1,5 +1,5 @@
 import { isOffscreenControl, validOffscreenControlData } from './messages/offscreen-control';
-import { isWorkerEvent, validWorkerEventInit } from './messages/worker-event';
+import { isWorkerEvent, validWorkerEventInit, WorkerEvent } from './messages/worker-event';
 import { toErrorEventInit, toMessageEventInit } from './to-init';
 
 declare global {
@@ -48,15 +48,23 @@ const constructWorker = ({
   });
   const caller = chrome.runtime.connect({ name: workerId });
 
-  worker.addEventListener('error', event =>
-    caller.postMessage({ event: 'error', init: toErrorEventInit(event) }),
-  );
-  worker.addEventListener('messageerror', event =>
-    caller.postMessage({ event: 'messageerror', init: toMessageEventInit(event) }),
-  );
-  worker.addEventListener('message', event =>
-    caller.postMessage({ event: 'message', init: toMessageEventInit(event) }),
-  );
+  worker.addEventListener('error', event => {
+    console.log('-- worker output error ', event);
+    const json: WorkerEvent<'error'> = ['error', toErrorEventInit(event)];
+    caller.postMessage(json);
+  });
+
+  worker.addEventListener('messageerror', event => {
+    console.log('-- worker output messageerror ', event);
+    const json: WorkerEvent<'messageerror'> = ['messageerror', toMessageEventInit(event)];
+    caller.postMessage(json);
+  });
+
+  worker.addEventListener('message', event => {
+    console.log('-- worker output message ', event);
+    const json: WorkerEvent<'message'> = ['message', toMessageEventInit(event)];
+    caller.postMessage(json);
+  });
 
   // setup disconnect handler
   caller.onDisconnect.addListener(() => {
@@ -68,9 +76,10 @@ const constructWorker = ({
   caller.onMessage.addListener((json: unknown) => {
     console.log('entry callerInputListener', json, workerId);
     if (isWorkerEvent(json)) {
-      switch (json.event) {
+      const [event, init] = json;
+      switch (event) {
         case 'message': {
-          const { data } = validWorkerEventInit('message', json);
+          const { data } = validWorkerEventInit('message', init);
           worker.postMessage(data);
           return;
         }
