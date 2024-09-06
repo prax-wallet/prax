@@ -37,30 +37,16 @@ export const fetchBlockHeightWithTimeout = async (
   grpcEndpoint: string,
   timeoutMs = 5000,
 ): Promise<number> => {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error('Request timed out'));
-    }, timeoutMs);
+  const tendermintClient = createPromiseClient(
+    TendermintProxyService,
+    createGrpcWebTransport({ baseUrl: grpcEndpoint }),
+  );
 
-    const tendermintClient = createPromiseClient(
-      TendermintProxyService,
-      createGrpcWebTransport({ baseUrl: grpcEndpoint }),
-    );
-
-    tendermintClient
-      .getStatus({})
-      .then(result => {
-        if (!result.syncInfo) {
-          reject(new Error('No syncInfo in getStatus result'));
-        }
-        clearTimeout(timeout);
-        resolve(Number(result.syncInfo?.latestBlockHeight));
-      })
-      .catch(() => {
-        clearTimeout(timeout);
-        reject(new Error('RPC request timed out while fetching block height'));
-      });
-  });
+  const result = await tendermintClient.getStatus({}, { signal: AbortSignal.timeout(timeoutMs) });
+  if (!result.syncInfo) {
+    throw new Error('No syncInfo in getStatus result');
+  }
+  return Number(result.syncInfo.latestBlockHeight);
 };
 
 // Fetch the block height from a specific RPC endpoint.
