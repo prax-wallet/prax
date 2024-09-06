@@ -117,10 +117,10 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/client':
-        specifier: ^18.1.0
+        specifier: 18.1.0
         version: 18.1.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.0)
       '@penumbra-zone/crypto-web':
-        specifier: ^23.0.0
+        specifier: 23.0.0
         version: 23.0.0(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: ^16.0.0
@@ -129,19 +129,19 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1
       '@penumbra-zone/perspective':
-        specifier: ^29.0.0
+        specifier: 29.0.0
         version: 29.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/protobuf':
         specifier: ^6.0.0
         version: 6.0.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/query':
-        specifier: ^30.0.0
+        specifier: 30.0.0
         version: 30.0.0(banmk3erwunubgvg457fwz7rvq)
       '@penumbra-zone/services':
-        specifier: ^33.0.0
+        specifier: 33.0.0
         version: 33.0.0(m7lhnv2o565qvcwz2e4vqrdxsi)
       '@penumbra-zone/storage':
-        specifier: ^29.0.0
+        specifier: 29.0.0
         version: 29.0.0(uz3f7wsbv65r4y3vsa3krgv4bu)
       '@penumbra-zone/transport-chrome':
         specifier: ^8.0.1
@@ -150,10 +150,10 @@ importers:
         specifier: ^7.5.0
         version: 7.5.0
       '@penumbra-zone/types':
-        specifier: ^22.0.0
+        specifier: 22.0.0
         version: 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/wasm':
-        specifier: ^27.0.0
+        specifier: 27.0.0
         version: 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
       '@radix-ui/react-icons':
         specifier: ^1.3.0
@@ -218,7 +218,7 @@ importers:
         version: 18.3.0
       '@types/webpack':
         specifier: ^5.28.5
-        version: 5.28.5(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4(webpack@5.94.0))
+        version: 5.28.5(@swc/core@1.7.23)(webpack-cli@5.1.4(webpack@5.94.0))
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.20(postcss@8.4.45)
@@ -227,31 +227,31 @@ importers:
         version: 6.0.3
       copy-webpack-plugin:
         specifier: ^12.0.2
-        version: 12.0.2(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 12.0.2(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
       css-loader:
         specifier: ^7.1.1
-        version: 7.1.2(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 7.1.2(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
       html-webpack-plugin:
         specifier: ^5.6.0
-        version: 5.6.0(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 5.6.0(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
       postcss:
         specifier: ^8.4.38
         version: 8.4.45
       postcss-loader:
         specifier: ^8.1.1
-        version: 8.1.1(postcss@8.4.45)(typescript@5.5.4)(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 8.1.1(postcss@8.4.45)(typescript@5.5.4)(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
       style-loader:
         specifier: ^4.0.0
-        version: 4.0.0(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 4.0.0(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.10(ts-node@10.9.2(@swc/core@1.7.23)(@types/node@20.16.5)(typescript@5.5.4))
       ts-loader:
         specifier: ^9.5.1
-        version: 9.5.1(typescript@5.5.4)(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 9.5.1(typescript@5.5.4)(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.7.23)(@types/node@20.16.5)(typescript@5.5.4)
@@ -260,7 +260,7 @@ importers:
         version: 8.2.0(body-parser@1.20.2)(express@4.19.2)
       webpack:
         specifier: ^5.91.0
-        version: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+        version: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
       webpack-cli:
         specifier: ^5.1.4
         version: 5.1.4(webpack@5.94.0)
@@ -269,7 +269,7 @@ importers:
         version: 5.10.0
       webpack-watch-external-files-plugin:
         specifier: ^3.1.0
-        version: 3.1.0(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
+        version: 3.1.0(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
 
   apps/prax-marketing-site:
     dependencies:
@@ -320,7 +320,7 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/crypto-web':
-        specifier: ^23.0.0
+        specifier: 23.0.0
         version: 23.0.0(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: ^16.0.0
@@ -329,19 +329,19 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1
       '@penumbra-zone/perspective':
-        specifier: ^29.0.0
+        specifier: 29.0.0
         version: 29.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/protobuf':
         specifier: ^6.0.0
         version: 6.0.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/query':
-        specifier: ^30.0.0
+        specifier: 30.0.0
         version: 30.0.0(banmk3erwunubgvg457fwz7rvq)
       '@penumbra-zone/services':
-        specifier: ^33.0.0
+        specifier: 33.0.0
         version: 33.0.0(m7lhnv2o565qvcwz2e4vqrdxsi)
       '@penumbra-zone/storage':
-        specifier: ^29.0.0
+        specifier: 29.0.0
         version: 29.0.0(uz3f7wsbv65r4y3vsa3krgv4bu)
       '@penumbra-zone/transport-chrome':
         specifier: ^8.0.1
@@ -350,10 +350,10 @@ importers:
         specifier: ^7.5.0
         version: 7.5.0
       '@penumbra-zone/types':
-        specifier: ^22.0.0
+        specifier: 22.0.0
         version: 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/wasm':
-        specifier: ^27.0.0
+        specifier: 27.0.0
         version: 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
       exponential-backoff:
         specifier: ^3.1.1
@@ -433,16 +433,16 @@ importers:
         specifier: ^16.0.0
         version: 16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/perspective':
-        specifier: ^29.0.0
+        specifier: 29.0.0
         version: 29.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/protobuf':
         specifier: ^6.0.0
         version: 6.0.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/types':
-        specifier: ^22.0.0
+        specifier: 22.0.0
         version: 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/wasm':
-        specifier: ^27.0.0
+        specifier: 27.0.0
         version: 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
       '@radix-ui/react-avatar':
         specifier: ^1.0.4
@@ -2152,11 +2152,6 @@ packages:
     peerDependencies:
       '@penumbra-zone/types': 22.0.0
 
-  '@penumbra-zone/crypto-web@23.0.0':
-    resolution: {integrity: sha512-JLDIOHJE4B7gPOAIPbCT2DxF5srUq4AW95hllvMADsO2iwovh54OFXSuFbLZfvaJrLs84boVT10R/27QlTdG0A==}
-    peerDependencies:
-      '@penumbra-zone/types': 22.0.0
-
   '@penumbra-zone/getters@16.0.0':
     resolution: {integrity: sha512-c4saUCIooXKDIdl3UmXAtIspxkt/K1vZNyXRLwUyB0B0EfXj7qILlDbz2csOewU8SSKFIuzaBscIeJykOEHKXg==}
     peerDependencies:
@@ -2167,15 +2162,6 @@ packages:
   '@penumbra-zone/keys@4.2.1':
     resolution: {integrity: sha512-1K+/8bh53Kse4u/I1afUQuRrTnZhLLA6JWIV+mFiXX8An2J2CGIVDjp1mSJkUSzFjFDUzUX052kvYHCtZYK3QA==}
     hasBin: true
-
-  '@penumbra-zone/perspective@29.0.0':
-    resolution: {integrity: sha512-9nzixSJqbaPQvwYGhANr+kCgpqwakcsz+Amp/l2CJwjW9m/dGa79O6wA8Qp3ZKgHhXy+b51+PU/Tsdaosv3Rug==}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/bech32m': 7.0.0
-      '@penumbra-zone/getters': 16.0.0
-      '@penumbra-zone/protobuf': 6.0.0
-      '@penumbra-zone/wasm': 27.0.0
 
   '@penumbra-zone/perspective@29.0.0':
     resolution: {integrity: sha512-9nzixSJqbaPQvwYGhANr+kCgpqwakcsz+Amp/l2CJwjW9m/dGa79O6wA8Qp3ZKgHhXy+b51+PU/Tsdaosv3Rug==}
@@ -2201,46 +2187,6 @@ packages:
       '@penumbra-zone/types': 22.0.0
       '@penumbra-zone/wasm': 27.0.0
 
-<<<<<<< HEAD
-  '@penumbra-zone/services@33.0.0':
-    resolution: {integrity: sha512-HFIh0rw/mqLSgPFtyYPVreizg/wO+eIsoNQYSdb2RSiKRlCkBEogpTXytrzTw10XHSLXbsZrJR7ReTeJBGp5ZA==}
-||||||| parent of 938bfa9b (bump versions to sept 3 release)
-  '@penumbra-zone/services@32.0.0':
-    resolution: {integrity: sha512-dONqQcAAqexFXthiKHSendu1MDa4ZjtLZVakL5OmjXFs4vXpPpYNG3CCecEun/EzAs4jeGeaeWER9JtqPhH0Xg==}
-=======
-  '@penumbra-zone/query@30.0.0':
-    resolution: {integrity: sha512-rr+xAlOk49ORWWsTsVnynIXkk/HGz9O4myOOIdWqH1YpEcHu6AHjwPJl5mq/B5uptopyPgwS7uW4qIt8CCCJtA==}
-    peerDependencies:
-      '@penumbra-zone/bech32m': 7.0.0
-      '@penumbra-zone/crypto-web': 23.0.0
-      '@penumbra-zone/getters': 16.0.0
-      '@penumbra-zone/protobuf': 6.0.0
-      '@penumbra-zone/types': 22.0.0
-      '@penumbra-zone/wasm': 27.0.0
-
-  '@penumbra-zone/services@32.0.0':
-    resolution: {integrity: sha512-dONqQcAAqexFXthiKHSendu1MDa4ZjtLZVakL5OmjXFs4vXpPpYNG3CCecEun/EzAs4jeGeaeWER9JtqPhH0Xg==}
->>>>>>> 938bfa9b (bump versions to sept 3 release)
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.10.0
-      '@connectrpc/connect': ^1.4.0
-      '@penumbra-zone/bech32m': 7.0.0
-      '@penumbra-zone/crypto-web': 23.0.0
-      '@penumbra-zone/getters': 16.0.0
-      '@penumbra-zone/protobuf': 6.0.0
-      '@penumbra-zone/query': 30.0.0
-      '@penumbra-zone/storage': 29.0.0
-      '@penumbra-zone/transport-dom': 7.5.0
-      '@penumbra-zone/types': 22.0.0
-      '@penumbra-zone/wasm': 27.0.0
-
-<<<<<<< HEAD
-  '@penumbra-zone/storage@29.0.0':
-    resolution: {integrity: sha512-m11GuRFMl7b8BV/L64tkjIbecTaOmEAIrTHfmpZKyQXdyw7povVbIegBw/PXAqxH9Gf0BAwLL+lBvRA9/JHcKA==}
-||||||| parent of 938bfa9b (bump versions to sept 3 release)
-  '@penumbra-zone/storage@28.0.0':
-    resolution: {integrity: sha512-zausWRlhmVpE5mxPBFj61zG1bzlHHcT0LYzXwOnbeYhkZfbIOCYo7oPvNY6KqPdrqYrOQZPcIeQSEdUrelLuxA==}
-=======
   '@penumbra-zone/services@33.0.0':
     resolution: {integrity: sha512-HFIh0rw/mqLSgPFtyYPVreizg/wO+eIsoNQYSdb2RSiKRlCkBEogpTXytrzTw10XHSLXbsZrJR7ReTeJBGp5ZA==}
     peerDependencies:
@@ -2253,18 +2199,6 @@ packages:
       '@penumbra-zone/query': 30.0.0
       '@penumbra-zone/storage': 29.0.0
       '@penumbra-zone/transport-dom': 7.5.0
-      '@penumbra-zone/types': 22.0.0
-      '@penumbra-zone/wasm': 27.0.0
-
-  '@penumbra-zone/storage@28.0.0':
-    resolution: {integrity: sha512-zausWRlhmVpE5mxPBFj61zG1bzlHHcT0LYzXwOnbeYhkZfbIOCYo7oPvNY6KqPdrqYrOQZPcIeQSEdUrelLuxA==}
->>>>>>> 938bfa9b (bump versions to sept 3 release)
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-labs/registry': 11.1.0
-      '@penumbra-zone/bech32m': 7.0.0
-      '@penumbra-zone/getters': 16.0.0
-      '@penumbra-zone/protobuf': 6.0.0
       '@penumbra-zone/types': 22.0.0
       '@penumbra-zone/wasm': 27.0.0
 
@@ -2297,21 +2231,6 @@ packages:
       '@penumbra-zone/getters': 16.0.0
       '@penumbra-zone/protobuf': 6.0.0
 
-<<<<<<< HEAD
-  '@penumbra-zone/wasm@27.0.0':
-    resolution: {integrity: sha512-+ttIMQeOUbFSx4IC7LnHGixwGoV3F4gvNo7sHqR60T2DL3rWpBiSsTm9BFBfSmKLnOdAgkfr+2/uGFJvibaVnw==}
-||||||| parent of 938bfa9b (bump versions to sept 3 release)
-  '@penumbra-zone/wasm@26.2.0':
-    resolution: {integrity: sha512-WimfNxVe9NXJMJnvoEyxSbOixW8x8YIcrIiXmaMBPPrkC3p8Bq3UzJqgg8FBtDEycU8oVOehs9MN3lLVMbgagQ==}
-=======
-  '@penumbra-zone/types@22.0.0':
-    resolution: {integrity: sha512-cl0OTcGXJehkL1B18HTVMXY+aqZ6pIfD12DhP9kAi8xkOiIbjNwu48NHzs2BXospnTMaiW8aqdpBRy6nCJCF0A==}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/bech32m': 7.0.0
-      '@penumbra-zone/getters': 16.0.0
-      '@penumbra-zone/protobuf': 6.0.0
-
   '@penumbra-zone/ui@9.1.0':
     resolution: {integrity: sha512-hxGnPmVaonxuoZ8EBgGYc6IzUy2TBRmg/IW/HKS1x66twc/ZfBEX5roaPHrqUrhoUoyKYA3h7CBmRNAYgozMsw==}
     peerDependencies:
@@ -2323,15 +2242,6 @@ packages:
       react: ^18.3.1
       styled-components: ^6.1.11
       tailwindcss: ^3.4.3
-
-  '@penumbra-zone/wasm@26.2.0':
-    resolution: {integrity: sha512-WimfNxVe9NXJMJnvoEyxSbOixW8x8YIcrIiXmaMBPPrkC3p8Bq3UzJqgg8FBtDEycU8oVOehs9MN3lLVMbgagQ==}
->>>>>>> 938bfa9b (bump versions to sept 3 release)
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/bech32m': 7.0.0
-      '@penumbra-zone/protobuf': 6.0.0
-      '@penumbra-zone/types': 22.0.0
 
   '@penumbra-zone/wasm@27.0.0':
     resolution: {integrity: sha512-+ttIMQeOUbFSx4IC7LnHGixwGoV3F4gvNo7sHqR60T2DL3rWpBiSsTm9BFBfSmKLnOdAgkfr+2/uGFJvibaVnw==}
@@ -11733,12 +11643,6 @@ snapshots:
       bip39: 3.1.0
       crypto-js: 4.2.0
 
-  '@penumbra-zone/crypto-web@23.0.0(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))':
-    dependencies:
-      '@penumbra-zone/types': 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      bip39: 3.1.0
-      crypto-js: 4.2.0
-
   '@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
@@ -11746,14 +11650,6 @@ snapshots:
       '@penumbra-zone/protobuf': 6.0.0(@bufbuild/protobuf@1.10.0)
 
   '@penumbra-zone/keys@4.2.1': {}
-
-  '@penumbra-zone/perspective@29.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))))':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-      '@penumbra-zone/bech32m': 7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/getters': 16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.0.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/wasm': 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
 
   '@penumbra-zone/perspective@29.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))))':
     dependencies:
@@ -11780,44 +11676,6 @@ snapshots:
       '@penumbra-zone/wasm': 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
       exponential-backoff: 3.1.1
 
-<<<<<<< HEAD
-  '@penumbra-zone/services@33.0.0(m7lhnv2o565qvcwz2e4vqrdxsi)':
-||||||| parent of 938bfa9b (bump versions to sept 3 release)
-  '@penumbra-zone/services@32.0.0(puvtpkyxdz7u2mryloo5z5pz6q)':
-=======
-  '@penumbra-zone/query@30.0.0(banmk3erwunubgvg457fwz7rvq)':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect-web': 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/bech32m': 7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/crypto-web': 23.0.0(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/getters': 16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.0.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/types': 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/wasm': 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
-      exponential-backoff: 3.1.1
-
-  '@penumbra-zone/services@32.0.0(puvtpkyxdz7u2mryloo5z5pz6q)':
->>>>>>> 938bfa9b (bump versions to sept 3 release)
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/bech32m': 7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/crypto-web': 23.0.0(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
-      '@penumbra-zone/getters': 16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.0.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/query': 30.0.0(banmk3erwunubgvg457fwz7rvq)
-      '@penumbra-zone/storage': 29.0.0(uz3f7wsbv65r4y3vsa3krgv4bu)
-      '@penumbra-zone/transport-dom': 7.5.0
-      '@penumbra-zone/types': 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/wasm': 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
-
-<<<<<<< HEAD
-  '@penumbra-zone/storage@29.0.0(uz3f7wsbv65r4y3vsa3krgv4bu)':
-||||||| parent of 938bfa9b (bump versions to sept 3 release)
-  '@penumbra-zone/storage@28.0.0(3wbpnsgziu7e3ofmprbzkzltsi)':
-=======
   '@penumbra-zone/services@33.0.0(m7lhnv2o565qvcwz2e4vqrdxsi)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
@@ -11831,18 +11689,6 @@ snapshots:
       '@penumbra-zone/transport-dom': 7.5.0
       '@penumbra-zone/types': 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/wasm': 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
-
-  '@penumbra-zone/storage@28.0.0(3wbpnsgziu7e3ofmprbzkzltsi)':
->>>>>>> 938bfa9b (bump versions to sept 3 release)
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-      '@penumbra-labs/registry': 11.1.0
-      '@penumbra-zone/bech32m': 7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/getters': 16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.0.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/types': 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/wasm': 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))
-      idb: 8.0.0
 
   '@penumbra-zone/storage@29.0.0(uz3f7wsbv65r4y3vsa3krgv4bu)':
     dependencies:
@@ -11866,21 +11712,6 @@ snapshots:
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
 
-  '@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-      '@penumbra-zone/bech32m': 7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/getters': 16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.0.0(@bufbuild/protobuf@1.10.0)
-      bignumber.js: 9.1.2
-      idb: 8.0.0
-      zod: 3.23.8
-
-<<<<<<< HEAD
-  '@penumbra-zone/wasm@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))':
-||||||| parent of 938bfa9b (bump versions to sept 3 release)
-  '@penumbra-zone/wasm@26.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@21.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))':
-=======
   '@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
@@ -11955,16 +11786,6 @@ snapshots:
       - '@types/react-dom'
       - immer
       - supports-color
-
-  '@penumbra-zone/wasm@26.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@21.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))':
->>>>>>> 938bfa9b (bump versions to sept 3 release)
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-      '@penumbra-zone/bech32m': 7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.0.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/types': 22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))
-    optionalDependencies:
-      '@penumbra-zone/keys': 4.2.1
 
   '@penumbra-zone/wasm@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@22.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@16.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@7.0.0(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.0.0(@bufbuild/protobuf@1.10.0)))':
     dependencies:
@@ -13745,11 +13566,11 @@ snapshots:
 
   '@types/uuid@9.0.8': {}
 
-  '@types/webpack@5.28.5(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4(webpack@5.94.0))':
+  '@types/webpack@5.28.5(@swc/core@1.7.23)(webpack-cli@5.1.4(webpack@5.94.0))':
     dependencies:
       '@types/node': 20.16.5
       tapable: 2.2.1
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
@@ -14147,19 +13968,19 @@ snapshots:
       '@webassemblyjs/ast': 1.12.1
       '@xtuc/long': 4.2.2
 
-  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))':
+  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.94.0)
 
-  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))':
+  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.94.0)
 
-  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))':
+  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))':
     dependencies:
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.94.0)
 
   '@xtuc/ieee754@1.2.0': {}
@@ -15135,7 +14956,7 @@ snapshots:
     dependencies:
       toggle-selection: 1.0.6
 
-  copy-webpack-plugin@12.0.2(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  copy-webpack-plugin@12.0.2(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)):
     dependencies:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
@@ -15143,7 +14964,7 @@ snapshots:
       normalize-path: 3.0.0
       schema-utils: 4.2.0
       serialize-javascript: 6.0.2
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
 
   core-js-compat@3.38.1:
     dependencies:
@@ -15237,7 +15058,7 @@ snapshots:
       semver: 6.3.1
       webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.21.5)
 
-  css-loader@7.1.2(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  css-loader@7.1.2(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)):
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.45)
       postcss: 8.4.45
@@ -15248,7 +15069,7 @@ snapshots:
       postcss-value-parser: 4.2.0
       semver: 7.6.3
     optionalDependencies:
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
 
   css-select@4.3.0:
     dependencies:
@@ -16983,7 +16804,7 @@ snapshots:
 
   html-tags@3.3.1: {}
 
-  html-webpack-plugin@5.6.0(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  html-webpack-plugin@5.6.0(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)):
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -16991,7 +16812,7 @@ snapshots:
       pretty-error: 4.0.0
       tapable: 2.2.1
     optionalDependencies:
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
 
   htmlparser2@6.1.0:
     dependencies:
@@ -18692,14 +18513,14 @@ snapshots:
       semver: 7.6.3
       webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.21.5)
 
-  postcss-loader@8.1.1(postcss@8.4.45)(typescript@5.5.4)(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  postcss-loader@8.1.1(postcss@8.4.45)(typescript@5.5.4)(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)):
     dependencies:
       cosmiconfig: 9.0.0(typescript@5.5.4)
       jiti: 1.21.6
       postcss: 8.4.45
       semver: 7.6.3
     optionalDependencies:
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
     transitivePeerDependencies:
       - typescript
 
@@ -19861,9 +19682,9 @@ snapshots:
       schema-utils: 2.7.1
       webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.21.5)
 
-  style-loader@4.0.0(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  style-loader@4.0.0(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)):
     dependencies:
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
 
   styled-components@6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
@@ -20069,18 +19890,6 @@ snapshots:
 
   term-size@2.2.1: {}
 
-  terser-webpack-plugin@5.3.10(@swc/core@1.7.23)(esbuild@0.20.2)(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)):
-    dependencies:
-      '@jridgewell/trace-mapping': 0.3.25
-      jest-worker: 27.5.1
-      schema-utils: 3.3.0
-      serialize-javascript: 6.0.2
-      terser: 5.31.6
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
-    optionalDependencies:
-      '@swc/core': 1.7.23
-      esbuild: 0.20.2
-
   terser-webpack-plugin@5.3.10(@swc/core@1.7.23)(esbuild@0.21.5)(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.21.5)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
@@ -20092,6 +19901,17 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.7.23
       esbuild: 0.21.5
+
+  terser-webpack-plugin@5.3.10(@swc/core@1.7.23)(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)):
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.25
+      jest-worker: 27.5.1
+      schema-utils: 3.3.0
+      serialize-javascript: 6.0.2
+      terser: 5.31.6
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
+    optionalDependencies:
+      '@swc/core': 1.7.23
 
   terser@5.31.6:
     dependencies:
@@ -20193,7 +20013,7 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-loader@9.5.1(typescript@5.5.4)(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  ts-loader@9.5.1(typescript@5.5.4)(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.17.1
@@ -20201,7 +20021,7 @@ snapshots:
       semver: 7.6.3
       source-map: 0.7.4
       typescript: 5.5.4
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
 
   ts-node@10.9.2(@swc/core@1.7.23)(@types/node@20.16.5)(typescript@5.5.4):
     dependencies:
@@ -20708,9 +20528,9 @@ snapshots:
   webpack-cli@5.1.4(webpack@5.94.0):
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
-      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
-      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
-      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
+      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
+      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
+      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
       colorette: 2.0.20
       commander: 10.0.1
       cross-spawn: 7.0.3
@@ -20719,7 +20539,7 @@ snapshots:
       import-local: 3.2.0
       interpret: 3.1.1
       rechoir: 0.8.0
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
       webpack-merge: 5.10.0
 
   webpack-merge@5.10.0:
@@ -20732,43 +20552,11 @@ snapshots:
 
   webpack-virtual-modules@0.6.2: {}
 
-  webpack-watch-external-files-plugin@3.1.0(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)):
+  webpack-watch-external-files-plugin@3.1.0(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)):
     dependencies:
       glob: 10.4.2
       path: 0.12.7
-      webpack: 5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4)
-
-  webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4):
-    dependencies:
-      '@types/estree': 1.0.5
-      '@webassemblyjs/ast': 1.12.1
-      '@webassemblyjs/wasm-edit': 1.12.1
-      '@webassemblyjs/wasm-parser': 1.12.1
-      acorn: 8.12.1
-      acorn-import-attributes: 1.9.5(acorn@8.12.1)
-      browserslist: 4.23.3
-      chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.17.1
-      es-module-lexer: 1.5.4
-      eslint-scope: 5.1.1
-      events: 3.3.0
-      glob-to-regexp: 0.4.1
-      graceful-fs: 4.2.11
-      json-parse-even-better-errors: 2.3.1
-      loader-runner: 4.3.0
-      mime-types: 2.1.35
-      neo-async: 2.6.2
-      schema-utils: 3.3.0
-      tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(@swc/core@1.7.23)(esbuild@0.20.2)(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.20.2)(webpack-cli@5.1.4))
-      watchpack: 2.4.2
-      webpack-sources: 3.2.3
-    optionalDependencies:
-      webpack-cli: 5.1.4(webpack@5.94.0)
-    transitivePeerDependencies:
-      - '@swc/core'
-      - esbuild
-      - uglify-js
+      webpack: 5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4)
 
   webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.21.5):
     dependencies:
@@ -20795,6 +20583,38 @@ snapshots:
       terser-webpack-plugin: 5.3.10(@swc/core@1.7.23)(esbuild@0.21.5)(webpack@5.94.0(@swc/core@1.7.23)(esbuild@0.21.5))
       watchpack: 2.4.2
       webpack-sources: 3.2.3
+    transitivePeerDependencies:
+      - '@swc/core'
+      - esbuild
+      - uglify-js
+
+  webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4):
+    dependencies:
+      '@types/estree': 1.0.5
+      '@webassemblyjs/ast': 1.12.1
+      '@webassemblyjs/wasm-edit': 1.12.1
+      '@webassemblyjs/wasm-parser': 1.12.1
+      acorn: 8.12.1
+      acorn-import-attributes: 1.9.5(acorn@8.12.1)
+      browserslist: 4.23.3
+      chrome-trace-event: 1.0.4
+      enhanced-resolve: 5.17.1
+      es-module-lexer: 1.5.4
+      eslint-scope: 5.1.1
+      events: 3.3.0
+      glob-to-regexp: 0.4.1
+      graceful-fs: 4.2.11
+      json-parse-even-better-errors: 2.3.1
+      loader-runner: 4.3.0
+      mime-types: 2.1.35
+      neo-async: 2.6.2
+      schema-utils: 3.3.0
+      tapable: 2.2.1
+      terser-webpack-plugin: 5.3.10(@swc/core@1.7.23)(webpack@5.94.0(@swc/core@1.7.23)(webpack-cli@5.1.4))
+      watchpack: 2.4.2
+      webpack-sources: 3.2.3
+    optionalDependencies:
+      webpack-cli: 5.1.4(webpack@5.94.0)
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
