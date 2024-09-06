@@ -34,6 +34,17 @@
   ],
   "versionGroups": [
     {
+      "label": "Ensure @bufbuild and @connectrpc don't upgrade yet",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "@bufbuild/**",
+        "@connectrpc/**"
+      ],
+      "pinVersion": "^1.x"
+    },
+    {
       "label": "Use workspace protocol for local packages",
       "dependencies": [
         "$LOCAL"
@@ -51,12 +62,9 @@
       "isBanned": true
     },
     {
-      "label": "Require @buf registry packages remain in root or in apps",
+      "label": "Ban BSR packages",
       "dependencies": [
         "@buf/*"
-      ],
-      "packages": [
-        "@penumbra-zone/**"
       ],
       "isBanned": true
     }

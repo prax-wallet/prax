@@ -28,15 +28,12 @@
     "watch-and-repack": "./scripts/watch-and-repack.sh"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
-    "@connectrpc/connect-web": "^1.4.0",
+    "@bufbuild/protobuf": "^1.x",
+    "@connectrpc/connect": "^1.x",
+    "@connectrpc/connect-web": "^1.x",
     "tsx": "^4.16.2"
   },
   "devDependencies": {
-    "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
-    "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.3",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@changesets/cli": "^2.27.5",
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",

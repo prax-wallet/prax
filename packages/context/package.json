@@ -16,7 +16,7 @@
     ".": "./src/index.ts"
   },
   "peerDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protobuf": "^1.x",
     "@penumbra-labs/registry": "11.1.0",
     "@penumbra-zone/bech32m": "^7.0.0",
     "@penumbra-zone/crypto-web": "^23.0.0",

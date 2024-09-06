@@ -71,7 +71,7 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protobuf": "^1.x",
     "@storybook/addon-essentials": "^8.1.1",
     "@storybook/addon-interactions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
