@@ -23,7 +23,7 @@ const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number
   }
 
   try {
-    return await fetchBlockHeight(randomGrpcEndpoint);
+    return await fetchBlockHeightWithTimeout(randomGrpcEndpoint);
   } catch (e) {
     // Remove the current endpoint from the list and retry with remaining endpoints
     const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
@@ -31,11 +31,29 @@ const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number
   }
 };
 
-// Fetch the block height from a specific RPC endpoint with a timeout to prevent hanging requests.
+// Fetch the block height from a specific RPC endpoint with a request-level timeout that superceeds
+// the channel transport-level timeout to prevent hanging requests.
+export const fetchBlockHeightWithTimeout = async (
+  grpcEndpoint: string,
+  timeoutMs = 5000,
+): Promise<number> => {
+  const tendermintClient = createPromiseClient(
+    TendermintProxyService,
+    createGrpcWebTransport({ baseUrl: grpcEndpoint }),
+  );
+
+  const result = await tendermintClient.getStatus({}, { signal: AbortSignal.timeout(timeoutMs) });
+  if (!result.syncInfo) {
+    throw new Error('No syncInfo in getStatus result');
+  }
+  return Number(result.syncInfo.latestBlockHeight);
+};
+
+// Fetch the block height from a specific RPC endpoint.
 export const fetchBlockHeight = async (grpcEndpoint: string): Promise<number> => {
   const tendermintClient = createPromiseClient(
     TendermintProxyService,
-    createGrpcWebTransport({ baseUrl: grpcEndpoint, defaultTimeoutMs: 2000 }),
+    createGrpcWebTransport({ baseUrl: grpcEndpoint }),
   );
 
   const result = await tendermintClient.getStatus({});
