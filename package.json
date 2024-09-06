@@ -27,56 +27,10 @@
     "test:rust": "turbo test:rust",
     "watch-and-repack": "./scripts/watch-and-repack.sh"
   },
-  "pnpm": {
-    "overrides": {
-      "@penumbra-zone/bech32m": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/bech32m/penumbra-zone-bech32m-7.0.0.tgz",
-      "@penumbra-zone/client": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/client/penumbra-zone-client-18.1.0.tgz",
-      "@penumbra-zone/crypto-web": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/crypto/penumbra-zone-crypto-web-24.0.0.tgz",
-      "@penumbra-zone/getters": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/getters/penumbra-zone-getters-17.0.0.tgz",
-      "@penumbra-zone/perspective": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/perspective/penumbra-zone-perspective-30.0.0.tgz",
-      "@penumbra-zone/protobuf": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/protobuf/penumbra-zone-protobuf-6.0.0.tgz",
-      "@penumbra-zone/query": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/query/penumbra-zone-query-31.0.0.tgz",
-      "@penumbra-zone/services": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/services/penumbra-zone-services-34.0.0.tgz",
-      "@penumbra-zone/storage": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/storage/penumbra-zone-storage-30.0.0.tgz",
-      "@penumbra-zone/transport-chrome": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/transport-chrome/penumbra-zone-transport-chrome-8.0.1.tgz",
-      "@penumbra-zone/transport-dom": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/transport-dom/penumbra-zone-transport-dom-7.5.0.tgz",
-      "@penumbra-zone/types": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/types/penumbra-zone-types-23.0.0.tgz",
-      "@penumbra-zone/ui": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/ui/penumbra-zone-ui-9.1.1.tgz",
-      "@penumbra-zone/wasm": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/wasm/penumbra-zone-wasm-28.0.0.tgz"
-    },
-    "peerDependencyRules": {
-      "allowAny": [
-        "@penumbra-zone/bech32m",
-        "@penumbra-zone/client",
-        "@penumbra-zone/crypto-web",
-        "@penumbra-zone/getters",
-        "@penumbra-zone/perspective",
-        "@penumbra-zone/protobuf",
-        "@penumbra-zone/query",
-        "@penumbra-zone/services",
-        "@penumbra-zone/storage",
-        "@penumbra-zone/transport-chrome",
-        "@penumbra-zone/transport-dom",
-        "@penumbra-zone/types",
-        "@penumbra-zone/ui",
-        "@penumbra-zone/wasm"
-      ]
-    }
-  },
   "dependencies": {
     "@bufbuild/protobuf": "^1.x",
     "@connectrpc/connect": "^1.x",
-    "@connectrpc/connect-web": "^1.x",
-    "@penumbra-zone/client": "18.1.0",
-    "@penumbra-zone/crypto-web": "23.0.0",
-    "@penumbra-zone/perspective": "29.0.0",
-    "@penumbra-zone/query": "30.0.0",
-    "@penumbra-zone/services": "33.0.0",
-    "@penumbra-zone/storage": "29.0.0",
-    "@penumbra-zone/types": "22.0.0",
-    "@penumbra-zone/ui": "9.1.0",
-    "@penumbra-zone/wasm": "27.0.0",
-    "tsx": "^4.16.2"
+    "@connectrpc/connect-web": "^1.x"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.5",
@@ -92,6 +46,7 @@
     "prettier": "^3.3.2",
     "syncpack": "^12.3.2",
     "tailwindcss": "^3.4.4",
+    "tsx": "^4.16.2",
     "turbo": "^2.0.12",
     "typescript": "^5.5.3",
     "vitest": "^1.6.0"

@@ -22,6 +22,16 @@
   ],
   "semverGroups": [
     {
+      "range": "",
+      "dependencies": [
+        "@penumbra-zone/**",
+        "@prax-wallet/**"
+      ],
+      "packages": [
+        "**"
+      ]
+    },
+    {
       "range": "^",
       "dependencies": [
         "@bufbuild/**",
