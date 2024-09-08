@@ -7,7 +7,7 @@ import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 
 export interface ServicesConfig {
   readonly chainId: string;

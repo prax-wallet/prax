@@ -9,7 +9,7 @@ import { LocalStorageState } from '../types';
 import { localV0Migration, V0LocalStorageState, V0LocalStorageVersion } from './local-v1-migration';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 const bech32FVK =

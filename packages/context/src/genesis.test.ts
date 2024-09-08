@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { join } from 'path';
 import { readFileSync } from 'fs';
 
