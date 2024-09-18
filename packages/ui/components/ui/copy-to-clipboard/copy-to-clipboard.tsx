@@ -21,7 +21,7 @@ const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps
       <Button
         className={cn(
           copied && 'cursor-default text-teal-500 hover:no-underline',
-          'flex items-center justify-center',
+          'block px-0',
           className,
         )}
         variant='link'
@@ -38,7 +38,7 @@ const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps
       >
         {copied ? (
           <span className={cn(isSuccessCopyText && 'flex items-center gap-2')}>
-            {isSuccessCopyText && <span>Copied</span>}
+            {isSuccessCopyText && <span className='whitespace-nowrap'>Copied</span>}
             <CheckCircledIcon />
           </span>
         ) : (
