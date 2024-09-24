@@ -3,9 +3,11 @@ import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { NumeraireForm } from '../../../shared/components/numeraires-form';
+import { useStore } from '../../../state';
 
 export const SetNumerairesPage = () => {
   const navigate = usePageNav();
+  const chainId = useStore(state => state.network.chainId);
 
   const onSuccess = (): void => {
     navigate(PagePath.ONBOARDING_SUCCESS);
@@ -22,7 +24,7 @@ export const SetNumerairesPage = () => {
           </CardDescription>
         </CardHeader>
         <div className='mt-6'>
-          <NumeraireForm isOnboarding onSuccess={onSuccess} />
+          <NumeraireForm isOnboarding onSuccess={onSuccess} chainId={chainId} />
         </div>
       </Card>
     </FadeTransition>
