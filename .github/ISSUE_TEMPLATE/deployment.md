@@ -35,6 +35,7 @@ Manual testing to confirm extension works with all flows. Can use mainnet rpc or
     - [ ] Manage Portfolio button goes to selected frontend url
     - [ ] Top-right chain id links to node status page
     - [ ] Test sync can complete within an expected/reasonable amount of time
+    - [ ] Disable wifi on computer and re-enable. See if syncing continues without issues.
   - Settings
     - [ ] Seed phrase recovery flow
     - [ ] Change RPC & re-sync
