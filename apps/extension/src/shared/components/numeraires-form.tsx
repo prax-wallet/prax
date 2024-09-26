@@ -1,5 +1,4 @@
 import { AllSlices, useStore } from '../../state';
-import { useChainIdQuery } from '../../hooks/chain-id';
 import { useEffect, useState } from 'react';
 import { ServicesMessage } from '../../message/services';
 import { SelectList } from '@repo/ui/components/ui/select';
@@ -13,30 +12,27 @@ const useNumerairesSelector = (state: AllSlices) => {
     selectedNumeraires: state.numeraires.selectedNumeraires,
     selectNumeraire: state.numeraires.selectNumeraire,
     saveNumeraires: state.numeraires.saveNumeraires,
-    networkChainId: state.network.chainId,
   };
 };
 
 export const NumeraireForm = ({
   isOnboarding,
   onSuccess,
+  chainId,
 }: {
+  chainId?: string;
   isOnboarding?: boolean;
-  onSuccess: () => void | Promise<void>;
+  onSuccess: () => void;
 }) => {
-  const { chainId } = useChainIdQuery();
-  const { selectedNumeraires, selectNumeraire, saveNumeraires, networkChainId } =
-    useStore(useNumerairesSelector);
+  const { selectedNumeraires, selectNumeraire, saveNumeraires } = useStore(useNumerairesSelector);
+  const { numeraires, isLoading, isError } = useNumeraires(chainId);
 
-  // 'chainId' from 'useChainIdQuery' is not available during onboarding,
-  // this forces you to use two sources to guarantee 'chainId' for both settings and onboarding
-  const { numeraires } = useNumeraires(chainId ?? networkChainId);
-
+  // If query errors or there aren't numeraires in the registry, can skip
   useEffect(() => {
-    if (numeraires.length === 0) {
-      void onSuccess();
+    if (isError || (!isLoading && numeraires.length === 0)) {
+      onSuccess();
     }
-  }, [numeraires]);
+  }, [numeraires.length, isError, isLoading]);
 
   const [loading, setLoading] = useState(false);
 
@@ -44,8 +40,8 @@ export const NumeraireForm = ({
     setLoading(true);
     void (async function () {
       await saveNumeraires();
-      await chrome.runtime.sendMessage(ServicesMessage.ChangeNumeraires);
-      await onSuccess();
+      void chrome.runtime.sendMessage(ServicesMessage.ChangeNumeraires);
+      onSuccess();
     })();
   };
 
