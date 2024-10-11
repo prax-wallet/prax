@@ -41,7 +41,7 @@ jobs:
 
       # Outputs beta.zip and prod.zip
       - name: Zip extension versions
-        run: pnpm tsx apps/extension/src/utils/zip-extension.ts
+        run: pnpm zip
 
       - name: Upload beta version
         uses: penumbra-zone/chrome-extension-upload@v1

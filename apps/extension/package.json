@@ -6,10 +6,11 @@
   "description": "chrome-extension",
   "type": "module",
   "scripts": {
-    "build": "pnpm bundle",
-    "bundle": "NODE_OPTIONS=\"--import=./src/utils/webpack-register.js\" webpack",
-    "clean": "rm -rfv dist bin",
-    "dev": "NODE_ENV=testnet pnpm bundle --watch --mode=development -d inline-source-map",
+    "build": "pnpm bundle:beta && pnpm bundle:prod",
+    "bundle:beta": "NODE_OPTIONS=\"--import=./src/utils/webpack-register.js\" webpack --config webpack.beta-config.ts",
+    "bundle:prod": "NODE_OPTIONS=\"--import=./src/utils/webpack-register.js\" webpack --config webpack.prod-config.ts",
+    "clean": "rm -rfv dist beta-dist bin",
+    "dev": "NODE_ENV=testnet pnpm bundle:prod --watch --mode=development -d inline-source-map",
     "lint": "eslint src",
     "test": "vitest run"
   },
