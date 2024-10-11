@@ -11,7 +11,6 @@
     "clean": "turbo clean",
     "clean:modules": "rm -rf node_modules apps/*/node_modules packages/*/node_modules pnpm-lock.yaml",
     "clean:vitest-mjs": "find . -type f -name 'vite*.config.ts.timestamp-*-*.mjs' -ls -delete",
-    "zip": "pnpm tsx apps/extension/src/utils/zip-extension.ts",
     "compile": "turbo compile",
     "dev": "turbo dev",
     "format": "turbo format",
@@ -26,7 +25,8 @@
     "pretest": "playwright install",
     "test": "turbo test",
     "test:rust": "turbo test:rust",
-    "watch-and-repack": "./scripts/watch-and-repack.sh"
+    "watch-and-repack": "./scripts/watch-and-repack.sh",
+    "zip": "pnpm tsx apps/extension/src/utils/zip-extension.ts"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.x",
