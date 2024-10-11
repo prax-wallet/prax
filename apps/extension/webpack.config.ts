@@ -15,8 +15,10 @@ import WatchExternalFilesPlugin from 'webpack-watch-external-files-plugin';
 
 export default ({
   WEBPACK_WATCH = false,
+  PRAX_ID,
 }: {
   ['WEBPACK_WATCH']?: boolean;
+  PRAX_ID: string;
 }): webpack.Configuration => {
   const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
@@ -49,8 +51,8 @@ export default ({
    * - Replacement is literal, so the values must be stringified.
    */
   const DefinePlugin = new webpack.DefinePlugin({
-    PRAX: JSON.stringify(process.env['PRAX']),
-    PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
+    PRAX: PRAX_ID,
+    PRAX_ORIGIN: JSON.stringify(`chrome-extension://${PRAX_ID}`),
     'globalThis.__DEV__': JSON.stringify(process.env['NODE_ENV'] !== 'production'),
     'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
   });

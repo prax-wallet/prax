@@ -1,10 +1,7 @@
-import dotenv from 'dotenv';
 import path from 'node:path';
 import CopyPlugin from 'copy-webpack-plugin';
 
 import config from './webpack.config.js';
-
-dotenv.config({ path: '.env.beta', override: true });
 
 const __dirname = new URL('.', import.meta.url).pathname;
 
@@ -19,12 +16,14 @@ const BetaManifestReplacerPlugin = new CopyPlugin({
   ],
 });
 
+const PRAX_ID = 'ejpfkiblcablembkdhcofhokccbbppnc';
+
 /**
- * This config overrides the env file for the extension, changes the output directory,
- * and modifies the `manifest.json` file to use the beta extension ID
+ * This config defines the Prax Chrome ID, changes the output directory,
+ * and modifies the `manifest.json` file to use the correct extension information
  */
 export default ({ WEBPACK_WATCH = false }: { ['WEBPACK_WATCH']?: boolean }) => {
-  const appliedConfig = config({ WEBPACK_WATCH });
+  const appliedConfig = config({ PRAX_ID, WEBPACK_WATCH });
 
   appliedConfig.output!.path = path.join(__dirname, 'beta-dist');
   appliedConfig.plugins!.push(BetaManifestReplacerPlugin);
