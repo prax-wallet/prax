@@ -51,7 +51,7 @@ export default ({
    * - Replacement is literal, so the values must be stringified.
    */
   const DefinePlugin = new webpack.DefinePlugin({
-    PRAX: PRAX_ID,
+    PRAX: JSON.stringify(PRAX_ID),
     PRAX_ORIGIN: JSON.stringify(`chrome-extension://${PRAX_ID}`),
     'globalThis.__DEV__': JSON.stringify(process.env['NODE_ENV'] !== 'production'),
     'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
