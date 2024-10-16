@@ -2,9 +2,22 @@ import { Button } from '@repo/ui/components/ui/button';
 import { SplashPage } from '@repo/ui/components/ui/splash-page';
 import { useStore } from '../../../state';
 import { getDefaultFrontend } from '../../../state/default-frontend';
+import { localExtStorage } from '../../../storage/local';
+// import { useEffect } from 'react';
 
 export const OnboardingSuccess = () => {
   const defaultFrontendUrl = useStore(getDefaultFrontend);
+
+  // Conditional: for beta-testing purposes, set the wallet block height to zero for non-mainnet chain id's.
+  void (async () => {
+    const storedParams = await localExtStorage.get('params');
+    if (storedParams) {
+      const { chainId } = JSON.parse(storedParams as string);
+      if (chainId && !chainId.includes('penumbra-1')) {
+        await localExtStorage.set('walletCreationBlockHeight', 0);
+      }
+    }
+  })();
 
   return (
     <SplashPage title='Account created'>
