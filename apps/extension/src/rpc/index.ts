@@ -25,7 +25,6 @@ import { viewImpl } from '@penumbra-zone/services/view-service';
 import { createProxyImpl, noContextHandler } from '@penumbra-zone/transport-dom/proxy';
 import { onboardGrpcEndpoint } from '../storage/onboard';
 import { rethrowImplErrors } from './rethrow-impl-errors';
-import { makeTendermintProxyZeroNanos } from './tendermint-proxy';
 
 type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];
 
@@ -69,7 +68,6 @@ export const getRpcImpls = async () => {
           TendermintProxyService,
           createPromiseClient(TendermintProxyService, webTransport),
           noContextHandler,
-          makeTendermintProxyZeroNanos,
         ),
       ),
     ],
