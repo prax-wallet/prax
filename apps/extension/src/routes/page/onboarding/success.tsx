@@ -3,7 +3,6 @@ import { SplashPage } from '@repo/ui/components/ui/splash-page';
 import { useStore } from '../../../state';
 import { getDefaultFrontend } from '../../../state/default-frontend';
 import { localExtStorage } from '../../../storage/local';
-// import { useEffect } from 'react';
 
 export const OnboardingSuccess = () => {
   const defaultFrontendUrl = useStore(getDefaultFrontend);
@@ -12,8 +11,8 @@ export const OnboardingSuccess = () => {
   void (async () => {
     const storedParams = await localExtStorage.get('params');
     if (storedParams) {
-      const { chainId } = JSON.parse(storedParams as string);
-      if (chainId && !chainId.includes('penumbra-1')) {
+      const parsedParams = JSON.parse(storedParams) as string;
+      if (parsedParams && !parsedParams.includes('penumbra-1')) {
         await localExtStorage.set('walletCreationBlockHeight', 0);
       }
     }
