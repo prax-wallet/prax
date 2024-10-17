@@ -42,7 +42,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         state.connectedSites.knownSites = knownSites;
         state.defaultFrontend.url = frontendUrl;
         state.numeraires.selectedNumeraires = numeraires;
-        state.network.fullSyncHeight = fullSyncHeight ?? 0;
+        state.network.fullSyncHeight = fullSyncHeight;
       }),
     );
 
