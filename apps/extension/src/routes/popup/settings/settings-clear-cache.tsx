@@ -11,15 +11,14 @@ import { SettingsScreen } from './settings-screen';
 const useCacheClear = () => {
   const navigate = usePopupNav();
   const [loading, setLoading] = useState(false);
+  const setFullSyncHeight = useStore(state => state.network.setFullSyncHeight);
 
   const handleCacheClear = () => {
     setLoading(true);
 
     void (async function () {
+      await setFullSyncHeight(0);
       await chrome.runtime.sendMessage(ServicesMessage.ClearCache);
-      useStore.setState(state => {
-        state.network.fullSyncHeight = undefined;
-      });
       navigate(PopupPath.INDEX);
     })();
   };
