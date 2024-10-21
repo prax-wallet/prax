@@ -3,11 +3,26 @@ import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { GrpcEndpointForm } from '../../../shared/components/grpc-endpoint-form';
+import { localExtStorage } from '../../../storage/local';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 
 export const SetGrpcEndpoint = () => {
   const navigate = usePageNav();
 
-  const onSuccess = (): void => {
+  // For beta testing: set the wallet block height to zero for non-mainnet chain IDs.
+  // This logic only runs after the user selects their rpc endpoint.
+  const onSuccess = async (): Promise<void> => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const storedParams = await localExtStorage.get('params');
+    if (storedParams) {
+      const parsedParams = JSON.parse(storedParams) as AppParameters;
+      if (!parsedParams.chainId.includes('penumbra-1')) {
+        await localExtStorage.set('walletCreationBlockHeight', 0);
+      }
+    }
+
+    // Navigate to the next page after logic completes
     navigate(PagePath.SET_DEFAULT_FRONTEND);
   };
 
