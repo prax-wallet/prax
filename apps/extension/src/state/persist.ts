@@ -29,7 +29,6 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
     const passwordKey = await sessionExtStorage.get('passwordKey');
     const wallets = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-    const fullSyncHeight = await localExtStorage.get('fullSyncHeight');
     const knownSites = await localExtStorage.get('knownSites');
     const frontendUrl = await localExtStorage.get('frontendUrl');
     const numeraires = await localExtStorage.get('numeraires');
@@ -42,7 +41,6 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         state.connectedSites.knownSites = knownSites;
         state.defaultFrontend.url = frontendUrl;
         state.numeraires.selectedNumeraires = numeraires;
-        state.network.fullSyncHeight = fullSyncHeight ?? 0;
       }),
     );
 
