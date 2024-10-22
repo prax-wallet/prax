@@ -46,3 +46,12 @@ export const onboardWallet = async (): Promise<WalletJson> => {
     localExtStorage.addListener(storageListener);
   });
 };
+
+// For beta testing: set the wallet block height to zero for non-mainnet chain IDs.
+// This logic only runs after the user selects their rpc endpoint.
+export const handleWalletBlockHeight = async (grpcEndpoint: string) => {
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  if (!grpcEndpoint.includes('penumbra-1')) {
+    await localExtStorage.set('walletCreationBlockHeight', 0);
+  }
+};

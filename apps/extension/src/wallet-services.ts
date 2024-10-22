@@ -4,7 +4,7 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createPromiseClient } from '@connectrpc/connect';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { localExtStorage } from './storage/local';
-import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
+import { handleWalletBlockHeight, onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
 import { Services } from '@repo/context';
 import { ServicesMessage } from './message/services';
 import { WalletServices } from '@penumbra-zone/types/services';
@@ -15,13 +15,15 @@ export const startWalletServices = async () => {
   const wallet = await onboardWallet();
   const grpcEndpoint = await onboardGrpcEndpoint();
   const numeraires = await localExtStorage.get('numeraires');
+  const chainId = await getChainId(grpcEndpoint);
 
   // Retrieve the wallet creation height flag from storage
+  await handleWalletBlockHeight(chainId);
   const walletCreationBlockHeight = await localExtStorage.get('walletCreationBlockHeight');
 
   const services = new Services({
     grpcEndpoint,
-    chainId: await getChainId(grpcEndpoint),
+    chainId,
     walletId: WalletId.fromJsonString(wallet.id),
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
     numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
