@@ -86,7 +86,11 @@ const attachServiceControlListener = ({
       case ServicesMessage.ClearCache:
         void (async () => {
           blockProcessor.stop('clearCache');
-          await Promise.allSettled([localExtStorage.remove('params'), indexedDb.clear()]);
+          await Promise.allSettled([
+            localExtStorage.remove('params'),
+            indexedDb.clear(),
+            chrome.storage.local.remove('fullSyncHeight'),
+          ]);
         })()
           .then(() => respond())
           .finally(() => chrome.runtime.reload());
