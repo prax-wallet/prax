@@ -17,7 +17,7 @@ const useCacheClear = () => {
     setLoading(true);
 
     void (async function () {
-      await setFullSyncHeight(undefined);
+      await setFullSyncHeight(0);
       await chrome.runtime.sendMessage(ServicesMessage.ClearCache);
       navigate(PopupPath.INDEX);
     })();
