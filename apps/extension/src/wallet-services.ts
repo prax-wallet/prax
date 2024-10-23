@@ -89,7 +89,7 @@ const attachServiceControlListener = ({
           await Promise.allSettled([
             localExtStorage.remove('params'),
             indexedDb.clear(),
-            chrome.storage.local.remove('fullSyncHeight'),
+            localExtStorage.remove('fullSyncHeight'),
           ]);
         })()
           .then(() => respond())
