@@ -109,11 +109,20 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
 
   const chainIdChanged = !!originalChainId && !!chainId && originalChainId !== chainId;
 
-  const onSubmit = async (
+  const onSubmit = async ({
+    beforeSubmit,
+    onSuccess,
+  }: {
+    /** Callback to run prior to saving action */
+    beforeSubmit?: (proposedEndpoint: string) => void | Promise<void>;
     /** Callback to run when the RPC endpoint successfully saves */
-    onSuccess: () => void | Promise<void>,
-  ) => {
+    onSuccess: () => void | Promise<void>;
+  }) => {
     setIsSubmitButtonEnabled(false);
+
+    if (beforeSubmit) {
+      await beforeSubmit(grpcEndpointInput);
+    }
 
     // If the chain id has changed, our cache is invalid
     if (!isOnboarding && chainIdChanged) {
