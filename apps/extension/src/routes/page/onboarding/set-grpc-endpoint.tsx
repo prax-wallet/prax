@@ -21,12 +21,19 @@ export const correctBirthdayHeightIfNeeded = async (grpcEndpoint: string) => {
       const tendermintClient = createPromiseClient(TendermintProxyService, transport);
       const { syncInfo } = await tendermintClient.getStatus({});
 
-      // If the user's birthday is longer than the chain height, that means their mainnet birthday
-      // is too long and needs to be shortened to the current block height of the non-mainnet chain
-      if (syncInfo?.latestBlockHeight && Number(syncInfo.latestBlockHeight) < setWalletBirthday) {
-        await localExtStorage.set('walletCreationBlockHeight', Number(syncInfo.latestBlockHeight));
-      }
+      await adjustWalletBirthday(setWalletBirthday, syncInfo?.latestBlockHeight);
     }
+  }
+};
+
+// If the user's birthday is longer than the chain height, that means their mainnet birthday
+// is too long and needs to be shortened to the current block height of the non-mainnet chain
+export const adjustWalletBirthday = async (
+  setWalletBirthday: number,
+  latestBlockHeight: bigint | undefined,
+) => {
+  if (latestBlockHeight && Number(latestBlockHeight) < setWalletBirthday) {
+    await localExtStorage.set('walletCreationBlockHeight', Number(latestBlockHeight));
   }
 };
 
