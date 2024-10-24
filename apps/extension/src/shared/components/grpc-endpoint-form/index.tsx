@@ -15,10 +15,12 @@ export const GrpcEndpointForm = ({
   submitButtonLabel,
   isOnboarding,
   onSuccess,
+  beforeSubmit,
 }: {
   submitButtonLabel: string;
   isOnboarding: boolean;
   onSuccess: () => void | Promise<void>;
+  beforeSubmit?: (proposedEndpoint: string) => void | Promise<void>;
 }) => {
   const {
     chainId,
@@ -39,7 +41,7 @@ export const GrpcEndpointForm = ({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isSubmitButtonEnabled) {
-      void onSubmit(onSuccess);
+      void onSubmit({ beforeSubmit, onSuccess });
     }
   };
 
