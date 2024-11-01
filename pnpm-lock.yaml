@@ -191,7 +191,11 @@ importers:
         version: 18.3.0
       '@types/webpack':
         specifier: ^5.28.5
+<<<<<<< Updated upstream
         version: 5.28.5(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4(webpack@5.94.0))
+=======
+        version: 5.28.5(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4(webpack@5.94.0))
+>>>>>>> Stashed changes
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.45)
@@ -200,31 +204,53 @@ importers:
         version: 6.0.3
       copy-webpack-plugin:
         specifier: ^12.0.2
+<<<<<<< Updated upstream
         version: 12.0.2(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
       css-loader:
         specifier: ^7.1.2
         version: 7.1.2(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
+=======
+        version: 12.0.2(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+      css-loader:
+        specifier: ^7.1.2
+        version: 7.1.2(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+>>>>>>> Stashed changes
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
       html-webpack-plugin:
         specifier: ^5.6.0
+<<<<<<< Updated upstream
         version: 5.6.0(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
+=======
+        version: 5.6.0(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+>>>>>>> Stashed changes
       postcss:
         specifier: ^8.4.45
         version: 8.4.45
       postcss-loader:
         specifier: ^8.1.1
+<<<<<<< Updated upstream
         version: 8.1.1(postcss@8.4.45)(typescript@5.6.3)(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
       style-loader:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
+=======
+        version: 8.1.1(postcss@8.4.45)(typescript@5.6.2)(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+      style-loader:
+        specifier: ^4.0.0
+        version: 4.0.0(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+>>>>>>> Stashed changes
       tailwindcss:
         specifier: ^3.4.10
         version: 3.4.10(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.8.6)(typescript@5.6.3))
       ts-loader:
         specifier: ^9.5.1
+<<<<<<< Updated upstream
         version: 9.5.1(typescript@5.6.3)(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
+=======
+        version: 9.5.1(typescript@5.6.2)(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+>>>>>>> Stashed changes
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.7.42)(@types/node@22.8.6)(typescript@5.6.3)
@@ -242,7 +268,11 @@ importers:
         version: 6.0.1
       webpack-watch-external-files-plugin:
         specifier: ^3.1.0
+<<<<<<< Updated upstream
         version: 3.1.0(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
+=======
+        version: 3.1.0(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+>>>>>>> Stashed changes
 
   packages/context:
     dependencies:
@@ -329,13 +359,21 @@ importers:
         version: 0.8.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3)
       eslint-plugin-tailwindcss:
         specifier: ^3.15.2
+<<<<<<< Updated upstream
         version: 3.17.4(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.6.3)))
+=======
+        version: 3.17.4(tailwindcss@3.4.13(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.6.2)))
+>>>>>>> Stashed changes
       eslint-plugin-turbo:
         specifier: ^2.0.12
         version: 2.1.1(eslint@9.10.0(jiti@2.4.0))
       eslint-plugin-vitest:
         specifier: ^0.5.4
+<<<<<<< Updated upstream
         version: 0.5.4(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3)(vitest@2.1.4(@types/node@22.5.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0))
+=======
+        version: 0.5.4(eslint@9.10.0(jiti@2.1.0))(typescript@5.6.2)(vitest@2.1.1(@types/node@22.5.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1))
+>>>>>>> Stashed changes
       typescript-eslint:
         specifier: ^7.10.0
         version: 7.18.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3)
@@ -347,6 +385,7 @@ importers:
         version: 0.32.4
       '@penumbra-zone/bech32m':
         specifier: 10.0.0
+<<<<<<< Updated upstream
         version: 10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1))
       '@penumbra-zone/protobuf':
         specifier: 6.3.0
@@ -354,15 +393,31 @@ importers:
       '@penumbra-zone/wasm':
         specifier: 32.0.0
         version: 32.0.0(@bufbuild/protobuf@2.2.1)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1))(@penumbra-zone/types@26.1.0(@bufbuild/protobuf@2.2.1)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/getters@20.0.0(@bufbuild/protobuf@2.2.1)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))
+=======
+        version: 10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf':
+        specifier: 6.3.0
+        version: 6.3.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/wasm':
+        specifier: 32.0.0
+        version: 32.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@26.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@20.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))
+>>>>>>> Stashed changes
 
   packages/tailwind-config:
     dependencies:
       tailwindcss:
         specifier: ^3.4.10
+<<<<<<< Updated upstream
         version: 3.4.10(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.5.4))
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.5.4)))
+=======
+        version: 3.4.10(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.5.4))
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.5.4)))
+>>>>>>> Stashed changes
 
   packages/tsconfig: {}
 
@@ -503,7 +558,11 @@ importers:
         version: 8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(webpack-sources@3.2.3)
       '@storybook/addon-interactions':
         specifier: ^8.2.9
+<<<<<<< Updated upstream
         version: 8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(vitest@2.1.4(@types/node@22.8.6)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0))
+=======
+        version: 8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(vitest@2.1.1(@types/node@22.7.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1))
+>>>>>>> Stashed changes
       '@storybook/addon-links':
         specifier: ^8.2.9
         version: 8.2.9(react@18.3.1)(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))
@@ -10848,11 +10907,14 @@ snapshots:
       '@penumbra-zone/protobuf': 6.3.0(@bufbuild/protobuf@1.10.0)
       bech32: 2.0.0
 
+<<<<<<< Updated upstream
   '@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1))':
     dependencies:
       '@penumbra-zone/protobuf': 6.3.0(@bufbuild/protobuf@2.2.1)
       bech32: 2.0.0
 
+=======
+>>>>>>> Stashed changes
   '@penumbra-zone/client@21.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.0)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
@@ -10871,12 +10933,15 @@ snapshots:
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/protobuf': 6.3.0(@bufbuild/protobuf@1.10.0)
+<<<<<<< Updated upstream
 
   '@penumbra-zone/getters@20.0.0(@bufbuild/protobuf@2.2.1)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1))':
     dependencies:
       '@bufbuild/protobuf': 2.2.1
       '@penumbra-zone/bech32m': 10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1))
       '@penumbra-zone/protobuf': 6.3.0(@bufbuild/protobuf@2.2.1)
+=======
+>>>>>>> Stashed changes
 
   '@penumbra-zone/keys@4.2.1': {}
 
@@ -10892,10 +10957,13 @@ snapshots:
     dependencies:
       '@bufbuild/protobuf': 1.10.0
 
+<<<<<<< Updated upstream
   '@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)':
     dependencies:
       '@bufbuild/protobuf': 2.2.1
 
+=======
+>>>>>>> Stashed changes
   '@penumbra-zone/query@37.0.0(htymxraugqbluqqla3g523ff4i)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
@@ -10955,6 +11023,7 @@ snapshots:
       idb: 8.0.0
       zod: 3.23.8
 
+<<<<<<< Updated upstream
   '@penumbra-zone/types@26.1.0(@bufbuild/protobuf@2.2.1)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/getters@20.0.0(@bufbuild/protobuf@2.2.1)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1))':
     dependencies:
       '@bufbuild/protobuf': 2.2.1
@@ -10965,12 +11034,15 @@ snapshots:
       idb: 8.0.0
       zod: 3.23.8
 
+=======
+>>>>>>> Stashed changes
   '@penumbra-zone/wasm@32.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@26.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@20.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/protobuf': 6.3.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/types': 26.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@20.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@1.10.0))
+<<<<<<< Updated upstream
     optionalDependencies:
       '@penumbra-zone/keys': 4.2.1
 
@@ -10980,6 +11052,8 @@ snapshots:
       '@penumbra-zone/bech32m': 10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1))
       '@penumbra-zone/protobuf': 6.3.0(@bufbuild/protobuf@2.2.1)
       '@penumbra-zone/types': 26.1.0(@bufbuild/protobuf@2.2.1)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/getters@20.0.0(@bufbuild/protobuf@2.2.1)(@penumbra-zone/bech32m@10.0.0(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1)))(@penumbra-zone/protobuf@6.3.0(@bufbuild/protobuf@2.2.1))
+=======
+>>>>>>> Stashed changes
     optionalDependencies:
       '@penumbra-zone/keys': 4.2.1
 
@@ -11810,11 +11884,19 @@ snapshots:
       '@storybook/global': 5.0.0
       storybook: 8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2))
 
+<<<<<<< Updated upstream
   '@storybook/addon-interactions@8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(vitest@2.1.4(@types/node@22.8.6)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0))':
     dependencies:
       '@storybook/global': 5.0.0
       '@storybook/instrumenter': 8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))
       '@storybook/test': 8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(vitest@2.1.4(@types/node@22.8.6)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0))
+=======
+  '@storybook/addon-interactions@8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(vitest@2.1.1(@types/node@22.7.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1))':
+    dependencies:
+      '@storybook/global': 5.0.0
+      '@storybook/instrumenter': 8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))
+      '@storybook/test': 8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(vitest@2.1.1(@types/node@22.7.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1))
+>>>>>>> Stashed changes
       polished: 4.3.1
       storybook: 8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2))
       ts-dedent: 2.2.0
@@ -12166,12 +12248,20 @@ snapshots:
     optionalDependencies:
       typescript: 5.5.4
 
+<<<<<<< Updated upstream
   '@storybook/test@8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(vitest@2.1.4(@types/node@22.8.6)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0))':
+=======
+  '@storybook/test@8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))(vitest@2.1.1(@types/node@22.7.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1))':
+>>>>>>> Stashed changes
     dependencies:
       '@storybook/csf': 0.1.11
       '@storybook/instrumenter': 8.2.9(storybook@8.2.9(@babel/preset-env@7.25.4(@babel/core@7.25.2)))
       '@testing-library/dom': 10.1.0
+<<<<<<< Updated upstream
       '@testing-library/jest-dom': 6.4.5(vitest@2.1.4(@types/node@22.8.6)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0))
+=======
+      '@testing-library/jest-dom': 6.4.5(vitest@2.1.1(@types/node@22.7.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1))
+>>>>>>> Stashed changes
       '@testing-library/user-event': 14.5.2(@testing-library/dom@10.1.0)
       '@vitest/expect': 1.6.0
       '@vitest/spy': 1.6.0
@@ -12280,7 +12370,11 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
+<<<<<<< Updated upstream
   '@testing-library/jest-dom@6.4.5(vitest@2.1.4(@types/node@22.8.6)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0))':
+=======
+  '@testing-library/jest-dom@6.4.5(vitest@2.1.1(@types/node@22.7.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1))':
+>>>>>>> Stashed changes
     dependencies:
       '@adobe/css-tools': 4.4.0
       '@babel/runtime': 7.25.6
@@ -12291,7 +12385,11 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
+<<<<<<< Updated upstream
       vitest: 2.1.4(@types/node@22.8.6)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0)
+=======
+      vitest: 2.1.1(@types/node@22.7.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1)
+>>>>>>> Stashed changes
 
   '@testing-library/jest-dom@6.5.0':
     dependencies:
@@ -12596,7 +12694,11 @@ snapshots:
 
   '@types/uuid@9.0.8': {}
 
+<<<<<<< Updated upstream
   '@types/webpack@5.28.5(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4(webpack@5.94.0))':
+=======
+  '@types/webpack@5.28.5(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4(webpack@5.94.0))':
+>>>>>>> Stashed changes
     dependencies:
       '@types/node': 22.5.4
       tapable: 2.2.1
@@ -12769,12 +12871,26 @@ snapshots:
       tinyrainbow: 1.2.0
     optional: true
 
+<<<<<<< Updated upstream
   '@vitest/mocker@2.1.4(vite@5.4.10(@types/node@22.5.4)(terser@5.36.0))':
+=======
+  '@vitest/mocker@2.1.1(@vitest/spy@2.1.1)(vite@5.4.10(@types/node@22.5.4)(terser@5.34.1))':
+    dependencies:
+      '@vitest/spy': 2.1.1
+      estree-walker: 3.0.3
+      magic-string: 0.30.12
+    optionalDependencies:
+      vite: 5.4.10(@types/node@22.5.4)(terser@5.34.1)
+    optional: true
+
+  '@vitest/mocker@2.1.1(@vitest/spy@2.1.1)(vite@5.4.10(@types/node@22.7.4)(terser@5.34.1))':
+>>>>>>> Stashed changes
     dependencies:
       '@vitest/spy': 2.1.4
       estree-walker: 3.0.3
       magic-string: 0.30.12
     optionalDependencies:
+<<<<<<< Updated upstream
       vite: 5.4.10(@types/node@22.5.4)(terser@5.36.0)
     optional: true
 
@@ -12785,6 +12901,9 @@ snapshots:
       magic-string: 0.30.12
     optionalDependencies:
       vite: 5.4.10(@types/node@22.8.6)(terser@5.36.0)
+=======
+      vite: 5.4.10(@types/node@22.7.4)(terser@5.34.1)
+>>>>>>> Stashed changes
     optional: true
 
   '@vitest/pretty-format@2.0.5':
@@ -12927,17 +13046,29 @@ snapshots:
       '@webassemblyjs/ast': 1.12.1
       '@xtuc/long': 4.2.2
 
+<<<<<<< Updated upstream
   '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))':
+=======
+  '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))':
+>>>>>>> Stashed changes
     dependencies:
       webpack: 5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.94.0)
 
+<<<<<<< Updated upstream
   '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))':
+=======
+  '@webpack-cli/info@2.0.2(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))':
+>>>>>>> Stashed changes
     dependencies:
       webpack: 5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.94.0)
 
+<<<<<<< Updated upstream
   '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))':
+=======
+  '@webpack-cli/serve@2.0.5(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))':
+>>>>>>> Stashed changes
     dependencies:
       webpack: 5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)
       webpack-cli: 5.1.4(webpack@5.94.0)
@@ -13763,7 +13894,11 @@ snapshots:
     dependencies:
       toggle-selection: 1.0.6
 
+<<<<<<< Updated upstream
   copy-webpack-plugin@12.0.2(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)):
+=======
+  copy-webpack-plugin@12.0.2(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4)):
+>>>>>>> Stashed changes
     dependencies:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
@@ -13850,7 +13985,11 @@ snapshots:
       semver: 6.3.1
       webpack: 5.96.1(@swc/core@1.7.42)(esbuild@0.21.5)
 
+<<<<<<< Updated upstream
   css-loader@7.1.2(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)):
+=======
+  css-loader@7.1.2(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4)):
+>>>>>>> Stashed changes
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.45)
       postcss: 8.4.45
@@ -14398,8 +14537,13 @@ snapshots:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.3.7
       enhanced-resolve: 5.17.1
+<<<<<<< Updated upstream
       eslint: 9.10.0(jiti@2.4.0)
       eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3))(eslint-plugin-import@2.30.0)(eslint@9.10.0(jiti@2.4.0)))(eslint@9.10.0(jiti@2.4.0))
+=======
+      eslint: 9.10.0(jiti@2.1.0)
+      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.1.0))(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@9.10.0(jiti@2.1.0)))(eslint@9.10.0(jiti@2.1.0))
+>>>>>>> Stashed changes
       fast-glob: 3.3.2
       get-tsconfig: 4.8.0
       is-bun-module: 1.1.0
@@ -14412,7 +14556,11 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
+<<<<<<< Updated upstream
   eslint-module-utils@2.11.0(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3))(eslint-plugin-import@2.30.0)(eslint@9.10.0(jiti@2.4.0)))(eslint@9.10.0(jiti@2.4.0)):
+=======
+  eslint-module-utils@2.11.0(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.1.0))(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@9.10.0(jiti@2.1.0)))(eslint@9.10.0(jiti@2.1.0)):
+>>>>>>> Stashed changes
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -14434,7 +14582,11 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.10.0(jiti@2.4.0)
       eslint-import-resolver-node: 0.3.9
+<<<<<<< Updated upstream
       eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3))(eslint-plugin-import@2.30.0)(eslint@9.10.0(jiti@2.4.0)))(eslint@9.10.0(jiti@2.4.0))
+=======
+      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.1.0))(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.18.0(eslint@9.10.0(jiti@2.1.0))(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@9.10.0(jiti@2.1.0)))(eslint@9.10.0(jiti@2.1.0))
+>>>>>>> Stashed changes
       hasown: 2.0.2
       is-core-module: 2.15.1
       is-glob: 4.0.3
@@ -14502,23 +14654,39 @@ snapshots:
       - supports-color
       - typescript
 
+<<<<<<< Updated upstream
   eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.6.3))):
     dependencies:
       fast-glob: 3.3.2
       postcss: 8.4.45
       tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.6.3))
+=======
+  eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.13(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.6.2))):
+    dependencies:
+      fast-glob: 3.3.2
+      postcss: 8.4.45
+      tailwindcss: 3.4.13(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.6.2))
+>>>>>>> Stashed changes
 
   eslint-plugin-turbo@2.1.1(eslint@9.10.0(jiti@2.4.0)):
     dependencies:
       dotenv: 16.0.3
       eslint: 9.10.0(jiti@2.4.0)
 
+<<<<<<< Updated upstream
   eslint-plugin-vitest@0.5.4(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3)(vitest@2.1.4(@types/node@22.5.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0)):
+=======
+  eslint-plugin-vitest@0.5.4(eslint@9.10.0(jiti@2.1.0))(typescript@5.6.2)(vitest@2.1.1(@types/node@22.5.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1)):
+>>>>>>> Stashed changes
     dependencies:
       '@typescript-eslint/utils': 7.18.0(eslint@9.10.0(jiti@2.4.0))(typescript@5.6.3)
       eslint: 9.10.0(jiti@2.4.0)
     optionalDependencies:
+<<<<<<< Updated upstream
       vitest: 2.1.4(@types/node@22.5.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0)
+=======
+      vitest: 2.1.1(@types/node@22.5.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1)
+>>>>>>> Stashed changes
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -15291,7 +15459,11 @@ snapshots:
 
   html-tags@3.3.1: {}
 
+<<<<<<< Updated upstream
   html-webpack-plugin@5.6.0(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)):
+=======
+  html-webpack-plugin@5.6.0(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4)):
+>>>>>>> Stashed changes
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -16679,13 +16851,21 @@ snapshots:
       postcss: 8.4.45
       ts-node: 10.9.2(@swc/core@1.7.42)(@types/node@22.8.6)(typescript@5.6.3)
 
+<<<<<<< Updated upstream
   postcss-load-config@4.0.2(postcss@8.4.47)(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.6.3)):
+=======
+  postcss-load-config@4.0.2(postcss@8.4.47)(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.6.2)):
+>>>>>>> Stashed changes
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.5.1
     optionalDependencies:
       postcss: 8.4.47
+<<<<<<< Updated upstream
       ts-node: 10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.6.3)
+=======
+      ts-node: 10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.6.2)
+>>>>>>> Stashed changes
 
   postcss-loader@4.3.0(postcss@7.0.39)(webpack@5.96.1(@swc/core@1.7.42)(esbuild@0.21.5)):
     dependencies:
@@ -16697,7 +16877,11 @@ snapshots:
       semver: 7.6.3
       webpack: 5.96.1(@swc/core@1.7.42)(esbuild@0.21.5)
 
+<<<<<<< Updated upstream
   postcss-loader@8.1.1(postcss@8.4.45)(typescript@5.6.3)(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)):
+=======
+  postcss-loader@8.1.1(postcss@8.4.45)(typescript@5.6.2)(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4)):
+>>>>>>> Stashed changes
     dependencies:
       cosmiconfig: 9.0.0(typescript@5.6.3)
       jiti: 1.21.6
@@ -17746,7 +17930,11 @@ snapshots:
       schema-utils: 2.7.1
       webpack: 5.96.1(@swc/core@1.7.42)(esbuild@0.21.5)
 
+<<<<<<< Updated upstream
   style-loader@4.0.0(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)):
+=======
+  style-loader@4.0.0(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4)):
+>>>>>>> Stashed changes
     dependencies:
       webpack: 5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)
 
@@ -17831,9 +18019,15 @@ snapshots:
 
   tailwind-merge@2.5.2: {}
 
+<<<<<<< Updated upstream
   tailwindcss-animate@1.0.7(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.5.4))):
     dependencies:
       tailwindcss: 3.4.10(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.5.4))
+=======
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.5.4))):
+    dependencies:
+      tailwindcss: 3.4.10(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.5.4))
+>>>>>>> Stashed changes
 
   tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.5.4)):
     dependencies:
@@ -17889,7 +18083,11 @@ snapshots:
     transitivePeerDependencies:
       - ts-node
 
+<<<<<<< Updated upstream
   tailwindcss@3.4.14(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.6.3)):
+=======
+  tailwindcss@3.4.13(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.6.2)):
+>>>>>>> Stashed changes
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -17908,7 +18106,11 @@ snapshots:
       postcss: 8.4.47
       postcss-import: 15.1.0(postcss@8.4.47)
       postcss-js: 4.0.1(postcss@8.4.47)
+<<<<<<< Updated upstream
       postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.6.3))
+=======
+      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.6.2))
+>>>>>>> Stashed changes
       postcss-nested: 6.2.0(postcss@8.4.47)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.8
@@ -17958,7 +18160,11 @@ snapshots:
       '@swc/core': 1.7.42
       esbuild: 0.21.5
 
+<<<<<<< Updated upstream
   terser-webpack-plugin@5.3.10(@swc/core@1.7.42)(esbuild@0.24.0)(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)):
+=======
+  terser-webpack-plugin@5.3.10(@swc/core@1.7.28)(esbuild@0.23.1)(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4)):
+>>>>>>> Stashed changes
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
@@ -18075,7 +18281,11 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
+<<<<<<< Updated upstream
   ts-loader@9.5.1(typescript@5.6.3)(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)):
+=======
+  ts-loader@9.5.1(typescript@5.6.2)(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4)):
+>>>>>>> Stashed changes
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.17.1
@@ -18105,7 +18315,32 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.7.42
 
+<<<<<<< Updated upstream
   ts-node@10.9.2(@swc/core@1.7.42)(@types/node@22.5.4)(typescript@5.6.3):
+=======
+  ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.5.4)(typescript@5.6.2):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 22.5.4
+      acorn: 8.12.1
+      acorn-walk: 8.3.3
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.6.2
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    optionalDependencies:
+      '@swc/core': 1.7.28
+    optional: true
+
+  ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.7.4)(typescript@5.6.2):
+>>>>>>> Stashed changes
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -18470,7 +18705,29 @@ snapshots:
       - supports-color
       - terser
 
+<<<<<<< Updated upstream
   vite-node@2.1.4(@types/node@22.5.4)(terser@5.36.0):
+=======
+  vite-node@2.1.1(@types/node@22.5.4)(terser@5.34.1):
+    dependencies:
+      cac: 6.7.14
+      debug: 4.3.7
+      pathe: 1.1.2
+      vite: 5.4.10(@types/node@22.5.4)(terser@5.34.1)
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    optional: true
+
+  vite-node@2.1.1(@types/node@22.7.4)(terser@5.34.1):
+>>>>>>> Stashed changes
     dependencies:
       cac: 6.7.14
       debug: 4.3.7
@@ -18572,10 +18829,54 @@ snapshots:
       - supports-color
       - terser
 
+<<<<<<< Updated upstream
   vitest@2.1.4(@types/node@22.5.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.36.0):
     dependencies:
       '@vitest/expect': 2.1.4
       '@vitest/mocker': 2.1.4(vite@5.4.10(@types/node@22.5.4)(terser@5.36.0))
+=======
+  vitest@2.1.1(@types/node@22.5.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1):
+    dependencies:
+      '@vitest/expect': 2.1.1
+      '@vitest/mocker': 2.1.1(@vitest/spy@2.1.1)(vite@5.4.10(@types/node@22.5.4)(terser@5.34.1))
+      '@vitest/pretty-format': 2.1.4
+      '@vitest/runner': 2.1.1
+      '@vitest/snapshot': 2.1.1
+      '@vitest/spy': 2.1.1
+      '@vitest/utils': 2.1.1
+      chai: 5.1.2
+      debug: 4.3.7
+      magic-string: 0.30.12
+      pathe: 1.1.2
+      std-env: 3.7.0
+      tinybench: 2.9.0
+      tinyexec: 0.3.1
+      tinypool: 1.0.1
+      tinyrainbow: 1.2.0
+      vite: 5.4.10(@types/node@22.5.4)(terser@5.34.1)
+      vite-node: 2.1.1(@types/node@22.5.4)(terser@5.34.1)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 22.5.4
+      '@vitest/browser': 2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0)
+      jsdom: 25.0.0
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - msw
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    optional: true
+
+  vitest@2.1.1(@types/node@22.7.4)(@vitest/browser@2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0))(jsdom@25.0.0)(terser@5.34.1):
+    dependencies:
+      '@vitest/expect': 2.1.1
+      '@vitest/mocker': 2.1.1(@vitest/spy@2.1.1)(vite@5.4.10(@types/node@22.7.4)(terser@5.34.1))
+>>>>>>> Stashed changes
       '@vitest/pretty-format': 2.1.4
       '@vitest/runner': 2.1.4
       '@vitest/snapshot': 2.1.4
@@ -18598,6 +18899,7 @@ snapshots:
       '@types/node': 22.5.4
       '@vitest/browser': 2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0)
       jsdom: 25.0.0
+<<<<<<< Updated upstream
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -18636,6 +18938,8 @@ snapshots:
       '@types/node': 22.8.6
       '@vitest/browser': 2.0.5(graphql@16.9.0)(playwright@1.47.0)(typescript@5.5.4)(vitest@1.6.0)
       jsdom: 25.0.0
+=======
+>>>>>>> Stashed changes
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -18717,9 +19021,15 @@ snapshots:
   webpack-cli@5.1.4(webpack@5.94.0):
     dependencies:
       '@discoveryjs/json-ext': 0.5.7
+<<<<<<< Updated upstream
       '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
       '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
       '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
+=======
+      '@webpack-cli/configtest': 2.1.1(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+      '@webpack-cli/info': 2.0.2(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+      '@webpack-cli/serve': 2.0.5(webpack-cli@5.1.4(webpack@5.94.0))(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+>>>>>>> Stashed changes
       colorette: 2.0.20
       commander: 10.0.1
       cross-spawn: 7.0.3
@@ -18747,7 +19057,11 @@ snapshots:
 
   webpack-virtual-modules@0.6.2: {}
 
+<<<<<<< Updated upstream
   webpack-watch-external-files-plugin@3.1.0(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4)):
+=======
+  webpack-watch-external-files-plugin@3.1.0(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4)):
+>>>>>>> Stashed changes
     dependencies:
       glob: 10.4.2
       path: 0.12.7
@@ -18775,7 +19089,11 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
+<<<<<<< Updated upstream
       terser-webpack-plugin: 5.3.10(@swc/core@1.7.42)(esbuild@0.24.0)(webpack@5.94.0(@swc/core@1.7.42)(esbuild@0.24.0)(webpack-cli@5.1.4))
+=======
+      terser-webpack-plugin: 5.3.10(@swc/core@1.7.28)(esbuild@0.23.1)(webpack@5.94.0(@swc/core@1.7.28)(esbuild@0.23.1)(webpack-cli@5.1.4))
+>>>>>>> Stashed changes
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     optionalDependencies:
