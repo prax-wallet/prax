@@ -1,7 +1,6 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { InputProps } from '@repo/ui/components/ui/input';
-import { PagePath } from '../page/paths';
 import { PasswordInput } from '../../shared/components/password-input';
 import { usePopupNav } from '../../utils/navigate';
 import { useStore } from '../../state';
@@ -65,19 +64,6 @@ export const Login = () => {
           </Button>
         </form>
         <div className='flex flex-col gap-2'>
-          <Button
-            className='font-body text-[15px] font-normal leading-[22px] text-muted-foreground'
-            variant='link'
-            onClick={() =>
-              void (async function () {
-                await chrome.tabs.create({
-                  url: `${chrome.runtime.getURL('page.html')}#${PagePath.RESTORE_PASSWORD}`,
-                });
-              })()
-            }
-          >
-            Forgot Password?
-          </Button>
           <p className='text-center text-muted-foreground'>
             Need help? Contact{' '}
             <a
