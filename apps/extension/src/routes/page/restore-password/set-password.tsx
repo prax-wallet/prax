@@ -13,7 +13,9 @@ import { useAddWallet } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { PasswordInput } from '../../../shared/components/password-input';
+import { ServicesMessage } from '../../../message/services';
 
+// TODO: Why do we need this?
 export const SetPassword = () => {
   const navigate = usePageNav();
   const addWallet = useAddWallet();
@@ -24,6 +26,7 @@ export const SetPassword = () => {
     event.preventDefault();
     void (async function () {
       await addWallet(password);
+      await chrome.runtime.sendMessage(ServicesMessage.ClearCache);
       navigate(PagePath.ONBOARDING_SUCCESS);
     })();
   };

@@ -12,6 +12,7 @@ export const needsLogin = async (): Promise<Response | null> => {
   return redirect(PopupPath.LOGIN);
 };
 
+// Do we need to change this logic?
 export const needsOnboard = async () => {
   const wallets = await localExtStorage.get('wallets');
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
