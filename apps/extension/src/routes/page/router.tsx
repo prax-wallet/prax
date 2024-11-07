@@ -3,8 +3,6 @@ import { PageIndex, pageIndexLoader } from '.';
 import { Onboarding } from './onboarding';
 import { onboardingRoutes } from './onboarding/routes';
 import { PagePath } from './paths';
-import { RestorePasswordIndex } from './restore-password';
-import { restorePasswordRoutes } from './restore-password/routes';
 
 export const pageRoutes: RouteObject[] = [
   {
@@ -19,11 +17,6 @@ export const pageRoutes: RouteObject[] = [
         path: PagePath.WELCOME,
         element: <Onboarding />,
         children: onboardingRoutes,
-      },
-      {
-        path: PagePath.RESTORE_PASSWORD,
-        element: <RestorePasswordIndex />,
-        children: restorePasswordRoutes,
       },
     ],
   },

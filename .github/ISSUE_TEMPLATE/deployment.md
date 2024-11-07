@@ -53,7 +53,6 @@ Manual testing to confirm extension works with all flows. Can use mainnet rpc or
   - Lock screen
     - [ ] Entering correct password grants entry
     - [ ] Entering incorrect password denies entry and gives warning
-    - [ ] Forgot password flow allows to reset wallet state
     - [ ] Penumbra support link correctly links to discord
   - [ ] Previous wallet version upgrade. Ways to test:
     - In dev env, have previous version loaded (via `load unpacked`) and click `window -> extensions -> update` after re-building new code.
