@@ -7,12 +7,11 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 import { localExtStorage } from '../storage/local';
+import { SEED_PHRASE_ORIGIN } from '../routes/page/onboarding/set-password';
 
 const DEFAULT_TRANSPORT_OPTS = { timeoutMs: 5000 };
 
-export const setOnboardingValuesInStorage = async (
-  onboardingFlow: 'importedSeedphrase' | 'newlyGeneratedSeedphrase',
-) => {
+export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE_ORIGIN) => {
   const chainRegistryClient = new ChainRegistryClient();
   const { rpcs, frontends } = await chainRegistryClient.remote.globals();
   const randomRpc = sample(rpcs);
@@ -31,7 +30,7 @@ export const setOnboardingValuesInStorage = async (
 
   const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
 
-  if (onboardingFlow === 'newlyGeneratedSeedphrase') {
+  if (seedPhraseOrigin === SEED_PHRASE_ORIGIN.NEWLY_GENERATED) {
     const tendermintClient = createPromiseClient(
       TendermintProxyService,
       createGrpcWebTransport({ baseUrl: randomRpc.url }),

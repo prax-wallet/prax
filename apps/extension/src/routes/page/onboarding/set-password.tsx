@@ -15,12 +15,14 @@ import { LineWave } from 'react-loader-spinner';
 import { useAddWallet } from '../../../hooks/onboarding';
 import { setOnboardingValuesInStorage } from '../../../hooks/latest-block-height';
 import { PagePath } from '../paths';
+import { Location, useLocation } from 'react-router-dom';
 
 const useFinalizeOnboarding = () => {
   const addWallet = useAddWallet();
   const navigate = usePageNav();
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
 
   const handleSubmit = useCallback(async (event: FormEvent, password: string) => {
     event.preventDefault();
@@ -28,7 +30,8 @@ const useFinalizeOnboarding = () => {
       setLoading(true);
       setError(undefined);
       await addWallet(password);
-      await setOnboardingValuesInStorage('newlyGeneratedSeedphrase');
+      const origin = getSeedPhraseOrigin(location);
+      await setOnboardingValuesInStorage(origin);
       navigate(PagePath.ONBOARDING_SUCCESS);
     } catch (e) {
       setError(String(e));
@@ -39,6 +42,33 @@ const useFinalizeOnboarding = () => {
 
   return { handleSubmit, error, loading };
 };
+
+export enum SEED_PHRASE_ORIGIN {
+  IMPORTED = 'IMPORTED',
+  NEWLY_GENERATED = 'NEWLY_GENERATED',
+}
+
+interface LocationState {
+  origin?: SEED_PHRASE_ORIGIN;
+}
+
+const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
+  const state = location.state as Partial<LocationState> | undefined;
+  if (
+    state &&
+    typeof state.origin === 'string' &&
+    Object.values(SEED_PHRASE_ORIGIN).includes(state.origin)
+  ) {
+    return state.origin;
+  }
+  // Default to IMPORTED if the origin is not valid as it won't generate a walletCreationHeight
+  return SEED_PHRASE_ORIGIN.IMPORTED;
+};
+
+export const navigateToPasswordPage = (
+  nav: ReturnType<typeof usePageNav>,
+  origin: SEED_PHRASE_ORIGIN,
+) => nav(PagePath.SET_PASSWORD, { state: { origin } });
 
 export const SetPassword = () => {
   const navigate = usePageNav();
