@@ -16,6 +16,7 @@ import { useAddWallet } from '../../../hooks/onboarding';
 import { setOnboardingValuesInStorage } from '../../../hooks/latest-block-height';
 import { PagePath } from '../paths';
 import { Location, useLocation } from 'react-router-dom';
+import { localExtStorage } from '../../../storage/local';
 
 const useFinalizeOnboarding = () => {
   const addWallet = useAddWallet();
@@ -35,6 +36,8 @@ const useFinalizeOnboarding = () => {
       navigate(PagePath.ONBOARDING_SUCCESS);
     } catch (e) {
       setError(String(e));
+      // If something fails, roll back the wallet addition so it forces onboarding if they leave and click popup again
+      await localExtStorage.remove('wallets');
     } finally {
       setLoading(false);
     }

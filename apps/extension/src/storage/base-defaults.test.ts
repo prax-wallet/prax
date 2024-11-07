@@ -61,4 +61,34 @@ describe('Base storage default instantiation', () => {
     expect(result1).toBe(0);
     expect(result3).toBe(123);
   });
+
+  test('remove sets value to default when default exists', async () => {
+    await extStorage.set('accounts', [{ label: 'Account 1' }]);
+    await extStorage.remove('accounts');
+    const networkValue = await extStorage.get('accounts');
+    expect(networkValue).toStrictEqual([]);
+  });
+
+  test('remove removes key when no default exists', async () => {
+    await extStorage.set('seedPhrase', 'test seed phrase');
+    await extStorage.remove('seedPhrase');
+    const seedPhraseValue = await extStorage.get('seedPhrase');
+    expect(seedPhraseValue).toBe(undefined);
+  });
+
+  test('remove throws error when attempting to remove dbVersion', async () => {
+    await expect(extStorage.remove('dbVersion')).rejects.toThrow('Cannot remove dbVersion');
+  });
+
+  test('remove maintains concurrency and locks', async () => {
+    const promise1 = extStorage.remove('network');
+    const promise2 = extStorage.set('network', 'testnet');
+    const promise3 = extStorage.get('network');
+
+    await promise1;
+    await promise2;
+    const networkValue = await promise3;
+
+    expect(networkValue).toBe('testnet');
+  });
 });
