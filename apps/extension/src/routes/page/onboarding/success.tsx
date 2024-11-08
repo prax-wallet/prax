@@ -9,11 +9,7 @@ export const OnboardingSuccess = () => {
   return (
     <SplashPage title='Account created'>
       <div className='grid gap-2 text-base font-bold'>
-        <p>You are all set!</p>
-        <p>
-          Use your account to transact, stake, swap or market make. All of it is shielded and
-          private.
-        </p>
+        <p>Connect to a Penumbra frontend to deposit, transfer, stake or swap.</p>
         <Button
           variant='gradient'
           onClick={() => {
