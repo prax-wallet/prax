@@ -1,54 +1,54 @@
 import { useQuery } from '@tanstack/react-query';
 import { sample } from 'lodash';
-import { createPromiseClient } from '@connectrpc/connect';
+import { createPromiseClient, Transport } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { AppService, TendermintProxyService } from '@penumbra-zone/protobuf';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { TendermintProxyService } from '@penumbra-zone/protobuf';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
-import { localExtStorage } from '../storage/local';
-import { SEED_PHRASE_ORIGIN } from '../routes/page/onboarding/set-password';
 
-const DEFAULT_TRANSPORT_OPTS = { timeoutMs: 5000 };
+// Utility function to fetch the block height by randomly querying one of the RPC endpoints
+// from the chain registry, using a recursive callback to try another endpoint if the current
+// one fails. Additionally, this implements a timeout mechanism at the request level to avoid
+// hanging from stalled requests.
 
-export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE_ORIGIN) => {
-  const chainRegistryClient = new ChainRegistryClient();
-  const { rpcs, frontends } = await chainRegistryClient.remote.globals();
-  const randomRpc = sample(rpcs);
-  const randomFrontend = sample(frontends);
-  if (!randomRpc || !randomFrontend) {
-    throw new Error('Registry missing RPCs or frontends');
+export const fetchBlockHeightWithFallback = async (
+  endpoints: string[],
+  transport?: Transport, // Deps injection mostly for unit tests
+): Promise<{ blockHeight: number; rpc: string }> => {
+  if (endpoints.length === 0) {
+    throw new Error('All RPC endpoints failed to fetch the block height.');
   }
 
-  const { appParameters } = await createPromiseClient(
-    AppService,
-    createGrpcWebTransport({ baseUrl: randomRpc.url }),
-  ).appParameters({}, DEFAULT_TRANSPORT_OPTS);
-  if (!appParameters?.chainId) {
-    throw new Error('No chain id');
+  // Randomly select an RPC endpoint from the chain registry
+  const randomGrpcEndpoint = sample(endpoints);
+  if (!randomGrpcEndpoint) {
+    throw new Error('No RPC endpoints found.');
   }
 
-  const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
-
-  if (seedPhraseOrigin === SEED_PHRASE_ORIGIN.NEWLY_GENERATED) {
-    const tendermintClient = createPromiseClient(
-      TendermintProxyService,
-      createGrpcWebTransport({ baseUrl: randomRpc.url }),
-    );
-    const result = await tendermintClient.getStatus({}, DEFAULT_TRANSPORT_OPTS);
-    if (!result.syncInfo) {
-      throw new Error('No syncInfo in getStatus result');
-    }
-    const walletBirthday = Number(result.syncInfo.latestBlockHeight);
-    await localExtStorage.set('walletCreationBlockHeight', walletBirthday);
+  try {
+    const blockHeight = await fetchBlockHeightWithTimeout(randomGrpcEndpoint, transport);
+    return { blockHeight, rpc: randomGrpcEndpoint };
+  } catch (e) {
+    // Remove the current endpoint from the list and retry with remaining endpoints
+    const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
+    return fetchBlockHeightWithFallback(remainingEndpoints, transport);
   }
+};
 
-  await localExtStorage.set('grpcEndpoint', randomRpc.url);
-  await localExtStorage.set('frontendUrl', randomFrontend.url);
-  await localExtStorage.set(
-    'numeraires',
-    numeraires.map(n => n.toJsonString()),
-  );
+// Fetch the block height from a specific RPC endpoint with a request-level timeout that supersedes
+// the channel transport-level timeout to prevent hanging requests.
+export const fetchBlockHeightWithTimeout = async (
+  grpcEndpoint: string,
+  transport = createGrpcWebTransport({ baseUrl: grpcEndpoint }),
+  timeoutMs = 3000,
+): Promise<number> => {
+  const tendermintClient = createPromiseClient(TendermintProxyService, transport);
+
+  const result = await tendermintClient.getStatus({}, { signal: AbortSignal.timeout(timeoutMs) });
+  if (!result.syncInfo) {
+    throw new Error('No syncInfo in getStatus result');
+  }
+  return Number(result.syncInfo.latestBlockHeight);
 };
 
 // Fetch the block height from a specific RPC endpoint.

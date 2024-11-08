@@ -13,7 +13,8 @@ import { Input } from '@repo/ui/components/ui/input';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
-import { navigateToPasswordPage, SEED_PHRASE_ORIGIN } from './set-password';
+import { navigateToPasswordPage } from './password/utils';
+import { SEED_PHRASE_ORIGIN } from './password/types';
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();

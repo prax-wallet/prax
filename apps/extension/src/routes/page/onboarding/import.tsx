@@ -14,7 +14,8 @@ import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';
 import { ImportForm } from '../../../shared/containers/import-form';
 import { FormEvent, MouseEvent } from 'react';
-import { navigateToPasswordPage, SEED_PHRASE_ORIGIN } from './set-password';
+import { navigateToPasswordPage } from './password/utils';
+import { SEED_PHRASE_ORIGIN } from './password/types';
 
 export const ImportSeedPhrase = () => {
   const navigate = usePageNav();

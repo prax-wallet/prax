@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useState } from 'react';
+import { useState } from 'react';
 import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { Button } from '@repo/ui/components/ui/button';
 import {
@@ -9,69 +9,10 @@ import {
   CardTitle,
 } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
-import { usePageNav } from '../../../utils/navigate';
-import { PasswordInput } from '../../../shared/components/password-input';
 import { LineWave } from 'react-loader-spinner';
-import { useAddWallet } from '../../../hooks/onboarding';
-import { setOnboardingValuesInStorage } from '../../../hooks/latest-block-height';
-import { PagePath } from '../paths';
-import { Location, useLocation } from 'react-router-dom';
-import { localExtStorage } from '../../../storage/local';
-
-const useFinalizeOnboarding = () => {
-  const addWallet = useAddWallet();
-  const navigate = usePageNav();
-  const [error, setError] = useState<string>();
-  const [loading, setLoading] = useState(false);
-  const location = useLocation();
-
-  const handleSubmit = useCallback(async (event: FormEvent, password: string) => {
-    event.preventDefault();
-    try {
-      setLoading(true);
-      setError(undefined);
-      await addWallet(password);
-      const origin = getSeedPhraseOrigin(location);
-      await setOnboardingValuesInStorage(origin);
-      navigate(PagePath.ONBOARDING_SUCCESS);
-    } catch (e) {
-      setError(String(e));
-      // If something fails, roll back the wallet addition so it forces onboarding if they leave and click popup again
-      await localExtStorage.remove('wallets');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  return { handleSubmit, error, loading };
-};
-
-export enum SEED_PHRASE_ORIGIN {
-  IMPORTED = 'IMPORTED',
-  NEWLY_GENERATED = 'NEWLY_GENERATED',
-}
-
-interface LocationState {
-  origin?: SEED_PHRASE_ORIGIN;
-}
-
-const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
-  const state = location.state as Partial<LocationState> | undefined;
-  if (
-    state &&
-    typeof state.origin === 'string' &&
-    Object.values(SEED_PHRASE_ORIGIN).includes(state.origin)
-  ) {
-    return state.origin;
-  }
-  // Default to IMPORTED if the origin is not valid as it won't generate a walletCreationHeight
-  return SEED_PHRASE_ORIGIN.IMPORTED;
-};
-
-export const navigateToPasswordPage = (
-  nav: ReturnType<typeof usePageNav>,
-  origin: SEED_PHRASE_ORIGIN,
-) => nav(PagePath.SET_PASSWORD, { state: { origin } });
+import { usePageNav } from '../../../../utils/navigate';
+import { PasswordInput } from '../../../../shared/components/password-input';
+import { useFinalizeOnboarding } from './hooks';
 
 export const SetPassword = () => {
   const navigate = usePageNav();

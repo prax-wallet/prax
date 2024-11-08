@@ -4,7 +4,7 @@ import { GenerateSeedPhrase } from './generate';
 import { ConfirmBackup } from './confirm-backup';
 import { ImportSeedPhrase } from './import';
 import { OnboardingSuccess } from './success';
-import { SetPassword } from './set-password';
+import { SetPassword } from './password';
 
 export const onboardingRoutes = [
   {
