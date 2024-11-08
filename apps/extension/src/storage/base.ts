@@ -113,11 +113,22 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
   }
 
   /**
-   * Removes key/value from db (waits on ongoing migration)
+   * Removes key/value from db (waits on ongoing migration). If there is a default, sets that.
    */
   async remove<K extends keyof T>(key: K): Promise<void> {
     await this.withDbLock(async () => {
-      await this.storage.remove(String(key));
+      // Prevent removing dbVersion
+      if (key === 'dbVersion') {
+        throw new Error('Cannot remove dbVersion');
+      }
+
+      const specificKey = key as K & Exclude<keyof T, 'dbVersion'>;
+      const defaultValue = this.defaults[specificKey];
+      if (defaultValue !== undefined) {
+        await this._set({ [specificKey]: defaultValue } as Record<K, T[K]>);
+      } else {
+        await this.storage.remove(String(specificKey));
+      }
     });
   }
 

@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { sample } from 'lodash';
-import { createPromiseClient } from '@connectrpc/connect';
+import { createPromiseClient, Transport } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 
@@ -11,7 +10,11 @@ import { networkSelector } from '../state/network';
 // from the chain registry, using a recursive callback to try another endpoint if the current
 // one fails. Additionally, this implements a timeout mechanism at the request level to avoid
 // hanging from stalled requests.
-const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number> => {
+
+export const fetchBlockHeightWithFallback = async (
+  endpoints: string[],
+  transport?: Transport, // Deps injection mostly for unit tests
+): Promise<{ blockHeight: number; rpc: string }> => {
   if (endpoints.length === 0) {
     throw new Error('All RPC endpoints failed to fetch the block height.');
   }
@@ -23,24 +26,23 @@ const fetchBlockHeightWithFallback = async (endpoints: string[]): Promise<number
   }
 
   try {
-    return await fetchBlockHeightWithTimeout(randomGrpcEndpoint);
+    const blockHeight = await fetchBlockHeightWithTimeout(randomGrpcEndpoint, transport);
+    return { blockHeight, rpc: randomGrpcEndpoint };
   } catch (e) {
     // Remove the current endpoint from the list and retry with remaining endpoints
     const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
-    return fetchBlockHeightWithFallback(remainingEndpoints);
+    return fetchBlockHeightWithFallback(remainingEndpoints, transport);
   }
 };
 
-// Fetch the block height from a specific RPC endpoint with a request-level timeout that superceeds
+// Fetch the block height from a specific RPC endpoint with a request-level timeout that supersedes
 // the channel transport-level timeout to prevent hanging requests.
 export const fetchBlockHeightWithTimeout = async (
   grpcEndpoint: string,
-  timeoutMs = 5000,
+  transport = createGrpcWebTransport({ baseUrl: grpcEndpoint }),
+  timeoutMs = 3000,
 ): Promise<number> => {
-  const tendermintClient = createPromiseClient(
-    TendermintProxyService,
-    createGrpcWebTransport({ baseUrl: grpcEndpoint }),
-  );
+  const tendermintClient = createPromiseClient(TendermintProxyService, transport);
 
   const result = await tendermintClient.getStatus({}, { signal: AbortSignal.timeout(timeoutMs) });
   if (!result.syncInfo) {
@@ -61,19 +63,6 @@ export const fetchBlockHeight = async (grpcEndpoint: string): Promise<number> =>
     throw new Error('No syncInfo in getStatus result');
   }
   return Number(result.syncInfo.latestBlockHeight);
-};
-
-export const useLatestBlockHeightWithFallback = () => {
-  return useQuery({
-    queryKey: ['latestBlockHeightWithFallback'],
-    queryFn: async () => {
-      const chainRegistryClient = new ChainRegistryClient();
-      const { rpcs } = chainRegistryClient.bundled.globals();
-      const suggestedEndpoints = rpcs.map(i => i.url);
-      return await fetchBlockHeightWithFallback(suggestedEndpoints);
-    },
-    retry: false,
-  });
 };
 
 export const useLatestBlockHeight = () => {

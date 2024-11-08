@@ -12,9 +12,10 @@ import { cn } from '@repo/ui/lib/utils';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';
-import { PagePath } from '../paths';
 import { ImportForm } from '../../../shared/containers/import-form';
 import { FormEvent, MouseEvent } from 'react';
+import { navigateToPasswordPage } from './password/utils';
+import { SEED_PHRASE_ORIGIN } from './password/types';
 
 export const ImportSeedPhrase = () => {
   const navigate = usePageNav();
@@ -22,7 +23,7 @@ export const ImportSeedPhrase = () => {
 
   const handleSubmit = (event: MouseEvent | FormEvent) => {
     event.preventDefault();
-    navigate(PagePath.IMPORT_WALLET_CREATION_HEIGHT);
+    navigateToPasswordPage(navigate, SEED_PHRASE_ORIGIN.IMPORTED);
   };
 
   return (

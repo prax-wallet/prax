@@ -13,7 +13,8 @@ import { Input } from '@repo/ui/components/ui/input';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
-import { PagePath } from '../paths';
+import { navigateToPasswordPage } from './password/utils';
+import { SEED_PHRASE_ORIGIN } from './password/types';
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();
@@ -38,7 +39,7 @@ export const ConfirmBackup = () => {
           <Button
             variant='gradient'
             disabled={!userAttemptCorrect()}
-            onClick={() => navigate(PagePath.SET_PASSWORD)}
+            onClick={() => navigateToPasswordPage(navigate, SEED_PHRASE_ORIGIN.NEWLY_GENERATED)}
           >
             Next
           </Button>

@@ -69,7 +69,7 @@ export const Login = () => {
             <a
               className='cursor-pointer text-teal hover:underline'
               target='_blank'
-              href='https://discord.com/channels/824484045370818580/1077672871251415141'
+              href='https://discord.com/channels/824484045370818580/1245108769143394457'
               rel='noreferrer'
             >
               Penumbra Support

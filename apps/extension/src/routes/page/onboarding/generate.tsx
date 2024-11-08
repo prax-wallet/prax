@@ -13,9 +13,6 @@ import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
-import { useLatestBlockHeightWithFallback } from '../../../hooks/latest-block-height';
-import { localExtStorage } from '../../../storage/local';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
@@ -23,14 +20,11 @@ export const GenerateSeedPhrase = () => {
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
 
-  const { data: latestBlockHeight, isLoading, error } = useLatestBlockHeightWithFallback();
-
-  const onSubmit = async () => {
-    await localExtStorage.set('walletCreationBlockHeight', latestBlockHeight);
+  const onSubmit = () => {
     navigate(PagePath.CONFIRM_BACKUP);
   };
 
-  // On render, asynchronously generate a new seed phrase and initialize the wallet creation block height
+  // On render, asynchronously generate a new seed phrase
   useEffect(() => {
     if (!phrase.length) {
       generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
@@ -47,7 +41,6 @@ export const GenerateSeedPhrase = () => {
         </CardHeader>
         <CardContent className='mt-6 grid gap-4'>
           <div className={cn('grid gap-4', !reveal && 'blur')}>
-            <WordLengthToogles toogleClick={generateRandomSeedPhrase} phrase={phrase} />
             <div
               className={cn(
                 'grid gap-4 mt-2',
@@ -65,35 +58,10 @@ export const GenerateSeedPhrase = () => {
               disabled={!reveal}
               text={phrase.join(' ')}
               label={<span className='font-bold text-muted-foreground'>Copy to clipboard</span>}
-              className='m-auto w-48'
+              className='m-auto'
               isSuccessCopyText
             />
           </div>
-
-          {reveal && (
-            <div className='mt-4 rounded-lg border border-gray-500 bg-gray-800 p-4 shadow-sm'>
-              <h4 className='text-center text-lg font-semibold text-gray-200'>Wallet Birthday</h4>
-              <p className='mt-2 text-center text-gray-300'>
-                <span className='font-bold text-gray-100'>
-                  {Boolean(error) && <span className='text-red-500'>{String(error)}</span>}
-                  {isLoading && 'Loading...'}
-                  {latestBlockHeight && Number(latestBlockHeight)}
-                </span>
-              </p>
-              <p className='mt-2 text-sm text-gray-400'>
-                This is the block height at the time your wallet was created. Please save the block
-                height along with your recovery passphrase. It&apos;s not required, but will help
-                you restore your wallet quicker on a fresh Prax install next time.
-              </p>
-              <CopyToClipboard
-                disabled={!reveal}
-                text={Number(latestBlockHeight).toString()}
-                label={<span className='font-bold text-muted-foreground'>Copy to clipboard</span>}
-                className='m-auto mt-4 w-48'
-                isSuccessCopyText
-              />
-            </div>
-          )}
 
           <div className='mt-2 flex flex-col justify-center gap-4'>
             <div className='flex flex-col gap-1'>
@@ -117,12 +85,7 @@ export const GenerateSeedPhrase = () => {
           </div>
 
           {reveal ? (
-            <Button
-              className='mt-4'
-              variant='gradient'
-              onClick={() => void onSubmit()}
-              disabled={count !== 0}
-            >
+            <Button className='mt-4' variant='gradient' onClick={onSubmit} disabled={count !== 0}>
               I have backed this up
             </Button>
           ) : (

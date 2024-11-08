@@ -1,6 +1,6 @@
-import { FormEvent, useState } from 'react';
-import { Button } from '@repo/ui/components/ui/button';
+import { useState } from 'react';
 import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
+import { Button } from '@repo/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,24 +9,16 @@ import {
   CardTitle,
 } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
-import { useAddWallet } from '../../../hooks/onboarding';
-import { usePageNav } from '../../../utils/navigate';
-import { PagePath } from '../paths';
-import { PasswordInput } from '../../../shared/components/password-input';
+import { LineWave } from 'react-loader-spinner';
+import { usePageNav } from '../../../../utils/navigate';
+import { PasswordInput } from '../../../../shared/components/password-input';
+import { useFinalizeOnboarding } from './hooks';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
-  const addWallet = useAddWallet();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
-
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    void (async function () {
-      await addWallet(password);
-      navigate(PagePath.ONBOARDING_SUCCESS);
-    })();
-  };
+  const { handleSubmit, error, loading } = useFinalizeOnboarding();
 
   return (
     <FadeTransition>
@@ -40,7 +32,7 @@ export const SetPassword = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+          <form className='flex flex-col gap-4' onSubmit={e => void handleSubmit(e, password)}>
             <PasswordInput
               passwordValue={password}
               label='New password'
@@ -61,11 +53,22 @@ export const SetPassword = () => {
             <Button
               variant='gradient'
               className='mt-2'
-              disabled={password !== confirmation}
+              disabled={password !== confirmation || loading}
               type='submit'
             >
-              Next
+              {loading ? (
+                <LineWave
+                  visible={true}
+                  height='60'
+                  width='60'
+                  color='#FFFFFF'
+                  wrapperClass='mt-[-17.5px] mr-[-21px]'
+                />
+              ) : (
+                'Next'
+              )}
             </Button>
+            {error && <div className='text-red-600'>{error}</div>}
           </form>
         </CardContent>
       </Card>

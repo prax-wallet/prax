@@ -11,17 +11,9 @@ import { getDefaultFrontend } from '../../state/default-frontend';
 // Will redirect to onboarding if necessary.
 export const pageIndexLoader = async () => {
   const wallets = await localExtStorage.get('wallets');
-  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-  const frontendUrl = await localExtStorage.get('frontendUrl');
 
   if (!wallets.length) {
     return redirect(PagePath.WELCOME);
-  }
-  if (!grpcEndpoint) {
-    return redirect(PagePath.SET_GRPC_ENDPOINT);
-  }
-  if (!frontendUrl) {
-    return redirect(PagePath.SET_DEFAULT_FRONTEND);
   }
 
   return null;
