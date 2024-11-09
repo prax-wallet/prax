@@ -69,8 +69,8 @@ export const GenerateSeedPhrase = () => {
                 <ExclamationTriangleIcon /> Do not share this with anyone
               </p>
               <p>
-                Never share your recovery passphrase with anyone, not even Penumbra employees. Your
-                phrase grants full access to your funds.
+                Never share your recovery passphrase with anyone. Your recovery phrase grants full
+                access to your funds.
               </p>
             </div>
             <div className='flex flex-col gap-1'>
