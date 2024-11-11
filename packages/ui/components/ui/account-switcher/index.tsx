@@ -68,7 +68,7 @@ export const AccountSwitcher = ({
         disabled={!previousButtonEnabled}
       >
         <ArrowLeftIcon
-          aria-label='Previous account'
+          aria-label='Previous sub-account'
           role='button'
           onClick={handleClickPrevious}
           className='size-6 hover:cursor-pointer'
@@ -76,42 +76,49 @@ export const AccountSwitcher = ({
       </Button>
       <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
         <div className='flex flex-row flex-wrap items-end gap-[6px]'>
-          <span>Account</span>
-          <div className='flex items-end gap-0'>
-            <p>#</p>
-            <div className='relative w-min min-w-[24px]'>
-              <Input
-                aria-label={`Account #${account}`}
-                aria-disabled={!!filter}
-                variant='transparent'
-                type='number'
-                className='mb-[3px] h-6 py-[2px] font-headline text-xl font-semibold leading-[30px]'
-                onChange={e => {
-                  /**
-                   * Don't allow manual account number entry when there's a
-                   * filter.
-                   *
-                   * @todo: Change this to only call `handleChange()` when the
-                   * user presses Enter? Then it could validate that the entered
-                   * account index is in the filter.
-                   */
-                  if (filter) {
-                    return;
-                  }
+          {account === 0 ? (
+            <span>Main Account</span>
+          ) : (
+            <>
+              <span>Sub-Account</span>
 
-                  const value = Number(e.target.value);
-                  const valueLength = e.target.value.replace(/^0+/, '').length;
+              <div className='flex items-end gap-0'>
+                <p>#</p>
+                <div className='relative w-min min-w-[24px]'>
+                  <Input
+                    aria-label={`Sub-Account #${account}`}
+                    aria-disabled={!!filter}
+                    variant='transparent'
+                    type='number'
+                    className='mb-[3px] h-6 py-[2px] font-headline text-xl font-semibold leading-[30px]'
+                    onChange={e => {
+                      /**
+                       * Don't allow manual account number entry when there's a
+                       * filter.
+                       *
+                       * @todo: Change this to only call `handleChange()` when the
+                       * user presses Enter? Then it could validate that the entered
+                       * account index is in the filter.
+                       */
+                      if (filter) {
+                        return;
+                      }
 
-                  if (value > MAX_INDEX || valueLength > MAX_INDEX.toString().length) {
-                    return;
-                  }
-                  handleChange(value);
-                }}
-                style={{ width: `${inputCharWidth}ch` }}
-                value={account ? account.toString().replace(/^0+/, '') : '0'} // Removes leading zeros (e.g. 00123 -> 123
-              />
-            </div>
-          </div>
+                      const value = Number(e.target.value);
+                      const valueLength = e.target.value.replace(/^0+/, '').length;
+
+                      if (value > MAX_INDEX || valueLength > MAX_INDEX.toString().length) {
+                        return;
+                      }
+                      handleChange(value);
+                    }}
+                    style={{ width: `${inputCharWidth}ch` }}
+                    value={account ? account.toString().replace(/^0+/, '') : '0'} // Removes leading zeros (e.g. 00123 -> 123
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <Button
@@ -123,7 +130,7 @@ export const AccountSwitcher = ({
         disabled={!nextButtonEnabled}
       >
         <ArrowRightIcon
-          aria-label='Next account'
+          aria-label='Next sub-account'
           role='button'
           onClick={handleClickNext}
           className='size-6 hover:cursor-pointer'
