@@ -16,6 +16,7 @@ const TabsList = React.forwardRef<
       'inline-flex h-[52px] items-center justify-center rounded-lg bg-background px-2',
       className,
     )}
+    style={{ marginBottom: '16px' }}
     {...props}
   />
 ));

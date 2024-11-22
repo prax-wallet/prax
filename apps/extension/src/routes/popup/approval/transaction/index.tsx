@@ -47,11 +47,15 @@ export const TransactionApproval = () => {
 
   return (
     <div className='flex h-screen flex-col'>
-      <div className='grow overflow-auto p-[30px] pt-10'>
-        <p className='bg-text-linear bg-clip-text pb-2 font-headline text-2xl font-bold text-transparent'>
-          Confirm transaction
-        </p>
-
+      <div className='border-b border-gray-700 p-4'>
+        <h1
+          className=' bg-text-linear bg-clip-text pb-2 font-headline text-2xl font-bold text-transparent'
+          style={{ paddingBottom: '0px' }}
+        >
+          Confirm Transaction
+        </h1>
+      </div>
+      <div className='grow overflow-auto p-4'>
         <ViewTabs
           defaultValue={selectedTransactionViewName}
           onValueChange={setSelectedTransactionViewName}
@@ -60,13 +64,18 @@ export const TransactionApproval = () => {
         <TransactionViewComponent txv={selectedTransactionView} metadataFetcher={getMetadata} />
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
-          <div className='mt-8'>
+          <div className='mt-4'>
             <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
           </div>
         )}
       </div>
 
-      <ApproveDeny approve={approve} deny={deny} wait={3} />
+      <div
+        className='border-t border-gray-700 p-4'
+        style={{ paddingBottom: '0px', paddingTop: '0px', paddingRight: '0px', paddingLeft: '0px' }}
+      >
+        <ApproveDeny approve={approve} deny={deny} wait={3} />
+      </div>
     </div>
   );
 };

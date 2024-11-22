@@ -20,7 +20,7 @@ export const ViewTabs = ({
       onValueChange={value => onValueChange(value as TransactionViewTab)}
     >
       <TabsList
-        className={cn('mx-auto mb-8 grid w-[100%] gap-4', {
+        className={cn('mx-auto mb-12 grid w-[100%] gap-4', {
           'grid-cols-2': !showReceiverTransactionView,
           'grid-cols-3': showReceiverTransactionView,
         })}

@@ -10,8 +10,7 @@ import {
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { getAmount as getAmountFee } from '@penumbra-zone/getters/fee';
 import { isZero, joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import { Density } from '@penumbra-zone/ui/Density';
+import { ValueViewComponent } from '../../../value';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 const getClaimLabel = (
@@ -45,30 +44,10 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
             <ActionDetails.Row label={claimLabel}>
               <div className='flex gap-2'>
                 {output1Amount && !isZero(output1Amount) && (
-                  <Density compact>
-                    <div className='ml-4'>
-                      <ValueViewComponent
-                        valueView={output1Value}
-                        context='default'
-                        priority='primary'
-                        hideSymbol={true}
-                        abbreviate={false}
-                      />
-                    </div>
-                  </Density>
+                  <ValueViewComponent view={output1Value} />
                 )}
                 {output2Amount && !isZero(output2Amount) && (
-                  <Density compact>
-                    <div className='ml-4'>
-                      <ValueViewComponent
-                        valueView={output2Value}
-                        context='default'
-                        priority='primary'
-                        hideSymbol={true}
-                        abbreviate={false}
-                      />
-                    </div>
-                  </Density>
+                  <ValueViewComponent view={output2Value} />
                 )}
               </div>
             </ActionDetails.Row>

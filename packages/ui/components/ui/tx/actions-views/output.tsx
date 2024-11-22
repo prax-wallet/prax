@@ -1,7 +1,6 @@
 import { OutputView } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { ViewBox } from '../viewbox';
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import { Density } from '@penumbra-zone/ui/Density';
+import { ValueViewComponent } from '../../value';
 import { ValueWithAddress } from './value-with-address';
 import { getNote } from '@penumbra-zone/getters/output-view';
 import { getAddress } from '@penumbra-zone/getters/note-view';
@@ -15,19 +14,12 @@ export const OutputViewComponent = ({ value }: { value: OutputView }) => {
       <ViewBox
         label='Output'
         visibleContent={
-          <ValueWithAddress addressView={address} label='to'>
-            <Density compact>
-              <div className='ml-4'>
-                <ValueViewComponent
-                  valueView={note.value}
-                  context='default'
-                  priority='primary'
-                  hideSymbol={true}
-                  abbreviate={false}
-                />
-              </div>
-            </Density>
-          </ValueWithAddress>
+          <div className='flex items-center justify-between gap-3'>
+            <ValueViewComponent view={note.value} />
+            <ValueWithAddress addressView={address} label='to'>
+              <></>
+            </ValueWithAddress>
+          </div>
         }
       />
     );

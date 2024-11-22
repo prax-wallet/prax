@@ -15,12 +15,21 @@ export const ApproveDeny = ({
   const count = useWindowCountdown(wait);
 
   return (
-    <div className='flex flex-row flex-wrap justify-center gap-4 bg-black p-4 shadow-lg'>
-      <Button variant='gradient' className='w-full' size='lg' onClick={approve} disabled={!!count}>
+    <div
+      className='flex flex-row justify-between gap-4 rounded-md bg-black p-4 shadow-md'
+      style={{ paddingBottom: '28px', paddingTop: '28px' }}
+    >
+      <Button
+        variant='gradient'
+        className='w-1/2 py-3.5 text-base'
+        size='lg'
+        onClick={approve}
+        disabled={!!count}
+      >
         Approve {count !== 0 && `(${count})`}
       </Button>
       <Button
-        className='min-w-[50%] grow items-center gap-2 hover:bg-destructive/90'
+        className='w-1/2 py-3.5 text-base hover:bg-destructive/90'
         size='lg'
         variant='destructiveSecondary'
         onClick={deny}
@@ -29,8 +38,8 @@ export const ApproveDeny = ({
       </Button>
       {ignore && (
         <Button
-          className='w-1/3 hover:bg-destructive/90'
-          size='lg'
+          className='w-[32%] py-2.5 text-sm hover:bg-destructive/90'
+          size='md'
           variant='secondary'
           onClick={ignore}
         >

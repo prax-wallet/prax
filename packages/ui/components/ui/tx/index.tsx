@@ -7,8 +7,7 @@ import {
   Metadata,
   ValueView,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import { Density } from '@penumbra-zone/ui/Density';
+import { ValueViewComponent } from '../value';
 import { useEffect, useState } from 'react';
 
 // Likely something that calls the registry or view service for metadata
@@ -65,29 +64,19 @@ export const TransactionViewComponent = ({
   const { feeValueView, isLoading, error } = useFeeMetadata(txv, metadataFetcher);
 
   return (
-    <div className='flex flex-col gap-8'>
+    <div className='flex flex-col gap-4'>
       {txv.bodyView?.memoView?.memoView && <MemoViewComponent memo={txv.bodyView.memoView} />}
-      <ViewSection heading='Actions'>
+      <ViewSection heading={<div style={{ paddingLeft: '3px' }}>Actions</div>}>
         {txv.bodyView?.actionViews.map((av, i) => (
           <ActionViewComponent av={av} feeValueView={feeValueView} key={i} />
         ))}
       </ViewSection>
-      <ViewSection heading='Parameters'>
+      <ViewSection heading={<div style={{ paddingLeft: '3px' }}>Parameters</div>}>
         <ViewBox
           label='Transaction Fee'
           visibleContent={
             <div className='flex items-center gap-2'>
-              <Density compact>
-                <div className='ml-4'>
-                  <ValueViewComponent
-                    valueView={feeValueView}
-                    context='default'
-                    priority='primary'
-                    hideSymbol={true}
-                    abbreviate={false}
-                  />
-                </div>
-              </Density>
+              <ValueViewComponent view={feeValueView} />
               {isLoading && <span className='font-mono text-light-brown'>Loading...</span>}
               {error ? (
                 <span className='font-mono text-red-400'>Error: {String(error)}</span>
