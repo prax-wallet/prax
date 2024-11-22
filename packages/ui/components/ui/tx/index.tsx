@@ -7,7 +7,8 @@ import {
   Metadata,
   ValueView,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ValueViewComponent } from '../value';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
+import { Density } from '@penumbra-zone/ui/Density';
 import { useEffect, useState } from 'react';
 
 // Likely something that calls the registry or view service for metadata
@@ -76,7 +77,17 @@ export const TransactionViewComponent = ({
           label='Transaction Fee'
           visibleContent={
             <div className='flex items-center gap-2'>
-              <ValueViewComponent view={feeValueView} />
+              <Density compact>
+                <div className='ml-4'>
+                  <ValueViewComponent
+                    valueView={feeValueView}
+                    context='default'
+                    priority='primary'
+                    hideSymbol={true}
+                    abbreviate={false}
+                  />
+                </div>
+              </Density>
               {isLoading && <span className='font-mono text-light-brown'>Loading...</span>}
               {error ? (
                 <span className='font-mono text-red-400'>Error: {String(error)}</span>

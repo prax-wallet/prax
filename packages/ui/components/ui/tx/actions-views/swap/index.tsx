@@ -9,7 +9,8 @@ import {
   getClaimFeeFromSwapView,
   getClaimTx,
 } from '@penumbra-zone/getters/swap-view';
-import { ValueViewComponent } from '../../../value';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
+import { Density } from '@penumbra-zone/ui/Density';
 import { ActionDetails } from '../action-details';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
@@ -48,13 +49,33 @@ export const SwapViewComponent = ({
             <ActionDetails>
               {oneWaySwap?.unfilled && (
                 <ActionDetails.Row label='Unfilled'>
-                  <ValueViewComponent view={oneWaySwap.unfilled} />
+                  <Density compact>
+                    <div className='ml-4'>
+                      <ValueViewComponent
+                        valueView={oneWaySwap.unfilled}
+                        context='default'
+                        priority='primary'
+                        hideSymbol={true}
+                        abbreviate={false}
+                      />
+                    </div>
+                  </Density>
                 </ActionDetails.Row>
               )}
 
               <ActionDetails.Row label='Swap Claim Fee'>
                 <div className='font-mono'>
-                  <ValueViewComponent view={prepaidClaimFee} />
+                  <Density compact>
+                    <div className='ml-4'>
+                      <ValueViewComponent
+                        valueView={prepaidClaimFee}
+                        context='default'
+                        priority='primary'
+                        hideSymbol={true}
+                        abbreviate={false}
+                      />
+                    </div>
+                  </Density>
                 </div>
               </ActionDetails.Row>
 

@@ -61,6 +61,8 @@ const getLabelForActionCase = (actionCase: ActionView['actionView']['case']): st
   return String(actionCase);
 };
 
+// note: ensure to update the ValueViewComponent to handle unimplemented views
+// once support for them is added.
 export const ActionViewComponent = ({
   av: { actionView },
   feeValueView,

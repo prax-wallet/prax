@@ -1,5 +1,6 @@
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ValueViewComponent } from '../../../value';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
+import { Density } from '@penumbra-zone/ui/Density';
 import { DutchAuction } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { Separator } from '../../../separator';
 import { Indicator } from './indicator';
@@ -41,8 +42,17 @@ export const ProgressBar = ({
 
   return (
     <div className='relative flex grow items-center justify-between gap-2 overflow-hidden'>
-      <ValueViewComponent view={input} size='sm' />
-
+      <Density compact>
+        <div className='ml-4'>
+          <ValueViewComponent
+            valueView={input}
+            context='default'
+            priority='primary'
+            hideSymbol={true}
+            abbreviate={false}
+          />
+        </div>
+      </Density>
       <div className='relative flex min-h-4 shrink grow items-center overflow-hidden'>
         {!auctionIsUpcoming && (
           <Indicator dutchAuction={dutchAuction} fullSyncHeight={fullSyncHeight} />
@@ -84,7 +94,17 @@ export const ProgressBar = ({
       </div>
 
       {outputMetadata && (
-        <ValueViewComponent view={getEmptyValueView(outputMetadata)} size='sm' showValue={false} />
+        <Density compact>
+          <div className='ml-4'>
+            <ValueViewComponent
+              valueView={getEmptyValueView(outputMetadata)}
+              context='default'
+              priority='primary'
+              hideSymbol={true}
+              abbreviate={false}
+            />
+          </div>
+        </Density>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import { ViewBox } from '../viewbox';
-import { ValueViewComponent } from '../../value';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
+import { Density } from '@penumbra-zone/ui/Density';
 import { getAddress } from '@penumbra-zone/getters/note-view';
 import { ActionDetails } from './action-details';
 import {
@@ -116,7 +117,17 @@ const VoteBodyDetails = ({ body }: { body?: DelegatorVoteBody }) => {
       )}
       {!!body?.unbondedAmount && (
         <ActionDetails.Row label='Voting power'>
-          <ValueViewComponent view={umValueView(body.unbondedAmount)} />
+          <Density compact>
+            <div className='ml-4'>
+              <ValueViewComponent
+                valueView={umValueView(body.unbondedAmount)}
+                context='default'
+                priority='primary'
+                hideSymbol={true}
+                abbreviate={false}
+              />
+            </div>
+          </Density>
         </ActionDetails.Row>
       )}
     </>
