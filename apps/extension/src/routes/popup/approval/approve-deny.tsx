@@ -42,8 +42,8 @@ export const ApproveDeny = ({
       </Button>
       {ignore && (
         <Button
-          className='w-[32%] py-2.5 text-sm hover:bg-destructive/90'
-          size='md'
+          className='w-1/2 py-3.5 text-base hover:bg-destructive/90'
+          size='lg'
           variant='secondary'
           onClick={ignore}
         >
