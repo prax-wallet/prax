@@ -25,7 +25,7 @@ export const customTheme: NamedColorspace = {
 
 export const JsonViewer = ({ jsonObj }: { jsonObj: JsonObject | JsonValue[] }) => {
   return (
-    <div className='mt-5 rounded bg-black p-5'>
+    <div className='mt-0 rounded bg-black p-5'>
       <TextaJsonViewer
         value={jsonObj}
         style={{ fontFamily: 'Iosevka Term' }}

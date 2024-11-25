@@ -58,7 +58,12 @@ export const TransactionApproval = () => {
 
   return (
     <div className='flex h-screen flex-col'>
-      <div className='flex grow flex-col overflow-auto p-[30px] pt-10'>
+      <div className='border-b border-gray-700 p-4'>
+        <h1 className=' bg-text-linear bg-clip-text pb-0 font-headline text-2xl font-bold text-transparent'>
+          Confirm Transaction
+        </h1>
+      </div>
+      <div className='grow overflow-auto p-4'>
         {selectedTransactionViewName === TransactionViewTab.SENDER &&
           !hasAltGasFee(selectedTransactionView) && (
             <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
@@ -67,11 +72,6 @@ export const TransactionApproval = () => {
               maintain an UM balance for fees.
             </div>
           )}
-
-        <p className='bg-text-linear bg-clip-text pb-2 font-headline text-2xl font-bold text-transparent'>
-          Confirm transaction
-        </p>
-
         <ViewTabs
           defaultValue={selectedTransactionViewName}
           onValueChange={setSelectedTransactionViewName}
@@ -80,7 +80,7 @@ export const TransactionApproval = () => {
         <TransactionViewComponent txv={selectedTransactionView} metadataFetcher={getMetadata} />
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
-          <div className='mt-4'>
+          <div className='mt-2'>
             <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
           </div>
         )}
