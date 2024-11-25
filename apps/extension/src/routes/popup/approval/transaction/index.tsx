@@ -11,7 +11,7 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { TransactionViewTab } from './types';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { viewClient } from '../../../../clients';
-import { useState } from 'react';
+import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
@@ -20,13 +20,21 @@ const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   return denomMetadata;
 };
 
+const hasAltGasFee = (txv?: TransactionView): boolean => {
+  const { stakingAssetId } = new ChainRegistryClient().bundled.globals();
+  let feeAssetId = txv?.bodyView?.transactionParameters?.fee?.assetId;
+  if (feeAssetId === undefined) {
+    feeAssetId = stakingAssetId;
+  }
+
+  return feeAssetId.equals(stakingAssetId);
+};
+
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
 
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
-
-  const [symbol, setSymbol] = useState<string>('Unknown asset');
 
   if (!authReqString) {
     return null;
@@ -51,16 +59,14 @@ export const TransactionApproval = () => {
   return (
     <div className='flex h-screen flex-col'>
       <div className='flex grow flex-col overflow-auto p-[30px] pt-10'>
-        {selectedTransactionViewName === TransactionViewTab.SENDER && symbol !== 'UM' && (
-          <div
-            style={{ marginBottom: '16px' }}
-            className='rounded border border-yellow-500 p-2 text-yellow-500 text-sm'
-          >
-            <span className='block text-center font-bold'>⚠ Privacy Warning:</span>
-            Transaction uses a non-native fee token. To reduce gas costs and protect your privacy,
-            maintain an UM balance for fees.
-          </div>
-        )}
+        {selectedTransactionViewName === TransactionViewTab.SENDER &&
+          !hasAltGasFee(selectedTransactionView) && (
+            <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
+              <span className='block text-center font-bold'>⚠ Privacy Warning:</span>
+              Transaction uses a non-native fee token. To reduce gas costs and protect your privacy,
+              maintain an UM balance for fees.
+            </div>
+          )}
 
         <p className='bg-text-linear bg-clip-text pb-2 font-headline text-2xl font-bold text-transparent'>
           Confirm transaction
@@ -71,11 +77,7 @@ export const TransactionApproval = () => {
           onValueChange={setSelectedTransactionViewName}
         />
 
-        <TransactionViewComponent
-          txv={selectedTransactionView}
-          metadataFetcher={getMetadata}
-          fetchSymbol={symbol => setSymbol(symbol)}
-        />
+        <TransactionViewComponent txv={selectedTransactionView} metadataFetcher={getMetadata} />
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
           <div className='mt-8'>

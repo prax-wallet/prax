@@ -57,25 +57,11 @@ const useFeeMetadata = (txv: TransactionView, getMetadata: MetadataFetchFn) => {
 export const TransactionViewComponent = ({
   txv,
   metadataFetcher,
-  fetchSymbol,
 }: {
   txv: TransactionView;
   metadataFetcher: MetadataFetchFn;
-  fetchSymbol?: (symbol: string) => void;
 }) => {
   const { feeValueView, isLoading, error } = useFeeMetadata(txv, metadataFetcher);
-
-  let symbol = 'Unknown asset';
-  if (feeValueView.valueView.case === 'knownAssetId' && feeValueView.valueView.value.metadata) {
-    const { metadata } = feeValueView.valueView.value;
-    symbol = metadata.symbol || 'Unknown asset';
-  }
-
-  useEffect(() => {
-    if (fetchSymbol) {
-      fetchSymbol(symbol);
-    }
-  }, [symbol, fetchSymbol]);
 
   return (
     <div className='flex flex-col gap-8'>
