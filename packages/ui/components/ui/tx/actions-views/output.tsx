@@ -14,12 +14,19 @@ export const OutputViewComponent = ({ value }: { value: OutputView }) => {
       <ViewBox
         label='Output'
         visibleContent={
-          <div className='flex items-center justify-between gap-3'>
-            <ValueViewComponent view={note.value} />
-            <ValueWithAddress addressView={address} label='to'>
-              <></>
-            </ValueWithAddress>
-          </div>
+          <ValueWithAddress addressView={address} label='to'>
+            <Density medium>
+              <div className='ml-4'>
+                <ValueViewComponent
+                  valueView={note.value}
+                  context='default'
+                  priority='primary'
+                  hideSymbol={true}
+                  abbreviate={false}
+                />
+              </div>
+            </Density>
+          </ValueWithAddress>
         }
       />
     );
