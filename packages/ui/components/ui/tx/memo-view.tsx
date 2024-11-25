@@ -10,13 +10,13 @@ export const MemoViewComponent = ({ memo: { memoView } }: { memo: MemoView }) =>
         <ViewBox
           label='Memo'
           visibleContent={
-            <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-2'>
               <ActionDetails>
                 <ActionDetails.Row label='Return Address'>
                   <AddressViewComponent view={memoView.value.plaintext!.returnAddress} />
                 </ActionDetails.Row>
                 <ActionDetails.Row label='Memo Text'>
-                  <span className='italic' style={{ wordBreak: 'normal' }}>
+                  <span className='text-sm italic' style={{ wordBreak: 'normal' }}>
                     {memoView.value.plaintext?.text}
                   </span>
                 </ActionDetails.Row>

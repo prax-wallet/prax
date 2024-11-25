@@ -50,16 +50,16 @@ export const PopupIndex = () => {
     <>
       <BlockSync />
 
-      <div className='flex h-full grow flex-col items-stretch gap-[30px] bg-logo bg-left-bottom px-[30px] pb-[30px]'>
+      <div className='flex h-full grow flex-col items-stretch gap-[15px] bg-logo bg-left-bottom px-[15px] pb-[15px]'>
         <IndexHeader />
 
-        <div className='flex flex-col gap-8'>
+        <div className='flex flex-col gap-4'>
           {activeWallet && <SelectAccount getAddrByIndex={getAddrByIndex(activeWallet)} />}
         </div>
 
         <ValidateAddress />
 
-        <div className='grow' />
+        <div className='shrink-0 grow' />
 
         <FrontendLink />
       </div>

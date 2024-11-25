@@ -80,13 +80,15 @@ export const TransactionApproval = () => {
         <TransactionViewComponent txv={selectedTransactionView} metadataFetcher={getMetadata} />
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
-          <div className='mt-8'>
+          <div className='mt-4'>
             <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
           </div>
         )}
       </div>
 
-      <ApproveDeny approve={approve} deny={deny} wait={3} />
+      <div className='border-t border-gray-700 p-0'>
+        <ApproveDeny approve={approve} deny={deny} wait={3} />
+      </div>
     </div>
   );
 };
