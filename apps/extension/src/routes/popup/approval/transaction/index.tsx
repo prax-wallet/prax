@@ -48,10 +48,7 @@ export const TransactionApproval = () => {
   return (
     <div className='flex h-screen flex-col'>
       <div className='border-b border-gray-700 p-4'>
-        <h1
-          className=' bg-text-linear bg-clip-text pb-2 font-headline text-2xl font-bold text-transparent'
-          style={{ paddingBottom: '0px' }}
-        >
+        <h1 className=' bg-text-linear bg-clip-text pb-0 font-headline text-2xl font-bold text-transparent'>
           Confirm Transaction
         </h1>
       </div>
@@ -70,10 +67,7 @@ export const TransactionApproval = () => {
         )}
       </div>
 
-      <div
-        className='border-t border-gray-700 p-4'
-        style={{ paddingBottom: '0px', paddingTop: '0px', paddingRight: '0px', paddingLeft: '0px' }}
-      >
+      <div className='border-t border-gray-700 p-0'>
         <ApproveDeny approve={approve} deny={deny} wait={3} />
       </div>
     </div>

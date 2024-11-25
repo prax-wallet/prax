@@ -15,31 +15,8 @@ export const OneWaySwap = ({ input, output }: { input: ValueView; output: ValueV
     <div className='flex items-center justify-between'>
       <ValueViewComponent view={input} />
       <div className='relative mx-2 flex items-center justify-center'>
-        <div className='flex items-center justify-center w-16 h-6 rounded-full bg-gray-800 border border-gray-500'>
-          <div
-            className='flex items-center justify-center'
-            style={{
-              position: 'relative',
-            }}
-          >
-            <div
-              className='flex items-center'
-              style={{
-                width: '14px',
-                height: '2px',
-                backgroundColor: 'white',
-              }}
-            />
-            <div
-              className='w-0 h-0 ml-[2px]'
-              style={{
-                borderTop: '4px solid transparent',
-                borderBottom: '4px solid transparent',
-                borderLeft: '6px solid white',
-              }}
-            />
-          </div>
-        </div>
+        <div className='flex h-0.5 w-3.5 items-center bg-white' />
+        <div className='ml-[2px] size-0 border-y-4 border-l-[6px] border-y-transparent border-l-white' />
       </div>
       <div className='flex items-center justify-end'>
         <ValueViewComponent view={output} showValue={!!outputAmount} />

@@ -66,12 +66,12 @@ export const TransactionViewComponent = ({
   return (
     <div className='flex flex-col gap-4'>
       {txv.bodyView?.memoView?.memoView && <MemoViewComponent memo={txv.bodyView.memoView} />}
-      <ViewSection heading={<div style={{ paddingLeft: '3px' }}>Actions</div>}>
+      <ViewSection heading={<div className='pl-[3px]'>Actions</div>}>
         {txv.bodyView?.actionViews.map((av, i) => (
           <ActionViewComponent av={av} feeValueView={feeValueView} key={i} />
         ))}
       </ViewSection>
-      <ViewSection heading={<div style={{ paddingLeft: '3px' }}>Parameters</div>}>
+      <ViewSection heading={<div className='pl-[3px]'>Parameters</div>}>
         <ViewBox
           label='Transaction Fee'
           visibleContent={
