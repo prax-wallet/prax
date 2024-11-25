@@ -53,7 +53,7 @@ export const SwapViewComponent = ({
               )}
 
               <ActionDetails.Row label='Swap Claim Fee'>
-                <div className='font-mono'>
+                <div className='text-base'>
                   <ValueViewComponent view={prepaidClaimFee} />
                 </div>
               </ActionDetails.Row>

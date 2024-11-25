@@ -11,7 +11,6 @@ export const ValueWithAddress = ({
   label,
   addressView,
 }: {
-  /** What to display before the address. Typically a `ValueViewComponent`. */
   children: ReactNode;
   label: 'from' | 'to';
   addressView?: AddressView;
@@ -22,8 +21,9 @@ export const ValueWithAddress = ({
     {addressView && (
       <div className='flex items-center gap-2 overflow-hidden'>
         <span className='whitespace-nowrap font-mono text-sm italic text-foreground'>{label}</span>
-
-        <AddressViewComponent view={addressView} />
+        <div className='max-w-[150px] truncate'>
+          <AddressViewComponent view={addressView} />
+        </div>
       </div>
     )}
   </div>

@@ -74,7 +74,7 @@ const ActionDetailsRow = ({
           <span>{label}</span>
         </span>
       ) : (
-        <span className='whitespace-nowrap break-keep'>{label}</span>
+        <span className='whitespace-nowrap break-keep text-base'>{label}</span>
       )}
 
       <Separator />
