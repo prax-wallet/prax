@@ -11,12 +11,23 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { TransactionViewTab } from './types';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { viewClient } from '../../../../clients';
+import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
 
   const { denomMetadata } = await viewClient.assetMetadataById({ assetId: feeAssetId });
   return denomMetadata;
+};
+
+const hasAltGasFee = (txv?: TransactionView): boolean => {
+  const { stakingAssetId } = new ChainRegistryClient().bundled.globals();
+  let feeAssetId = txv?.bodyView?.transactionParameters?.fee?.assetId;
+  if (feeAssetId === undefined) {
+    feeAssetId = stakingAssetId;
+  }
+
+  return feeAssetId.equals(stakingAssetId);
 };
 
 export const TransactionApproval = () => {
@@ -53,6 +64,14 @@ export const TransactionApproval = () => {
         </h1>
       </div>
       <div className='grow overflow-auto p-4'>
+        {selectedTransactionViewName === TransactionViewTab.SENDER &&
+          !hasAltGasFee(selectedTransactionView) && (
+            <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
+              <span className='block text-center font-bold'>⚠ Privacy Warning:</span>
+              Transaction uses a non-native fee token. To reduce gas costs and protect your privacy,
+              maintain an UM balance for fees.
+            </div>
+          )}
         <ViewTabs
           defaultValue={selectedTransactionViewName}
           onValueChange={setSelectedTransactionViewName}
@@ -61,7 +80,7 @@ export const TransactionApproval = () => {
         <TransactionViewComponent txv={selectedTransactionView} metadataFetcher={getMetadata} />
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
-          <div className='mt-4'>
+          <div className='mt-2'>
             <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
           </div>
         )}
