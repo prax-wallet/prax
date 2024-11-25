@@ -11,6 +11,7 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { TransactionViewTab } from './types';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { viewClient } from '../../../../clients';
+import { useState } from 'react';
 
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
@@ -24,6 +25,8 @@ export const TransactionApproval = () => {
 
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
+
+  const [symbol, setSymbol] = useState<string>('Unknown asset');
 
   if (!authReqString) {
     return null;
@@ -47,7 +50,7 @@ export const TransactionApproval = () => {
 
   return (
     <div className='flex h-screen flex-col'>
-      <div className='grow overflow-auto p-[30px] pt-10'>
+      <div className='flex grow flex-col overflow-auto p-[30px] pt-10'>
         <p className='bg-text-linear bg-clip-text pb-2 font-headline text-2xl font-bold text-transparent'>
           Confirm transaction
         </p>
@@ -57,11 +60,25 @@ export const TransactionApproval = () => {
           onValueChange={setSelectedTransactionViewName}
         />
 
-        <TransactionViewComponent txv={selectedTransactionView} metadataFetcher={getMetadata} />
+        <TransactionViewComponent
+          txv={selectedTransactionView}
+          metadataFetcher={getMetadata}
+          fetchSymbol={symbol => setSymbol(symbol)}
+        />
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
           <div className='mt-8'>
             <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
+          </div>
+        )}
+
+        {selectedTransactionViewName === TransactionViewTab.SENDER && symbol !== 'UM' && (
+          <div
+            style={{ marginTop: '20px' }}
+            className='rounded border border-yellow-500 p-4 text-yellow-500'
+          >
+            Privacy Warning: Transaction uses a non-native fee token. To reduce gas costs and
+            protect your privacy, maintain an UM balance for fees.
           </div>
         )}
       </div>
