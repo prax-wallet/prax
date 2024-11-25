@@ -16,8 +16,12 @@ export const ApproveDeny = ({
 
   return (
     <div
-      className='flex flex-row justify-between gap-4 rounded-md bg-black p-4 shadow-md'
-      style={{ paddingBottom: '28px', paddingTop: '28px' }}
+      className='flex flex-row justify-between gap-4 rounded-md p-4 shadow-md'
+      style={{
+        backgroundColor: '#1A1A1A',
+        paddingBottom: '28px',
+        paddingTop: '28px',
+      }}
     >
       <Button
         variant='gradient'
