@@ -21,7 +21,9 @@ CI/CD pipeline `/.github/workflows` should actively enforce the best practices:
 - [Vitest](https://vitest.dev/) for unit testing
 - [Turborepo](https://turbo.build/) for builds
 
-It should not be possible to ship code that hasn't gone through the fire. Further, the use of `eslint` with quite high standards ([packages/eslint-config-custom/index.js](../packages/eslint-config-custom/index.js)) is necessary to keep the codebase
+It should not be possible to ship code that hasn't gone through the fire. Further, the use of `eslint`
+with [quite high standards](https://github.com/penumbra-zone/web/tree/main/packages/configs) is necessary to keep the
+codebase
 code quality high. See [CI/CD guide](ci-cd.md) for running commands locally.
 
 ## Modularity from the beginning
@@ -34,5 +36,6 @@ that can make developing further apps easier.
 
 We should attempt to _document as we go_. That should commonly come in two forms:
 
-1. **Code comments** - When there is code that starts to require domain knowledge to understand, we should be quite liberal about adding in-line code comments to explain variables, functions, decisions, etc.
+1. **Code comments** - When there is code that starts to require domain knowledge to understand, we should be quite
+   liberal about adding in-line code comments to explain variables, functions, decisions, etc.
 2. **Architecture docs** - This directory holds the documentation on larger technical decisions and system designs.
