@@ -64,7 +64,7 @@ const _getNextSequence = async ({
     case NobleRegistrationResponse.Success:
     // This means the midpoint had a deposit in it waiting for registration.
     // This will "flush" this unregistered address, however the user still wants a new one, so continue the search
-    // eslint-disable-next-line no-fallthrough
+    // eslint-disable-next-line no-fallthrough -- see above
     case NobleRegistrationResponse.AlreadyRegistered:
       // The midpoint has been registered already, search the right-hand side
       return _getNextSequence({
