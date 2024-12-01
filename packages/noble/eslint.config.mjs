@@ -1,13 +1,3 @@
-import { penumbraEslintConfig } from '@repo/eslint-config';
-import { config, parser } from 'typescript-eslint';
+import eslintConfig from '@penumbra-zone/configs/eslint';
 
-export default config({
-  ...penumbraEslintConfig,
-  languageOptions: {
-    parser,
-    parserOptions: {
-      project: true,
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+export default eslintConfig;
