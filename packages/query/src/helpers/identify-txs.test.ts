@@ -355,15 +355,12 @@ describe('identifyTransactions', () => {
     test('identifies relevant MsgRecvPacket', async () => {
       const txA = new Transaction({
         body: {
-          actions: [
-            createMsgReceiveAction(knownAddr, 'MsgRecvPacket'),
-            createMsgReceiveAction(unknownAddr, 'MsgRecvPacket'),
-          ],
+          actions: [createMsgReceive(knownAddr), createMsgReceive(unknownAddr)],
         },
       });
       const txB = new Transaction({
         body: {
-          actions: [createMsgReceiveAction(unknownAddr, 'MsgRecvPacket')],
+          actions: [createMsgReceive(unknownAddr)],
         },
       });
       const blockTx = [txA, txB];
@@ -382,15 +379,12 @@ describe('identifyTransactions', () => {
     test('identifies relevant MsgAcknowledgement', async () => {
       const txA = new Transaction({
         body: {
-          actions: [
-            createMsgReceiveAction(knownAddr, 'MsgAcknowledgement'),
-            createMsgReceiveAction(unknownAddr, 'MsgAcknowledgement'),
-          ],
+          actions: [createMsgAcknowledgement(knownAddr), createMsgAcknowledgement(unknownAddr)],
         },
       });
       const txB = new Transaction({
         body: {
-          actions: [createMsgReceiveAction(unknownAddr, 'MsgAcknowledgement')],
+          actions: [createMsgAcknowledgement(unknownAddr)],
         },
       });
       const blockTx = [txA, txB];
@@ -409,15 +403,12 @@ describe('identifyTransactions', () => {
     test('identifies relevant MsgTimeout', async () => {
       const txA = new Transaction({
         body: {
-          actions: [
-            createMsgReceiveAction(knownAddr, 'MsgTimeout'),
-            createMsgReceiveAction(unknownAddr, 'MsgTimeout'),
-          ],
+          actions: [createMsgTimeout(knownAddr), createMsgTimeout(unknownAddr)],
         },
       });
       const txB = new Transaction({
         body: {
-          actions: [createMsgReceiveAction(unknownAddr, 'MsgTimeout')],
+          actions: [createMsgTimeout(unknownAddr)],
         },
       });
       const blockTx = [txA, txB];
@@ -437,9 +428,9 @@ describe('identifyTransactions', () => {
       const tx = new Transaction({
         body: {
           actions: [
-            createMsgReceiveAction(unknownAddr, 'MsgTimeout'),
-            createMsgReceiveAction(unknownAddr, 'MsgAcknowledgement'),
-            createMsgReceiveAction(unknownAddr, 'MsgRecvPacket'),
+            createMsgReceive(unknownAddr),
+            createMsgAcknowledgement(unknownAddr),
+            createMsgTimeout(unknownAddr),
           ],
         },
       });
@@ -456,15 +447,11 @@ describe('identifyTransactions', () => {
   });
 });
 
-const createMsgReceiveAction = (
-  receiver: string,
-  action: 'MsgRecvPacket' | 'MsgAcknowledgement' | 'MsgTimeout',
-): Action => {
+const createMsgReceive = (receiver: string): Action => {
   const tokenPacketData = new FungibleTokenPacketData({ receiver });
   const encoder = new TextEncoder();
-  const Msg = getMsgType(action);
   const relevantRelay = Any.pack(
-    new Msg({
+    new MsgRecvPacket({
       packet: new Packet({ data: encoder.encode(tokenPacketData.toJsonString()) }),
     }),
   );
@@ -473,12 +460,28 @@ const createMsgReceiveAction = (
   });
 };
 
-const getMsgType = (action: 'MsgRecvPacket' | 'MsgAcknowledgement' | 'MsgTimeout') => {
-  if (action === 'MsgRecvPacket') {
-    return MsgRecvPacket;
-  } else if (action === 'MsgAcknowledgement') {
-    return MsgAcknowledgement;
-  } else {
-    return MsgTimeout;
-  }
+const createMsgAcknowledgement = (sender: string): Action => {
+  const tokenPacketData = new FungibleTokenPacketData({ sender });
+  const encoder = new TextEncoder();
+  const relevantRelay = Any.pack(
+    new MsgAcknowledgement({
+      packet: new Packet({ data: encoder.encode(tokenPacketData.toJsonString()) }),
+    }),
+  );
+  return new Action({
+    action: { case: 'ibcRelayAction', value: new IbcRelay({ rawAction: relevantRelay }) },
+  });
+};
+
+const createMsgTimeout = (sender: string): Action => {
+  const tokenPacketData = new FungibleTokenPacketData({ sender });
+  const encoder = new TextEncoder();
+  const relevantRelay = Any.pack(
+    new MsgTimeout({
+      packet: new Packet({ data: encoder.encode(tokenPacketData.toJsonString()) }),
+    }),
+  );
+  return new Action({
+    action: { case: 'ibcRelayAction', value: new IbcRelay({ rawAction: relevantRelay }) },
+  });
 };

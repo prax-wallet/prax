@@ -42,28 +42,35 @@ const hasRelevantIbcRelay = (
       return false;
     }
 
-    let packet: Packet | undefined;
-
     if (rawAction.is(MsgRecvPacket.typeName)) {
       const recvPacket = new MsgRecvPacket();
       rawAction.unpackTo(recvPacket);
-      packet = recvPacket.packet;
-    } else if (rawAction.is(MsgAcknowledgement.typeName)) {
+      if (!recvPacket.packet) {
+        return false;
+      }
+      return isControlledByUser(recvPacket.packet, isControlledAddr, 'receiver');
+    }
+
+    if (rawAction.is(MsgAcknowledgement.typeName)) {
       const ackPacket = new MsgAcknowledgement();
       rawAction.unpackTo(ackPacket);
-      packet = ackPacket.packet;
-    } else if (rawAction.is(MsgTimeout.typeName)) {
+      if (!ackPacket.packet) {
+        return false;
+      }
+      return isControlledByUser(ackPacket.packet, isControlledAddr, 'sender');
+    }
+
+    if (rawAction.is(MsgTimeout.typeName)) {
       const timeout = new MsgTimeout();
       rawAction.unpackTo(timeout);
-      packet = timeout.packet;
+      if (!timeout.packet) {
+        return false;
+      }
+      return isControlledByUser(timeout.packet, isControlledAddr, 'sender');
     }
 
     // Not a potentially relevant ibc relay action
-    if (!packet) {
-      return false;
-    }
-
-    return isControlledByUser(packet, isControlledAddr);
+    return false;
   });
 };
 
@@ -71,12 +78,14 @@ const hasRelevantIbcRelay = (
 const isControlledByUser = (
   packet: Packet,
   isControlledAddr: ViewServerInterface['isControlledAddress'],
+  entityToCheck: 'sender' | 'receiver',
 ): boolean => {
   try {
     const dataString = new TextDecoder().decode(packet.data);
-    const { receiver } = FungibleTokenPacketData.fromJsonString(dataString);
-    const receivingAddr = parseIntoAddr(receiver);
-    return isControlledAddr(receivingAddr);
+    const { sender, receiver } = FungibleTokenPacketData.fromJsonString(dataString);
+    const addrStr = entityToCheck === 'sender' ? sender : receiver;
+    const addrToCheck = parseIntoAddr(addrStr);
+    return isControlledAddr(addrToCheck);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- On error, ignore and continue
   } catch (e) {
     return false;
