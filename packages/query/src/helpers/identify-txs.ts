@@ -7,16 +7,27 @@ import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbr
 import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
-import { MsgRecvPacket } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
+import {
+  MsgAcknowledgement,
+  MsgRecvPacket,
+  MsgTimeout,
+} from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
 import { FungibleTokenPacketData } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
 import { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { parseIntoAddr } from '@penumbra-zone/types/address';
+import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 
 export const BLANK_TX_SOURCE = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
 
-// Identifies if a tx with a relay action of which the receiver is the user
+/**
+ * Identifies if a tx with a relay action of which the receiver is the user.
+ * In terms of minting notes in the shielded pool, three IBC actions are relevant:
+ * - MsgRecvPacket (containing an ICS20 inbound transfer)
+ * - MsgAcknowledgement (containing an error acknowledgement, thus triggering a refund on our end)
+ * - MsgTimeout
+ */
 const hasRelevantIbcRelay = (
   tx: Transaction,
   isControlledAddr: ViewServerInterface['isControlledAddress'],
@@ -26,30 +37,50 @@ const hasRelevantIbcRelay = (
       return false;
     }
 
-    if (!action.action.value.rawAction?.is(MsgRecvPacket.typeName)) {
+    const rawAction = action.action.value.rawAction;
+    if (!rawAction) {
       return false;
     }
 
-    const recvPacket = new MsgRecvPacket();
-    const success = action.action.value.rawAction.unpackTo(recvPacket);
-    if (!success) {
-      throw new Error('Error while trying to unpack Any to MsgRecvPacket');
+    let packet: Packet | undefined;
+
+    if (rawAction.is(MsgRecvPacket.typeName)) {
+      const recvPacket = new MsgRecvPacket();
+      rawAction.unpackTo(recvPacket);
+      packet = recvPacket.packet;
+    } else if (rawAction.is(MsgAcknowledgement.typeName)) {
+      const ackPacket = new MsgAcknowledgement();
+      rawAction.unpackTo(ackPacket);
+      packet = ackPacket.packet;
+    } else if (rawAction.is(MsgTimeout.typeName)) {
+      const timeout = new MsgTimeout();
+      rawAction.unpackTo(timeout);
+      packet = timeout.packet;
     }
 
-    if (!recvPacket.packet?.data) {
-      throw new Error('No FungibleTokenPacketData MsgRecvPacket');
-    }
-
-    try {
-      const dataString = new TextDecoder().decode(recvPacket.packet.data);
-      const { receiver } = FungibleTokenPacketData.fromJsonString(dataString);
-      const receivingAddr = parseIntoAddr(receiver);
-      return isControlledAddr(receivingAddr);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: Fix eslint issue
-    } catch (e) {
+    // Not a potentially relevant ibc relay action
+    if (!packet) {
       return false;
     }
+
+    return isControlledByUser(packet, isControlledAddr);
   });
+};
+
+// Determines if the packet data points to the user as the receiver
+const isControlledByUser = (
+  packet: Packet,
+  isControlledAddr: ViewServerInterface['isControlledAddress'],
+): boolean => {
+  try {
+    const dataString = new TextDecoder().decode(packet.data);
+    const { receiver } = FungibleTokenPacketData.fromJsonString(dataString);
+    const receivingAddr = parseIntoAddr(receiver);
+    return isControlledAddr(receivingAddr);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- On error, ignore and continue
+  } catch (e) {
+    return false;
+  }
 };
 
 // Used as a type-check helper as .filter(Boolean) still results with undefined as a possible value

@@ -33,7 +33,11 @@ import {
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
-import { MsgRecvPacket } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
+import {
+  MsgAcknowledgement,
+  MsgRecvPacket,
+  MsgTimeout,
+} from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
 
 describe('getCommitmentsFromActions', () => {
   test('returns empty array when tx.body.actions is undefined', () => {
@@ -342,39 +346,139 @@ describe('identifyTransactions', () => {
     expect(commitmentRecordsBeforeSize).toEqual(commitmentRecords.size);
   });
 
-  test('identifies ibc relays', async () => {
+  describe('ibc relays', () => {
     const knownAddr =
       'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4';
     const unknownAddr =
       'penumbracompat1147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhwqq0da';
-    const tx = new Transaction({
-      body: {
-        actions: [createIbcRelay(knownAddr), createIbcRelay(unknownAddr)],
-      },
+
+    test('identifies relevant MsgRecvPacket', async () => {
+      const txA = new Transaction({
+        body: {
+          actions: [
+            createMsgReceiveAction(knownAddr, 'MsgRecvPacket'),
+            createMsgReceiveAction(unknownAddr, 'MsgRecvPacket'),
+          ],
+        },
+      });
+      const txB = new Transaction({
+        body: {
+          actions: [createMsgReceiveAction(unknownAddr, 'MsgRecvPacket')],
+        },
+      });
+      const blockTx = [txA, txB];
+      const spentNullifiers = new Set<Nullifier>();
+      const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+
+      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
+        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      );
+
+      expect(result.relevantTxs.length).toBe(1);
+      expect(result.relevantTxs[0]?.data.equals(txA)).toBeTruthy();
+      expect(result.recoveredSourceRecords.length).toBe(0);
     });
-    const blockTx = [tx];
-    const spentNullifiers = new Set<Nullifier>();
-    const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-    const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
-      addr.equals(new Address(addressFromBech32m(knownAddr))),
-    );
+    test('identifies relevant MsgAcknowledgement', async () => {
+      const txA = new Transaction({
+        body: {
+          actions: [
+            createMsgReceiveAction(knownAddr, 'MsgAcknowledgement'),
+            createMsgReceiveAction(unknownAddr, 'MsgAcknowledgement'),
+          ],
+        },
+      });
+      const txB = new Transaction({
+        body: {
+          actions: [createMsgReceiveAction(unknownAddr, 'MsgAcknowledgement')],
+        },
+      });
+      const blockTx = [txA, txB];
+      const spentNullifiers = new Set<Nullifier>();
+      const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-    expect(result.relevantTxs.length).toBe(1);
-    expect(result.relevantTxs[0]?.data.equals(tx)).toBeTruthy();
-    expect(result.recoveredSourceRecords.length).toBe(0);
+      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
+        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      );
+
+      expect(result.relevantTxs.length).toBe(1);
+      expect(result.relevantTxs[0]?.data.equals(txA)).toBeTruthy();
+      expect(result.recoveredSourceRecords.length).toBe(0);
+    });
+
+    test('identifies relevant MsgTimeout', async () => {
+      const txA = new Transaction({
+        body: {
+          actions: [
+            createMsgReceiveAction(knownAddr, 'MsgTimeout'),
+            createMsgReceiveAction(unknownAddr, 'MsgTimeout'),
+          ],
+        },
+      });
+      const txB = new Transaction({
+        body: {
+          actions: [createMsgReceiveAction(unknownAddr, 'MsgTimeout')],
+        },
+      });
+      const blockTx = [txA, txB];
+      const spentNullifiers = new Set<Nullifier>();
+      const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+
+      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
+        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      );
+
+      expect(result.relevantTxs.length).toBe(1);
+      expect(result.relevantTxs[0]?.data.equals(txA)).toBeTruthy();
+      expect(result.recoveredSourceRecords.length).toBe(0);
+    });
+
+    test('ignores irrelevant ibc relays', async () => {
+      const tx = new Transaction({
+        body: {
+          actions: [
+            createMsgReceiveAction(unknownAddr, 'MsgTimeout'),
+            createMsgReceiveAction(unknownAddr, 'MsgAcknowledgement'),
+            createMsgReceiveAction(unknownAddr, 'MsgRecvPacket'),
+          ],
+        },
+      });
+      const blockTx = [tx];
+      const spentNullifiers = new Set<Nullifier>();
+      const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+
+      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
+        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      );
+
+      expect(result.relevantTxs.length).toBe(0);
+    });
   });
 });
 
-const createIbcRelay = (receiver: string): Action => {
+const createMsgReceiveAction = (
+  receiver: string,
+  action: 'MsgRecvPacket' | 'MsgAcknowledgement' | 'MsgTimeout',
+): Action => {
   const tokenPacketData = new FungibleTokenPacketData({ receiver });
   const encoder = new TextEncoder();
+  const Msg = getMsgType(action);
   const relevantRelay = Any.pack(
-    new MsgRecvPacket({
+    new Msg({
       packet: new Packet({ data: encoder.encode(tokenPacketData.toJsonString()) }),
     }),
   );
   return new Action({
     action: { case: 'ibcRelayAction', value: new IbcRelay({ rawAction: relevantRelay }) },
   });
+};
+
+const getMsgType = (action: 'MsgRecvPacket' | 'MsgAcknowledgement' | 'MsgTimeout') => {
+  if (action === 'MsgRecvPacket') {
+    return MsgRecvPacket;
+  } else if (action === 'MsgAcknowledgement') {
+    return MsgAcknowledgement;
+  } else {
+    return MsgTimeout;
+  }
 };
