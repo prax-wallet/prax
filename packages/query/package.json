@@ -31,25 +31,15 @@
     }
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
-    "@connectrpc/connect-web": "^1.4.0",
+    "@bufbuild/protobuf": "^1.x",
+    "@connectrpc/connect": "^1.x",
+    "@connectrpc/connect-web": "^1.x",
+    "@penumbra-zone/bech32m": "10.0.0",
+    "@penumbra-zone/crypto-web": "29.0.1",
+    "@penumbra-zone/getters": "20.0.0",
+    "@penumbra-zone/protobuf": "6.3.0",
+    "@penumbra-zone/types": "26.2.1",
+    "@penumbra-zone/wasm": "33.1.0",
     "exponential-backoff": "^3.1.1"
-  },
-  "devDependencies": {
-    "@penumbra-zone/bech32m": "workspace:*",
-    "@penumbra-zone/crypto-web": "workspace:*",
-    "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*"
-  },
-  "peerDependencies": {
-    "@penumbra-zone/bech32m": "workspace:*",
-    "@penumbra-zone/crypto-web": "workspace:*",
-    "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*"
   }
 }

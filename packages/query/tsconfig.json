@@ -1,13 +1,5 @@
 {
-  "compilerOptions": {
-    "exactOptionalPropertyTypes": false,
-    "composite": true,
-    "module": "Node16",
-    "outDir": "dist",
-    "preserveWatchOutput": true,
-    "rootDir": "src",
-    "target": "ESNext"
-  },
-  "extends": "@tsconfig/strictest/tsconfig.json",
-  "include": ["src"]
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["."],
+  "exclude": ["node_modules"]
 }
