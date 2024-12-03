@@ -3,9 +3,6 @@
   "version": "40.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
-  "engine": {
-    "node": ">=22"
-  },
   "scripts": {
     "build": "tsc --build --verbose",
     "clean": "rm -rfv dist *.tsbuildinfo package penumbra-zone-*.tgz",
@@ -41,5 +38,8 @@
     "@penumbra-zone/types": "26.2.1",
     "@penumbra-zone/wasm": "33.1.0",
     "exponential-backoff": "^3.1.1"
+  },
+  "engine": {
+    "node": ">=22"
   }
 }

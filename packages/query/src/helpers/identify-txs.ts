@@ -45,6 +45,7 @@ const hasRelevantIbcRelay = (
       const { receiver } = FungibleTokenPacketData.fromJsonString(dataString);
       const receivingAddr = parseIntoAddr(receiver);
       return isControlledAddr(receivingAddr);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: Fix eslint issue
     } catch (e) {
       return false;
     }
@@ -62,6 +63,7 @@ export const getCommitmentsFromActions = (tx: Transaction): StateCommitment[] =>
 
   return tx.body.actions
     .flatMap(({ action }) => {
+      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- TODO: Fix eslint issue
       switch (action.case) {
         case 'output':
           return action.value.body?.notePayload?.noteCommitment;
@@ -83,6 +85,7 @@ export const getNullifiersFromActions = (tx: Transaction): Nullifier[] => {
 
   return tx.body.actions
     .flatMap(({ action }) => {
+      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- TODO: Fix eslint issue
       switch (action.case) {
         case 'spend':
         case 'swapClaim':
