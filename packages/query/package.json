@@ -1,0 +1,45 @@
+{
+  "name": "@penumbra-zone/query",
+  "version": "40.0.0",
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build --verbose",
+    "clean": "rm -rfv dist *.tsbuildinfo package penumbra-zone-*.tgz",
+    "dev:pack": "tsc-watch --onSuccess \"$npm_execpath pack\"",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
+    "test": "vitest run"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*"
+  ],
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      "./*": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
+      }
+    }
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^1.x",
+    "@connectrpc/connect": "^1.x",
+    "@connectrpc/connect-web": "^1.x",
+    "@penumbra-zone/bech32m": "10.0.0",
+    "@penumbra-zone/crypto-web": "29.0.1",
+    "@penumbra-zone/getters": "20.0.0",
+    "@penumbra-zone/protobuf": "6.3.0",
+    "@penumbra-zone/types": "26.2.1",
+    "@penumbra-zone/wasm": "33.1.0",
+    "exponential-backoff": "^3.1.1"
+  },
+  "engine": {
+    "node": ">=22"
+  }
+}
