@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shouldSkipTrialDecrypt } from './skip-trial-decrypt.js';
+import { shouldSkipTrialDecrypt } from './skip-trial-decrypt';
 
 describe('skipTrialDecrypt()', () => {
   it('should not skip trial decryption if walletCreationBlockHeight is undefined', () => {

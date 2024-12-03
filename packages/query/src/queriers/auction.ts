@@ -1,7 +1,7 @@
 import { AuctionQuerierInterface } from '@penumbra-zone/types/querier';
 import { AuctionService } from '@penumbra-zone/protobuf';
 import { PromiseClient } from '@connectrpc/connect';
-import { createClient } from './utils.js';
+import { createClient } from './utils';
 import {
   AuctionId,
   DutchAuction,

@@ -1,5 +1,5 @@
 import { PromiseClient } from '@connectrpc/connect';
-import { createClient } from './utils.js';
+import { createClient } from './utils';
 import { SctService } from '@penumbra-zone/protobuf';
 import { SctQuerierInterface } from '@penumbra-zone/types/querier';
 import {

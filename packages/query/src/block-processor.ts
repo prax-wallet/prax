@@ -26,11 +26,11 @@ import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { backOff } from 'exponential-backoff';
-import { updatePricesFromSwaps } from './helpers/price-indexer.js';
-import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end.js';
-import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule.js';
-import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw.js';
-import { RootQuerier } from './root-querier.js';
+import { updatePricesFromSwaps } from './helpers/price-indexer';
+import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end';
+import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
+import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
+import { RootQuerier } from './root-querier';
 import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 import { toPlainMessage } from '@bufbuild/protobuf';
@@ -38,8 +38,8 @@ import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
 import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
-import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt.js';
-import { identifyTransactions, RelevantTx } from './helpers/identify-txs.js';
+import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
+import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals

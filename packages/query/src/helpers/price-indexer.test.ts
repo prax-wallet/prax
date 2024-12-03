@@ -1,4 +1,4 @@
-import { deriveAndSavePriceFromBSOD } from './price-indexer.js';
+import { deriveAndSavePriceFromBSOD } from './price-indexer';
 import { BatchSwapOutputData } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';

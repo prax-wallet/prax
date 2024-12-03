@@ -1,5 +1,5 @@
 import { PromiseClient } from '@connectrpc/connect';
-import { createClient } from './utils.js';
+import { createClient } from './utils';
 import { CnidariumService } from '@penumbra-zone/protobuf';
 import { KeyValueRequest } from '@penumbra-zone/protobuf/penumbra/cnidarium/v1/cnidarium_pb';
 import { CnidariumQuerierInterface } from '@penumbra-zone/types/querier';
