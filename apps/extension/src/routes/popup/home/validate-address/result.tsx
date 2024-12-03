@@ -27,7 +27,9 @@ export const Result = ({
         <div className='flex flex-col'>
           Belongs to this wallet
           <span className='text-xs text-muted-foreground'>
-            Account #{addressOwnershipInfo.addressIndexAccount}
+            {addressOwnershipInfo.addressIndexAccount === 0
+              ? 'Main Account'
+              : `Sub-Account #${addressOwnershipInfo.addressIndexAccount}`}
             {addressOwnershipInfo.isEphemeral && (
               <>
                 {' '}
