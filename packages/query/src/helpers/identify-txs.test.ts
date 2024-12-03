@@ -11,7 +11,7 @@ import {
   getCommitmentsFromActions,
   getNullifiersFromActions,
   identifyTransactions,
-} from './identify-txs.js';
+} from './identify-txs';
 import {
   Output,
   OutputBody,

@@ -1,5 +1,5 @@
 import { PromiseClient } from '@connectrpc/connect';
-import { createClient } from './utils.js';
+import { createClient } from './utils';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { AppService } from '@penumbra-zone/protobuf';

@@ -4,7 +4,7 @@ import {
   CompactBlockRangeRequest,
 } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { CompactBlockService } from '@penumbra-zone/protobuf';
-import { createClient } from './utils.js';
+import { createClient } from './utils';
 import type {
   CompactBlockQuerierInterface,
   CompactBlockRangeParams,

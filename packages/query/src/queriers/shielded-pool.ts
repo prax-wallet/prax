@@ -1,5 +1,5 @@
 import { PromiseClient } from '@connectrpc/connect';
-import { createClient } from './utils.js';
+import { createClient } from './utils';
 import { ShieldedPoolService } from '@penumbra-zone/protobuf';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import type { ShieldedPoolQuerierInterface } from '@penumbra-zone/types/querier';

@@ -1,5 +1,5 @@
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
-import { processActionDutchAuctionEnd } from './process-action-dutch-auction-end.js';
+import { processActionDutchAuctionEnd } from './process-action-dutch-auction-end';
 import { AssetId, Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   ActionDutchAuctionEnd,

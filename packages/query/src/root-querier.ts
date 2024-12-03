@@ -1,13 +1,13 @@
-import { CompactBlockQuerier } from './queriers/compact-block.js';
-import { AppQuerier } from './queriers/app.js';
-import { TendermintQuerier } from './queriers/tendermint.js';
-import { ShieldedPoolQuerier } from './queriers/shielded-pool.js';
-import { IbcClientQuerier } from './queriers/ibc-client.js';
-import { CnidariumQuerier } from './queriers/cnidarium.js';
-import { StakeQuerier } from './queriers/staking.js';
+import { CompactBlockQuerier } from './queriers/compact-block';
+import { AppQuerier } from './queriers/app';
+import { TendermintQuerier } from './queriers/tendermint';
+import { ShieldedPoolQuerier } from './queriers/shielded-pool';
+import { IbcClientQuerier } from './queriers/ibc-client';
+import { CnidariumQuerier } from './queriers/cnidarium';
+import { StakeQuerier } from './queriers/staking';
 import type { RootQuerierInterface } from '@penumbra-zone/types/querier';
-import { AuctionQuerier } from './queriers/auction.js';
-import { SctQuerier } from './queriers/sct.js';
+import { AuctionQuerier } from './queriers/auction';
+import { SctQuerier } from './queriers/sct';
 
 // Given the amount of query services, this root querier aggregates them all
 // to make it easier for consumers
