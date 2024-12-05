@@ -444,6 +444,44 @@ describe('identifyTransactions', () => {
 
       expect(result.relevantTxs.length).toBe(0);
     });
+
+    test('ignores errors if any unpack fails', async () => {
+      const noAction = new Action({
+        action: { case: 'ibcRelayAction', value: new IbcRelay({}) },
+      });
+      const noPacket = new Action({
+        action: {
+          case: 'ibcRelayAction',
+          value: new IbcRelay({ rawAction: Any.pack(new MsgRecvPacket({})) }),
+        },
+      });
+      const badDataPacket = new Action({
+        action: {
+          case: 'ibcRelayAction',
+          value: new IbcRelay({
+            rawAction: Any.pack(
+              new MsgRecvPacket({
+                packet: new Packet({ data: new Uint8Array([1, 2, 3, 4, 5, 6, 7]) }),
+              }),
+            ),
+          }),
+        },
+      });
+      const tx = new Transaction({
+        body: {
+          actions: [noAction, noPacket, badDataPacket],
+        },
+      });
+      const blockTx = [tx];
+      const spentNullifiers = new Set<Nullifier>();
+      const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+
+      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
+        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      );
+
+      expect(result.relevantTxs.length).toBe(0);
+    });
   });
 });
 

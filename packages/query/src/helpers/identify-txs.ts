@@ -22,7 +22,7 @@ export const BLANK_TX_SOURCE = new CommitmentSource({
 });
 
 /**
- * Identifies if a tx with a relay action of which the receiver is the user.
+ * Identifies if a tx has a relay action of which the receiver is the user.
  * In terms of minting notes in the shielded pool, three IBC actions are relevant:
  * - MsgRecvPacket (containing an ICS20 inbound transfer)
  * - MsgAcknowledgement (containing an error acknowledgement, thus triggering a refund on our end)
@@ -86,8 +86,7 @@ const isControlledByUser = (
     const addrStr = entityToCheck === 'sender' ? sender : receiver;
     const addrToCheck = parseIntoAddr(addrStr);
     return isControlledAddr(addrToCheck);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- On error, ignore and continue
-  } catch (e) {
+  } catch {
     return false;
   }
 };
