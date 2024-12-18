@@ -30,6 +30,16 @@ const hasAltGasFee = (txv?: TransactionView): boolean => {
   return feeAssetId.equals(stakingAssetId);
 };
 
+const hasTransparentAddress = (txv?: TransactionView): boolean => {
+  return (
+    txv?.bodyView?.actionViews?.some(
+      action =>
+        action.actionView.case === 'ics20Withdrawal' &&
+        action.actionView.value.useTransparentAddress,
+    ) ?? false
+  );
+};
+
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
 
@@ -65,11 +75,18 @@ export const TransactionApproval = () => {
       </div>
       <div className='grow overflow-auto p-4'>
         {selectedTransactionViewName === TransactionViewTab.SENDER &&
-          !hasAltGasFee(selectedTransactionView) && (
+          (hasTransparentAddress(selectedTransactionView) ||
+            !hasAltGasFee(selectedTransactionView)) && (
             <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
               <span className='block text-center font-bold'>⚠ Privacy Warning:</span>
-              Transaction uses a non-native fee token. To reduce gas costs and protect your privacy,
-              maintain an UM balance for fees.
+              {hasTransparentAddress(selectedTransactionView) ? (
+                <p>This transaction uses transparent addresses which may reduce privacy.</p>
+              ) : (
+                <p>
+                  Transaction uses a non-native fee token. To reduce gas costs and protect your
+                  privacy, maintain an UM balance for fees
+                </p>
+              )}
             </div>
           )}
         <ViewTabs
