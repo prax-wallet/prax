@@ -29,14 +29,14 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
           )}
 
           <ActionDetails.Row label='Destination Address'>
-            {value.destinationChainAddress}
+            <span className='truncate max-w-[125px]'>{value.destinationChainAddress}</span>
           </ActionDetails.Row>
 
           <ActionDetails.Row label='Source channel'>{value.sourceChannel}</ActionDetails.Row>
 
           {value.returnAddress && (
             <ActionDetails.Row label='Return Address'>
-              {bech32mAddress(value.returnAddress)}
+              <span className='truncate max-w-[125px]'>{bech32mAddress(value.returnAddress)}</span>
             </ActionDetails.Row>
           )}
 
