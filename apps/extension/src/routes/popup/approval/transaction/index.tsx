@@ -74,21 +74,25 @@ export const TransactionApproval = () => {
         </h1>
       </div>
       <div className='grow overflow-auto p-4'>
-        {selectedTransactionViewName === TransactionViewTab.SENDER &&
-          (hasTransparentAddress(selectedTransactionView) ||
-            !hasAltGasFee(selectedTransactionView)) && (
-            <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
-              <span className='block text-center font-bold'>⚠ Privacy Warning:</span>
-              {hasTransparentAddress(selectedTransactionView) ? (
+        {selectedTransactionViewName === TransactionViewTab.SENDER && (
+          <>
+            {hasTransparentAddress(selectedTransactionView) && (
+              <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
+                <span className='block text-center font-bold'>⚠ Privacy Warning:</span>
                 <p>This transaction uses transparent addresses which may reduce privacy.</p>
-              ) : (
+              </div>
+            )}
+            {!hasAltGasFee(selectedTransactionView) && (
+              <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
+                <span className='block text-center font-bold'>⚠ Privacy Warning:</span>
                 <p>
                   Transaction uses a non-native fee token. To reduce gas costs and protect your
-                  privacy, maintain an UM balance for fees
+                  privacy, maintain an UM balance for fees.
                 </p>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </>
+        )}
         <ViewTabs
           defaultValue={selectedTransactionViewName}
           onValueChange={setSelectedTransactionViewName}
