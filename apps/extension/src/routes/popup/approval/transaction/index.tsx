@@ -30,6 +30,16 @@ const hasAltGasFee = (txv?: TransactionView): boolean => {
   return feeAssetId.equals(stakingAssetId);
 };
 
+const hasTransparentAddress = (txv?: TransactionView): boolean => {
+  return (
+    txv?.bodyView?.actionViews.some(
+      action =>
+        action.actionView.case === 'ics20Withdrawal' &&
+        action.actionView.value.useTransparentAddress,
+    ) ?? false
+  );
+};
+
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
 
@@ -64,14 +74,25 @@ export const TransactionApproval = () => {
         </h1>
       </div>
       <div className='grow overflow-auto p-4'>
-        {selectedTransactionViewName === TransactionViewTab.SENDER &&
-          !hasAltGasFee(selectedTransactionView) && (
-            <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
-              <span className='block text-center font-bold'>⚠ Privacy Warning:</span>
-              Transaction uses a non-native fee token. To reduce gas costs and protect your privacy,
-              maintain an UM balance for fees.
-            </div>
-          )}
+        {selectedTransactionViewName === TransactionViewTab.SENDER && (
+          <>
+            {hasTransparentAddress(selectedTransactionView) && (
+              <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
+                <span className='block text-center font-bold'>⚠ Privacy Warning</span>
+                <p>This transaction uses a transparent address which may reduce privacy.</p>
+              </div>
+            )}
+            {!hasAltGasFee(selectedTransactionView) && (
+              <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
+                <span className='block text-center font-bold'>⚠ Privacy Warning</span>
+                <p>
+                  Transaction uses a non-native fee token. To reduce gas costs and protect your
+                  privacy, maintain an UM balance for fees.
+                </p>
+              </div>
+            )}
+          </>
+        )}
         <ViewTabs
           defaultValue={selectedTransactionViewName}
           onValueChange={setSelectedTransactionViewName}
