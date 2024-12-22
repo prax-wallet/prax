@@ -2,7 +2,8 @@ import { Ics20Withdrawal } from '@penumbra-zone/protobuf/penumbra/core/component
 import { ViewBox } from '../viewbox';
 import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
+import { getTransmissionKeyByAddress } from '@penumbra-zone/wasm/keys';
+import { bech32TransparentAddress } from '@penumbra-zone/bech32m/tpenumbra';
 
 const getUtcTime = (time: bigint) => {
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -36,7 +37,11 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
 
           {value.returnAddress && (
             <ActionDetails.Row label='Return Address'>
-              <span className='truncate max-w-[125px]'>{bech32mAddress(value.returnAddress)}</span>
+              <span className='truncate max-w-[125px]'>
+                {bech32TransparentAddress({
+                  inner: getTransmissionKeyByAddress(value.returnAddress),
+                })}
+              </span>
             </ActionDetails.Row>
           )}
 
