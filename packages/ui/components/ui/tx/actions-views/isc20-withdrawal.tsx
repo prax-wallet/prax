@@ -4,6 +4,7 @@ import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getTransmissionKeyByAddress } from '@penumbra-zone/wasm/keys';
 import { bech32TransparentAddress } from '@penumbra-zone/bech32m/tpenumbra';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 const getUtcTime = (time: bigint) => {
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -38,9 +39,11 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
           {value.returnAddress && (
             <ActionDetails.Row label='Return Address'>
               <span className='truncate max-w-[125px]'>
-                {bech32TransparentAddress({
-                  inner: getTransmissionKeyByAddress(value.returnAddress),
-                })}
+                {value.useTransparentAddress
+                  ? bech32TransparentAddress({
+                      inner: getTransmissionKeyByAddress(value.returnAddress),
+                    })
+                  : bech32mAddress(value.returnAddress)}
               </span>
             </ActionDetails.Row>
           )}
