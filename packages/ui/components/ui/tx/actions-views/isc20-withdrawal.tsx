@@ -2,6 +2,8 @@ import { Ics20Withdrawal } from '@penumbra-zone/protobuf/penumbra/core/component
 import { ViewBox } from '../viewbox';
 import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { getTransmissionKeyByAddress } from '@penumbra-zone/wasm/keys';
+import { bech32TransparentAddress } from '@penumbra-zone/bech32m/tpenumbra';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 const getUtcTime = (time: bigint) => {
@@ -29,19 +31,25 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
           )}
 
           <ActionDetails.Row label='Destination Address'>
-            {value.destinationChainAddress}
+            <span className='truncate max-w-[125px]'>{value.destinationChainAddress}</span>
           </ActionDetails.Row>
 
           <ActionDetails.Row label='Source channel'>{value.sourceChannel}</ActionDetails.Row>
 
           {value.returnAddress && (
             <ActionDetails.Row label='Return Address'>
-              {bech32mAddress(value.returnAddress)}
+              <span className='truncate max-w-[125px]'>
+                {value.useTransparentAddress
+                  ? bech32TransparentAddress({
+                      inner: getTransmissionKeyByAddress(value.returnAddress),
+                    })
+                  : bech32mAddress(value.returnAddress)}
+              </span>
             </ActionDetails.Row>
           )}
 
-          <ActionDetails.Row label='Use Compat Address'>
-            {value.useCompatAddress ? 'TRUE' : 'FALSE'}
+          <ActionDetails.Row label='Use Transparent Address'>
+            {value.useTransparentAddress ? 'TRUE' : 'FALSE'}
           </ActionDetails.Row>
 
           {value.timeoutHeight && (
