@@ -145,6 +145,7 @@ export class BlockProcessor implements BlockProcessorInterface {
    */
   private async syncAndStore() {
     const PRE_GENESIS_SYNC_HEIGHT = -1n;
+    const GENESIS_CHUNK_SIZE = 500;
 
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? PRE_GENESIS_SYNC_HEIGHT;
@@ -177,17 +178,41 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
 
-        // Set the trial decryption flag for the genesis compact block
+        // determine whether to skip trial decryption at genesis
         const skipTrialDecrypt = shouldSkipTrialDecrypt(
           this.walletCreationBlockHeight,
           currentHeight,
         );
 
-        await this.processBlock({
-          compactBlock: this.genesisBlock,
-          latestKnownBlockHeight: latestKnownBlockHeight,
-          skipTrialDecrypt,
-        });
+        // to prevent blocking the single-threaded service worker environment, iterate through
+        // the genesis block's state payloads in manageable chunks to prevent blocking the
+        // single threaded service worker runtime. This approach segments the computationally
+        // intensive tasks of trial decryption and merkle poseidon hashing.
+        for (
+          let start = 0;
+          start < this.genesisBlock.statePayloads.length;
+          start += GENESIS_CHUNK_SIZE
+        ) {
+          // slice out a subset of state payloads
+          const chunkedPayloads = this.genesisBlock.statePayloads.slice(
+            start,
+            start + GENESIS_CHUNK_SIZE,
+          );
+
+          const chunkedBlock = new CompactBlock({
+            ...toPlainMessage(this.genesisBlock),
+            statePayloads: chunkedPayloads,
+          });
+
+          await this.processBlock({
+            compactBlock: chunkedBlock,
+            latestKnownBlockHeight,
+            skipTrialDecrypt,
+          });
+
+          // critically, we yield the event loop after each chunk.
+          await new Promise(r => setTimeout(r, 0));
+        }
       }
     }
 
