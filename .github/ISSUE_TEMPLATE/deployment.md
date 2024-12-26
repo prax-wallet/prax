@@ -13,16 +13,10 @@ Manual testing to confirm extension works with all flows. Can use mainnet rpc or
 
   - Fresh wallet onboarding
     - [ ] Create new wallet (block sync should be must faster)
-      - [ ] Wallet birthday generates
       - [ ] Can select 12 vs 24 words
       - [ ] Seed phrase validation
     - [ ] Import seed phrase (12 or 24 words)
-      - [ ] Block height empty
-      - [ ] Block height selected
     - [ ] Password selection & validation
-    - [ ] Rpc selection & custom entry
-    - [ ] Frontend selection & custom entry
-    - [ ] Numeraires selection
   - Popup home
     - [ ] Account selection arrows
       - [ ] Copy icon works
@@ -37,7 +31,7 @@ Manual testing to confirm extension works with all flows. Can use mainnet rpc or
     - [ ] Test sync can complete within an expected/reasonable amount of time
     - [ ] Disable wifi on computer and re-enable. See if syncing continues without issues.
   - Settings
-    - [ ] Seed phrase recovery flow
+    - [ ] Seed phrase recovery flow (**temporarily deprecated**)
     - [ ] Change RPC & re-sync
     - [ ] Change default frontend
     - Connected sites
