@@ -1,15 +1,17 @@
+import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { SelectAccount } from '@repo/ui/components/ui/select';
+import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
+import { Wallet } from '@penumbra-zone/types/wallet';
 import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
 import { localExtStorage } from '../../../storage/local';
 import { getActiveWallet } from '../../../state/wallets';
 import { needsLogin, needsOnboard } from '../popup-needs';
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
-import { Wallet } from '@penumbra-zone/types/wallet';
 import { ValidateAddress } from './validate-address';
 import { FrontendLink } from './frontend-link';
+import { AssetsTable } from './assets-table';
+import { useState } from 'react';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -45,23 +47,30 @@ const getAddrByIndex =
 
 export const PopupIndex = () => {
   const activeWallet = useStore(getActiveWallet);
+  const [index, setIndex] = useState<number>(0);
 
   return (
     <>
       <BlockSync />
 
-      <div className='flex h-full grow flex-col items-stretch gap-[15px] bg-logo bg-left-bottom px-[15px] pb-[15px]'>
+      <div className='flex h-full grow flex-col items-stretch gap-[15px] bg-logo bg-[left_-180px] px-[15px] pb-[15px]'>
         <IndexHeader />
 
         <div className='flex flex-col gap-4'>
-          {activeWallet && <SelectAccount getAddrByIndex={getAddrByIndex(activeWallet)} />}
+          {activeWallet && (
+            <SelectAccount
+              index={index}
+              setIndex={setIndex}
+              getAddrByIndex={getAddrByIndex(activeWallet)}
+            />
+          )}
         </div>
 
         <ValidateAddress />
 
-        <div className='shrink-0 grow' />
-
         <FrontendLink />
+
+        <AssetsTable account={index} />
       </div>
     </>
   );
