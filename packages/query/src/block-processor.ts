@@ -74,6 +74,12 @@ interface ProcessBlockParams {
   skipTrialDecrypt?: boolean;
 }
 
+interface ProcessGenesisBlockParams {
+  start: number;
+  compactBlock: CompactBlock;
+  skipTrialDecrypt?: boolean;
+}
+
 const POSITION_STATES: PositionState[] = [
   new PositionState({ state: PositionState_PositionStateEnum.OPENED }),
   new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
@@ -204,13 +210,18 @@ export class BlockProcessor implements BlockProcessorInterface {
             statePayloads: chunkedPayloads,
           });
 
-          await this.processBlock({
+          await this.trialDecryptGenesisChunk({
+            start,
             compactBlock: chunkedBlock,
-            latestKnownBlockHeight,
             skipTrialDecrypt,
           });
 
-          // critically, we yield the event loop after each chunk.
+          // check if this is the last chunk
+          if (start + GENESIS_CHUNK_SIZE >= this.genesisBlock.statePayloads.length) {
+            await this.genesisAdvice(this.genesisBlock);
+          }
+
+          // critically, we yield the event loop after each chunk
           await new Promise(r => setTimeout(r, 0));
         }
       }
@@ -230,7 +241,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      // Set the trial decryption flag for all other compact blocks
+      // set the trial decryption flag for all other compact blocks
       const skipTrialDecrypt = shouldSkipTrialDecrypt(
         this.walletCreationBlockHeight,
         currentHeight,
@@ -253,7 +264,67 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  // logic for processing a compact block
+  /**
+   * Trial decrypts a chunk of the genesis block for notes owned by the wallet.
+   */
+  private async trialDecryptGenesisChunk({
+    start,
+    compactBlock,
+    skipTrialDecrypt = false,
+  }: ProcessGenesisBlockParams) {
+    if (compactBlock.appParametersUpdated) {
+      await this.indexedDb.saveAppParams(await this.querier.app.appParams());
+    }
+    if (compactBlock.fmdParameters) {
+      await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
+    }
+    if (compactBlock.gasPrices) {
+      await this.indexedDb.saveGasPrices({
+        ...toPlainMessage(compactBlock.gasPrices),
+        assetId: toPlainMessage(this.stakingAssetId),
+      });
+    }
+    if (compactBlock.altGasPrices.length) {
+      for (const altGas of compactBlock.altGasPrices) {
+        await this.indexedDb.saveGasPrices({
+          ...toPlainMessage(altGas),
+          assetId: getAssetIdFromGasPrices(altGas),
+        });
+      }
+    }
+
+    await this.viewServer.trialDecryptGenesisChunk(BigInt(start), compactBlock, skipTrialDecrypt);
+  }
+
+  /**
+   * Processes accumulated genesis notes by constructing the state commitment tree (SCT)
+   * and saving relevant transaction data.
+   */
+  private async genesisAdvice(compactBlock: CompactBlock) {
+    const scannerWantsFlush = await this.viewServer.genesisAdvice(compactBlock);
+
+    const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+    let flush: ScanBlockResult | undefined;
+    if (Object.values(scannerWantsFlush).some(Boolean)) {
+      flush = this.viewServer.flushUpdates();
+
+      // in an atomic query, this
+      // - saves 'sctUpdates'
+      // - saves new decrypted notes
+      // - saves new decrypted swaps
+      // - updates last block synced
+      await this.indexedDb.saveScanResult(flush);
+
+      for (const spendableNoteRecord of flush.newNotes) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
+        recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
+      }
+    }
+  }
+
+  /**
+   * Logic for processing a compact block.
+   */
   private async processBlock({
     compactBlock,
     latestKnownBlockHeight,
