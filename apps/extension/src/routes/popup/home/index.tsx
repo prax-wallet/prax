@@ -51,26 +51,31 @@ export const PopupIndex = () => {
 
   return (
     <>
-      <BlockSync />
+      <div className='fixed inset-0 h-full bg-logoImg bg-[left_-180px] bg-no-repeat pointer-events-none' />
+      <div className='fixed inset-0 h-full bg-logo pointer-events-none' />
 
-      <div className='flex h-full grow flex-col items-stretch gap-[15px] bg-logo bg-[left_-180px] px-[15px] pb-[15px]'>
-        <IndexHeader />
+      <div className='z-[1] flex flex-col h-full'>
+        <BlockSync />
 
-        <div className='flex flex-col gap-4'>
-          {activeWallet && (
-            <SelectAccount
-              index={index}
-              setIndex={setIndex}
-              getAddrByIndex={getAddrByIndex(activeWallet)}
-            />
-          )}
+        <div className='flex h-full grow flex-col items-stretch gap-[15px] px-[15px] pb-[15px]'>
+          <IndexHeader />
+
+          <div className='flex flex-col gap-4'>
+            {activeWallet && (
+              <SelectAccount
+                index={index}
+                setIndex={setIndex}
+                getAddrByIndex={getAddrByIndex(activeWallet)}
+              />
+            )}
+          </div>
+
+          <ValidateAddress />
+
+          <FrontendLink />
+
+          <AssetsTable account={index} />
         </div>
-
-        <ValidateAddress />
-
-        <FrontendLink />
-
-        <AssetsTable account={index} />
       </div>
     </>
   );

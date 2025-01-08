@@ -9,6 +9,7 @@ import {
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomFromView, getEquivalentValues } from '@penumbra-zone/getters/value-view';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { asValueView } from '@penumbra-zone/getters/equivalent-value';
 import { useQuery } from '@tanstack/react-query';
 import { viewClient } from '../../../clients';
@@ -44,7 +45,17 @@ export const AssetsTable = ({ account }: AssetsTableProps) => {
     queryKey: ['balances', account],
     staleTime: Infinity,
     queryFn: async () => {
-      return Array.fromAsync(viewClient.balances({ accountFilter: { account } }));
+      try {
+        const balances = await Array.fromAsync(viewClient.balances({ accountFilter: { account } }));
+        balances.sort((a, b) => {
+          const aScore = getMetadataFromBalancesResponse.optional(a)?.priorityScore ?? 0n;
+          const bScore = getMetadataFromBalancesResponse.optional(b)?.priorityScore ?? 0n;
+          return Number(bScore - aScore);
+        });
+        return balances;
+      } catch (_) {
+        return [];
+      }
     },
   });
 
