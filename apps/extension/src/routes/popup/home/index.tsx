@@ -51,8 +51,8 @@ export const PopupIndex = () => {
 
   return (
     <>
-      <div className='fixed inset-0 h-full bg-logoImg bg-[left_-180px] bg-no-repeat pointer-events-none' />
-      <div className='fixed inset-0 h-full bg-logo pointer-events-none' />
+      <div className='fixed top-0 left-0 w-screen h-screen bg-logoImg bg-[left_-180px] bg-no-repeat pointer-events-none' />
+      <div className='fixed top-0 left-0 w-screen h-screen bg-logo pointer-events-none' />
 
       <div className='z-[1] flex flex-col h-full'>
         <BlockSync />
