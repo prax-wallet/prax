@@ -16,7 +16,7 @@ export const PopupLayout = () => {
   usePopupReady();
 
   return (
-    <div className='flex grow flex-col bg-card-radial'>
+    <div className='relative flex grow flex-col bg-card-radial'>
       <Outlet />
     </div>
   );

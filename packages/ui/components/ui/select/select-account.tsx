@@ -13,14 +13,15 @@ import { Box } from '../box';
 
 export interface SelectAccountProps {
   getAddrByIndex: (index: number, ephemeral: boolean) => Promise<Address> | Address;
+  index: number;
+  setIndex: (index: number) => void;
 }
 
 /**
  * Renders an account address, along with a switcher to choose a different
  * account index. Also allows the user to view a one-time IBC deposit address.
  */
-export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
-  const [index, setIndex] = useState<number>(0);
+export const SelectAccount = ({ getAddrByIndex, index, setIndex }: SelectAccountProps) => {
   const [ephemeral, setEphemeral] = useState<boolean>(false);
   const [address, setAddress] = useState<Address>();
 
