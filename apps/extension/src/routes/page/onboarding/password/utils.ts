@@ -2,13 +2,13 @@ import { Location } from 'react-router-dom';
 import { LocationState, SEED_PHRASE_ORIGIN } from './types';
 import { PagePath } from '../../paths';
 import { usePageNav } from '../../../../utils/navigate';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { sample } from 'lodash';
+// import { ChainRegistryClient } from '@penumbra-labs/registry';
+// import { sample } from 'lodash';
 import { createPromiseClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { localExtStorage } from '../../../../storage/local';
 import { AppService } from '@penumbra-zone/protobuf';
-import { fetchBlockHeightWithFallback } from '../../../../hooks/latest-block-height';
+// import { fetchBlockHeightWithFallback } from '../../../../hooks/latest-block-height';
 
 export const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
   const state = location.state as Partial<LocationState> | undefined;
@@ -32,15 +32,13 @@ export const navigateToPasswordPage = (
 const DEFAULT_TRANSPORT_OPTS = { timeoutMs: 5000 };
 
 export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE_ORIGIN) => {
-  const chainRegistryClient = new ChainRegistryClient();
-  const { rpcs, frontends } = await chainRegistryClient.remote.globals();
-  const randomFrontend = sample(frontends);
-  if (!randomFrontend) {
-    throw new Error('Registry missing frontends');
-  }
+  // const chainRegistryClient = new ChainRegistryClient();
+  // const { rpcs, frontends } = await chainRegistryClient.remote.globals();
 
   // Queries for blockHeight regardless of SEED_PHRASE_ORIGIN as a means of testing endpoint for liveness
-  const { blockHeight, rpc } = await fetchBlockHeightWithFallback(rpcs.map(r => r.url));
+  const blockHeight = 0;
+  const rpc = "http://localhost:8080"
+  // const { blockHeight, rpc } = { blockHeight, rpc: "http://localhost:8080" };
 
   const { appParameters } = await createPromiseClient(
     AppService,
@@ -54,12 +52,12 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
     await localExtStorage.set('walletCreationBlockHeight', blockHeight);
   }
 
-  const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
+  // const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
 
   await localExtStorage.set('grpcEndpoint', rpc);
-  await localExtStorage.set('frontendUrl', randomFrontend.url);
-  await localExtStorage.set(
-    'numeraires',
-    numeraires.map(n => n.toJsonString()),
-  );
+  await localExtStorage.set('frontendUrl', "http://localhost:8080/app/#/dashboard");
+  // await localExtStorage.set(
+  //   'numeraires',
+  //   numeraires.map(n => n.toJsonString()),
+  // );
 };

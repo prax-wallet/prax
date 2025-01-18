@@ -6,9 +6,9 @@ import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { ServicesMessage } from '../../../message/services';
 import debounce from 'lodash/debounce';
-import { randomSort } from '../../utils/random-sort';
+// import { randomSort } from '../../utils/random-sort';
 import { isValidUrl } from '../../utils/is-valid-url';
-import { useRegistry } from '../registry';
+// import { useRegistry } from '../registry';
 
 const useSaveGrpcEndpointSelector = (state: AllSlices) => ({
   grpcEndpoint: state.network.grpcEndpoint,
@@ -18,18 +18,18 @@ const useSaveGrpcEndpointSelector = (state: AllSlices) => ({
   setChainId: state.network.setChainId,
 });
 
-const useRpcs = () => {
-  const { data, isLoading, error } = useRegistry();
+// const useRpcs = () => {
+//   const { data, isLoading, error } = useRegistry();
 
-  const rpcs = useMemo(() => {
-    return data?.rpcs.toSorted(randomSort) ?? [];
-  }, [data]);
+//   const rpcs = useMemo(() => {
+//     return data?.rpcs.toSorted(randomSort) ?? [];
+//   }, [data]);
 
-  return { rpcs, isLoading, error };
-};
+//   return { rpcs, isLoading, error };
+// };
 
 export const useGrpcEndpointForm = (isOnboarding: boolean) => {
-  const grpcEndpointsQuery = useRpcs();
+  // const grpcEndpointsQuery = useRpcs();
 
   // Get the rpc set in storage (if present)
   const { grpcEndpoint, chainId, setGrpcEndpoint, setChainId, clearWalletCreationHeight } =
@@ -44,14 +44,14 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
     PromiseWithResolvers<void> | undefined
   >();
 
-  const isCustomGrpcEndpoint =
-    grpcEndpointInput !== '' &&
-    !grpcEndpointsQuery.rpcs.some(({ url }) => url === grpcEndpointInput);
+  // const isCustomGrpcEndpoint =
+  //   grpcEndpointInput !== '' &&
+  //   !grpcEndpointsQuery.rpcs.some(({ url }) => url === grpcEndpointInput);
 
   const setGrpcEndpointInputOnLoadFromState = useCallback(() => {
-    if (grpcEndpoint) {
-      setGrpcEndpointInput(grpcEndpoint);
-    }
+    // if (grpcEndpoint) {
+      setGrpcEndpointInput("http://localhost:8080");
+    // }
   }, [grpcEndpoint]);
 
   useEffect(setGrpcEndpointInputOnLoadFromState, [setGrpcEndpointInputOnLoadFromState]);
@@ -170,11 +170,11 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
      */
     grpcEndpointInput,
     setGrpcEndpointInput,
-    grpcEndpointsQuery,
+    // grpcEndpointsQuery,
     rpcError,
     onSubmit,
     isSubmitButtonEnabled,
-    isCustomGrpcEndpoint,
+    // isCustomGrpcEndpoint,
     isValidationLoading,
   };
 };

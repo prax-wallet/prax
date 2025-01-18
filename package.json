@@ -52,5 +52,55 @@
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.16.0",
     "vitest": "1.x"
+  },
+  "pnpm": {
+    "overrides": {
+      "@penumbra-zone/bech32m": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/bech32m/penumbra-zone-bech32m-11.0.0.tgz",
+      "@penumbra-zone/client": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/client/penumbra-zone-client-22.0.0.tgz",
+      "@penumbra-zone/crypto-web": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/crypto/penumbra-zone-crypto-web-33.0.0.tgz",
+      "@penumbra-zone/getters": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/getters/penumbra-zone-getters-21.0.0.tgz",
+      "@penumbra-zone/keys": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/keys/penumbra-zone-keys-4.2.1.tgz",
+      "@penumbra-zone/perspective": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/perspective/penumbra-zone-perspective-43.0.0.tgz",
+      "@penumbra-zone/protobuf": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/protobuf/penumbra-zone-protobuf-7.0.0.tgz",
+      "@penumbra-zone/services": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/services/penumbra-zone-services-48.0.0.tgz",
+      "@penumbra-zone/storage": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/storage/penumbra-zone-storage-43.0.0.tgz",
+      "@penumbra-zone/transport-chrome": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/transport-chrome/penumbra-zone-transport-chrome-8.0.1.tgz",
+      "@penumbra-zone/transport-dom": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/transport-dom/penumbra-zone-transport-dom-7.5.0.tgz",
+      "@penumbra-zone/types": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/types/penumbra-zone-types-27.1.0.tgz",
+      "@penumbra-zone/ui-deprecated": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/ui-deprecated/penumbra-zone-ui-deprecated-13.0.1.tgz",
+      "@penumbra-zone/wasm": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/wasm/penumbra-zone-wasm-37.0.0.tgz"
+    },
+    "peerDependencyRules": {
+      "allowAny": [
+        "@penumbra-zone/bech32m",
+        "@penumbra-zone/client",
+        "@penumbra-zone/crypto-web",
+        "@penumbra-zone/getters",
+        "@penumbra-zone/keys",
+        "@penumbra-zone/perspective",
+        "@penumbra-zone/protobuf",
+        "@penumbra-zone/services",
+        "@penumbra-zone/storage",
+        "@penumbra-zone/transport-chrome",
+        "@penumbra-zone/transport-dom",
+        "@penumbra-zone/types",
+        "@penumbra-zone/ui-deprecated",
+        "@penumbra-zone/wasm",
+        "@penumbra-zone/bech32m",
+        "@penumbra-zone/client",
+        "@penumbra-zone/crypto-web",
+        "@penumbra-zone/getters",
+        "@penumbra-zone/keys",
+        "@penumbra-zone/perspective",
+        "@penumbra-zone/protobuf",
+        "@penumbra-zone/services",
+        "@penumbra-zone/storage",
+        "@penumbra-zone/transport-chrome",
+        "@penumbra-zone/transport-dom",
+        "@penumbra-zone/types",
+        "@penumbra-zone/ui-deprecated",
+        "@penumbra-zone/wasm"
+      ]
+    }
   }
 }

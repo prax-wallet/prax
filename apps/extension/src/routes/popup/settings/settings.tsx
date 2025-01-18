@@ -13,8 +13,8 @@ import { passwordSelector } from '../../../state/password';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { SettingsScreen } from './settings-screen';
-import { useChainIdQuery } from '../../../hooks/chain-id';
-import { useNumeraires } from '../../../hooks/numeraires-query';
+// import { useChainIdQuery } from '../../../hooks/chain-id';
+// import { useNumeraires } from '../../../hooks/numeraires-query';
 
 const links = [
   {
@@ -53,8 +53,8 @@ export const Settings = () => {
   const navigate = usePopupNav();
   const { clearSessionPassword } = useStore(passwordSelector);
 
-  const { chainId } = useChainIdQuery();
-  const { numeraires } = useNumeraires(chainId);
+  // const { chainId } = useChainIdQuery();
+  // const { numeraires } = useNumeraires(chainId);
 
   return (
     <SettingsScreen title='Settings'>
@@ -66,7 +66,7 @@ export const Settings = () => {
               title={i.title}
               icon={i.icon}
               onClick={() => navigate(i.href)}
-              disabled={i.href === PopupPath.SETTINGS_NUMERAIRES && numeraires.length === 0}
+              // disabled={i.href === PopupPath.SETTINGS_NUMERAIRES && numeraires.length === 0}
             />
           ))}
         </div>

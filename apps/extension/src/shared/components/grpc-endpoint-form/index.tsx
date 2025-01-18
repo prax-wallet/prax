@@ -5,7 +5,7 @@ import { Network, Loader2 } from 'lucide-react';
 import { useGrpcEndpointForm } from './use-grpc-endpoint-form';
 import { ConfirmChangedChainIdDialog } from './confirm-changed-chain-id-dialog';
 import { ChainIdOrError } from './chain-id-or-error';
-import { LoadingList } from '../loading-list';
+// import { LoadingList } from '../loading-list';
 
 /**
  * Renders all the parts of the gRPC endpoint form that are shared between the
@@ -27,13 +27,13 @@ export const GrpcEndpointForm = ({
     chainIdChanged,
     confirmChangedChainIdPromise,
     originalChainId,
-    grpcEndpointsQuery,
+    // grpcEndpointsQuery,
     grpcEndpointInput,
     setGrpcEndpointInput,
     onSubmit,
     rpcError,
     isSubmitButtonEnabled,
-    isCustomGrpcEndpoint,
+    // isCustomGrpcEndpoint,
     isValidationLoading,
   } = useGrpcEndpointForm(isOnboarding);
   const customGrpcEndpointInput = useRef<HTMLInputElement | null>(null);
@@ -50,7 +50,7 @@ export const GrpcEndpointForm = ({
       <div className='flex flex-col gap-2'>
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
           <SelectList>
-            {grpcEndpointsQuery.rpcs.map(option => {
+            {/* {grpcEndpointsQuery.rpcs.map(option => {
               const imageUrl = option.images[0]?.svg ?? option.images[0]?.png;
               return (
                 <SelectList.Option
@@ -71,7 +71,7 @@ export const GrpcEndpointForm = ({
                   }
                 />
               );
-            })}
+            })} */}
 
             <SelectList.Option
               label='Custom RPC'
@@ -80,23 +80,23 @@ export const GrpcEndpointForm = ({
                   type='url'
                   placeholder='Enter URL'
                   ref={customGrpcEndpointInput}
-                  value={isCustomGrpcEndpoint && !!grpcEndpointInput ? grpcEndpointInput : ''}
+                  value={true && !!grpcEndpointInput ? grpcEndpointInput : ''}
                   onChange={e => setGrpcEndpointInput(e.target.value)}
                   className='w-full rounded border border-secondary bg-background p-1 outline-0 transition hover:border-gray-400 focus:border-gray-400'
                 />
               }
               onSelect={() => {
-                if (!isCustomGrpcEndpoint) {
+                // if (!isCustomGrpcEndpoint) {
                   setGrpcEndpointInput('');
-                }
+                // }
                 customGrpcEndpointInput.current?.focus();
               }}
-              isSelected={isCustomGrpcEndpoint}
+              // isSelected={isCustomGrpcEndpoint}
               image={<Network className='size-full' />}
             />
           </SelectList>
 
-          <LoadingList isLoading={grpcEndpointsQuery.isLoading} />
+          {/* <LoadingList isLoading={grpcEndpointsQuery.isLoading} /> */}
 
           <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
             {isValidationLoading ? (
@@ -112,7 +112,7 @@ export const GrpcEndpointForm = ({
 
         <ChainIdOrError chainId={chainId} chainIdChanged={chainIdChanged} error={rpcError} />
         <div className='text-red-400'>
-          {grpcEndpointsQuery.error ? String(grpcEndpointsQuery.error) : null}
+          {/* {grpcEndpointsQuery.error ? String(grpcEndpointsQuery.error) : null} */}
         </div>
       </div>
 

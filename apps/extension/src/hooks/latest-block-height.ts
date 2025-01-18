@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { sample } from 'lodash';
+// import { sample } from 'lodash';
 import { createPromiseClient, Transport } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
@@ -12,27 +12,27 @@ import { networkSelector } from '../state/network';
 // hanging from stalled requests.
 
 export const fetchBlockHeightWithFallback = async (
-  endpoints: string[],
-  transport?: Transport, // Deps injection mostly for unit tests
+  _endpoints: string[],
+  _transport?: Transport, // Deps injection mostly for unit tests
 ): Promise<{ blockHeight: number; rpc: string }> => {
-  if (endpoints.length === 0) {
-    throw new Error('All RPC endpoints failed to fetch the block height.');
-  }
+  // if (endpoints.length === 0) {
+  //   throw new Error('All RPC endpoints failed to fetch the block height.');
+  // }
 
-  // Randomly select an RPC endpoint from the chain registry
-  const randomGrpcEndpoint = sample(endpoints);
-  if (!randomGrpcEndpoint) {
-    throw new Error('No RPC endpoints found.');
-  }
+  // // Randomly select an RPC endpoint from the chain registry
+  // const randomGrpcEndpoint = sample(endpoints);
+  // if (!randomGrpcEndpoint) {
+  //   throw new Error('No RPC endpoints found.');
+  // }
 
-  try {
-    const blockHeight = await fetchBlockHeightWithTimeout(randomGrpcEndpoint, transport);
-    return { blockHeight, rpc: randomGrpcEndpoint };
-  } catch (e) {
-    // Remove the current endpoint from the list and retry with remaining endpoints
-    const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
-    return fetchBlockHeightWithFallback(remainingEndpoints, transport);
-  }
+  // try {
+    const blockHeight = 0
+    return { blockHeight, rpc: "http://localhost:8080" };
+  // } catch (e) {
+  //   // Remove the current endpoint from the list and retry with remaining endpoints
+  //   const remainingEndpoints = endpoints.filter(endpoint => endpoint !== "https://localhost:8080");
+  //   return fetchBlockHeightWithFallback(remainingEndpoints, transport);
+  // }
 };
 
 // Fetch the block height from a specific RPC endpoint with a request-level timeout that supersedes
