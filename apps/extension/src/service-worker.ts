@@ -96,3 +96,9 @@ const handler = await backOff(() => initHandler(), {
 });
 
 CRSessionManager.init(PRAX, handler);
+
+// https://developer.chrome.com/docs/extensions/reference/api/alarms
+chrome.alarms.create('blockSync', {
+  periodInMinutes: 30,
+  delayInMinutes: 0
+});
