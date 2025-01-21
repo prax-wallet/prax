@@ -35,13 +35,12 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   const chainRegistryClient = new ChainRegistryClient();
   const { rpcs, frontends } = await chainRegistryClient.remote.globals();
 
-  let selectedFrontend: EntityMetadata | undefined;
-  // Check for default frontend in registry
-  for (const frontend of frontends) {
-    if ((frontend.name = 'Radiant Commons')) {
-      selectedFrontend = frontend;
-    }
-  }
+  // Define a canconcial default frontend
+  const defaultFront = 'Radiant Commons';
+
+  let selectedFrontend: EntityMetadata | undefined = frontends.find(
+    frontend => frontend.name === defaultFront,
+  );
 
   // If default frontend is not found, randomly select a frontend
   if (!selectedFrontend) {
