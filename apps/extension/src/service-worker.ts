@@ -102,3 +102,9 @@ void chrome.alarms.create('blockSync', {
   periodInMinutes: 30,
   delayInMinutes: 0,
 });
+
+chrome.alarms.onAlarm.addListener(alarm => {
+  if (alarm.name === 'blockSync') {
+    console.log('Block sync alarm fired, service worker restarting');
+  }
+});
