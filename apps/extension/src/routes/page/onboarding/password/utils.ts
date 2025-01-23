@@ -2,7 +2,7 @@ import { Location } from 'react-router-dom';
 import { LocationState, SEED_PHRASE_ORIGIN } from './types';
 import { PagePath } from '../../paths';
 import { usePageNav } from '../../../../utils/navigate';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { ChainRegistryClient, EntityMetadata } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
 import { createPromiseClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
@@ -34,8 +34,20 @@ const DEFAULT_TRANSPORT_OPTS = { timeoutMs: 5000 };
 export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE_ORIGIN) => {
   const chainRegistryClient = new ChainRegistryClient();
   const { rpcs, frontends } = await chainRegistryClient.remote.globals();
-  const randomFrontend = sample(frontends);
-  if (!randomFrontend) {
+
+  // Define a canconcial default frontend
+  const defaultFront = 'Radiant Commons';
+
+  let selectedFrontend: EntityMetadata | undefined = frontends.find(
+    frontend => frontend.name === defaultFront,
+  );
+
+  // If default frontend is not found, randomly select a frontend
+  if (!selectedFrontend) {
+    selectedFrontend = sample(frontends);
+  }
+
+  if (!selectedFrontend) {
     throw new Error('Registry missing frontends');
   }
 
@@ -57,7 +69,7 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
 
   await localExtStorage.set('grpcEndpoint', rpc);
-  await localExtStorage.set('frontendUrl', randomFrontend.url);
+  await localExtStorage.set('frontendUrl', selectedFrontend.url);
   await localExtStorage.set(
     'numeraires',
     numeraires.map(n => n.toJsonString()),
