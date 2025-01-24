@@ -105,6 +105,8 @@ void chrome.alarms.create('blockSync', {
 
 chrome.alarms.onAlarm.addListener(alarm => {
   if (alarm.name === 'blockSync') {
-    console.log('Block sync alarm fired, service worker restarting');
+    if (globalThis.__DEV__) {
+      console.info('Background sync scheduled');
+    }
   }
 });
