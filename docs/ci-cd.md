@@ -21,3 +21,25 @@ Main merges will also deploy dapp on Firebase. Workflows can be [seen here](../.
 
 If a release is made in the repo, the extension code will be submitted for publishing
 to the Chrome Web Store. See more in [publishing](./publishing.md).
+
+### Creds for publishing
+
+Publishing to the webstore requires three (3) credentials to be present in CI:
+
+1. Google app oauth client_id
+2. Google app oauth client_secret
+3. Google app refresh_token
+
+If an extension publishing job fails with an HTTP 429, it's likely either:
+
+1. unreviewed drafts in the developer web ui, or
+2. an expired "refresh token" being used in CI
+
+If you need to update 2:
+
+1. Follow this guide: https://github.com/fregante/chrome-webstore-upload-keys
+2. Download JSON file with client_id and client_secret (constituting 2/3 of the creds you need)
+3. `node cli.js` in that repo, follow the interactive tool
+4. Edit the CI secrets in this repo with the new client_id, client_secret, and refresh_token values
+
+Then rerun the failed publishing job, and confirm it passes.
