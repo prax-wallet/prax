@@ -19,6 +19,6 @@
     "@cosmjs/stargate": "^0.32.4",
     "@penumbra-zone/bech32m": "11.0.0",
     "@penumbra-zone/protobuf": "7.0.0",
-    "@penumbra-zone/wasm": "37.0.0"
+    "@penumbra-zone/wasm": "37.1.0"
   }
 }
