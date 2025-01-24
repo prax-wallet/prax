@@ -96,3 +96,17 @@ const handler = await backOff(() => initHandler(), {
 });
 
 CRSessionManager.init(PRAX, handler);
+
+// https://developer.chrome.com/docs/extensions/reference/api/alarms
+void chrome.alarms.create('blockSync', {
+  periodInMinutes: 30,
+  delayInMinutes: 0,
+});
+
+chrome.alarms.onAlarm.addListener(alarm => {
+  if (alarm.name === 'blockSync') {
+    if (globalThis.__DEV__) {
+      console.info('Background sync scheduled');
+    }
+  }
+});

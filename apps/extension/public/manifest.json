@@ -40,7 +40,7 @@
       "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["storage", "unlimitedStorage", "offscreen"],
+  "permissions": ["storage", "unlimitedStorage", "offscreen", "alarms"],
   "host_permissions": ["<all_urls>"],
   "externally_connectable": {
     "matches": ["<all_urls>"]
