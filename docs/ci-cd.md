@@ -40,6 +40,6 @@ If you need to update 2:
 1. Follow this guide: https://github.com/fregante/chrome-webstore-upload-keys
 2. Download JSON file with client_id and client_secret (constituting 2/3 of the creds you need)
 3. `node cli.js` in that repo, follow the interactive tool
-4.  Edit the CI secrets in this repo with the new client_id, client_secret, and refresh_token values
+4. Edit the CI secrets in this repo with the new client_id, client_secret, and refresh_token values
 
 Then rerun the failed publishing job, and confirm it passes.
