@@ -151,9 +151,9 @@ export default {
           linear-gradient(
             color-mix(in srgb, var(--charcoal) 80%, transparent),
             color-mix(in srgb, var(--charcoal) 80%, transparent)
-          ),
-          url('penumbra-logo.svg')
+          )
         `,
+        logoImg: `url('penumbra-logo.svg')`,
       },
     },
   },
