@@ -16,7 +16,7 @@ export const CondensedBlockSyncStatus = ({
   error?: unknown;
 }) => {
   if (error) {
-    return <BlockSyncErrorState error={error} />;
+    return <BlockSyncErrorState />;
   }
   if (!latestKnownBlockHeight || !fullSyncHeight) {
     return <AwaitingSyncState genesisSyncing={!fullSyncHeight} />;
@@ -41,7 +41,7 @@ export const CondensedBlockSyncStatus = ({
   );
 };
 
-const BlockSyncErrorState = ({ error }: { error: unknown }) => {
+const BlockSyncErrorState = () => {
   return (
     <motion.div
       className='flex w-full select-none flex-col'
@@ -51,7 +51,7 @@ const BlockSyncErrorState = ({ error }: { error: unknown }) => {
       <Progress status='error' value={100} shape='squared' />
       <div className='absolute flex w-full justify-between px-2'>
         <div className='mt-[-5.5px] font-mono text-[10px] text-red-300'>
-          Block sync error: {String(error)}
+          Block sync error. Ensure your internet connection is stable
         </div>
       </div>
     </motion.div>
