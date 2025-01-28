@@ -31,7 +31,7 @@ import {
   IbcRelay,
 } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Address, AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 import {
   MsgAcknowledgement,
@@ -214,25 +214,27 @@ describe('getNullifiersFromActions', () => {
 });
 
 describe('identifyTransactions', () => {
+  const MAIN_ACCOUNT = new AddressIndex({ account: 0 });
+
   test('returns empty arrays when no relevant transactions are found', async () => {
     const tx = new Transaction();
     const blockTx = [tx];
-    const spentNullifiers = new Set<Nullifier>();
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
     const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
     const result = await identifyTransactions(
       spentNullifiers,
       commitmentRecords,
       blockTx,
-      () => false,
+      () => MAIN_ACCOUNT,
     );
 
     expect(result.relevantTxs).toEqual([]);
     expect(result.recoveredSourceRecords).toEqual([]);
   });
 
-  test('identifies relevant transactions and recovers sources', async () => {
-    // Transaction 1: Matching nullifier
+  test('identifies relevant transactions by nullifiers', async () => {
+    // Relevant nullifier
     const nullifier = new Nullifier({ inner: new Uint8Array([1, 2, 3]) });
     const tx1 = new Transaction({
       body: new TransactionBody({
@@ -251,9 +253,53 @@ describe('identifyTransactions', () => {
       }),
     });
 
-    // Transaction 2: Matching commitment
-    const commitment = new StateCommitment({ inner: new Uint8Array([4, 5, 6]) });
+    // Irrelevant nullifier
     const tx2 = new Transaction({
+      body: new TransactionBody({
+        actions: [
+          new Action({
+            action: {
+              case: 'spend',
+              value: new Spend({
+                body: new SpendBody({
+                  nullifier: new Nullifier({ inner: new Uint8Array([4, 5, 6]) }),
+                }),
+              }),
+            },
+          }),
+        ],
+      }),
+    });
+
+    const spendableNoteRecord = new SpendableNoteRecord({
+      addressIndex: MAIN_ACCOUNT,
+      source: BLANK_TX_SOURCE,
+    });
+
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>([
+      [nullifier, spendableNoteRecord],
+    ]);
+    const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+
+    const result = await identifyTransactions(
+      spentNullifiers,
+      commitmentRecords,
+      [
+        tx1, // relevant
+        tx2, // irrelevant
+      ],
+      () => MAIN_ACCOUNT,
+    );
+
+    expect(result.relevantTxs.length).toBe(1);
+    expect(result.relevantTxs[0]?.data.equals(tx1)).toBeTruthy();
+    expect(result.relevantTxs[0]?.subaccount?.equals(MAIN_ACCOUNT)).toBeTruthy();
+  });
+
+  test('identifies relevant transactions by commitments and recovers sources', async () => {
+    // Matching commitment
+    const commitment = new StateCommitment({ inner: new Uint8Array([4, 5, 6]) });
+    const tx1 = new Transaction({
       body: new TransactionBody({
         actions: [
           new Action({
@@ -272,8 +318,8 @@ describe('identifyTransactions', () => {
       }),
     });
 
-    // Transaction 3: Irrelevant commitment
-    const tx3 = new Transaction({
+    // Irrelevant commitment
+    const tx2 = new Transaction({
       body: new TransactionBody({
         actions: [
           new Action({
@@ -292,27 +338,8 @@ describe('identifyTransactions', () => {
       }),
     });
 
-    // Transaction 4: Irrelevant nullifier
-    const tx4 = new Transaction({
-      body: new TransactionBody({
-        actions: [
-          new Action({
-            action: {
-              case: 'spend',
-              value: new Spend({
-                body: new SpendBody({
-                  nullifier: new Nullifier({ inner: new Uint8Array([4, 5, 6]) }),
-                }),
-              }),
-            },
-          }),
-        ],
-      }),
-    });
-
-    const spentNullifiers = new Set<Nullifier>([nullifier]);
-
     const spendableNoteRecord = new SpendableNoteRecord({
+      addressIndex: MAIN_ACCOUNT,
       source: BLANK_TX_SOURCE,
     });
 
@@ -320,6 +347,7 @@ describe('identifyTransactions', () => {
       [commitment, spendableNoteRecord], // Expecting match
       [new StateCommitment({ inner: new Uint8Array([1, 6, 9]) }), new SpendableNoteRecord()], // not expecting match
     ]);
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
 
     const spentNullifiersBeforeSize = spentNullifiers.size;
     const commitmentRecordsBeforeSize = commitmentRecords.size;
@@ -328,15 +356,15 @@ describe('identifyTransactions', () => {
       commitmentRecords,
       [
         tx1, // relevant
-        tx2, // relevant
-        tx3, // not
-        tx4, // not
+        tx2, // not
       ],
-      () => false,
+      () => MAIN_ACCOUNT,
     );
 
-    expect(result.relevantTxs.length).toBe(2);
+    expect(result.relevantTxs.length).toBe(1);
     expect(result.recoveredSourceRecords.length).toBe(1);
+    expect(result.relevantTxs[0]?.data.equals(tx1)).toBeTruthy();
+    expect(result.relevantTxs[0]?.subaccount?.equals(MAIN_ACCOUNT)).toBeTruthy();
 
     // Source was recovered
     expect(result.recoveredSourceRecords[0]!.source?.equals(BLANK_TX_SOURCE)).toEqual(false);
@@ -351,6 +379,8 @@ describe('identifyTransactions', () => {
       'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4';
     const unknownAddr =
       'penumbracompat1147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhwqq0da';
+    const getIndexByAddress = (addr: Address) =>
+      addr.equals(new Address(addressFromBech32m(knownAddr))) ? MAIN_ACCOUNT : undefined;
 
     test('identifies relevant MsgRecvPacket', async () => {
       const txA = new Transaction({
@@ -364,15 +394,19 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [txA, txB];
-      const spentNullifiers = new Set<Nullifier>();
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
-        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        getIndexByAddress,
       );
 
       expect(result.relevantTxs.length).toBe(1);
       expect(result.relevantTxs[0]?.data.equals(txA)).toBeTruthy();
+      expect(result.relevantTxs[0]?.subaccount?.equals(MAIN_ACCOUNT)).toBeTruthy();
       expect(result.recoveredSourceRecords.length).toBe(0);
     });
 
@@ -388,11 +422,14 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [txA, txB];
-      const spentNullifiers = new Set<Nullifier>();
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
-        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        getIndexByAddress,
       );
 
       expect(result.relevantTxs.length).toBe(1);
@@ -412,11 +449,14 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [txA, txB];
-      const spentNullifiers = new Set<Nullifier>();
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
-        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        getIndexByAddress,
       );
 
       expect(result.relevantTxs.length).toBe(1);
@@ -435,11 +475,14 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [tx];
-      const spentNullifiers = new Set<Nullifier>();
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
-        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        getIndexByAddress,
       );
 
       expect(result.relevantTxs.length).toBe(0);
@@ -473,11 +516,14 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [tx];
-      const spentNullifiers = new Set<Nullifier>();
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(spentNullifiers, commitmentRecords, blockTx, addr =>
-        addr.equals(new Address(addressFromBech32m(knownAddr))),
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        getIndexByAddress,
       );
 
       expect(result.relevantTxs.length).toBe(0);

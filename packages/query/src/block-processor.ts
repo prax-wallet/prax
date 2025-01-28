@@ -31,7 +31,7 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
 import { RootQuerier } from './root-querier';
-import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 import { toPlainMessage } from '@bufbuild/protobuf';
 import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
@@ -317,7 +317,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         spentNullifiers,
         recordsByCommitment,
         blockTx,
-        addr => this.viewServer.isControlledAddress(addr),
+        addr => this.viewServer.getIndexByAddress(addr),
       );
 
       // this simply stores the new records with 'rehydrated' sources to idb
@@ -494,7 +494,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   // Nullifier is published in network when a note is spent or swap is claimed.
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
-    const spentNullifiers = new Set<Nullifier>();
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
     const readOperations = [];
     const writeOperations = [];
 
@@ -518,8 +518,6 @@ export class BlockProcessor implements BlockProcessorInterface {
         continue;
       }
 
-      spentNullifiers.add(nullifier);
-
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
         const writePromise = this.indexedDb.saveSpendableNote({
@@ -535,6 +533,8 @@ export class BlockProcessor implements BlockProcessorInterface {
         });
         writeOperations.push(writePromise);
       }
+
+      spentNullifiers.set(nullifier, record);
     }
 
     // Await all writes in parallel
@@ -548,9 +548,12 @@ export class BlockProcessor implements BlockProcessorInterface {
    * such as metadata, liquidity positions, etc.
    */
   private async processTransactions(txs: RelevantTx[]) {
-    for (const { data } of txs) {
+    for (const { data, subaccount } of txs) {
       for (const { action } of data.body?.actions ?? []) {
-        await Promise.all([this.identifyAuctionNfts(action), this.identifyLpNftPositions(action)]);
+        await Promise.all([
+          this.identifyAuctionNfts(action),
+          this.identifyLpNftPositions(action, subaccount),
+        ]);
       }
     }
   }
@@ -582,7 +585,7 @@ export class BlockProcessor implements BlockProcessorInterface {
    * - generate all possible position state metadata
    * - update idb
    */
-  private async identifyLpNftPositions(action: Action['action']) {
+  private async identifyLpNftPositions(action: Action['action'], subaccount?: AddressIndex) {
     if (action.case === 'positionOpen' && action.value.position) {
       for (const state of POSITION_STATES) {
         const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
@@ -597,12 +600,14 @@ export class BlockProcessor implements BlockProcessorInterface {
       await this.indexedDb.addPosition(
         computePositionId(action.value.position),
         action.value.position,
+        subaccount,
       );
     }
     if (action.case === 'positionClose' && action.value.positionId) {
       await this.indexedDb.updatePosition(
         action.value.positionId,
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        subaccount,
       );
     }
     if (action.case === 'positionWithdraw' && action.value.positionId) {
@@ -618,7 +623,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         penumbraAssetId: getAssetId(metadata),
       });
 
-      await this.indexedDb.updatePosition(action.value.positionId, positionState);
+      await this.indexedDb.updatePosition(action.value.positionId, positionState, subaccount);
     }
   }
 

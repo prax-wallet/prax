@@ -16,6 +16,7 @@ import { FungibleTokenPacketData } from '@penumbra-zone/protobuf/penumbra/core/c
 import { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { parseIntoAddr } from '@penumbra-zone/types/address';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const BLANK_TX_SOURCE = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
@@ -23,71 +24,81 @@ export const BLANK_TX_SOURCE = new CommitmentSource({
 
 /**
  * Identifies if a tx has a relay action of which the receiver is the user.
+ * If so, returns corresponding address.
+ *
  * In terms of minting notes in the shielded pool, three IBC actions are relevant:
  * - MsgRecvPacket (containing an ICS20 inbound transfer)
  * - MsgAcknowledgement (containing an error acknowledgement, thus triggering a refund on our end)
  * - MsgTimeout
  */
-const hasRelevantIbcRelay = (
+const getRelevantIbcRelay = (
   tx: Transaction,
-  isControlledAddr: ViewServerInterface['isControlledAddress'],
-) => {
-  return tx.body?.actions.some(action => {
-    if (action.action.case !== 'ibcRelayAction') {
-      return false;
-    }
-
-    const rawAction = action.action.value.rawAction;
-    if (!rawAction) {
-      return false;
-    }
-
-    if (rawAction.is(MsgRecvPacket.typeName)) {
-      const recvPacket = new MsgRecvPacket();
-      rawAction.unpackTo(recvPacket);
-      if (!recvPacket.packet) {
-        return false;
+  getIndexByAddress: ViewServerInterface['getIndexByAddress'],
+): AddressIndex | undefined => {
+  return tx.body?.actions.slice(0).reduce(
+    (accum, action, _, original) => {
+      if (accum) {
+        original.splice(1); // Break early
+        return accum;
       }
-      return isControlledByUser(recvPacket.packet, isControlledAddr, 'receiver');
-    }
 
-    if (rawAction.is(MsgAcknowledgement.typeName)) {
-      const ackPacket = new MsgAcknowledgement();
-      rawAction.unpackTo(ackPacket);
-      if (!ackPacket.packet) {
-        return false;
+      if (action.action.case !== 'ibcRelayAction') {
+        return undefined;
       }
-      return isControlledByUser(ackPacket.packet, isControlledAddr, 'sender');
-    }
 
-    if (rawAction.is(MsgTimeout.typeName)) {
-      const timeout = new MsgTimeout();
-      rawAction.unpackTo(timeout);
-      if (!timeout.packet) {
-        return false;
+      const rawAction = action.action.value.rawAction;
+      if (!rawAction) {
+        return undefined;
       }
-      return isControlledByUser(timeout.packet, isControlledAddr, 'sender');
-    }
 
-    // Not a potentially relevant ibc relay action
-    return false;
-  });
+      if (rawAction.is(MsgRecvPacket.typeName)) {
+        const recvPacket = new MsgRecvPacket();
+        rawAction.unpackTo(recvPacket);
+        if (!recvPacket.packet) {
+          return undefined;
+        }
+        return controlledByAddress(recvPacket.packet, getIndexByAddress, 'receiver');
+      }
+
+      if (rawAction.is(MsgAcknowledgement.typeName)) {
+        const ackPacket = new MsgAcknowledgement();
+        rawAction.unpackTo(ackPacket);
+        if (!ackPacket.packet) {
+          return undefined;
+        }
+        return controlledByAddress(ackPacket.packet, getIndexByAddress, 'sender');
+      }
+
+      if (rawAction.is(MsgTimeout.typeName)) {
+        const timeout = new MsgTimeout();
+        rawAction.unpackTo(timeout);
+        if (!timeout.packet) {
+          return undefined;
+        }
+        return controlledByAddress(timeout.packet, getIndexByAddress, 'sender');
+      }
+
+      // Not a potentially relevant ibc relay action
+      return undefined;
+    },
+    undefined as AddressIndex | undefined,
+  );
 };
 
 // Determines if the packet data points to the user as the receiver
-const isControlledByUser = (
+const controlledByAddress = (
   packet: Packet,
-  isControlledAddr: ViewServerInterface['isControlledAddress'],
+  getIndexByAddress: ViewServerInterface['getIndexByAddress'],
   entityToCheck: 'sender' | 'receiver',
-): boolean => {
+): AddressIndex | undefined => {
   try {
     const dataString = new TextDecoder().decode(packet.data);
     const { sender, receiver } = FungibleTokenPacketData.fromJsonString(dataString);
     const addrStr = entityToCheck === 'sender' ? sender : receiver;
     const addrToCheck = parseIntoAddr(addrStr);
-    return isControlledAddr(addrToCheck);
+    return getIndexByAddress(addrToCheck);
   } catch {
-    return false;
+    return undefined;
   }
 };
 
@@ -139,6 +150,7 @@ export const getNullifiersFromActions = (tx: Transaction): Nullifier[] => {
 export interface RelevantTx {
   id: TransactionId;
   data: Transaction;
+  subaccount?: AddressIndex;
 }
 
 type RecoveredSourceRecords = (SpendableNoteRecord | SwapRecord)[];
@@ -147,28 +159,48 @@ const generateTxId = async (tx: Transaction): Promise<TransactionId> => {
   return new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
 };
 
+const isSpendableNoteRecord = (
+  note: SpendableNoteRecord | SwapRecord,
+): note is SpendableNoteRecord => {
+  return note.getType().typeName === SpendableNoteRecord.typeName;
+};
+const getAddressIndexFromNote = (
+  note: SpendableNoteRecord | SwapRecord,
+): AddressIndex | undefined => {
+  if (isSpendableNoteRecord(note)) {
+    return note.addressIndex;
+  }
+  return undefined;
+};
+
 const searchRelevant = async (
   tx: Transaction,
-  spentNullifiers: Set<Nullifier>,
+  spentNullifiers: Map<Nullifier, SpendableNoteRecord | SwapRecord>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
-  isControlledAddr: ViewServerInterface['isControlledAddress'],
+  getIndexByAddress: ViewServerInterface['getIndexByAddress'],
 ): Promise<
   { relevantTx: RelevantTx; recoveredSourceRecords: RecoveredSourceRecords } | undefined
 > => {
   let txId: TransactionId | undefined; // If set, that means this tx is relevant and should be returned to the caller
+  let subaccount: AddressIndex | undefined;
   const recoveredSourceRecords: RecoveredSourceRecords = [];
 
+  // for spend/swapClaim transaction actions
   const txNullifiers = getNullifiersFromActions(tx);
-  for (const spentNullifier of spentNullifiers) {
-    if (txNullifiers.some(txNullifier => spentNullifier.equals(txNullifier))) {
+  for (const [spentNullifier, spendableNoteRecord] of spentNullifiers) {
+    const nullifier = txNullifiers.find(txNullifier => spentNullifier.equals(txNullifier));
+    if (nullifier) {
       txId ??= await generateTxId(tx);
+      subaccount = getAddressIndexFromNote(spendableNoteRecord);
     }
   }
 
+  // For output/swap/swapClaim transaction actions
   const txCommitments = getCommitmentsFromActions(tx);
   for (const [stateCommitment, spendableNoteRecord] of commitmentRecords) {
     if (txCommitments.some(txCommitment => stateCommitment.equals(txCommitment))) {
       txId ??= await generateTxId(tx);
+      subaccount = getAddressIndexFromNote(spendableNoteRecord);
 
       // Blank sources can be recovered by associating them with the transaction
       if (BLANK_TX_SOURCE.equals(spendableNoteRecord.source)) {
@@ -181,13 +213,15 @@ const searchRelevant = async (
     }
   }
 
-  if (hasRelevantIbcRelay(tx, isControlledAddr)) {
+  const relevantIbcRelay = getRelevantIbcRelay(tx, getIndexByAddress);
+  if (relevantIbcRelay) {
     txId ??= await generateTxId(tx);
+    subaccount = relevantIbcRelay;
   }
 
   if (txId) {
     return {
-      relevantTx: { id: txId, data: tx },
+      relevantTx: { id: txId, data: tx, subaccount },
       recoveredSourceRecords,
     };
   }
@@ -198,10 +232,10 @@ const searchRelevant = async (
 // identify transactions that involve a new record by comparing nullifiers and state commitments
 // also returns records with recovered sources
 export const identifyTransactions = async (
-  spentNullifiers: Set<Nullifier>,
+  spentNullifiers: Map<Nullifier, SpendableNoteRecord | SwapRecord>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
   blockTx: Transaction[],
-  isControlledAddr: ViewServerInterface['isControlledAddress'],
+  getIndexByAddress: ViewServerInterface['getIndexByAddress'],
 ): Promise<{
   relevantTxs: RelevantTx[];
   recoveredSourceRecords: RecoveredSourceRecords;
@@ -210,7 +244,7 @@ export const identifyTransactions = async (
   const recoveredSourceRecords: RecoveredSourceRecords = [];
 
   const searchPromises = blockTx.map(tx =>
-    searchRelevant(tx, spentNullifiers, commitmentRecords, isControlledAddr),
+    searchRelevant(tx, spentNullifiers, commitmentRecords, getIndexByAddress),
   );
   const results = await Promise.all(searchPromises);
 
