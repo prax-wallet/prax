@@ -309,7 +309,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // if a new record involves a state commitment, scan all block tx
     if (spentNullifiers.size || recordsByCommitment.size) {
-      // this is a network query
+      // compact block doesn't store transactions data, this query request it by rpc call
       const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
 
       // Filter down to transactions & note records in block relevant to user
@@ -317,7 +317,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         spentNullifiers,
         recordsByCommitment,
         blockTx,
-        addr => this.viewServer.getIndexByAddress(addr),
+        addr => this.viewServer.isControlledAddress(addr),
       );
 
       // this simply stores the new records with 'rehydrated' sources to idb
