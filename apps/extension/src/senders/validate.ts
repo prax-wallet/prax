@@ -1,8 +1,6 @@
-enum ValidProtocol {
-  'https:' = 'https:',
-}
+const validProtocols = ['https:'];
 
-type ValidSender = chrome.runtime.MessageSender & {
+export type ValidSender = chrome.runtime.MessageSender & {
   frameId: 0;
   documentId: string;
   tab: chrome.tabs.Tab & { id: number };
@@ -13,7 +11,7 @@ type ValidSender = chrome.runtime.MessageSender & {
 const isHttpLocalhost = (url: URL): boolean =>
   url.protocol === 'http:' && url.hostname === 'localhost';
 
-export const assertValidSender = (sender?: chrome.runtime.MessageSender) => {
+export const assertValidSender = (sender?: chrome.runtime.MessageSender): ValidSender => {
   if (!sender) {
     throw new Error('Sender undefined');
   }
@@ -35,8 +33,12 @@ export const assertValidSender = (sender?: chrome.runtime.MessageSender) => {
     throw new Error('Sender origin is invalid');
   }
 
-  if (!(parsedOrigin.protocol in ValidProtocol || isHttpLocalhost(parsedOrigin))) {
-    throw new Error(`Sender protocol is not ${Object.values(ValidProtocol).join(',')}`);
+  if (!validProtocols.includes(parsedOrigin.protocol)) {
+    if (isHttpLocalhost(parsedOrigin)) {
+      console.warn('Allowing http at localhost', parsedOrigin);
+    } else {
+      throw new Error(`Sender protocol is not ${validProtocols.join(',')}`);
+    }
   }
 
   if (!sender.url) {
@@ -49,10 +51,6 @@ export const assertValidSender = (sender?: chrome.runtime.MessageSender) => {
   if (parsedUrl.origin !== parsedOrigin.origin) {
     throw new Error('Sender URL has unexpected origin');
   }
-
-  // TODO: externally_connectable can use more sender data
-  //if (!sender.tlsChannelId) throw new Error('Sender has no tlsChannelId');
-  //if (!sender.id) throw new Error('Sender has no crx id');
 
   return sender as ValidSender;
 };
