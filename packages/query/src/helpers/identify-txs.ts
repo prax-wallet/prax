@@ -210,6 +210,9 @@ const searchRelevant = async (
     }
   }
 
+  // todo: matches LQT actions with commitments and rehydrate transaction source with
+  // `CommitmentSource` variant.
+
   // finds if either source or destination of an IBC relay action is controlled by the user
   if (hasRelevantIbcRelay(tx, isControlledAddr)) {
     txId ??= await generateTxId(tx);

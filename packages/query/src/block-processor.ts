@@ -553,6 +553,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         await Promise.all([
           this.identifyAuctionNfts(action),
           this.identifyLpNftPositions(action, subaccount),
+          // todo: identify LQT voting and save in relevant LQT table.
         ]);
       }
     }
