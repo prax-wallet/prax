@@ -22,6 +22,13 @@ export const BLANK_TX_SOURCE = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
 
+export const BLANK_VOTING_SOURCE = new CommitmentSource({
+  source: {
+    case: 'lqt',
+    value: { epoch: 0n, txHash: new TransactionId({ inner: new Uint8Array() }) },
+  },
+});
+
 /**
  * Identifies if a tx has a relay action of which the receiver is the user.
  *
@@ -140,6 +147,24 @@ export const getNullifiersFromActions = (tx: Transaction): Nullifier[] => {
     .filter(isDefined);
 };
 
+export const getVotingNullifiersFromActions = (tx: Transaction): Nullifier[] => {
+  if (!tx.body?.actions) {
+    return [];
+  }
+
+  return tx.body.actions
+    .flatMap(({ action }) => {
+      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- TODO: Fix eslint issue
+      switch (action.case) {
+        case 'actionLiquidityTournamentVote':
+          return action.value.body?.nullifier;
+        default:
+          return;
+      }
+    })
+    .filter(isDefined);
+};
+
 export interface RelevantTx {
   id: TransactionId;
   data: Transaction;
@@ -192,6 +217,36 @@ const searchRelevant = async (
     }
   }
 
+  // matches spend/swapClaim transaction actions with nullifiers
+  const votingNullifiers = getVotingNullifiersFromActions(tx);
+  for (const [spentNullifier, spendableNoteRecord] of spentNullifiers) {
+    const nullifier = votingNullifiers.find(votingNullifiers =>
+      spentNullifier.equals(votingNullifiers),
+    );
+    if (nullifier) {
+      txId ??= await generateTxId(tx);
+      subaccount = getAddressIndexFromNote(spendableNoteRecord);
+    }
+
+    // Blank sources can be recovered by associating them with the transaction
+    if (BLANK_VOTING_SOURCE.equals(spendableNoteRecord.source)) {
+      const recovered = spendableNoteRecord.clone();
+      if (spendableNoteRecord instanceof SpendableNoteRecord) {
+        // todo: request epoch index from block height
+        recovered.source = new CommitmentSource({
+          source: {
+            case: 'lqt',
+            value: {
+              epoch: spendableNoteRecord.heightCreated,
+              txHash: new TransactionId({ inner: txId?.inner }),
+            },
+          },
+        });
+        recoveredSourceRecords.push(recovered);
+      }
+    }
+  }
+
   // matches output/swap/swapClaim transaction actions with commitments
   const txCommitments = getCommitmentsFromActions(tx);
   for (const [stateCommitment, spendableNoteRecord] of commitmentRecords) {
@@ -209,6 +264,10 @@ const searchRelevant = async (
       }
     }
   }
+
+  // todo: matches LQT actions with commitments and rehydrate transaction source with
+  // `CommitmentSource` variant.
+  // todo: account for duplicate rehydrated sources?
 
   // finds if either source or destination of an IBC relay action is controlled by the user
   if (hasRelevantIbcRelay(tx, isControlledAddr)) {
