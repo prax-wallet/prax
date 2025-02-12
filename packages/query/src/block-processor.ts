@@ -40,6 +40,7 @@ import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -518,6 +519,8 @@ export class BlockProcessor implements BlockProcessorInterface {
         continue;
       }
 
+      // if the nullifier in the compact block matches the spendable note payload's nullifier
+      // we decoded, then mark it as spent at the relavant block height.
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
         const writePromise = this.indexedDb.saveSpendableNote({
@@ -548,12 +551,13 @@ export class BlockProcessor implements BlockProcessorInterface {
    * such as metadata, liquidity positions, etc.
    */
   private async processTransactions(txs: RelevantTx[]) {
-    for (const { data, subaccount } of txs) {
+    for (const { id, data, subaccount } of txs) {
       for (const { action } of data.body?.actions ?? []) {
         await Promise.all([
           this.identifyAuctionNfts(action),
           this.identifyLpNftPositions(action, subaccount),
-          // todo: identify LQT voting and save in relevant LQT table.
+          // todo, differentiate between a vote and reward (LQT commitment source)
+          this.identifyLiquiditTournamentVotes(action, id),
         ]);
       }
     }
@@ -575,6 +579,15 @@ export class BlockProcessor implements BlockProcessorInterface {
         action.value.seq,
         this.indexedDb,
       );
+    }
+  }
+
+  private async identifyLiquiditTournamentVotes(
+    action: Action['action'],
+    _transactionId: TransactionId,
+  ) {
+    if (action.case === 'actionLiquidityTournamentVote') {
+      // todo: save vote to table.
     }
   }
 
