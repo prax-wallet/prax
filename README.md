@@ -1,4 +1,4 @@
-# Penumbra Web
+# Prax Wallet
 
 The [Prax Wallet](https://praxwallet.com/) monorepo for all things Prax.
 
@@ -62,6 +62,19 @@ content scripts. For worker script changes, you may need to manually reload the
 extension. For content script changes, you must also manually reload pages
 hosting the injected scripts.
 
+#### Building against feature branches
+
+When testing Prax locally, you may want to depend on as-yet unreleased
+software changes, e.g. in the [web repo]. To do so:
+
+1. In the [web repo], run `pnpm install && pnpm build && pnpm dev:pack`
+2. In the [web repo], run `pnpm dev` (in a separate terminal)
+3. In the [prax repo], run `pnpm -w add:tgz ~/PATH_TO_WEB_REPO/web/packages/*/penumbra-zone-*.tgz && pnpm -w syncpack fix-mismatches && pnpm dev`
+
+Provided you configured `CHROMIUM_PROFILE`, you should see a browser launch,
+running the local builds. You must also ensure that the desired feature branches
+are checked out in the local git repos.
+
 #### Manually loading your unbundled build of Prax into Chrome
 
 If you don't want to use the profile tool, you must manually load the extension.
@@ -75,23 +88,11 @@ If you don't want to use the profile tool, you must manually load the extension.
    - You may set a blank password.
    - You can pin the Prax extension button to your toolbar for quick access.
 
-#### Using local tarball packages
-
-If you're working on packages in another repository that you'd like to include
-in your development cycle, tooling exists here to support use of local `*.tgz`
-packages with `pnpm dev` for a fast watch-edit-rebuild cycle
-
-```sh
-pnpm add:tgz ../path/to/somewhere/specific.tgz ../path/to/some/repo/packages/*/some-filename-*.tgz`
-```
-
-Your other workspace is responsible for rebuilding and repacking the tarballs.
-
-This script also handles peer dependency conflict issues that can arise from use
-of local tarball packages.
-
 ## Security
 
 If you believe you've found a security-related issue with Penumbra,
 please disclose responsibly by contacting the Penumbra Labs team at
 security@penumbralabs.xyz.
+
+[web repo]: https://github.com/penumbra-zone/web
+[prax repo]: https://github.com/prax-wallet/prax
