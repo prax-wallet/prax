@@ -60,20 +60,13 @@ async function executeWorker(
 
   const actionType = transactionPlan.actions[actionPlanIndex]!.action.case!;
 
-  // temporary workaround (normalize action casing)
-  // TODO: remove after updating protos with proper naming convention
-  const normalizedCase =
-    actionType === 'actionLiquidityTournamentVotePlan'
-      ? 'actionLiquidityTournamentVote'
-      : actionType;
-
   // Build action according to specification in `TransactionPlan`
   const action = await penumbraWasmModule.buildActionParallel(
     transactionPlan,
     witness,
     fullViewingKey,
     actionPlanIndex,
-    keyFileNames[normalizedCase]?.href,
+    keyFileNames[actionType]?.href,
   );
 
   return action.toJson();

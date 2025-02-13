@@ -609,7 +609,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         if (incentivizedAssetMetadata && action.value.body.value) {
           // Save the vote, and optionally the reward, in the historical table indexed by epoch
           await this.indexedDb.saveLQTHistoricalVotes(
-            epochIndex.toString(),
+            epochIndex,
             transactionId,
             incentivizedAssetMetadata,
             action.value.body.value,
