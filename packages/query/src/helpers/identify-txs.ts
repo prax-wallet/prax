@@ -190,6 +190,7 @@ const getAddressIndexFromNote = (
  */
 const searchRelevant = async (
   tx: Transaction,
+  spentNullifiers: Map<Nullifier, SpendableNoteRecord | SwapRecord>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
   isControlledAddr: ViewServerInterface['isControlledAddress'],
 ): Promise<
@@ -199,18 +200,29 @@ const searchRelevant = async (
   let subaccount: AddressIndex | undefined;
   const recoveredSourceRecords: RecoveredSourceRecords = [];
 
-  // we need to identify which transaction is specifically relevant to the user. Previously,
-  // we checked known nullifiers and state commitments that we knew were ours. Recall that we maintain
+  // we need to identify which transaction is specifically relevant to the user. We check,
+  // known nullifiers and state commitments that we knew were ours. Recall that we maintain
   // a mapping between nullifiers and state commitments to their associated SpendableNoteRecords and SwapRecords.
   // We compared these known nullifiers and state commitments against those embedded in transaction actions,
   // then rehydrated the relevant transaction sources for the SNRs and returned the relevant transaction.
   //
-  // A slight optimization allows us to check only state commitments. Previously, we checked nullifiers
-  // in [spend, swapClaim] actions and state commitments in [output, swap, swapClaim] actions. However,
-  // if you inspect the intersection of these actions, you'll notice that spends will always be associated
-  // with outputs, and swapClaims contain both nullifiers and commitments. Therefore, we don't need to check nullifiers.
+  // We checked nullifiers in [spend, swapClaim] actions and state commitments in [output, swap, swapClaim] actions.
+  // However, if you inspect the intersection of these actions, you'll notice that spends will always be associated
+  // with outputs (expect for spend), and swapClaims contain both nullifiers and commitments. Therefore, we don't need
+  // to check nullifiers? But in fact, we need nullifiers because what if for instance we sent our entire balance to
+  // another external account, which will only produce spends (and not outputs) relevent to us.
   //
-  // We only need to rehydrate the transaction sources for SNRs, as the other source variants (LQT, ) are already populated.
+  // We only need to rehydrate the transaction sources for SNRs, as the other source variants (eg. LQT) are already populated.
+
+  // matches spend/swapClaim transaction actions with nullifiers
+  const txNullifiers = getNullifiersFromActions(tx);
+  for (const [spentNullifier, spendableNoteRecord] of spentNullifiers) {
+    const nullifier = txNullifiers.find(txNullifier => spentNullifier.equals(txNullifier));
+    if (nullifier) {
+      txId ??= await generateTxId(tx);
+      subaccount = getAddressIndexFromNote(spendableNoteRecord);
+    }
+  }
 
   // matches transaction actions [output, swap, swapClaim] with state commitments
   const txCommitments = getCommitmentsFromActions(tx);
@@ -233,16 +245,12 @@ const searchRelevant = async (
     }
   }
 
-  // todo: matches LQT actions with commitments and rehydrate transaction source with
-  // `CommitmentSource` variant.
-  // todo: account for duplicate rehydrated sources?
-
   // finds if either source or destination of an IBC relay action is controlled by the user
   if (hasRelevantIbcRelay(tx, isControlledAddr)) {
     txId ??= await generateTxId(tx);
   }
 
-  // If set, that means this tx is relevant and should be returned to the caller
+  // if set, that means this tx is relevant and should be returned to the caller
   if (txId) {
     return {
       relevantTx: { id: txId, data: tx, subaccount },
@@ -258,6 +266,7 @@ const searchRelevant = async (
  * Also returns records with recovered sources.
  */
 export const identifyTransactions = async (
+  spentNullifiers: Map<Nullifier, SpendableNoteRecord | SwapRecord>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
   blockTx: Transaction[],
   isControlledAddr: ViewServerInterface['isControlledAddress'],
@@ -268,7 +277,9 @@ export const identifyTransactions = async (
   const relevantTxs: RelevantTx[] = [];
   const recoveredSourceRecords: RecoveredSourceRecords = [];
 
-  const searchPromises = blockTx.map(tx => searchRelevant(tx, commitmentRecords, isControlledAddr));
+  const searchPromises = blockTx.map(tx =>
+    searchRelevant(tx, spentNullifiers, commitmentRecords, isControlledAddr),
+  );
   const results = await Promise.all(searchPromises);
 
   for (const result of results) {

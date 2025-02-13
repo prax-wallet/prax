@@ -315,6 +315,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       // Filter down to transactions & note records in block relevant to user
       const { relevantTxs, recoveredSourceRecords } = await identifyTransactions(
+        spentNullifiers,
         recordsByCommitment,
         blockTx,
         addr => this.viewServer.isControlledAddress(addr),
@@ -494,7 +495,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   // Nullifier is published in network when a note is spent or swap is claimed.
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
-    const spentNullifiers = new Set<Nullifier>();
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
     const readOperations = [];
     const writeOperations = [];
 
@@ -536,7 +537,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         writeOperations.push(writePromise);
       }
 
-      spentNullifiers.add(nullifier);
+      spentNullifiers.set(nullifier, record);
     }
 
     // Await all writes in parallel

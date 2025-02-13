@@ -219,9 +219,15 @@ describe('identifyTransactions', () => {
   test('returns empty arrays when no relevant transactions are found', async () => {
     const tx = new Transaction();
     const blockTx = [tx];
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
     const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-    const result = await identifyTransactions(commitmentRecords, blockTx, () => false);
+    const result = await identifyTransactions(
+      spentNullifiers,
+      commitmentRecords,
+      blockTx,
+      () => false,
+    );
 
     expect(result.relevantTxs).toEqual([]);
     expect(result.recoveredSourceRecords).toEqual([]);
@@ -265,9 +271,18 @@ describe('identifyTransactions', () => {
       }),
     });
 
+    const spendableNoteRecord = new SpendableNoteRecord({
+      addressIndex: MAIN_ACCOUNT,
+      source: BLANK_TX_SOURCE,
+    });
+
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>([
+      [nullifier, spendableNoteRecord],
+    ]);
     const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
     const result = await identifyTransactions(
+      spentNullifiers,
       commitmentRecords,
       [
         tx1, // relevant
@@ -332,9 +347,12 @@ describe('identifyTransactions', () => {
       [commitment, spendableNoteRecord], // Expecting match
       [new StateCommitment({ inner: new Uint8Array([1, 6, 9]) }), new SpendableNoteRecord()], // not expecting match
     ]);
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
 
+    const spentNullifiersBeforeSize = spentNullifiers.size;
     const commitmentRecordsBeforeSize = commitmentRecords.size;
     const result = await identifyTransactions(
+      spentNullifiers,
       commitmentRecords,
       [
         tx1, // relevant
@@ -352,6 +370,7 @@ describe('identifyTransactions', () => {
     expect(result.recoveredSourceRecords[0]!.source?.equals(BLANK_TX_SOURCE)).toEqual(false);
 
     // Expect inputs where not mutated
+    expect(spentNullifiersBeforeSize).toEqual(spentNullifiers.size);
     expect(commitmentRecordsBeforeSize).toEqual(commitmentRecords.size);
   });
 
@@ -375,9 +394,15 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [txA, txB];
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(commitmentRecords, blockTx, isControlledByAddress);
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        isControlledByAddress,
+      );
 
       expect(result.relevantTxs.length).toBe(1);
       expect(result.relevantTxs[0]?.data.equals(txA)).toBeTruthy();
@@ -396,9 +421,15 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [txA, txB];
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(commitmentRecords, blockTx, isControlledByAddress);
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        isControlledByAddress,
+      );
 
       expect(result.relevantTxs.length).toBe(1);
       expect(result.relevantTxs[0]?.data.equals(txA)).toBeTruthy();
@@ -417,9 +448,15 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [txA, txB];
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(commitmentRecords, blockTx, isControlledByAddress);
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        isControlledByAddress,
+      );
 
       expect(result.relevantTxs.length).toBe(1);
       expect(result.relevantTxs[0]?.data.equals(txA)).toBeTruthy();
@@ -437,9 +474,15 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [tx];
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(commitmentRecords, blockTx, isControlledByAddress);
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        isControlledByAddress,
+      );
 
       expect(result.relevantTxs.length).toBe(0);
     });
@@ -472,9 +515,15 @@ describe('identifyTransactions', () => {
         },
       });
       const blockTx = [tx];
+      const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
       const commitmentRecords = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
 
-      const result = await identifyTransactions(commitmentRecords, blockTx, isControlledByAddress);
+      const result = await identifyTransactions(
+        spentNullifiers,
+        commitmentRecords,
+        blockTx,
+        isControlledByAddress,
+      );
 
       expect(result.relevantTxs.length).toBe(0);
     });
