@@ -315,7 +315,6 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       // Filter down to transactions & note records in block relevant to user
       const { relevantTxs, recoveredSourceRecords } = await identifyTransactions(
-        spentNullifiers,
         recordsByCommitment,
         blockTx,
         addr => this.viewServer.isControlledAddress(addr),
@@ -325,7 +324,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // TODO: this is the second time we save these records, after "saveScanResult"
       await this.saveRecoveredCommitmentSources(recoveredSourceRecords);
 
-      await this.processTransactions(relevantTxs);
+      await this.processTransactions(relevantTxs, compactBlock.epochIndex);
 
       // at this point txinfo can be generated and saved. this will resolve
       // pending broadcasts, and populate the transaction list.
@@ -495,7 +494,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   // Nullifier is published in network when a note is spent or swap is claimed.
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
-    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
+    const spentNullifiers = new Set<Nullifier>();
     const readOperations = [];
     const writeOperations = [];
 
@@ -537,7 +536,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         writeOperations.push(writePromise);
       }
 
-      spentNullifiers.set(nullifier, record);
+      spentNullifiers.add(nullifier);
     }
 
     // Await all writes in parallel
@@ -550,14 +549,13 @@ export class BlockProcessor implements BlockProcessorInterface {
    * Identify various pieces of data from the transaction that we need to save,
    * such as metadata, liquidity positions, etc.
    */
-  private async processTransactions(txs: RelevantTx[]) {
+  private async processTransactions(txs: RelevantTx[], epochIndex: bigint) {
     for (const { id, data, subaccount } of txs) {
       for (const { action } of data.body?.actions ?? []) {
         await Promise.all([
           this.identifyAuctionNfts(action),
           this.identifyLpNftPositions(action, subaccount),
-          // todo, differentiate between a vote and reward (LQT commitment source)
-          this.identifyLiquiditTournamentVotes(action, id),
+          this.identifyLiquidityTournamentVotes(action, id, epochIndex),
         ]);
       }
     }
@@ -582,12 +580,43 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  private async identifyLiquiditTournamentVotes(
+  /**
+   * Identify liquidity tournament votes and rewards.
+   */
+  private async identifyLiquidityTournamentVotes(
     action: Action['action'],
-    _transactionId: TransactionId,
+    transactionId: TransactionId,
+    epochIndex: bigint,
   ) {
     if (action.case === 'actionLiquidityTournamentVote') {
-      // todo: save vote to table.
+      const incentivizedTokenAssetId = new AssetId({
+        altBaseDenom: action.value.body?.incentivized?.denom,
+      });
+
+      const incentivizedAssetMetadata =
+        await this.indexedDb.getAssetsMetadata(incentivizedTokenAssetId);
+
+      // Look up the corresponding SNR using the nullifier from the vote action.
+      // Then check if the SNR's source is from the liquidity tournament, indicating a reward.
+      if (action.value.body?.nullifier) {
+        const spendableNoteRecord = await this.indexedDb.getSpendableNoteByNullifier(
+          action.value.body.nullifier,
+        );
+
+        const reward =
+          spendableNoteRecord?.source?.source.case === 'lqt' ? spendableNoteRecord : undefined;
+
+        if (incentivizedAssetMetadata && action.value.body.value) {
+          // Save the vote, and optionally the reward, in the historical table indexed by epoch
+          await this.indexedDb.saveLQTHistoricalVotes(
+            epochIndex.toString(),
+            transactionId,
+            incentivizedAssetMetadata,
+            action.value.body.value,
+            reward?.note?.value?.amount,
+          );
+        }
+      }
     }
   }
 

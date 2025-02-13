@@ -15,6 +15,8 @@ export class FundingQuerier implements FundingQuerierInterface {
     this.client = createClient(grpcEndpoint, FundingService);
   }
 
+  // Checks if a given nullifier has already been used in the current epoch of the liquidity tournament,
+  // indicating that the delegation notes have already been used for voting.
   async lqtCheckNullifier(
     epochIndex: bigint,
     nullifier: Nullifier,

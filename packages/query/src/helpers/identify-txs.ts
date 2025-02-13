@@ -22,13 +22,6 @@ export const BLANK_TX_SOURCE = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
 
-export const BLANK_VOTING_SOURCE = new CommitmentSource({
-  source: {
-    case: 'lqt',
-    value: { epoch: 0n, txHash: new TransactionId({ inner: new Uint8Array() }) },
-  },
-});
-
 /**
  * Identifies if a tx has a relay action of which the receiver is the user.
  *
@@ -197,60 +190,35 @@ const getAddressIndexFromNote = (
  */
 const searchRelevant = async (
   tx: Transaction,
-  spentNullifiers: Map<Nullifier, SpendableNoteRecord | SwapRecord>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
   isControlledAddr: ViewServerInterface['isControlledAddress'],
 ): Promise<
   { relevantTx: RelevantTx; recoveredSourceRecords: RecoveredSourceRecords } | undefined
 > => {
-  let txId: TransactionId | undefined; // If set, that means this tx is relevant and should be returned to the caller
+  let txId: TransactionId | undefined;
   let subaccount: AddressIndex | undefined;
   const recoveredSourceRecords: RecoveredSourceRecords = [];
 
-  // matches spend/swapClaim transaction actions with nullifiers
-  const txNullifiers = getNullifiersFromActions(tx);
-  for (const [spentNullifier, spendableNoteRecord] of spentNullifiers) {
-    const nullifier = txNullifiers.find(txNullifier => spentNullifier.equals(txNullifier));
-    if (nullifier) {
-      txId ??= await generateTxId(tx);
-      subaccount = getAddressIndexFromNote(spendableNoteRecord);
-    }
-  }
+  // we need to identify which transaction is specifically relevant to the user. Previously,
+  // we checked known nullifiers and state commitments that we knew were ours. Recall that we maintain
+  // a mapping between nullifiers and state commitments to their associated SpendableNoteRecords and SwapRecords.
+  // We compared these known nullifiers and state commitments against those embedded in transaction actions,
+  // then rehydrated the relevant transaction sources for the SNRs and returned the relevant transaction.
+  //
+  // A slight optimization allows us to check only state commitments. Previously, we checked nullifiers
+  // in [spend, swapClaim] actions and state commitments in [output, swap, swapClaim] actions. However,
+  // if you inspect the intersection of these actions, you'll notice that spends will always be associated
+  // with outputs, and swapClaims contain both nullifiers and commitments. Therefore, we don't need to check nullifiers.
+  //
+  // We only need to rehydrate the transaction sources for SNRs, as the other source variants (LQT, ) are already populated.
 
-  // matches spend/swapClaim transaction actions with nullifiers
-  const votingNullifiers = getVotingNullifiersFromActions(tx);
-  for (const [spentNullifier, spendableNoteRecord] of spentNullifiers) {
-    const nullifier = votingNullifiers.find(votingNullifiers =>
-      spentNullifier.equals(votingNullifiers),
-    );
-    if (nullifier) {
-      txId ??= await generateTxId(tx);
-      subaccount = getAddressIndexFromNote(spendableNoteRecord);
-    }
-
-    // Blank sources can be recovered by associating them with the transaction
-    if (BLANK_VOTING_SOURCE.equals(spendableNoteRecord.source)) {
-      const recovered = spendableNoteRecord.clone();
-      if (spendableNoteRecord instanceof SpendableNoteRecord) {
-        // todo: request epoch index from block height
-        recovered.source = new CommitmentSource({
-          source: {
-            case: 'lqt',
-            value: {
-              epoch: spendableNoteRecord.heightCreated,
-              txHash: new TransactionId({ inner: txId?.inner }),
-            },
-          },
-        });
-        recoveredSourceRecords.push(recovered);
-      }
-    }
-  }
-
-  // matches output/swap/swapClaim transaction actions with commitments
+  // matches transaction actions [output, swap, swapClaim] with state commitments
   const txCommitments = getCommitmentsFromActions(tx);
   for (const [stateCommitment, spendableNoteRecord] of commitmentRecords) {
     if (txCommitments.some(txCommitment => stateCommitment.equals(txCommitment))) {
+      // the nullish coalescing operator allows us to skip recomputation if the transaction
+      // hash for the corresponding spendableNoteRecord has already been computed, as
+      // all spendableNoteRecord's checked here are associated with the same transaction.
       txId ??= await generateTxId(tx);
       subaccount = getAddressIndexFromNote(spendableNoteRecord);
 
@@ -274,6 +242,7 @@ const searchRelevant = async (
     txId ??= await generateTxId(tx);
   }
 
+  // If set, that means this tx is relevant and should be returned to the caller
   if (txId) {
     return {
       relevantTx: { id: txId, data: tx, subaccount },
@@ -289,7 +258,6 @@ const searchRelevant = async (
  * Also returns records with recovered sources.
  */
 export const identifyTransactions = async (
-  spentNullifiers: Map<Nullifier, SpendableNoteRecord | SwapRecord>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
   blockTx: Transaction[],
   isControlledAddr: ViewServerInterface['isControlledAddress'],
@@ -300,9 +268,7 @@ export const identifyTransactions = async (
   const relevantTxs: RelevantTx[] = [];
   const recoveredSourceRecords: RecoveredSourceRecords = [];
 
-  const searchPromises = blockTx.map(tx =>
-    searchRelevant(tx, spentNullifiers, commitmentRecords, isControlledAddr),
-  );
+  const searchPromises = blockTx.map(tx => searchRelevant(tx, commitmentRecords, isControlledAddr));
   const results = await Promise.all(searchPromises);
 
   for (const result of results) {
