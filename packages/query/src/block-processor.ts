@@ -1,4 +1,4 @@
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetId, Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AuctionId } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import {
   PositionState,
@@ -6,7 +6,10 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { Action } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  Action,
+  Transaction,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
@@ -16,7 +19,7 @@ import {
   getExchangeRateFromValidatorInfoResponse,
   getIdentityKeyFromValidatorInfoResponse,
 } from '@penumbra-zone/getters/validator-info-response';
-import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
+import { addAmounts, toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/block-processor';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
@@ -41,6 +44,7 @@ import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/co
 import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -325,7 +329,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // TODO: this is the second time we save these records, after "saveScanResult"
       await this.saveRecoveredCommitmentSources(recoveredSourceRecords);
 
-      await this.processTransactions(relevantTxs, compactBlock.epochIndex);
+      await this.processTransactions(relevantTxs, recordsByCommitment, compactBlock.epochIndex);
 
       // at this point txinfo can be generated and saved. this will resolve
       // pending broadcasts, and populate the transaction list.
@@ -548,18 +552,32 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   /**
    * Identify various pieces of data from the transaction that we need to save,
-   * such as metadata, liquidity positions, etc.
+   * such as metadata, liquidity positions, liquidity tournament votes and rewards, etc.
    */
-  private async processTransactions(txs: RelevantTx[], epochIndex: bigint) {
-    for (const { id, data, subaccount } of txs) {
+  private async processTransactions(
+    txs: RelevantTx[],
+    recordsByCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
+    epochIndex: bigint,
+  ) {
+    // Process individual actions in each relevant transaction
+    for (const { data, subaccount } of txs) {
       for (const { action } of data.body?.actions ?? []) {
         await Promise.all([
           this.identifyAuctionNfts(action),
           this.identifyLpNftPositions(action, subaccount),
-          this.identifyLiquidityTournamentVotes(action, id, epochIndex),
         ]);
       }
     }
+
+    // For certain actions embedded in the transaction, it's preferable to process the transaction,
+    // for instance aggregating voting weight across multiple liquidity tournament (LQT) voting actions
+    // into a single vote before saving it to the database.
+    for (const { id, data } of txs) {
+      await Promise.all([this.identifyLiquidityTournamentVotes(data, id, epochIndex)]);
+    }
+
+    // Identify liquidity tournament rewards associated with votes in the current epoch.
+    await this.identifyLiquidityTournamentRewards(recordsByCommitment, epochIndex);
   }
 
   /**
@@ -582,39 +600,81 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   /**
-   * Identify liquidity tournament votes and rewards.
+   * Identify liquidity tournament votes.
    */
   private async identifyLiquidityTournamentVotes(
-    action: Action['action'],
+    transaction: Transaction,
     transactionId: TransactionId,
     epochIndex: bigint,
   ) {
-    if (action.case === 'actionLiquidityTournamentVote') {
-      const incentivizedTokenAssetId = new AssetId({
-        altBaseDenom: action.value.body?.incentivized?.denom,
+    let totalVoteWeight: Amount | undefined = undefined;
+    let incentivizedAssetMetadata: Metadata | undefined = undefined;
+
+    for (const { action } of transaction.body?.actions ?? []) {
+      let currentVoteWeight: Amount | undefined;
+
+      if (action.case === 'actionLiquidityTournamentVote' && action.value.body?.value) {
+        currentVoteWeight = action.value.body.value.amount;
+
+        // Aggregate the voting weight from all delegation notes in memory
+        if (!totalVoteWeight) {
+          const incentivizedTokenAssetId = new AssetId({
+            altBaseDenom: action.value.body.incentivized?.denom,
+          });
+
+          incentivizedAssetMetadata =
+            await this.indexedDb.getAssetsMetadata(incentivizedTokenAssetId);
+
+          totalVoteWeight = new Amount({ ...currentVoteWeight });
+        } else {
+          if (currentVoteWeight) {
+            totalVoteWeight = new Amount({ ...addAmounts(totalVoteWeight, currentVoteWeight) });
+          }
+        }
+      }
+    }
+
+    // Save the aggregated vote in the historical voting table, indexed by epoch
+    if (totalVoteWeight && incentivizedAssetMetadata) {
+      const totalVoteWeightValue = new Value({
+        amount: totalVoteWeight,
+        assetId: this.stakingAssetId,
       });
 
-      const incentivizedAssetMetadata =
-        await this.indexedDb.getAssetsMetadata(incentivizedTokenAssetId);
+      await this.indexedDb.saveLQTHistoricalVote(
+        epochIndex,
+        transactionId,
+        incentivizedAssetMetadata,
+        totalVoteWeightValue,
+        undefined, // initially, the voting reward will be empty
+      );
+    }
+  }
 
-      // Look up the corresponding SNR using the nullifier from the vote action.
-      // Then check if the SNR's source is from the liquidity tournament, indicating a reward.
-      if (action.value.body?.nullifier) {
-        const spendableNoteRecord = await this.indexedDb.getSpendableNoteByNullifier(
-          action.value.body.nullifier,
-        );
+  /**
+   * Identify liquidity tournament rewards.
+   */
+  private async identifyLiquidityTournamentRewards(
+    recordsByCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
+    epochIndex: bigint,
+  ) {
+    // Check if the SNR's source is from the liquidity tournament, indicating a reward,
+    // and save it for the existing table entry associated with the epoch
+    for (const [, spendableNoteRecord] of recordsByCommitment) {
+      if (spendableNoteRecord.source?.source.case === 'lqt' && 'note' in spendableNoteRecord) {
+        const rewardValue = spendableNoteRecord.note?.value;
 
-        const reward =
-          spendableNoteRecord?.source?.source.case === 'lqt' ? spendableNoteRecord : undefined;
+        // Retrieve the existing liquidity tournament vote for the specified epoch
+        const existingVote = await this.indexedDb.getLQTHistoricalVote(epochIndex);
 
-        if (incentivizedAssetMetadata && action.value.body.value) {
-          // Save the vote, and optionally the reward, in the historical table indexed by epoch
-          await this.indexedDb.saveLQTHistoricalVotes(
+        //  Update the received reward for the corresponding vote
+        if (existingVote && rewardValue) {
+          await this.indexedDb.saveLQTHistoricalVote(
             epochIndex,
-            transactionId,
-            incentivizedAssetMetadata,
-            action.value.body.value,
-            reward?.note?.value?.amount,
+            existingVote.TransactionId,
+            existingVote.AssetMetadata,
+            existingVote.VoteValue,
+            rewardValue.amount,
           );
         }
       }
