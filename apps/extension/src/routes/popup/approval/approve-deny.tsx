@@ -5,14 +5,13 @@ export const ApproveDeny = ({
   approve,
   deny,
   ignore,
-  wait = 0,
 }: {
   approve: () => void;
   deny: () => void;
   ignore?: () => void;
   wait?: number;
 }) => {
-  const count = useWindowCountdown(wait);
+  const count = useWindowCountdown();
 
   return (
     <div
@@ -28,9 +27,9 @@ export const ApproveDeny = ({
         className='w-1/2 py-3.5 text-base'
         size='lg'
         onClick={approve}
-        disabled={!!count}
+        disabled={count > 0}
       >
-        Approve {count !== 0 && `(${count})`}
+        Approve {count !== 0}
       </Button>
       <Button
         className='w-1/2 py-3.5 text-base hover:bg-destructive/90'
