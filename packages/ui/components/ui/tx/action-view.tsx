@@ -17,6 +17,7 @@ import { ValidatorVoteComponent } from './actions-views/validator-vote';
 import { PositionOpenComponent } from './actions-views/position-open';
 import { PositionCloseComponent } from './actions-views/position-close';
 import { PositionWithdrawComponent } from './actions-views/position-withdraw';
+import { LiquidityTournamentVoteComponent } from './actions-views/liquidity-tournament-vote';
 
 type Case = Exclude<ActionView['actionView']['case'], undefined>;
 
@@ -146,7 +147,7 @@ export const ActionViewComponent = ({
       return <UnimplementedView label='Community Deposit' />;
 
     case 'actionLiquidityTournamentVote':
-      return <UnimplementedView label='Liquidity Tournament Vote' />;
+      return <LiquidityTournamentVoteComponent value={actionView.value} />;
 
     default:
       return <UnimplementedView label={getLabelForActionCase(actionView.case)} />;
