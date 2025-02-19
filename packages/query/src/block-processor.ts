@@ -655,6 +655,7 @@ export class BlockProcessor implements BlockProcessorInterface {
           incentivizedAssetMetadata,
           totalVoteWeightValue,
           undefined,
+          undefined,
         );
       }
     }
@@ -687,6 +688,7 @@ export class BlockProcessor implements BlockProcessorInterface {
               existingVote.AssetMetadata,
               existingVote.VoteValue,
               rewardValue.amount,
+              existingVote.id,
             );
           }
         }
