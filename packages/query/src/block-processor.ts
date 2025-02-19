@@ -607,47 +607,56 @@ export class BlockProcessor implements BlockProcessorInterface {
     transactionId: TransactionId,
     epochIndex: bigint,
   ) {
-    let totalVoteWeight: Amount | undefined = undefined;
+    const totalVoteWeightByAssetId = new Map<AssetId, Amount>();
     let incentivizedAssetMetadata: Metadata | undefined = undefined;
 
     for (const { action } of transaction.body?.actions ?? []) {
-      let currentVoteWeight: Amount | undefined;
-
       if (action.case === 'actionLiquidityTournamentVote' && action.value.body?.value) {
-        currentVoteWeight = action.value.body.value.amount;
+        const currentVoteAmount = action.value.body.value.amount;
+        const currentVoteAssetId = action.value.body.value.assetId;
 
-        // Aggregate the voting weight from all delegation notes in memory
-        if (!totalVoteWeight) {
+        if (!currentVoteAmount || !currentVoteAssetId) {
+          continue;
+        }
+
+        // Incentivized asset the votes are associated with.
+        if (!incentivizedAssetMetadata) {
           const incentivizedTokenAssetId = new AssetId({
             altBaseDenom: action.value.body.incentivized?.denom,
           });
 
           incentivizedAssetMetadata =
             await this.indexedDb.getAssetsMetadata(incentivizedTokenAssetId);
-
-          totalVoteWeight = new Amount({ ...currentVoteWeight });
-        } else {
-          if (currentVoteWeight) {
-            totalVoteWeight = new Amount({ ...addAmounts(totalVoteWeight, currentVoteWeight) });
-          }
         }
+
+        // Aggregate voting weight for each delegation token's asset ID.
+        const currentVoteTotalByAssetId =
+          totalVoteWeightByAssetId.get(currentVoteAssetId) ?? new Amount({ lo: 0n, hi: 0n });
+        const newVoteTotal = new Amount({
+          ...addAmounts(currentVoteTotalByAssetId, currentVoteAmount),
+        });
+        totalVoteWeightByAssetId.set(currentVoteAssetId, newVoteTotal);
       }
     }
 
-    // Save the aggregated vote in the historical voting table, indexed by epoch
-    if (totalVoteWeight && incentivizedAssetMetadata) {
+    // Save the aggregated vote for each assetId in the historical voting table, indexed by epoch.
+    for (const [delegationAssetId, voteWeight] of totalVoteWeightByAssetId.entries()) {
       const totalVoteWeightValue = new Value({
-        amount: totalVoteWeight,
-        assetId: this.stakingAssetId,
+        amount: voteWeight,
+        assetId: delegationAssetId,
       });
 
-      await this.indexedDb.saveLQTHistoricalVote(
-        epochIndex,
-        transactionId,
-        incentivizedAssetMetadata,
-        totalVoteWeightValue,
-        undefined, // initially, the voting reward will be empty
-      );
+      // One DB save per delegation asset ID, potentially spanning multiple actions within the same transaction.
+      // Initially, the voting reward will be empty.
+      if (incentivizedAssetMetadata) {
+        await this.indexedDb.saveLQTHistoricalVote(
+          epochIndex,
+          transactionId,
+          incentivizedAssetMetadata,
+          totalVoteWeightValue,
+          undefined,
+        );
+      }
     }
   }
 
@@ -659,23 +668,27 @@ export class BlockProcessor implements BlockProcessorInterface {
     epochIndex: bigint,
   ) {
     // Check if the SNR's source is from the liquidity tournament, indicating a reward,
-    // and save it for the existing table entry associated with the epoch
+    // and save it for the existing table entry associated with the epoch.
     for (const [, spendableNoteRecord] of recordsByCommitment) {
       if (spendableNoteRecord.source?.source.case === 'lqt' && 'note' in spendableNoteRecord) {
         const rewardValue = spendableNoteRecord.note?.value;
 
-        // Retrieve the existing liquidity tournament vote for the specified epoch
-        const existingVote = await this.indexedDb.getLQTHistoricalVote(epochIndex);
+        // Retrieve the existing liquidity tournament votes for the specified epoch.
+        const existingVotes = await this.indexedDb.getLQTHistoricalVotes(epochIndex);
 
-        //  Update the received reward for the corresponding vote
-        if (existingVote && rewardValue) {
-          await this.indexedDb.saveLQTHistoricalVote(
-            epochIndex,
-            existingVote.TransactionId,
-            existingVote.AssetMetadata,
-            existingVote.VoteValue,
-            rewardValue.amount,
-          );
+        // Update the received reward for the each corresponding vote in the epoch.
+        // Note: Each vote will have an associated reward; however, these rewards
+        // are not cumulative—rather, the reward applies once for all votes.
+        if (rewardValue) {
+          for (const existingVote of existingVotes) {
+            await this.indexedDb.saveLQTHistoricalVote(
+              epochIndex,
+              existingVote.TransactionId,
+              existingVote.AssetMetadata,
+              existingVote.VoteValue,
+              rewardValue.amount,
+            );
+          }
         }
       }
     }
