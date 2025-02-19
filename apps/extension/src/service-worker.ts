@@ -19,6 +19,7 @@ import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/c
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
+import { assertValidSessionPort } from './senders/session';
 
 // context
 import { approverCtx } from '@penumbra-zone/services/ctx/approver';
@@ -27,19 +28,19 @@ import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
 import { skCtx } from '@penumbra-zone/services/ctx/spend-key';
 import { approveTransaction } from './approve-transaction';
 import { getFullViewingKey } from './ctx/full-viewing-key';
-import { getWalletId } from './ctx/wallet-id';
 import { getSpendKey } from './ctx/spend-key';
+import { getWalletId } from './ctx/wallet-id';
 
 // context clients
-import { StakeService, CustodyService } from '@penumbra-zone/protobuf';
+import { CustodyService, StakeService } from '@penumbra-zone/protobuf';
 import { custodyClientCtx } from '@penumbra-zone/services/ctx/custody-client';
 import { stakeClientCtx } from '@penumbra-zone/services/ctx/stake-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 import { internalTransportOptions } from './transport-options';
 
 // idb, querier, block processor
-import { startWalletServices } from './wallet-services';
 import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
+import { startWalletServices } from './wallet-services';
 
 import { backOff } from 'exponential-backoff';
 
@@ -95,7 +96,7 @@ const handler = await backOff(() => initHandler(), {
   },
 });
 
-CRSessionManager.init(PRAX, handler);
+CRSessionManager.init(PRAX, handler, assertValidSessionPort);
 
 // https://developer.chrome.com/docs/extensions/reference/api/alarms
 void chrome.alarms.create('blockSync', {
