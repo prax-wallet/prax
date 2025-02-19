@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/chrome-manifest",
   "manifest_version": 3,
   "name": "Prax wallet",
   "version": "16.0.0",
@@ -17,8 +18,9 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://localhost/*"],
-      "js": ["injected-connection-port.js", "injected-request-listener.js"],
-      "run_at": "document_start"
+      "js": ["injected-listeners.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED"
     },
     {
       "matches": ["https://*/*", "http://localhost/*"],
