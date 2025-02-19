@@ -35,13 +35,18 @@ export const startWalletServices = async () => {
 };
 
 /**
- * Get the chain id from local storage, or the rpc endpoint if no chain id is in
- * local storage.
+ * Get chainId from the rpc endpoint, or fall back to chainId from storage.
+ *
+ * It's possible that the remote endpoint may suddenly serve a new chainId.
+ * @see https://github.com/prax-wallet/prax/pull/65
  */
 const getChainId = async (baseUrl: string) => {
+  const serviceClient = createPromiseClient(AppService, createGrpcWebTransport({ baseUrl }));
   const params =
-    (await createPromiseClient(AppService, createGrpcWebTransport({ baseUrl })).appParameters({}))
-      .appParameters ??
+    (await serviceClient.appParameters({}).then(
+      ({ appParameters }) => appParameters,
+      () => undefined,
+    )) ??
     (await localExtStorage
       .get('params')
       .then(jsonParams => (jsonParams ? AppParameters.fromJsonString(jsonParams) : undefined)));
