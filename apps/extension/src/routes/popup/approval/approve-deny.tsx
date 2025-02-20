@@ -1,4 +1,5 @@
 import { Button } from '@repo/ui/components/ui/button';
+import { useWindowCountdown } from './use-window-countdown';
 
 export const ApproveDeny = ({
   approve,
@@ -10,6 +11,8 @@ export const ApproveDeny = ({
   ignore?: () => void;
   wait?: number;
 }) => {
+  const count = useWindowCountdown();
+
   return (
     <div
       className='flex flex-row justify-between gap-4 rounded-md p-4 shadow-md'
@@ -19,7 +22,13 @@ export const ApproveDeny = ({
         paddingTop: '28px',
       }}
     >
-      <Button variant='gradient' className='w-1/2 py-3.5 text-base' size='lg' onClick={approve}>
+      <Button
+        variant='gradient'
+        className='w-1/2 py-3.5 text-base'
+        size='lg'
+        onClick={approve}
+        disabled={count > 0}
+      >
         Approve
       </Button>
       <Button
