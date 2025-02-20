@@ -101,7 +101,7 @@ export const OriginApproval = () => {
           </div>
         </div>
         <div className='flex grow flex-col justify-end'>
-          <ApproveDeny approve={approve} deny={deny} ignore={lastRequest && ignore} wait={3} />
+          <ApproveDeny approve={approve} deny={deny} ignore={lastRequest && ignore} />
         </div>
       </div>
     </FadeTransition>
