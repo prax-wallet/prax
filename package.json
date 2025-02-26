@@ -41,7 +41,7 @@
     "@storybook/react-vite": "8.2.9",
     "@turbo/gen": "^2.3.3",
     "@types/node": "^22.10.2",
-    "@vitest/browser": "^2.1.8",
+    "@vitest/browser": "^1.6.0",
     "jsdom": "^25.0.1",
     "playwright": "^1.49.1",
     "prettier": "^3.4.2",
