@@ -70,7 +70,7 @@ export default ({
             keepProfileChanges: Boolean(CHROMIUM_PROFILE),
             profileCreateIfMissing: Boolean(CHROMIUM_PROFILE),
             sourceDir: options.output.path,
-            startUrl: 'https://localhost:5173/',
+            startUrl: 'http://localhost:5173/',
           });
           this.webExtRun.registerCleanup(() => (this.webExtRun = undefined));
         },
