@@ -2,6 +2,7 @@ import { OriginApproval, PopupType } from '../message/popup';
 import { popup } from '../popup';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { getOriginRecord, upsertOriginRecord } from '../storage/origin';
+import { ValidSender } from './validate';
 
 /**
  * Obtain approval status from storage, as boolean.
@@ -9,7 +10,7 @@ import { getOriginRecord, upsertOriginRecord } from '../storage/origin';
  * @param validSender A sender that has already been validated
  * @returns true if an existing record indicates this sender is approved
  */
-export const alreadyApprovedSender = async (validSender: { origin: string }): Promise<boolean> =>
+export const alreadyApprovedSender = async (validSender: ValidSender): Promise<boolean> =>
   getOriginRecord(validSender.origin).then(r => r?.choice === UserChoice.Approved);
 
 /**
