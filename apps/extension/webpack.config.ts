@@ -94,7 +94,7 @@ export default ({
               // --ignore-scripts because syncpack doesn't like to run under
               // webpack for some reason. watch out for post-install scripts that
               // dependencies might need.
-              ['-w', 'install', '--ignore-scripts'],
+              ['-w', 'install', '--ignore-scripts', '--offline'],
               { stdio: 'inherit' },
             );
             pnpmInstall.on('exit', code => {
