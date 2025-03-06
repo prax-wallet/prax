@@ -11,13 +11,17 @@ const requestFailureMessage = (failure?: unknown): PraxMessage<PenumbraRequestFa
     : { [PRAX]: PenumbraRequestFailure.BadResponse };
 
 const praxRequest = async (req: PraxConnection.Connect | PraxConnection.Disconnect) => {
-  const res = await chrome.runtime
-    .sendMessage<
+  try {
+    return await chrome.runtime.sendMessage<
       PraxConnection.Connect | PraxConnection.Disconnect,
       null | PenumbraRequestFailure
-    >(req)
-    .catch(() => PenumbraRequestFailure.NotHandled);
-  return res;
+    >(req);
+  } catch (e) {
+    if (globalThis.__DEV__) {
+      console.error('praxRequest', e);
+    }
+    return PenumbraRequestFailure.NotHandled;
+  }
 };
 
 const praxDocumentListener = (ev: MessageEvent<unknown>) => {
@@ -58,11 +62,14 @@ const praxExtensionListener = (
   if (sender.id === PRAX && typeof req === 'string' && req in PraxConnection) {
     switch (req as PraxConnection) {
       case PraxConnection.Init: {
+        console.warn('Init connection', sender.origin);
         const port = CRSessionClient.init(PRAX);
         window.postMessage(portMessage(port), '/', [port]);
         break;
       }
       case PraxConnection.End: {
+        console.warn('Ending connection', sender.origin);
+        CRSessionClient.end(PRAX);
         window.postMessage(endMessage, '/');
         break;
       }

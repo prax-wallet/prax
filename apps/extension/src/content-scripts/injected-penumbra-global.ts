@@ -78,16 +78,19 @@ class PraxInjection {
     if (PraxInjection.singleton) {
       return PraxInjection.singleton;
     }
+
     void this.listenPortMessage();
     window.postMessage(initMessage, '/');
   }
 
   private setConnected() {
+    window.addEventListener('message', this.ambientEndListener);
     this.presentState = PenumbraState.Connected;
     this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private setDisconnected() {
+    window.removeEventListener('message', this.ambientEndListener);
     this.presentState = PenumbraState.Disconnected;
     this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
@@ -128,17 +131,19 @@ class PraxInjection {
       }
     };
 
+    window.addEventListener('message', listener);
+
     void connection.promise
       .then(() => this.setConnected())
       .catch(() => this.setDisconnected())
       .finally(() => window.removeEventListener('message', listener));
 
-    window.addEventListener('message', listener);
-
     return connection.promise;
   }
 
   private listenEndMessage() {
+    window.removeEventListener('message', this.ambientEndListener);
+
     this.setDisconnected();
 
     const disconnection = Promise.withResolvers<void>();
@@ -155,12 +160,20 @@ class PraxInjection {
       }
     };
 
-    void disconnection.promise.finally(() => window.removeEventListener('message', listener));
-
     window.addEventListener('message', listener);
+
+    void disconnection.promise.finally(() => window.removeEventListener('message', listener));
 
     return disconnection.promise;
   }
+
+  private ambientEndListener = (msg: MessageEvent<unknown>) => {
+    if (msg.origin === window.origin) {
+      if (isPraxEndMessageEvent(msg)) {
+        this.setDisconnected();
+      }
+    }
+  };
 }
 
 // inject prax
