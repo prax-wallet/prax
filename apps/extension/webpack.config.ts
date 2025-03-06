@@ -228,7 +228,7 @@ export default ({
       // watch tarballs for changes
       WEBPACK_WATCH && new WatchExternalFilesPlugin({ files: localPackages }),
       WEBPACK_WATCH && PnpmInstallPlugin,
-      CHROMIUM_PROFILE && WebExtReloadPlugin,
+      WEBPACK_WATCH && CHROMIUM_PROFILE && WebExtReloadPlugin,
     ],
     experiments: {
       asyncWebAssembly: true,
