@@ -105,8 +105,8 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
       '@penumbra-zone/perspective':
-        specifier: 48.0.0
-        version: 48.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@41.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))))
+        specifier: 50.0.0
+        version: 50.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@41.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/protobuf':
         specifier: 8.0.0
         version: 8.0.0(@bufbuild/protobuf@1.10.0)
@@ -271,8 +271,8 @@ importers:
         specifier: 4.2.1
         version: 4.2.1
       '@penumbra-zone/perspective':
-        specifier: 48.0.0
-        version: 48.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@41.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))))
+        specifier: 50.0.0
+        version: 50.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@41.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/protobuf':
         specifier: 8.0.0
         version: 8.0.0(@bufbuild/protobuf@1.10.0)
@@ -384,8 +384,8 @@ importers:
         specifier: 24.0.0
         version: 24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/perspective':
-        specifier: 48.0.0
-        version: 48.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@41.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))))
+        specifier: 50.0.0
+        version: 50.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@41.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))))
       '@penumbra-zone/protobuf':
         specifier: 8.0.0
         version: 8.0.0(@bufbuild/protobuf@1.10.0)
@@ -1638,14 +1638,14 @@ packages:
     resolution: {integrity: sha512-1K+/8bh53Kse4u/I1afUQuRrTnZhLLA6JWIV+mFiXX8An2J2CGIVDjp1mSJkUSzFjFDUzUX052kvYHCtZYK3QA==}
     hasBin: true
 
-  '@penumbra-zone/perspective@48.0.0':
-    resolution: {integrity: sha512-k1Kc+cWbbXG9aDcE7FsaQqb5qOdk9bf9pIDUJ8U1y+CDPQsSpQlzOjGdrCaUXVYFsQ5M+zfbSSY7gh2kdQWf9w==}
+  '@penumbra-zone/perspective@50.0.0':
+    resolution: {integrity: sha512-x4PcxzkLGJpX8dAFHXRWqJ8of6qHmJ+Pn2DFZo37lbaDm1ZWhxDYIlE5Ygu1/Kx2++9UC+30AKPBB6t4TnHO9w==}
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/bech32m': 14.0.0
-      '@penumbra-zone/getters': 24.0.0
-      '@penumbra-zone/protobuf': 8.0.0
-      '@penumbra-zone/wasm': 41.0.0
+      '@penumbra-zone/bech32m': 15.0.0
+      '@penumbra-zone/getters': 25.0.0
+      '@penumbra-zone/protobuf': 9.0.0
+      '@penumbra-zone/wasm': 43.0.0
 
   '@penumbra-zone/protobuf@8.0.0':
     resolution: {integrity: sha512-HFUcsiUw8HWwMwiU2RdPUJSP8aEbFrrDLYHSVznBc164R3tU7x4zRCLurIr6TO9+KFYmB2Ivmxg2KE4DD45gyQ==}
@@ -9303,7 +9303,7 @@ snapshots:
 
   '@penumbra-zone/keys@4.2.1': {}
 
-  '@penumbra-zone/perspective@48.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@41.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))))':
+  '@penumbra-zone/perspective@50.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@41.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
       '@penumbra-zone/bech32m': 14.0.0(@penumbra-zone/protobuf@8.0.0(@bufbuild/protobuf@1.10.0))
