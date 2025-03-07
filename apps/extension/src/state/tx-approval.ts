@@ -97,7 +97,7 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
       state.txApproval.asSender = asSender.toJsonString();
       state.txApproval.asPublic = asPublic.toJsonString();
       state.txApproval.asReceiver = asReceiver.toJsonString();
-      state.txApproval.transactionClassification = transactionClassification;
+      state.txApproval.transactionClassification = transactionClassification.type;
 
       state.txApproval.choice = undefined;
     });
