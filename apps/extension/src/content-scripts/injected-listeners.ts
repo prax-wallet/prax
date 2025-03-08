@@ -62,13 +62,17 @@ const praxExtensionListener = (
   if (sender.id === PRAX && typeof req === 'string' && req in PraxConnection) {
     switch (req as PraxConnection) {
       case PraxConnection.Init: {
-        console.warn('Init connection', sender.origin);
+        if (globalThis.__DEV__) {
+          console.debug('Prax Init', sender.origin);
+        }
         const port = CRSessionClient.init(PRAX);
         window.postMessage(portMessage(port), '/', [port]);
         break;
       }
       case PraxConnection.End: {
-        console.warn('Ending connection', sender.origin);
+        if (globalThis.__DEV__) {
+          console.debug('Prax End', sender.origin);
+        }
         CRSessionClient.end(PRAX);
         window.postMessage(endMessage, '/');
         break;
