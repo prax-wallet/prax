@@ -12,8 +12,7 @@
     "scripts",
     "files",
     "exports",
-    "publishConfig",
-    "pnpm"
+    "publishConfig"
   ],
   "dependencyTypes": [
     "dev",
