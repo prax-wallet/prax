@@ -26,12 +26,12 @@
     "@bufbuild/protobuf": "^1.x",
     "@connectrpc/connect": "^1.x",
     "@connectrpc/connect-web": "^1.x",
-    "@penumbra-zone/bech32m": "14.0.0",
-    "@penumbra-zone/crypto-web": "37.0.0",
-    "@penumbra-zone/getters": "24.0.0",
-    "@penumbra-zone/protobuf": "8.0.0",
-    "@penumbra-zone/types": "30.0.0",
-    "@penumbra-zone/wasm": "41.0.0",
+    "@penumbra-zone/bech32m": "15.0.0",
+    "@penumbra-zone/crypto-web": "39.0.0",
+    "@penumbra-zone/getters": "25.0.0",
+    "@penumbra-zone/protobuf": "9.0.0",
+    "@penumbra-zone/types": "32.0.0",
+    "@penumbra-zone/wasm": "43.0.0",
     "exponential-backoff": "^3.1.1"
   },
   "engine": {
