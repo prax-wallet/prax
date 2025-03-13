@@ -1,11 +1,13 @@
-import { AllSlices, useStore } from '../../state';
-import { useEffect, useState } from 'react';
-import { ServicesMessage } from '../../message/services';
-import { SelectList } from '@repo/ui/components/ui/select';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { Button } from '@repo/ui/components/ui/button';
+import { SelectList } from '@repo/ui/components/ui/select';
+import { useEffect, useState } from 'react';
 import { useNumeraires } from '../../hooks/numeraires-query';
+import { InternalRequestType } from '../../message/internal';
+import { DatabaseRequest } from '../../message/services';
+import { postInternal } from '../../post-internal';
+import { AllSlices, useStore } from '../../state';
 
 const useNumerairesSelector = (state: AllSlices) => {
   return {
@@ -40,7 +42,7 @@ export const NumeraireForm = ({
     setLoading(true);
     void (async function () {
       await saveNumeraires();
-      void chrome.runtime.sendMessage(ServicesMessage.ChangeNumeraires);
+      void postInternal(InternalRequestType.Database, DatabaseRequest.ChangeNumeraires);
       onSuccess();
     })();
   };

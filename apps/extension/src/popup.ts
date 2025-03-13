@@ -1,76 +1,94 @@
-import { sessionExtStorage } from './storage/session';
-import { PopupMessage, PopupRequest, PopupType } from './message/popup';
+import {
+  InternalRequestType,
+  InternalFailure,
+  InternalResponse,
+  InternalRequest,
+} from './message/internal';
+import { isInternalReadyRequest } from './message/ready';
+import { isDialogMessage } from './message/popup';
+import { DialogRequest, DialogRequestType, DialogResponse } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
+import { isInternalSender } from './senders/internal';
+import { sessionExtStorage } from './storage/session';
+import { postDialog } from './post-internal';
 
-type ChromeResponderDroppedMessage =
-  'A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received';
+const POPUP_READY_TIMEOUT = 60 * 1000;
 
-const isChromeResponderDroppedError = (
-  e: unknown,
-): e is Error & { message: ChromeResponderDroppedMessage } =>
-  e instanceof Error &&
-  e.message ===
-    'A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received';
+const popupHtml = chrome.runtime.getURL('/popup.html');
 
-export const popup = async <M extends PopupMessage>(
-  req: PopupRequest<M>,
-): Promise<M['response']> => {
-  const popupId = crypto.randomUUID();
-  await spawnPopup(req.type, popupId);
-
-  // this is necessary given it takes a bit of time for the popup
-  // to be ready to accept messages from the service worker.
-  await popupReady(popupId);
-
-  const response = await chrome.runtime
-    .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
-    .catch((e: unknown) => {
-      if (isChromeResponderDroppedError(e)) {
-        return null;
-      } else {
-        throw e;
-      }
-    });
-
-  if (response && 'error' in response) {
-    throw errorFromJson(response.error, undefined, ConnectError.from(response));
-  } else {
-    return response && response.data;
-  }
+const dialogPath: Record<DialogRequestType, PopupPath> = {
+  [DialogRequestType.AuthorizeTransaction]: PopupPath.TRANSACTION_APPROVAL,
+  [DialogRequestType.ConnectDapp]: PopupPath.ORIGIN_APPROVAL,
 };
 
-const spawnDetachedPopup = async (url: URL) => {
-  const [hashPath] = url.hash.split('?');
-  await throwIfAlreadyOpen(hashPath!);
+const popupGeometry = (parent?: chrome.windows.Window) => ({
+  width: 400,
+  height: 628,
 
-  const { top, left, width } = await chrome.windows.getLastFocused();
+  top: parent?.top,
+  left:
+    parent?.left != null && parent.width != null
+      ? Math.max(0, parent.left + (parent.width - 400))
+      : undefined,
+});
+
+const spawnDetachedPopup = async (parent: chrome.windows.Window, url: URL): Promise<string> => {
+  console.debug('spawnDetachedPopup', url);
+  type SendResponse = (r: InternalResponse<InternalRequestType.Ready> | InternalFailure) => void;
+
+  const id = crypto.randomUUID();
+
+  const { promise: ready, resolve, reject } = Promise.withResolvers<typeof id>();
+
+  const handleReady = (
+    msg: InternalRequest<InternalRequestType.Ready>,
+    sender: chrome.runtime.MessageSender,
+    respond: SendResponse,
+  ) => {
+    if (isInternalSender(sender) && isInternalReadyRequest(id, msg)) {
+      try {
+        respond({ Ready: null });
+        resolve(id);
+      } catch (e) {
+        respond({ error: errorToJson(ConnectError.from(e), undefined) });
+        reject(e);
+      }
+      return true;
+    }
+    return false;
+  };
+
+  void ready.finally(() => chrome.runtime.onMessage.removeListener(handleReady));
+  chrome.runtime.onMessage.addListener(handleReady);
+  AbortSignal.timeout(POPUP_READY_TIMEOUT).onabort = reject;
+
+  url.searchParams.set('id', id);
 
   await chrome.windows.create({
     url: url.href,
     type: 'popup',
-    width: 400,
-    height: 628,
-    top,
-    // press the window to the right side of screen
-    left: left !== undefined && width !== undefined ? left + (width - 400) : 0,
+    ...popupGeometry(parent),
   });
+
+  return ready;
 };
 
-const throwIfAlreadyOpen = (path: string) =>
-  chrome.runtime
-    .getContexts({
-      documentUrls: [
-        path.startsWith(chrome.runtime.getURL('')) ? path : chrome.runtime.getURL(path),
-      ],
-    })
-    .then(popupContexts => {
-      if (popupContexts.length) {
-        throw Error('Popup already open');
+const throwIfAlreadyOpen = async (dialog: DialogRequestType) => {
+  const contexts = (
+    await chrome.runtime.getContexts({ contextTypes: [chrome.runtime.ContextType.POPUP] })
+  ).filter(c => c.documentUrl?.startsWith(popupHtml) && c.documentUrl.includes(dialogPath[dialog]));
+
+  for (const ctx of contexts) {
+    if (ctx.documentUrl) {
+      const ctxUrl = new URL(ctx.documentUrl);
+      if (ctxUrl.hash.includes(dialogPath[dialog])) {
+        throw new Error('Popup already open');
       }
-    });
+    }
+  }
+};
 
 const throwIfNeedsLogin = async () => {
   const loggedIn = await sessionExtStorage.get('passwordKey');
@@ -79,36 +97,32 @@ const throwIfNeedsLogin = async () => {
   }
 };
 
-const spawnPopup = async (pop: PopupType, popupId: string) => {
-  const popUrl = new URL(chrome.runtime.getURL('popup.html'));
+const spawnDialog = async (
+  window: chrome.windows.Window,
+  dialog: DialogRequestType,
+): Promise<string> => {
+  console.debug('spawnDialog', window, dialog);
   await throwIfNeedsLogin();
+  await throwIfAlreadyOpen(dialog);
 
-  switch (pop) {
-    // set path as hash since we use a hash router within the popup
-    case PopupType.OriginApproval:
-      popUrl.hash = `${PopupPath.ORIGIN_APPROVAL}?popupId=${popupId}`;
-      return spawnDetachedPopup(popUrl);
-    case PopupType.TxApproval:
-      popUrl.hash = `${PopupPath.TRANSACTION_APPROVAL}?popupId=${popupId}`;
-      return spawnDetachedPopup(popUrl);
-    default:
-      throw Error('Unknown popup type');
-  }
+  const url = new URL(popupHtml);
+  url.hash = dialogPath[dialog];
+
+  return spawnDetachedPopup(window, url);
 };
 
-const POPUP_READY_TIMEOUT = 60 * 1000;
+/** Opens a popup dialog to obtain a user response. */
+export const popup = async <M extends DialogRequestType>(
+  window: chrome.windows.Window,
+  dialogType: M,
+  requestData: DialogRequest<M>[M],
+): Promise<DialogResponse<M> | null> => {
+  console.debug('popup', window, dialogType, requestData);
+  const dialogRequest = { [dialogType]: requestData };
 
-const popupReady = (popupId: string): Promise<void> =>
-  new Promise((resolve, reject) => {
-    AbortSignal.timeout(POPUP_READY_TIMEOUT).onabort = reject;
+  if (!isDialogMessage(dialogType, dialogRequest)) {
+    throw new TypeError('Invalid dialog request', { cause: dialogRequest });
+  }
 
-    const idListen = (msg: unknown, _: chrome.runtime.MessageSender, respond: () => void) => {
-      if (msg === popupId) {
-        resolve();
-        chrome.runtime.onMessage.removeListener(idListen);
-        respond();
-      }
-    };
-
-    chrome.runtime.onMessage.addListener(idListen);
-  });
+  return postDialog(await spawnDialog(window, dialogType), dialogRequest);
+};

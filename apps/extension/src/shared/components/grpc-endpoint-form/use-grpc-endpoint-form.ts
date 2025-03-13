@@ -1,13 +1,15 @@
 import { Code, ConnectError, createPromiseClient } from '@connectrpc/connect';
-import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
+import { AppService } from '@penumbra-zone/protobuf';
+import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { InternalRequestType } from '../../../message/internal';
+import { DatabaseRequest } from '../../../message/services';
+import { postInternal } from '../../../post-internal';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { ServicesMessage } from '../../../message/services';
-import debounce from 'lodash/debounce';
-import { randomSort } from '../../utils/random-sort';
 import { isValidUrl } from '../../utils/is-valid-url';
+import { randomSort } from '../../utils/random-sort';
 import { useRegistry } from '../registry';
 
 const useSaveGrpcEndpointSelector = (state: AllSlices) => ({
@@ -140,7 +142,7 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
 
       await clearWalletCreationHeight(); // changing chain id means the wallet birthday is no longer valid
       await setGrpcEndpoint(grpcEndpointInput);
-      void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
+      void postInternal(InternalRequestType.Database, DatabaseRequest.ClearCache);
     } else {
       await setGrpcEndpoint(grpcEndpointInput);
     }

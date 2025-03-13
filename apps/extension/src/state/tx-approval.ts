@@ -1,26 +1,28 @@
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
-import { AllSlices, SliceCreator } from '.';
-import { PopupType, TxApproval } from '../message/popup';
-import {
-  TransactionPlan,
-  TransactionView,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { viewClient } from '../clients';
-import { ConnectError } from '@connectrpc/connect';
-import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
-import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
+import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
+import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
 } from '@penumbra-zone/perspective/translators/transaction-view';
-import { localExtStorage } from '../storage/local';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  TransactionPlan,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import type { Stringified } from '@penumbra-zone/types/jsonified';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { AllSlices, SliceCreator } from '.';
+import { viewClient } from '../clients';
+import { DialogRequest, DialogRequestType, DialogResponse } from '../message/popup';
+import { localExtStorage } from '../storage/local';
+
+interface PromiseExecutors<T> {
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: unknown) => void;
+}
 
 export interface TxApprovalSlice {
   /**
@@ -30,7 +32,7 @@ export interface TxApprovalSlice {
    * that everything be JSON-serializeable. So we'll store `Stringified`
    * representations of them instead.
    */
-  responder?: (m: InternalResponse<TxApproval>) => void;
+  responder?: PromiseExecutors<DialogResponse<DialogRequestType.AuthorizeTransaction>>;
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionView?: Stringified<TransactionView>;
   choice?: UserChoice;
@@ -41,8 +43,8 @@ export interface TxApprovalSlice {
   transactionClassification?: TransactionClassification;
 
   acceptRequest: (
-    req: InternalRequest<TxApproval>,
-    responder: (m: InternalResponse<TxApproval>) => void,
+    authorizeTransactionRequest: DialogRequest<DialogRequestType.AuthorizeTransaction>,
+    responder: PromiseExecutors<DialogResponse<DialogRequestType.AuthorizeTransaction>>,
   ) => Promise<void>;
 
   setChoice: (choice: UserChoice) => void;
@@ -51,13 +53,13 @@ export interface TxApprovalSlice {
 }
 
 export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, get) => ({
-  acceptRequest: async ({ request: { authorizeRequest: authReqJson } }, responder) => {
+  acceptRequest: async ({ [DialogRequestType.AuthorizeTransaction]: request }, responder) => {
     const existing = get().txApproval;
     if (existing.responder) {
       throw new Error('Another request is still pending');
     }
 
-    const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
+    const authorizeRequest = AuthorizeRequest.fromJson(request);
 
     const getMetadata = async (assetId: AssetId) => {
       try {
@@ -91,6 +93,7 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
 
     set(state => {
       state.txApproval.responder = responder;
+
       state.txApproval.authorizeRequest = authorizeRequest.toJsonString();
       state.txApproval.transactionView = transactionView.toJsonString();
 
@@ -110,39 +113,20 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
   },
 
   sendResponse: () => {
-    const {
-      responder,
-      choice,
-      transactionView: transactionViewString,
-      authorizeRequest: authorizeRequestString,
-    } = get().txApproval;
+    const { responder, choice } = get().txApproval;
 
     if (!responder) {
       throw new Error('No responder');
     }
 
     try {
-      if (choice === undefined || !transactionViewString || !authorizeRequestString) {
+      if (choice) {
+        responder.resolve(choice);
+      } else {
         throw new Error('Missing response data');
       }
-
-      // zustand doesn't like jsonvalue so stringify
-      const authorizeRequest = AuthorizeRequest.fromJsonString(
-        authorizeRequestString,
-      ).toJson() as Jsonified<AuthorizeRequest>;
-
-      responder({
-        type: PopupType.TxApproval,
-        data: {
-          choice,
-          authorizeRequest,
-        },
-      });
     } catch (e) {
-      responder({
-        type: PopupType.TxApproval,
-        error: errorToJson(ConnectError.from(e), undefined),
-      });
+      responder.reject(e);
     } finally {
       set(state => {
         state.txApproval.responder = undefined;
@@ -159,4 +143,20 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
   },
 });
 
-export const txApprovalSelector = (state: AllSlices) => state.txApproval;
+export const txApprovalSelector = ({ txApproval }: AllSlices) => {
+  const { asSender, asReceiver, asPublic, authorizeRequest, ...rest } = txApproval;
+
+  return {
+    ...rest,
+
+    authorizeRequest: authorizeRequest
+      ? AuthorizeRequest.fromJsonString(authorizeRequest)
+      : undefined,
+
+    views: {
+      asSender: asSender ? TransactionView.fromJsonString(asSender) : undefined,
+      asReceiver: asReceiver ? TransactionView.fromJsonString(asReceiver) : undefined,
+      asPublic: asPublic ? TransactionView.fromJsonString(asPublic) : undefined,
+    },
+  };
+};

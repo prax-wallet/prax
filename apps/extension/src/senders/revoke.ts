@@ -11,8 +11,9 @@ import { assertValidSender } from './validate';
  * sessions. A `PraxConnection.End` message is sent to the content scripts in
  * those senders.
  */
-export const revokeOrigin = (targetOrigin: string) => {
-  const storageOperation = removeOriginRecord(targetOrigin);
+export const revokeOrigin = async (targetOrigin: string) => {
+  await removeOriginRecord(targetOrigin);
+
   const killedSenders = CRSessionManager.killOrigin(targetOrigin);
 
   /**
@@ -45,7 +46,7 @@ export const revokeOrigin = (targetOrigin: string) => {
            */
           console.error("Can't end session of invalid sender", target, invalid);
           console.debug('Restarting extension to invalidate context.');
-          void storageOperation.finally(() => chrome.runtime.reload());
+          chrome.runtime.reload();
         }
       }
     }

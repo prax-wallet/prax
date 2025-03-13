@@ -1,6 +1,8 @@
 import { ExtensionStorage } from '../storage/base';
 import { LocalStorageState, OriginRecord } from '../storage/types';
 import { AllSlices, SliceCreator } from '.';
+import { InternalRequestType } from '../message/internal';
+import { postInternal } from '../post-internal';
 
 export interface ConnectedSitesSlice {
   filter?: string;
@@ -27,7 +29,7 @@ export const createConnectedSitesSlice =
         known => known.origin !== siteToDiscard.origin,
       );
       await local.set('knownSites', knownSitesWithoutDiscardedSite);
-      void chrome.runtime.sendMessage({ revoke: siteToDiscard.origin });
+      await postInternal(InternalRequestType.Revoke, siteToDiscard.origin);
     },
   });
 
