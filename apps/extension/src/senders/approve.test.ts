@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { approveSender } from './approve';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { OriginRecord } from '../storage/types';
-import { PopupType } from '../message/popup';
 
 const mockLocalStorage = vi.hoisted(() => ({
   get: vi.fn(),
@@ -111,17 +110,12 @@ describe('origin approvals', () => {
     it('calls popup with the correct parameters', async () => {
       mockLocalStorage.get.mockReturnValue(Promise.resolve([]));
       const messageSender = { origin: 'mock://popuptest.example.com', tab: mockTab };
-      mockPopup.mockResolvedValue({
-        choice: UserChoice.Approved,
-        date: 123,
-        origin: 'mock://popuptest.example.com',
-      } satisfies OriginRecord);
+      mockPopup.mockResolvedValue(UserChoice.Approved);
 
       await approveSender(messageSender);
 
       expect(mockPopup).toHaveBeenCalledWith({
-        type: PopupType.OriginApproval,
-        request: {
+        ApproveOrigin: {
           origin: 'mock://popuptest.example.com',
           favIconUrl: mockTab.favIconUrl,
           title: mockTab.title,

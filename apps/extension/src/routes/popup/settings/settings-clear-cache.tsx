@@ -1,11 +1,13 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button } from '@repo/ui/components/ui/button';
+import { useState } from 'react';
 import { TrashGradientIcon } from '../../../icons/trash-gradient';
-import { ServicesMessage } from '../../../message/services';
+import { InternalRequestType } from '../../../message/internal';
+import { DatabaseRequest } from '../../../message/services';
+import { postInternal } from '../../../post-internal';
+import { useStore } from '../../../state';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { useStore } from '../../../state';
-import { useState } from 'react';
 import { SettingsScreen } from './settings-screen';
 
 const useCacheClear = () => {
@@ -16,7 +18,7 @@ const useCacheClear = () => {
     setLoading(true);
 
     void (async function () {
-      await chrome.runtime.sendMessage(ServicesMessage.ClearCache);
+      await postInternal(InternalRequestType.Database, DatabaseRequest.ClearCache);
       useStore.setState(state => {
         state.network.fullSyncHeight = undefined;
       });

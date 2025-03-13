@@ -1,8 +1,8 @@
-import { OriginApproval, PopupType } from '../message/popup';
 import { popup } from '../popup';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { getOriginRecord, upsertOriginRecord } from '../storage/origin';
 import { ValidSender } from './validate';
+import { DialogRequestType } from '../message/popup';
 
 /**
  * Obtain approval status from storage, as boolean.
@@ -33,23 +33,29 @@ export const approveSender = async (approve: {
 
     case UserChoice.Denied:
     case undefined: {
-      const popupResponse = await popup<OriginApproval>({
-        type: PopupType.OriginApproval,
-        request: {
-          origin: approve.origin,
-          favIconUrl: approve.tab.favIconUrl,
-          title: approve.tab.title,
-          lastRequest: existingRecord?.date,
-        },
+      const window = await chrome.windows.get(approve.tab.windowId);
+      const response = await popup(window, DialogRequestType.ConnectDapp, {
+        origin: approve.origin,
+        favIconUrl: approve.tab.favIconUrl,
+        title: approve.tab.title,
+        lastRequest: existingRecord?.date,
       });
 
-      // if user interacted with popup, update record
-      if (popupResponse) {
-        await upsertOriginRecord(popupResponse);
+      if (response) {
+        // if user interacted with popup, update record
+        await upsertOriginRecord({
+          origin: approve.origin,
+          date: Date.now(),
+          choice: response,
+        });
       }
 
       // return choice, or default denial
-      return popupResponse?.choice ?? UserChoice.Denied;
+      return response ?? UserChoice.Denied;
+    }
+
+    default: {
+      throw new Error('Unknown record in storage', { cause: existingRecord });
     }
   }
 };
