@@ -143,20 +143,4 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
   },
 });
 
-export const txApprovalSelector = ({ txApproval }: AllSlices) => {
-  const { asSender, asReceiver, asPublic, authorizeRequest, ...rest } = txApproval;
-
-  return {
-    ...rest,
-
-    authorizeRequest: authorizeRequest
-      ? AuthorizeRequest.fromJsonString(authorizeRequest)
-      : undefined,
-
-    views: {
-      asSender: asSender ? TransactionView.fromJsonString(asSender) : undefined,
-      asReceiver: asReceiver ? TransactionView.fromJsonString(asReceiver) : undefined,
-      asPublic: asPublic ? TransactionView.fromJsonString(asPublic) : undefined,
-    },
-  };
-};
+export const txApprovalSelector = (state: AllSlices) => state.txApproval;
