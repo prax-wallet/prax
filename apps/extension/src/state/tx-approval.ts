@@ -1,6 +1,6 @@
 import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { AllSlices, SliceCreator } from '.';
-import { PopupType, TxApproval } from '../message/popup';
+import { DialogRequest, DialogResponse } from '../message/internal-control/dialog';
 import {
   TransactionPlan,
   TransactionView,
@@ -8,8 +8,8 @@ import {
 import { viewClient } from '../clients';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
-import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
+import type { ControlFailure, ControlRequest, ControlResponse } from '../message/control';
+import type { Stringified } from '@penumbra-zone/types/jsonified';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
@@ -30,7 +30,9 @@ export interface TxApprovalSlice {
    * that everything be JSON-serializeable. So we'll store `Stringified`
    * representations of them instead.
    */
-  responder?: (m: InternalResponse<TxApproval>) => void;
+  responder?: (
+    m: ControlResponse<'Dialog', DialogResponse<'AuthorizeTransaction'>> | ControlFailure,
+  ) => void;
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionView?: Stringified<TransactionView>;
   choice?: UserChoice;
@@ -41,8 +43,10 @@ export interface TxApprovalSlice {
   transactionClassification?: TransactionClassification;
 
   acceptRequest: (
-    req: InternalRequest<TxApproval>,
-    responder: (m: InternalResponse<TxApproval>) => void,
+    req: ControlRequest<'Dialog', DialogRequest<'AuthorizeTransaction'>>,
+    responder: (
+      m: ControlResponse<'Dialog', DialogResponse<'AuthorizeTransaction'>> | ControlFailure,
+    ) => void,
   ) => Promise<void>;
 
   setChoice: (choice: UserChoice) => void;
@@ -51,7 +55,7 @@ export interface TxApprovalSlice {
 }
 
 export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, get) => ({
-  acceptRequest: async ({ request: { authorizeRequest: authReqJson } }, responder) => {
+  acceptRequest: async ({ Dialog: { AuthorizeTransaction: authReqJson } }, responder) => {
     const existing = get().txApproval;
     if (existing.responder) {
       throw new Error('Another request is still pending');
@@ -126,21 +130,13 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
         throw new Error('Missing response data');
       }
 
-      // zustand doesn't like jsonvalue so stringify
-      const authorizeRequest = AuthorizeRequest.fromJsonString(
-        authorizeRequestString,
-      ).toJson() as Jsonified<AuthorizeRequest>;
-
       responder({
-        type: PopupType.TxApproval,
-        data: {
-          choice,
-          authorizeRequest,
+        Dialog: {
+          AuthorizeTransaction: choice,
         },
       });
     } catch (e) {
       responder({
-        type: PopupType.TxApproval,
         error: errorToJson(ConnectError.from(e), undefined),
       });
     } finally {

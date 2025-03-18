@@ -1,12 +1,14 @@
 import { ConnectError } from '@connectrpc/connect';
-import { OriginApproval, PopupType } from '../message/popup';
+import { DialogRequest, DialogResponse } from '../message/internal-control/dialog';
 import { AllSlices, SliceCreator } from '.';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import type { ControlFailure, ControlRequest, ControlResponse } from '../message/control';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export interface OriginApprovalSlice {
-  responder?: (m: InternalResponse<OriginApproval>) => void;
+  responder?: (
+    m: ControlResponse<'Dialog', DialogResponse<'ApproveOrigin'>> | ControlFailure,
+  ) => void;
   favIconUrl?: string;
   title?: string;
   requestOrigin?: string;
@@ -14,11 +16,13 @@ export interface OriginApprovalSlice {
   lastRequest?: Date;
 
   acceptRequest: (
-    req: InternalRequest<OriginApproval>,
-    responder: (m: InternalResponse<OriginApproval>) => void,
+    req: ControlRequest<'Dialog', DialogRequest<'ApproveOrigin'>>,
+    responder: (
+      m: ControlResponse<'Dialog', DialogResponse<'ApproveOrigin'>> | ControlFailure,
+    ) => void,
   ) => void;
 
-  setChoice: (attitute: UserChoice) => void;
+  setChoice: (attitude: UserChoice) => void;
 
   sendResponse: () => void;
 }
@@ -31,7 +35,11 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
   },
 
   acceptRequest: (
-    { request: { origin: requestOrigin, favIconUrl, title, lastRequest } },
+    {
+      Dialog: {
+        ApproveOrigin: { origin: requestOrigin, favIconUrl, title, lastRequest },
+      },
+    }: ControlRequest<'Dialog', DialogRequest<'ApproveOrigin'>>,
     responder,
   ) => {
     const existing = get().originApproval;
@@ -60,16 +68,12 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
         throw new Error('Missing response data');
       }
       responder({
-        type: PopupType.OriginApproval,
-        data: {
-          choice,
-          origin: requestOrigin,
-          date: Date.now(),
+        Dialog: {
+          ApproveOrigin: choice,
         },
       });
     } catch (e) {
       responder({
-        type: PopupType.OriginApproval,
         error: errorToJson(ConnectError.from(e), undefined),
       });
     } finally {

@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { approveSender } from './approve';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { OriginRecord } from '../storage/types';
-import { PopupType } from '../message/popup';
 
 const mockLocalStorage = vi.hoisted(() => ({
   get: vi.fn(),
@@ -32,14 +31,15 @@ describe('origin approvals', () => {
 
       const newOriginRecord = {
         choice: UserChoice.Approved,
-        date: 123,
         origin: 'mock://unknown.example.com',
-      } satisfies OriginRecord;
+      } satisfies Partial<OriginRecord>;
 
-      mockPopup.mockResolvedValue(newOriginRecord);
+      mockPopup.mockResolvedValue({ ApproveOrigin: UserChoice.Approved });
 
       const choice = await approveSender(messageSender);
-      expect(mockLocalStorage.set).toHaveBeenCalledWith('knownSites', [newOriginRecord]);
+      expect(mockLocalStorage.set).toHaveBeenCalledWith('knownSites', [
+        expect.objectContaining(newOriginRecord),
+      ]);
       expect(choice).toBe(UserChoice.Approved);
     });
 
@@ -79,11 +79,7 @@ describe('origin approvals', () => {
     it('returns denied choice if the popup is denied', async () => {
       mockLocalStorage.get.mockReturnValue(Promise.resolve([]));
       const messageSender = { origin: 'mock://unknown.example.com', tab: mockTab };
-      mockPopup.mockResolvedValue({
-        choice: UserChoice.Denied,
-        date: 123,
-        origin: 'mock://unknown.example.com',
-      } satisfies OriginRecord);
+      mockPopup.mockResolvedValue({ ApproveOrigin: UserChoice.Denied });
 
       const choice = await approveSender(messageSender);
       expect(choice).toBe(UserChoice.Denied);
@@ -97,31 +93,27 @@ describe('origin approvals', () => {
 
       const newOriginRecord = {
         choice: UserChoice.Approved,
-        date: 123,
         origin: 'mock://upsertable.example.com',
-      } satisfies OriginRecord;
+      } satisfies Partial<OriginRecord>;
 
-      mockPopup.mockResolvedValue(newOriginRecord);
+      mockPopup.mockResolvedValue({ ApproveOrigin: UserChoice.Approved });
 
       const choice = await approveSender(messageSender);
-      expect(mockLocalStorage.set).toHaveBeenCalledWith('knownSites', [newOriginRecord]);
+      expect(mockLocalStorage.set).toHaveBeenCalledWith('knownSites', [
+        expect.objectContaining(newOriginRecord),
+      ]);
       expect(choice).toBe(UserChoice.Approved);
     });
 
     it('calls popup with the correct parameters', async () => {
       mockLocalStorage.get.mockReturnValue(Promise.resolve([]));
       const messageSender = { origin: 'mock://popuptest.example.com', tab: mockTab };
-      mockPopup.mockResolvedValue({
-        choice: UserChoice.Approved,
-        date: 123,
-        origin: 'mock://popuptest.example.com',
-      } satisfies OriginRecord);
+      mockPopup.mockResolvedValue({ ApproveOrigin: UserChoice.Approved });
 
       await approveSender(messageSender);
 
       expect(mockPopup).toHaveBeenCalledWith({
-        type: PopupType.OriginApproval,
-        request: {
+        ApproveOrigin: {
           origin: 'mock://popuptest.example.com',
           favIconUrl: mockTab.favIconUrl,
           title: mockTab.title,
@@ -141,16 +133,15 @@ describe('origin approvals', () => {
       const messageSender = { origin: 'mock://unknown.example.com', tab: mockTab };
       const newOriginRecord = {
         choice: UserChoice.Approved,
-        date: 123,
         origin: 'mock://unknown.example.com',
-      } satisfies OriginRecord;
-      mockPopup.mockResolvedValue(newOriginRecord);
+      } satisfies Partial<OriginRecord>;
+      mockPopup.mockResolvedValue({ ApproveOrigin: UserChoice.Approved });
 
       await approveSender(messageSender);
 
       expect(mockLocalStorage.set).toHaveBeenCalledWith('knownSites', [
         existingOriginRecord,
-        newOriginRecord,
+        expect.objectContaining(newOriginRecord),
       ]);
     });
   });
