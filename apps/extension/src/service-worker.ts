@@ -8,8 +8,12 @@
  * - session manager for rpc entry
  */
 
-// side-effectful import attaches listeners
-import './listeners';
+// listeners
+import { contentScriptConnectListener } from './message/listen/content-script-connect';
+import { contentScriptDisconnectListener } from './message/listen/content-script-disconnect';
+import { contentScriptInitListener } from './message/listen/content-script-init';
+import { internalRevokeListener } from './message/listen/internal-revoke';
+import { internalServiceListener } from './message/listen/internal-services';
 
 // all rpc implementations, local and proxy
 import { getRpcImpls } from './rpc';
@@ -40,12 +44,15 @@ import { internalTransportOptions } from './transport-options';
 
 // idb, querier, block processor
 import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
+import type { Services } from '@repo/context';
 import { startWalletServices } from './wallet-services';
 
 import { backOff } from 'exponential-backoff';
 
+let walletServices: Promise<Services>;
+
 const initHandler = async () => {
-  const walletServices = startWalletServices();
+  walletServices = startWalletServices();
   const rpcImpls = await getRpcImpls();
 
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
@@ -97,6 +104,19 @@ const handler = await backOff(() => initHandler(), {
 });
 
 CRSessionManager.init(PRAX, handler, assertValidSessionPort);
+
+// listen for content script activity
+chrome.runtime.onMessage.addListener(contentScriptConnectListener);
+chrome.runtime.onMessage.addListener(contentScriptDisconnectListener);
+chrome.runtime.onMessage.addListener(contentScriptInitListener);
+
+// listen for internal revoke controls
+chrome.runtime.onMessage.addListener(internalRevokeListener);
+
+// listen for internal service controls
+chrome.runtime.onMessage.addListener((req, sender, respond) =>
+  internalServiceListener(walletServices, req, sender, respond),
+);
 
 // https://developer.chrome.com/docs/extensions/reference/api/alarms
 void chrome.alarms.create('blockSync', {
