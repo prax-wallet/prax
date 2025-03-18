@@ -1,5 +1,5 @@
 import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
-import { PraxConnection } from '../message/prax';
+import { PraxConnection } from './prax-connection';
 
 // @ts-expect-error - ts can't understand the injected string
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
