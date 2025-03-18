@@ -9,7 +9,7 @@ import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manage
 import { revokeOrigin } from '../../senders/revoke';
 
 // listen for page requests for disconnect
-export const praxDisconnectListener = (
+export const contentScriptDisconnectListener = (
   req: unknown,
   unvalidatedSender: chrome.runtime.MessageSender,
   // this handler will only ever send a null response, or an enumerated failure reason

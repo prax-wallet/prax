@@ -4,13 +4,13 @@ import { UserChoice } from '@penumbra-zone/types/user-choice';
 import {
   isPraxConnectionMessage,
   PraxConnection,
-} from '../../content-scripts/message/prax-connection';
-import { sendTab } from '../../message/send/tab';
-import { approveSender } from '../../senders/approve';
-import { assertValidSender } from '../../senders/validate';
+} from '../content-scripts/message/prax-connection';
+import { sendTab } from '../message/send/tab';
+import { approveSender } from '../senders/approve';
+import { assertValidSender } from '../senders/validate';
 
 // listen for page requests for approval
-export const praxConnectListener = (
+export const contentScriptConnectListener = (
   req: unknown,
   unvalidatedSender: chrome.runtime.MessageSender,
   // this handler responds with nothing, or an enumerated failure reason
