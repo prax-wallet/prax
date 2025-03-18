@@ -1,34 +1,32 @@
-import { PraxConnection } from '../../content-scripts/message/prax-connection';
+import {
+  isPraxConnectionMessage,
+  PraxConnection,
+} from '../../content-scripts/message/prax-connection';
+import { sendTab } from '../../message/send/tab';
 import { alreadyApprovedSender } from '../../senders/approve';
 import { assertValidSender } from '../../senders/validate';
 
 // listen for page init
-export const praxInitListener: ChromeExtensionMessageEventListener = (
-  req,
-  unvalidatedSender,
-  // this handler will only ever send an empty response
-  resepond: (no?: never) => void,
-) => {
-  if (req !== PraxConnection.Init) {
-    // boolean return in handlers signals intent to respond
+export const praxInitListener = (
+  req: unknown,
+  unvalidatedSender: chrome.runtime.MessageSender,
+  // this handler will only ever send a null response
+  respond: (r: null) => void,
+): boolean => {
+  if (!isPraxConnectionMessage(req) && req !== PraxConnection.Init) {
     return false;
   }
 
   const validSender = assertValidSender(unvalidatedSender);
-
-  void (async () => {
-    const alreadyApproved = await alreadyApprovedSender(validSender);
-    if (alreadyApproved) {
-      void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.Init, {
-        // init only the specific document
-        frameId: validSender.frameId,
-        documentId: validSender.documentId,
-      });
+  void alreadyApprovedSender(validSender).then(hasApproval => {
+    if (hasApproval) {
+      // init only the specific document
+      void sendTab(validSender, PraxConnection.Init);
     }
-  })();
 
-  // handler is done
-  resepond();
+    // handler is done
+    respond(null);
+  });
 
   // boolean return in handlers signals intent to respond
   return true;
