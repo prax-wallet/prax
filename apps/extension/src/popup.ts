@@ -5,6 +5,8 @@ import { ControlRequest, ControlResponse, ControlFailure } from './message/contr
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import { suppressChromeResponderDroppedError } from './utils/chrome-errors';
+import { listenInternal } from './message/listen/internal';
+import { isReadyRequest } from './message/internal-control/ready';
 
 export const popup = async <D extends DialogTypeName>(
   Dialog: DialogRequest<D>,
@@ -92,13 +94,15 @@ const popupReady = (popupId: string): Promise<void> =>
   new Promise((resolve, reject) => {
     AbortSignal.timeout(POPUP_READY_TIMEOUT).onabort = reject;
 
-    const idListen = (msg: unknown, _: chrome.runtime.MessageSender, respond: () => void) => {
-      if (typeof msg === 'object' && msg !== null && 'Ready' in msg && msg.Ready === popupId) {
-        resolve();
+    const idListen = listenInternal(
+      'Ready',
+      () => {
         chrome.runtime.onMessage.removeListener(idListen);
-        respond();
-      }
-    };
+        resolve();
+        return null;
+      },
+      ({ Ready }) => isReadyRequest(popupId, Ready),
+    );
 
     chrome.runtime.onMessage.addListener(idListen);
   });

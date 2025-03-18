@@ -9,11 +9,10 @@
  */
 
 // listeners
+import { listenInternal } from './message/listen/internal';
 import { contentScriptConnectListener } from './message/listen/content-script-connect';
 import { contentScriptDisconnectListener } from './message/listen/content-script-disconnect';
 import { contentScriptInitListener } from './message/listen/content-script-init';
-import { internalRevokeListener } from './message/listen/internal-revoke';
-import { internalServiceListener } from './message/listen/internal-services';
 
 // all rpc implementations, local and proxy
 import { getRpcImpls } from './rpc';
@@ -45,7 +44,10 @@ import { internalTransportOptions } from './transport-options';
 // idb, querier, block processor
 import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
 import type { Services } from '@repo/context';
-import { startWalletServices } from './wallet-services';
+import { controlWalletServices, startWalletServices } from './wallet-services';
+
+// permission control
+import { revokeOrigin } from './senders/revoke';
 
 import { backOff } from 'exponential-backoff';
 
@@ -111,11 +113,20 @@ chrome.runtime.onMessage.addListener(contentScriptDisconnectListener);
 chrome.runtime.onMessage.addListener(contentScriptInitListener);
 
 // listen for internal revoke controls
-chrome.runtime.onMessage.addListener(internalRevokeListener);
+chrome.runtime.onMessage.addListener(
+  listenInternal('Revoke', origin => {
+    revokeOrigin(origin);
+    return null;
+  }),
+);
 
-// listen for internal service controls
-chrome.runtime.onMessage.addListener((req, sender, respond) =>
-  internalServiceListener(walletServices, req, sender, respond),
+// listen for internal wallet services controls
+chrome.runtime.onMessage.addListener(
+  listenInternal('BlockProcessor', async ctl => {
+    const { blockProcessor, indexedDb } = await walletServices.then(ws => ws.getWalletServices());
+    await controlWalletServices({ blockProcessor, indexedDb }, ctl);
+    return null;
+  }),
 );
 
 // https://developer.chrome.com/docs/extensions/reference/api/alarms
