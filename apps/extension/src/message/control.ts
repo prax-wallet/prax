@@ -1,9 +1,10 @@
 import { JsonValue } from '@bufbuild/protobuf';
 import { DialogRequest, DialogResponse, DialogTypeName } from './internal-control/dialog';
+import { ReadyRequest } from './internal-control/ready';
 import { RevokeRequest } from './internal-control/revoke';
 import { BlockProcessorRequest } from './internal-control/block-processor';
 
-export type ControlTypeName = 'Dialog' | 'Revoke' | 'BlockProcessor';
+export type ControlTypeName = 'Dialog' | 'Ready' | 'Revoke' | 'BlockProcessor';
 export type ControlRequestData<M extends ControlTypeName> = ControlRequestMap[M];
 export type ControlResponseData<M extends ControlTypeName> = ControlResponseMap[M];
 
@@ -36,6 +37,7 @@ export const isControlRequest = <
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- map
 type ControlRequestMap = {
   Dialog: DialogRequest<unknown extends infer D extends DialogTypeName ? D : never>;
+  Ready: ReadyRequest;
   Revoke: RevokeRequest;
   BlockProcessor: BlockProcessorRequest;
 };
@@ -43,6 +45,7 @@ type ControlRequestMap = {
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- map
 type ControlResponseMap = {
   Dialog: DialogResponse<unknown extends infer D extends DialogTypeName ? D : never>;
+  Ready: null;
   Revoke: null;
   BlockProcessor: null;
 };

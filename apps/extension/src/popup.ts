@@ -93,7 +93,7 @@ const popupReady = (popupId: string): Promise<void> =>
     AbortSignal.timeout(POPUP_READY_TIMEOUT).onabort = reject;
 
     const idListen = (msg: unknown, _: chrome.runtime.MessageSender, respond: () => void) => {
-      if (msg === popupId) {
+      if (typeof msg === 'object' && msg !== null && 'Ready' in msg && msg.Ready === popupId) {
         resolve();
         chrome.runtime.onMessage.removeListener(idListen);
         respond();
