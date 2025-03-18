@@ -2,12 +2,12 @@ import {
   isPraxConnectionMessage,
   PraxConnection,
 } from '../../content-scripts/message/prax-connection';
-import { sendTab } from '../../message/send/tab';
+import { sendTab } from '../send/tab';
 import { alreadyApprovedSender } from '../../senders/approve';
 import { assertValidSender } from '../../senders/validate';
 
 // listen for page init
-export const praxInitListener = (
+export const contentScriptInitListener = (
   req: unknown,
   unvalidatedSender: chrome.runtime.MessageSender,
   // this handler will only ever send a null response

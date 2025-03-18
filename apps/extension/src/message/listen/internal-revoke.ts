@@ -1,8 +1,7 @@
-import { isPraxRevokeMessage } from '../../message/revoke';
+import { isPraxRevokeMessage } from '../revoke';
 import { isInternalSender } from '../../senders/internal';
 import { revokeOrigin } from '../../senders/revoke';
 
-// listen for internal revoke commands
 export const internalRevokeListener = (
   req: unknown,
   sender: chrome.runtime.MessageSender,
