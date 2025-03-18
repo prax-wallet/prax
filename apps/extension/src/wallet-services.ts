@@ -8,6 +8,7 @@ import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
 import { Services } from '@repo/context';
 import { WalletServices } from '@penumbra-zone/types/services';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { BlockProcessorRequest } from './message/internal-control/block-processor';
 
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
@@ -68,5 +69,39 @@ const syncLastBlockToStorage = async ({ indexedDb }: Pick<WalletServices, 'index
   const subscription = indexedDb.subscribe('FULL_SYNC_HEIGHT');
   for await (const update of subscription) {
     await localExtStorage.set('fullSyncHeight', Number(update.value));
+  }
+};
+
+export const controlWalletServices = async (
+  { blockProcessor, indexedDb }: Pick<WalletServices, 'blockProcessor' | 'indexedDb'>,
+  command: BlockProcessorRequest,
+) => {
+  switch (command) {
+    case BlockProcessorRequest.ClearCache:
+      {
+        blockProcessor.stop('clearCache');
+        await Promise.allSettled([
+          localExtStorage.remove('params'),
+          indexedDb.clear(),
+          localExtStorage.remove('fullSyncHeight'),
+        ]);
+        // Schedule reload after response is sent
+        setTimeout(() => chrome.runtime.reload(), 0);
+      }
+      break;
+    case BlockProcessorRequest.ChangeNumeraires:
+      {
+        const newNumeraires = await localExtStorage.get('numeraires');
+        blockProcessor.setNumeraires(newNumeraires.map(n => AssetId.fromJsonString(n)));
+        /**
+         * Changing numeraires causes all BSOD-based prices to be removed.
+         * This means that some new blocks will need to be scanned to get prices for the new numeraires.
+         * It also means that immediately after changing numeraires user will not see any equivalent BSOD-based prices.
+         */
+        await indexedDb.clearSwapBasedPrices();
+      }
+      break;
+    default:
+      throw new Error('Unknown BlockProcessor command', { cause: command });
   }
 };

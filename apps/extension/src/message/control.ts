@@ -34,6 +34,47 @@ export const isControlRequest = <
   Object.keys(request).filter(k => k !== 'id').length === 1 &&
   (id ? 'id' in request && request.id === id : !('id' in request));
 
+export const isControlResponse = <
+  T extends ControlTypeName,
+  D extends ControlResponseData<T> = ControlResponseData<T>,
+>(
+  typeKey: T,
+  response: unknown,
+): response is ControlResponse<T, D> =>
+  typeof response === 'object' &&
+  response !== null &&
+  Object.keys(response).length === 1 &&
+  typeKey in response;
+
+export const asControlRequest = <T extends ControlTypeName, D extends ControlRequestData<T>>(
+  typeKey: T,
+  data: D,
+  id?: string,
+): ControlRequest<T, D> => {
+  const request = { [typeKey]: data, ...(id ? { id } : {}) };
+  if (isControlRequest<T, D>(typeKey, request, id)) {
+    return request;
+  }
+  throw new TypeError(`Invalid ${typeKey} request`, { cause: request });
+};
+
+export const asControlResponse = <M extends ControlTypeName>(
+  typeKey: M,
+  data: ControlResponseData<M>,
+): ControlResponse<M> => {
+  const response = { [typeKey]: data };
+  if (isControlResponse(typeKey, response)) {
+    return response;
+  }
+  throw new TypeError(`Invalid ${typeKey} response`, { cause: response });
+};
+
+export const isControlFailure = (request: unknown): request is ControlFailure =>
+  typeof request === 'object' &&
+  request !== null &&
+  Object.keys(request).length === 1 &&
+  'error' in request;
+
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- map
 type ControlRequestMap = {
   Dialog: DialogRequest<unknown extends infer D extends DialogTypeName ? D : never>;
