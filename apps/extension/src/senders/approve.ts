@@ -1,4 +1,3 @@
-import { OriginApproval, PopupType } from '../message/popup';
 import { popup } from '../popup';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { getOriginRecord, upsertOriginRecord } from '../storage/origin';
@@ -33,9 +32,8 @@ export const approveSender = async (approve: {
 
     case UserChoice.Denied:
     case undefined: {
-      const popupResponse = await popup<OriginApproval>({
-        type: PopupType.OriginApproval,
-        request: {
+      const popupResponse = await popup<'ApproveOrigin'>({
+        ApproveOrigin: {
           origin: approve.origin,
           favIconUrl: approve.tab.favIconUrl,
           title: approve.tab.title,
@@ -45,11 +43,15 @@ export const approveSender = async (approve: {
 
       // if user interacted with popup, update record
       if (popupResponse) {
-        await upsertOriginRecord(popupResponse);
+        await upsertOriginRecord({
+          origin: approve.origin,
+          choice: popupResponse.ApproveOrigin,
+          date: Date.now(),
+        });
       }
 
       // return choice, or default denial
-      return popupResponse?.choice ?? UserChoice.Denied;
+      return popupResponse?.ApproveOrigin ?? UserChoice.Denied;
     }
   }
 };

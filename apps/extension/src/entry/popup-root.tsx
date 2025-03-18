@@ -4,7 +4,6 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { popupRouter } from '../routes/popup/router';
 
-import { isOriginApprovalRequest, isPopupRequest, isTxApprovalRequest } from '../message/popup';
 import { useStore } from '../state';
 import { originApprovalSelector } from '../state/origin-approval';
 import { txApprovalSelector } from '../state/tx-approval';
@@ -13,21 +12,29 @@ import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ConnectError } from '@connectrpc/connect';
 
 import '@repo/ui/styles/globals.css';
+import { ControlRequest, isControlRequest } from '../message/control';
+import { DialogRequest, DialogTypeName, isDialogRequest } from '../message/internal-control/dialog';
+
+const isControlDialogRequest = <D extends DialogTypeName>(
+  dialogType: D,
+  request: unknown,
+): request is ControlRequest<'Dialog', DialogRequest<D>> =>
+  isControlRequest('Dialog', request) && isDialogRequest(dialogType, request.Dialog);
 
 chrome.runtime.onMessage.addListener(
-  (req: unknown, _: chrome.runtime.MessageSender, responder: (x: unknown) => void) => {
-    if (isPopupRequest(req)) {
+  (msg: unknown, _: chrome.runtime.MessageSender, responder: (x: unknown) => void) => {
+    if (isControlRequest('Dialog', msg)) {
+      const req = msg.Dialog;
       try {
-        if (isTxApprovalRequest(req)) {
+        if (isControlDialogRequest('AuthorizeTransaction', req)) {
           void txApprovalSelector(useStore.getState()).acceptRequest(req, responder);
-        } else if (isOriginApprovalRequest(req)) {
+        } else if (isControlDialogRequest('ApproveOrigin', req)) {
           originApprovalSelector(useStore.getState()).acceptRequest(req, responder);
         } else {
           throw new Error('Unknown popup request');
         }
       } catch (e) {
         responder({
-          type: req.type,
           error: errorToJson(ConnectError.from(e), undefined),
         });
       }
