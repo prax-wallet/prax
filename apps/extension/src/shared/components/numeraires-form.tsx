@@ -1,6 +1,7 @@
 import { AllSlices, useStore } from '../../state';
 import { useEffect, useState } from 'react';
-import { ServicesMessage } from '../../message/services';
+import { BlockProcessorRequest } from '../../message/internal-control/block-processor';
+import { ControlRequest } from '../../message/control';
 import { SelectList } from '@repo/ui/components/ui/select';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
@@ -40,7 +41,9 @@ export const NumeraireForm = ({
     setLoading(true);
     void (async function () {
       await saveNumeraires();
-      void chrome.runtime.sendMessage(ServicesMessage.ChangeNumeraires);
+      void chrome.runtime.sendMessage({
+        BlockProcessor: BlockProcessorRequest.ChangeNumeraires,
+      } satisfies ControlRequest<'BlockProcessor'>);
       onSuccess();
     })();
   };

@@ -1,7 +1,8 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button } from '@repo/ui/components/ui/button';
 import { TrashGradientIcon } from '../../../icons/trash-gradient';
-import { ServicesMessage } from '../../../message/services';
+import { ControlRequest } from '../../../message/control';
+import { BlockProcessorRequest } from '../../../message/internal-control/block-processor';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { useStore } from '../../../state';
@@ -16,7 +17,9 @@ const useCacheClear = () => {
     setLoading(true);
 
     void (async function () {
-      await chrome.runtime.sendMessage(ServicesMessage.ClearCache);
+      await chrome.runtime.sendMessage({
+        BlockProcessor: BlockProcessorRequest.ClearCache,
+      } satisfies ControlRequest<'BlockProcessor'>);
       useStore.setState(state => {
         state.network.fullSyncHeight = undefined;
       });
