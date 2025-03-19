@@ -1,7 +1,7 @@
 import { JsonValue } from '@bufbuild/protobuf';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-import { isPopupResponse, PopupRequest, PopupResponse, PopupType } from './message/popup';
+import { isPopupResponseType, PopupRequest, PopupResponse, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import { sessionExtStorage } from './storage/session';
 import { suppressChromeResponderDroppedError } from './utils/chrome-errors';
@@ -26,7 +26,7 @@ export const popup = async <M extends PopupType>(
     return null;
   } else if ('error' in response) {
     throw errorFromJson(response.error, undefined, ConnectError.from(response));
-  } else if (isPopupResponse(response, popupType)) {
+  } else if (isPopupResponseType(response, popupType)) {
     return response[popupType];
   } else {
     throw new TypeError('Unknown popup response', { cause: response });

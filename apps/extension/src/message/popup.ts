@@ -11,7 +11,8 @@ export enum PopupType {
 
 export type PopupError = Record<'error', JsonValue>;
 
-export type PopupRequest<M extends PopupType> = Record<
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type PopupRequest<M extends PopupType = any> = Record<
   M,
   {
     TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
@@ -24,7 +25,8 @@ export type PopupRequest<M extends PopupType> = Record<
   }[M]
 >;
 
-export type PopupResponse<M extends PopupType> = Record<
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type PopupResponse<M extends PopupType = any> = Record<
   M,
   {
     TxApproval: {
@@ -35,16 +37,25 @@ export type PopupResponse<M extends PopupType> = Record<
   }[M]
 >;
 
-export const isPopupRequest = <M extends PopupType>(
+export const isPopupRequest = (id: string, req: unknown): req is PopupRequest =>
+  typeof req === 'object' &&
+  req !== null &&
+  Object.keys(req).length === 2 &&
+  'id' in req &&
+  req.id === id &&
+  Object.keys(req).some(k => k in PopupType);
+
+export const isPopupRequestType = <M extends PopupType>(
   req: unknown,
-  pt?: M | undefined,
+  pt: M,
 ): req is PopupRequest<M> =>
   typeof req === 'object' &&
   req !== null &&
-  Object.keys(req).length === 1 &&
-  Object.keys(req).some(k => (pt != null ? pt === k : k in PopupType));
+  Object.keys(req).length === 2 &&
+  'id' in req &&
+  Object.keys(req).some(k => pt === k);
 
-export const isPopupResponse = <M extends PopupType>(
+export const isPopupResponseType = <M extends PopupType>(
   res: unknown,
   pt: M,
 ): res is PopupResponse<M> =>

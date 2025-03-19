@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
-import { isPopupRequest, PopupType } from '../message/popup';
+import { isPopupRequestType, PopupType } from '../message/popup';
 import { popupRouter } from '../routes/popup/router';
 import { useStore } from '../state';
 import { originApprovalSelector } from '../state/origin-approval';
@@ -14,12 +14,12 @@ import '@repo/ui/styles/globals.css';
 
 chrome.runtime.onMessage.addListener(
   (req: unknown, _: chrome.runtime.MessageSender, responder: (x: unknown) => void) => {
-    if (isPopupRequest(req)) {
+    if (isPopupRequestType(req)) {
       void Promise.resolve(req).then(async req => {
         try {
-          if (isPopupRequest(req, PopupType.TxApproval)) {
+          if (isPopupRequestType(req, PopupType.TxApproval)) {
             responder(await txApprovalSelector(useStore.getState()).acceptRequest(req));
-          } else if (isPopupRequest(req, PopupType.OriginApproval)) {
+          } else if (isPopupRequestType(req, PopupType.OriginApproval)) {
             responder(await originApprovalSelector(useStore.getState()).acceptRequest(req));
           } else {
             throw new TypeError('Unknown popup request', { cause: req });
