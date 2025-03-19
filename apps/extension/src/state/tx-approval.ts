@@ -39,7 +39,7 @@ export interface TxApprovalSlice {
   transactionClassification?: TransactionClassification;
 
   acceptRequest: (
-    req: PopupRequest<PopupType.TxApproval>,
+    req: Omit<PopupRequest<PopupType.TxApproval>, 'id'>,
   ) => Promise<PopupResponse<PopupType.TxApproval>>;
 
   setChoice: (choice: UserChoice) => void;

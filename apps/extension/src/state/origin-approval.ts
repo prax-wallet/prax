@@ -11,7 +11,7 @@ export interface OriginApprovalSlice {
   lastRequest?: Date;
 
   acceptRequest: (
-    req: PopupRequest<PopupType.OriginApproval>,
+    req: Omit<PopupRequest<PopupType.OriginApproval>, 'id'>,
   ) => Promise<PopupResponse<PopupType.OriginApproval>>;
 
   setChoice: (attitute: UserChoice) => void;
