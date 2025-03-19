@@ -12,7 +12,7 @@ export enum PopupType {
 export type PopupError = Record<'error', JsonValue>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type PopupRequest<M extends PopupType = any> = Record<
+export type PopupRequest<M extends PopupType = any> = { id: string } & Record<
   M,
   {
     TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
