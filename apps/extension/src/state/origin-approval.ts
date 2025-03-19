@@ -33,15 +33,16 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
     if (existing.responder) {
       throw new Error('Another request is still pending');
     }
-
     const responder = Promise.withResolvers<PopupResponse<PopupType.OriginApproval>>();
+    set(state => {
+      state.originApproval.responder = responder;
+    });
 
     set(state => {
       state.originApproval.favIconUrl = favIconUrl;
       state.originApproval.title = title && !title.startsWith(requestOrigin) ? title : undefined;
       state.originApproval.requestOrigin = requestOrigin;
       state.originApproval.lastRequest = lastRequest ? new Date(lastRequest) : undefined;
-      state.originApproval.responder = responder;
     });
 
     return responder.promise;
@@ -50,23 +51,25 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
   sendResponse: () => {
     const { responder, choice, requestOrigin } = get().originApproval;
 
-    if (!responder) {
-      throw new Error('No responder');
-    }
-
     try {
-      if (choice === undefined || !requestOrigin) {
-        throw new Error('Missing response data');
+      if (!responder) {
+        throw new Error('No responder');
       }
-      responder.resolve({
-        OriginApproval: {
-          choice,
-          origin: requestOrigin,
-          date: Date.now(),
-        },
-      });
-    } catch (e) {
-      responder.reject(e);
+      try {
+        if (choice === undefined || !requestOrigin) {
+          throw new ReferenceError('Missing response data');
+        }
+
+        responder.resolve({
+          OriginApproval: {
+            choice,
+            origin: requestOrigin,
+            date: Date.now(),
+          },
+        });
+      } catch (e) {
+        responder.reject(e);
+      }
     } finally {
       set(state => {
         state.originApproval.responder = undefined;
