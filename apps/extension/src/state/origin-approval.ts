@@ -1,10 +1,11 @@
-import { OriginApproval, PopupType } from '../message/popup';
-import { AllSlices, SliceCreator } from '.';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { AllSlices, SliceCreator } from '.';
+import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
 
 export interface OriginApprovalSlice {
-  responder?: PromiseWithResolvers<InternalResponse<OriginApproval>>;
+  responder?: PromiseWithResolvers<
+    PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]
+  >;
   favIconUrl?: string;
   title?: string;
   requestOrigin?: string;
@@ -12,8 +13,8 @@ export interface OriginApprovalSlice {
   lastRequest?: Date;
 
   acceptRequest: (
-    req: InternalRequest<OriginApproval>,
-  ) => Promise<InternalResponse<OriginApproval>>;
+    req: PopupRequest<PopupType.OriginApproval>[PopupType.OriginApproval],
+  ) => Promise<PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]>;
 
   setChoice: (attitute: UserChoice) => void;
 
@@ -27,14 +28,15 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
     });
   },
 
-  acceptRequest: ({ request: { origin: requestOrigin, favIconUrl, title, lastRequest } }) => {
+  acceptRequest: ({ origin: requestOrigin, favIconUrl, title, lastRequest }) => {
     const existing = get().originApproval;
     if (existing.responder) {
       throw new Error('Another request is still pending');
     }
 
     // set responder synchronously
-    const responder = Promise.withResolvers<InternalResponse<OriginApproval>>();
+    const responder =
+      Promise.withResolvers<PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]>();
     set(state => {
       state.originApproval.responder = responder;
     });
@@ -62,12 +64,9 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
         }
 
         responder.resolve({
-          type: PopupType.OriginApproval,
-          data: {
-            choice,
-            origin: requestOrigin,
-            date: Date.now(),
-          },
+          choice,
+          origin: requestOrigin,
+          date: Date.now(),
         });
       } catch (e) {
         responder.reject(e);

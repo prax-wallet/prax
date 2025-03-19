@@ -1,16 +1,15 @@
 import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { AllSlices, SliceCreator } from '.';
-import { PopupType, TxApproval } from '../message/popup';
 import {
   TransactionPlan,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { viewClient } from '../clients';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
+
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
@@ -20,6 +19,7 @@ import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transa
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import type { ExtensionStorage } from '../storage/base';
 import type { LocalStorageState } from '../storage/types';
+import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
 
 export interface TxApprovalSlice {
   /**
@@ -29,7 +29,7 @@ export interface TxApprovalSlice {
    * that everything be JSON-serializeable. So we'll store `Stringified`
    * representations of them instead.
    */
-  responder?: PromiseWithResolvers<InternalResponse<TxApproval>>;
+  responder?: PromiseWithResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionView?: Stringified<TransactionView>;
   choice?: UserChoice;
@@ -39,7 +39,9 @@ export interface TxApprovalSlice {
   asPublic?: Stringified<TransactionView>;
   transactionClassification?: TransactionClassification;
 
-  acceptRequest: (req: InternalRequest<TxApproval>) => Promise<InternalResponse<TxApproval>>;
+  acceptRequest: (
+    req: PopupRequest<PopupType.TxApproval>[PopupType.TxApproval],
+  ) => Promise<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
 
   setChoice: (choice: UserChoice) => void;
 
@@ -49,12 +51,13 @@ export interface TxApprovalSlice {
 export const createTxApprovalSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<TxApprovalSlice> =>
   (set, get) => ({
-    acceptRequest: async ({ request: { authorizeRequest: authReqJson } }) => {
+    acceptRequest: async ({ authorizeRequest: authReqJson }) => {
       const existing = get().txApproval;
       if (existing.responder) {
         throw new Error('Another request is still pending');
       }
-      const responder = Promise.withResolvers<InternalResponse<TxApproval>>();
+      const responder =
+        Promise.withResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>();
       set(state => {
         state.txApproval.responder = responder;
       });
@@ -74,6 +77,7 @@ export const createTxApprovalSlice =
       if (!wallets[0]) {
         throw new Error('No found wallet');
       }
+
       const transactionView = await viewTransactionPlan(
         authorizeRequest.plan ?? new TransactionPlan(),
         getMetadata,
@@ -136,11 +140,8 @@ export const createTxApprovalSlice =
           ).toJson() as Jsonified<AuthorizeRequest>;
 
           responder.resolve({
-            type: PopupType.TxApproval,
-            data: {
-              choice,
-              authorizeRequest,
-            },
+            choice,
+            authorizeRequest,
           });
         } catch (e) {
           responder.reject(e);
