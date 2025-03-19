@@ -1,5 +1,5 @@
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
-import { PraxConnection } from '../message/prax';
+import { PraxConnection } from '../content-scripts/message/prax-connection';
 import { removeOriginRecord } from '../storage/origin';
 import { assertValidSender } from './validate';
 

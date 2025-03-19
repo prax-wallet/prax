@@ -1,7 +1,7 @@
 import { Code, ConnectError } from '@connectrpc/connect';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { PraxConnection } from '../../message/prax';
+import { PraxConnection } from '../../content-scripts/message/prax-connection';
 import { approveSender } from '../../senders/approve';
 import { assertValidSender } from '../../senders/validate';
 
