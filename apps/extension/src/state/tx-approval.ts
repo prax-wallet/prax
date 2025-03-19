@@ -1,26 +1,23 @@
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
-import { AllSlices, SliceCreator } from '.';
-import { PopupType, TxApproval } from '../message/popup';
-import {
-  TransactionPlan,
-  TransactionView,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { viewClient } from '../clients';
-import { ConnectError } from '@connectrpc/connect';
-import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
-import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
+import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
+import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
 } from '@penumbra-zone/perspective/translators/transaction-view';
-import { localExtStorage } from '../storage/local';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  TransactionPlan,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { AllSlices, SliceCreator } from '.';
+import { viewClient } from '../clients';
+import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
+import { localExtStorage } from '../storage/local';
 
 export interface TxApprovalSlice {
   /**
@@ -30,7 +27,7 @@ export interface TxApprovalSlice {
    * that everything be JSON-serializeable. So we'll store `Stringified`
    * representations of them instead.
    */
-  responder?: (m: InternalResponse<TxApproval>) => void;
+  responder?: PromiseWithResolvers<PopupResponse<PopupType.TxApproval>>;
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionView?: Stringified<TransactionView>;
   choice?: UserChoice;
@@ -41,9 +38,8 @@ export interface TxApprovalSlice {
   transactionClassification?: TransactionClassification;
 
   acceptRequest: (
-    req: InternalRequest<TxApproval>,
-    responder: (m: InternalResponse<TxApproval>) => void,
-  ) => Promise<void>;
+    req: PopupRequest<PopupType.TxApproval>,
+  ) => Promise<PopupResponse<PopupType.TxApproval>>;
 
   setChoice: (choice: UserChoice) => void;
 
@@ -51,11 +47,13 @@ export interface TxApprovalSlice {
 }
 
 export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, get) => ({
-  acceptRequest: async ({ request: { authorizeRequest: authReqJson } }, responder) => {
+  acceptRequest: async ({ TxApproval: { authorizeRequest: authReqJson } }) => {
     const existing = get().txApproval;
     if (existing.responder) {
       throw new Error('Another request is still pending');
     }
+
+    const responder = Promise.withResolvers<PopupResponse<PopupType.TxApproval>>();
 
     const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
 
@@ -101,6 +99,8 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
 
       state.txApproval.choice = undefined;
     });
+
+    return responder.promise;
   },
 
   setChoice: choice => {
@@ -131,18 +131,14 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
         authorizeRequestString,
       ).toJson() as Jsonified<AuthorizeRequest>;
 
-      responder({
-        type: PopupType.TxApproval,
-        data: {
+      responder.resolve({
+        TxApproval: {
           choice,
           authorizeRequest,
         },
       });
     } catch (e) {
-      responder({
-        type: PopupType.TxApproval,
-        error: errorToJson(ConnectError.from(e), undefined),
-      });
+      responder.reject(e);
     } finally {
       set(state => {
         state.txApproval.responder = undefined;

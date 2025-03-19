@@ -1,49 +1,54 @@
 import type { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
-import type {
-  InternalMessage,
-  InternalRequest,
-  InternalResponse,
-} from '@penumbra-zone/types/internal-msg/shared';
-import type { UserChoice } from '@penumbra-zone/types/user-choice';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
+import type { UserChoice } from '@penumbra-zone/types/user-choice';
 import { OriginRecord } from '../storage/types';
+import { JsonValue } from '@bufbuild/protobuf';
 
 export enum PopupType {
   TxApproval = 'TxApproval',
   OriginApproval = 'OriginApproval',
 }
 
-export type PopupMessage = TxApproval | OriginApproval;
-export type PopupRequest<T extends PopupMessage = PopupMessage> = InternalRequest<T>;
-export type PopupResponse<T extends PopupMessage = PopupMessage> = InternalResponse<T>;
+export type PopupError = Record<'error', JsonValue>;
 
-export type OriginApproval = InternalMessage<
-  PopupType.OriginApproval,
-  { origin: string; favIconUrl?: string; title?: string; lastRequest?: number },
-  null | OriginRecord
->;
-
-export type TxApproval = InternalMessage<
-  PopupType.TxApproval,
+export type PopupRequest<M extends PopupType> = Record<
+  M,
   {
-    authorizeRequest: Jsonified<AuthorizeRequest>;
-  },
-  null | {
-    authorizeRequest: Jsonified<AuthorizeRequest>;
-    choice: UserChoice;
-  }
+    TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
+    OriginApproval: {
+      origin: string;
+      favIconUrl?: string;
+      title?: string;
+      lastRequest?: number;
+    };
+  }[M]
 >;
 
-export const isPopupRequest = (req: unknown): req is PopupRequest =>
-  req != null &&
+export type PopupResponse<M extends PopupType> = Record<
+  M,
+  {
+    TxApproval: {
+      authorizeRequest: Jsonified<AuthorizeRequest>;
+      choice: UserChoice;
+    };
+    OriginApproval: OriginRecord;
+  }[M]
+>;
+
+export const isPopupRequest = <M extends PopupType>(
+  req: unknown,
+  pt?: M | undefined,
+): req is PopupRequest<M> =>
   typeof req === 'object' &&
-  'request' in req &&
-  'type' in req &&
-  typeof req.type === 'string' &&
-  req.type in PopupType;
+  req !== null &&
+  Object.keys(req).length === 1 &&
+  Object.keys(req).some(k => (pt != null ? pt === k : k in PopupType));
 
-export const isOriginApprovalRequest = (req: unknown): req is InternalRequest<OriginApproval> =>
-  isPopupRequest(req) && req.type === PopupType.OriginApproval && 'origin' in req.request;
-
-export const isTxApprovalRequest = (req: unknown): req is InternalRequest<TxApproval> =>
-  isPopupRequest(req) && req.type === PopupType.TxApproval && 'authorizeRequest' in req.request;
+export const isPopupResponse = <M extends PopupType>(
+  res: unknown,
+  pt: M,
+): res is PopupResponse<M> =>
+  typeof res === 'object' &&
+  res !== null &&
+  Object.keys(res).length === 1 &&
+  pt === Object.keys(res)[0];

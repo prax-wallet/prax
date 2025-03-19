@@ -1,12 +1,9 @@
-import { ConnectError } from '@connectrpc/connect';
-import { OriginApproval, PopupType } from '../message/popup';
-import { AllSlices, SliceCreator } from '.';
-import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { AllSlices, SliceCreator } from '.';
+import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
 
 export interface OriginApprovalSlice {
-  responder?: (m: InternalResponse<OriginApproval>) => void;
+  responder?: PromiseWithResolvers<PopupResponse<PopupType.OriginApproval>>;
   favIconUrl?: string;
   title?: string;
   requestOrigin?: string;
@@ -14,9 +11,8 @@ export interface OriginApprovalSlice {
   lastRequest?: Date;
 
   acceptRequest: (
-    req: InternalRequest<OriginApproval>,
-    responder: (m: InternalResponse<OriginApproval>) => void,
-  ) => void;
+    req: PopupRequest<PopupType.OriginApproval>,
+  ) => Promise<PopupResponse<PopupType.OriginApproval>>;
 
   setChoice: (attitute: UserChoice) => void;
 
@@ -30,14 +26,15 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
     });
   },
 
-  acceptRequest: (
-    { request: { origin: requestOrigin, favIconUrl, title, lastRequest } },
-    responder,
-  ) => {
+  acceptRequest: ({
+    OriginApproval: { origin: requestOrigin, favIconUrl, title, lastRequest },
+  }) => {
     const existing = get().originApproval;
     if (existing.responder) {
       throw new Error('Another request is still pending');
     }
+
+    const responder = Promise.withResolvers<PopupResponse<PopupType.OriginApproval>>();
 
     set(state => {
       state.originApproval.favIconUrl = favIconUrl;
@@ -46,6 +43,8 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
       state.originApproval.lastRequest = lastRequest ? new Date(lastRequest) : undefined;
       state.originApproval.responder = responder;
     });
+
+    return responder.promise;
   },
 
   sendResponse: () => {
@@ -59,19 +58,15 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
       if (choice === undefined || !requestOrigin) {
         throw new Error('Missing response data');
       }
-      responder({
-        type: PopupType.OriginApproval,
-        data: {
+      responder.resolve({
+        OriginApproval: {
           choice,
           origin: requestOrigin,
           date: Date.now(),
         },
       });
     } catch (e) {
-      responder({
-        type: PopupType.OriginApproval,
-        error: errorToJson(ConnectError.from(e), undefined),
-      });
+      responder.reject(e);
     } finally {
       set(state => {
         state.originApproval.responder = undefined;

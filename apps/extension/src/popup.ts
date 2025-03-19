@@ -1,44 +1,35 @@
-import { sessionExtStorage } from './storage/session';
-import { PopupMessage, PopupRequest, PopupType } from './message/popup';
-import { PopupPath } from './routes/popup/paths';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import { JsonValue } from '@bufbuild/protobuf';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+import { isPopupResponse, PopupRequest, PopupResponse, PopupType } from './message/popup';
+import { PopupPath } from './routes/popup/paths';
+import { sessionExtStorage } from './storage/session';
+import { suppressChromeResponderDroppedError } from './utils/chrome-errors';
 
-type ChromeResponderDroppedMessage =
-  'A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received';
-
-const isChromeResponderDroppedError = (
-  e: unknown,
-): e is Error & { message: ChromeResponderDroppedMessage } =>
-  e instanceof Error &&
-  e.message ===
-    'A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received';
-
-export const popup = async <M extends PopupMessage>(
-  req: PopupRequest<M>,
-): Promise<M['response']> => {
+export const popup = async <M extends PopupType>(
+  popupType: M,
+  req: PopupRequest<M>[M],
+): Promise<PopupResponse<M>[M] | null> => {
   const popupId = crypto.randomUUID();
-  await spawnPopup(req.type, popupId);
+  await spawnPopup(popupType, popupId);
 
   // this is necessary given it takes a bit of time for the popup
   // to be ready to accept messages from the service worker.
   await popupReady(popupId);
 
+  const popupRequest = { [popupType]: req } as Record<M, PopupRequest<M>[M]>;
   const response = await chrome.runtime
-    .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
-    .catch((e: unknown) => {
-      if (isChromeResponderDroppedError(e)) {
-        return null;
-      } else {
-        throw e;
-      }
-    });
+    .sendMessage<PopupRequest<M>, null | PopupResponse<M> | { error: JsonValue }>(popupRequest)
+    .catch(suppressChromeResponderDroppedError);
 
-  if (response && 'error' in response) {
+  if (response == null) {
+    return null;
+  } else if ('error' in response) {
     throw errorFromJson(response.error, undefined, ConnectError.from(response));
+  } else if (isPopupResponse(response, popupType)) {
+    return response[popupType];
   } else {
-    return response && response.data;
+    throw new TypeError('Unknown popup response', { cause: response });
   }
 };
 
