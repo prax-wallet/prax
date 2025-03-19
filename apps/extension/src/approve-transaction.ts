@@ -1,7 +1,7 @@
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { PopupType, TxApproval } from './message/popup';
+import { PopupType } from './message/popup';
 import { popup } from './popup';
 
 export const approveTransaction = async (
@@ -9,13 +9,10 @@ export const approveTransaction = async (
 ) => {
   const authorizeRequest = new AuthorizeRequest(partialAuthorizeRequest);
 
-  const popupResponse = await popup<TxApproval>({
-    type: PopupType.TxApproval,
-    request: {
-      authorizeRequest: new AuthorizeRequest(
-        authorizeRequest,
-      ).toJson() as Jsonified<AuthorizeRequest>,
-    },
+  const popupResponse = await popup(PopupType.TxApproval, {
+    authorizeRequest: new AuthorizeRequest(
+      authorizeRequest,
+    ).toJson() as Jsonified<AuthorizeRequest>,
   });
 
   if (popupResponse) {
