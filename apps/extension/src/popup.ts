@@ -41,6 +41,8 @@ const spawnDetachedPopup = async (url: URL): Promise<string> => {
   await chrome.windows.create({
     url: url.href,
     type: 'popup',
+    width: 400,
+    height: 628,
     top,
     // press the window to the right side of screen
     left: left !== undefined && width !== undefined ? left + (width - 400) : 0,
