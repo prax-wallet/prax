@@ -33,7 +33,7 @@ const listenPopup =
     return false;
   };
 
-export const handlePopupInit = async <T extends PopupType>(
+export const handlePopup = async <T extends PopupType>(
   popupRequest: PopupRequest extends PopupRequest<infer Q extends T> ? PopupRequest<Q> : never,
 ): Promise<PopupResponse extends PopupResponse<infer S extends T> ? PopupResponse<S> : never> => {
   if (isPopupRequestType(popupRequest, PopupType.TxApproval)) {
@@ -52,7 +52,7 @@ export const handlePopupInit = async <T extends PopupType>(
  * The initialization message responder is stored in the dialog's state slice
  * and eventually used by components to respond with the dialog result.
  */
-export const usePopupInit = () => {
+export const usePopupReady = () => {
   const sentReady = useRef(new Set());
   const attachedListeners = useRef(new Set());
 
@@ -60,12 +60,12 @@ export const usePopupInit = () => {
     if (!sentReady.current.size && !attachedListeners.current.size) {
       const popupId = new URL(window.location.href).searchParams.get('id');
       if (popupId) {
-        const listener = listenPopup(popupId, handlePopupInit);
+        const listener = listenPopup(popupId, handlePopup);
         chrome.runtime.onMessage.addListener(listener);
         attachedListeners.current.add(listener);
         void chrome.runtime.sendMessage(popupId);
         sentReady.current.add(popupId);
       }
     }
-  }, [sentReady, attachedListeners, handlePopupInit]);
+  }, [sentReady, attachedListeners, handlePopup]);
 };

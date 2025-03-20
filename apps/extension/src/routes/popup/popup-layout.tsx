@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { usePopupInit } from '../../hooks/popup-init';
+import { usePopupReady } from '../../hooks/popup-ready';
 
 /**
  * @todo: Fix the issue where the detached popup isn't sized correctly. This
@@ -13,7 +13,7 @@ import { usePopupInit } from '../../hooks/popup-init';
  * then removing the hard-coded width from `globals.css`.
  */
 export const PopupLayout = () => {
-  usePopupInit();
+  usePopupReady();
 
   return (
     <div className='relative flex grow flex-col bg-card-radial'>
