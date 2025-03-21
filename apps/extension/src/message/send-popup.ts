@@ -1,39 +1,33 @@
-import { PopupRequest, PopupResponse, PopupError, PopupType } from './popup';
+import { PopupRequest, PopupResponse, PopupType, isPopupResponseType, typeOfPopup } from './popup';
 import { suppressChromeResponderDroppedError } from '../utils/chrome-errors';
+import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+import { ConnectError } from '@connectrpc/connect';
+import { JsonValue } from '@bufbuild/protobuf';
 
-export const POPUP_READY_TIMEOUT = 60 * 1000;
-
+/**
+ * Send a configuration message to a uniquely identified popup, and await
+ * response. Resolves `null` if the popup is closed.
+ */
 export const sendPopup = async <M extends PopupType>(
-  id: string,
-  popupType: M,
-  request: PopupRequest<M>[M],
-) => {
-  const popupRequest = {
-    id,
-    [popupType]: request,
-  } as PopupRequest<M>;
-
-  return chrome.runtime
-    .sendMessage<PopupRequest<M>, PopupResponse<M> | PopupError>(popupRequest)
+  popupRequest: PopupRequest<M>,
+): Promise<PopupResponse<M> | null> => {
+  const popupResponse: unknown = await chrome.runtime
+    .sendMessage(popupRequest)
     .catch(suppressChromeResponderDroppedError);
-};
 
-export const listenReady = (
-  id: string,
-  { resolve, reject }: Pick<PromiseWithResolvers<string>, 'resolve' | 'reject'>,
-) => {
-  const timeoutSignal = AbortSignal.timeout(POPUP_READY_TIMEOUT);
-  timeoutSignal.addEventListener('abort', () => reject(timeoutSignal.reason));
-  return (
-    msg: unknown,
-    _: chrome.runtime.MessageSender,
-    respond: (response: null) => void,
-  ): boolean => {
-    if (id === msg) {
-      resolve(id);
-      respond(null);
-      return true;
-    }
-    return false;
-  };
+  if (popupResponse == null) {
+    return null;
+  } else if (typeof popupResponse === 'object' && 'error' in popupResponse) {
+    throw errorFromJson(
+      popupResponse.error as JsonValue,
+      undefined,
+      ConnectError.from('Popup failed'),
+    );
+  } else if (isPopupResponseType(typeOfPopup(popupRequest), popupResponse)) {
+    return popupResponse;
+  } else {
+    throw new TypeError('Invalid response to popup', {
+      cause: { popupRequest, popupResponse },
+    });
+  }
 };

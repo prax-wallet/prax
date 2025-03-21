@@ -1,48 +1,27 @@
 import { useEffect, useRef } from 'react';
-import {
-  isPopupRequest,
-  isPopupRequestType,
-  PopupError,
-  PopupRequest,
-  PopupResponse,
-  PopupType,
-} from '../message/popup';
-import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { ConnectError } from '@connectrpc/connect';
-import { isInternalSender } from '../senders/internal';
+import { PopupRequest, PopupResponse, PopupType, typeOfPopup } from '../message/popup';
 import { useStore } from '../state';
-import { originApprovalSelector } from '../state/origin-approval';
-import { txApprovalSelector } from '../state/tx-approval';
+import { listenPopup } from '../message/listen-popup';
 
-const listenPopup =
-  (
-    popupId: string,
-    handle: <T extends PopupType>(message: PopupRequest<T>) => Promise<PopupResponse<T>>,
-  ) =>
-  (
-    message: unknown,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: (response: PopupResponse | PopupError) => void,
-  ): boolean => {
-    if (isInternalSender(sender) && isPopupRequest(popupId, message)) {
-      void handle(message)
-        .catch(e => ({ error: errorToJson(ConnectError.from(e), undefined) }))
-        .then(sendResponse);
-      return true;
-    }
-    return false;
+const handlePopup = async <T extends PopupType>(
+  popupRequest: PopupRequest<T>,
+): Promise<PopupResponse<T>> => {
+  const popupType = typeOfPopup(popupRequest);
+
+  // get popup slice acceptRequest method
+  const state = useStore.getState();
+  const handlers: {
+    [k in PopupType]: (request: PopupRequest<k>[k]) => Promise<PopupResponse<k>[k]>;
+  } = {
+    [PopupType.TxApproval]: state.txApproval.acceptRequest,
+    [PopupType.OriginApproval]: state.originApproval.acceptRequest,
   };
 
-export const handlePopup = async <T extends PopupType>(
-  popupRequest: PopupRequest extends PopupRequest<infer Q extends T> ? PopupRequest<Q> : never,
-): Promise<PopupResponse extends PopupResponse<infer S extends T> ? PopupResponse<S> : never> => {
-  if (isPopupRequestType(popupRequest, PopupType.TxApproval)) {
-    return txApprovalSelector(useStore.getState()).acceptRequest(popupRequest);
-  } else if (isPopupRequestType(popupRequest, PopupType.OriginApproval)) {
-    return originApprovalSelector(useStore.getState()).acceptRequest(popupRequest);
-  } else {
-    throw new TypeError('Unknown popup type', { cause: popupRequest });
-  }
+  const popupResponse = {
+    [popupType]: await handlers[popupType](popupRequest[popupType]),
+  } as PopupResponse<T>;
+
+  return popupResponse;
 };
 
 /**

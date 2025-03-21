@@ -11,33 +11,12 @@ export enum PopupType {
 
 export type PopupError = Record<'error', JsonValue>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type PopupRequest<M extends PopupType = any> = { id: string } & Record<
-  M,
-  {
-    TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
-    OriginApproval: {
-      origin: string;
-      favIconUrl?: string;
-      title?: string;
-      lastRequest?: number;
-    };
-  }[M]
->;
+export type PopupRequest<M extends PopupType> = { id: string } & Record<M, PopupRequestMap[M]>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type PopupResponse<M extends PopupType = any> = Record<
-  M,
-  {
-    TxApproval: {
-      authorizeRequest: Jsonified<AuthorizeRequest>;
-      choice: UserChoice;
-    };
-    OriginApproval: OriginRecord;
-  }[M]
->;
+export type PopupResponse<M extends PopupType> = Record<M, PopupResponseMap[M]>;
 
-export const isPopupRequest = (id: string, req: unknown): req is PopupRequest =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- doesn't narrow the parameter
+export const isPopupRequest = (id: string, req: unknown): req is PopupRequest<any> =>
   typeof req === 'object' &&
   req !== null &&
   Object.keys(req).length === 2 &&
@@ -46,8 +25,8 @@ export const isPopupRequest = (id: string, req: unknown): req is PopupRequest =>
   Object.keys(req).some(k => k in PopupType);
 
 export const isPopupRequestType = <M extends PopupType>(
-  req: unknown,
   pt: M,
+  req: unknown,
 ): req is PopupRequest<M> =>
   typeof req === 'object' &&
   req !== null &&
@@ -56,10 +35,38 @@ export const isPopupRequestType = <M extends PopupType>(
   Object.keys(req).some(k => pt === k);
 
 export const isPopupResponseType = <M extends PopupType>(
-  res: unknown,
   pt: M,
+  res: unknown,
 ): res is PopupResponse<M> =>
   typeof res === 'object' &&
   res !== null &&
   Object.keys(res).length === 1 &&
   pt === Object.keys(res)[0];
+
+export const typeOfPopup = <M extends PopupType>(req: PopupRequest<M> | PopupResponse<M>): M => {
+  const [key, ...extra] = Object.keys(req).filter(k => k !== 'id');
+  if (!extra.length && key && key in PopupType) {
+    return key as M;
+  }
+  throw new TypeError('Unknown popup type', { cause: { req } });
+};
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- map
+type PopupRequestMap = {
+  TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
+  OriginApproval: {
+    origin: string;
+    favIconUrl?: string;
+    title?: string;
+    lastRequest?: number;
+  };
+};
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- map
+type PopupResponseMap = {
+  TxApproval: {
+    authorizeRequest: Jsonified<AuthorizeRequest>;
+    choice: UserChoice;
+  };
+  OriginApproval: OriginRecord;
+};
