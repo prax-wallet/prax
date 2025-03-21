@@ -41,16 +41,18 @@ const hasTransparentAddress = (txv?: TransactionView): boolean => {
 };
 
 export const TransactionApproval = () => {
-  const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
+  const {
+    authorizeRequest: plainAuthRequest,
+    setChoice,
+    sendResponse,
+  } = useStore(txApprovalSelector);
 
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
 
-  if (!authReqString) {
-    return null;
-  }
-  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
-  if (!authorizeRequest.plan || !selectedTransactionView) {
+  const authorizeRequest = plainAuthRequest ? new AuthorizeRequest(plainAuthRequest) : undefined;
+
+  if (!authorizeRequest?.plan || !selectedTransactionView) {
     return null;
   }
 

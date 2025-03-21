@@ -1,6 +1,6 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 
@@ -14,11 +14,8 @@ describe('Origin Approval Slice', () => {
   test('initial state is empty', () => {
     const state = useStore.getState().originApproval;
     expect(state.responder).toBeUndefined();
-    expect(state.favIconUrl).toBeUndefined();
-    expect(state.title).toBeUndefined();
-    expect(state.requestOrigin).toBeUndefined();
-    expect(state.choice).toBeUndefined();
-    expect(state.lastRequest).toBeUndefined();
+    expect(state.request).toBeUndefined();
+    expect(state.response).toBeUndefined();
   });
 
   describe('acceptRequest()', () => {
@@ -28,9 +25,9 @@ describe('Origin Approval Slice', () => {
       const title = 'Example Site';
       const lastRequest = Date.now();
 
-      const requestPromise = useStore.getState().originApproval.acceptRequest({
-        OriginApproval: { origin, favIconUrl, title, lastRequest },
-      });
+      const requestPromise = useStore
+        .getState()
+        .originApproval.acceptRequest({ origin, favIconUrl, title, lastRequest });
 
       // Shouldn't resolve yet
       expect(requestPromise).not.toBeUndefined();
@@ -38,46 +35,36 @@ describe('Origin Approval Slice', () => {
       // Check state was updated
       const state = useStore.getState().originApproval;
       expect(state.responder).not.toBeUndefined();
-      expect(state.favIconUrl).toBe(favIconUrl);
-      expect(state.title).toBe(title);
-      expect(state.requestOrigin).toBe(origin);
-      expect(state.lastRequest?.getTime()).toBe(lastRequest);
-    });
-
-    test('does not set title if it starts with origin', () => {
-      const origin = 'https://example.com';
-      const title = 'https://example.com - Some Page';
-
-      void useStore.getState().originApproval.acceptRequest({
-        OriginApproval: { origin, title },
-      });
-
-      // Title should be undefined since it starts with the origin
-      expect(useStore.getState().originApproval.title).toBeUndefined();
+      expect(state.request).toEqual({ origin, favIconUrl, title, lastRequest });
     });
 
     test('throws if another request is pending', () => {
       // First request
       void useStore.getState().originApproval.acceptRequest({
-        OriginApproval: { origin: 'https://example.com' },
+        origin: 'https://example.com',
       });
 
       // Second request should throw
       expect(() =>
         useStore.getState().originApproval.acceptRequest({
-          OriginApproval: { origin: 'https://another.com' },
+          origin: 'https://another.com',
         }),
-      ).toThrow('Another request is still pending');
+      ).toThrow('Another origin approval is still pending');
     });
   });
 
   describe('setChoice()', () => {
     test('sets choice correctly', () => {
+      // First we need to accept a request
+      void useStore.getState().originApproval.acceptRequest({
+        origin: 'https://example.com',
+      });
+
       useStore.getState().originApproval.setChoice(UserChoice.Approved);
-      expect(useStore.getState().originApproval.choice).toBe(UserChoice.Approved);
+      expect(useStore.getState().originApproval.response?.choice).toBe(UserChoice.Approved);
 
       useStore.getState().originApproval.setChoice(UserChoice.Denied);
-      expect(useStore.getState().originApproval.choice).toBe(UserChoice.Denied);
+      expect(useStore.getState().originApproval.response?.choice).toBe(UserChoice.Denied);
     });
   });
 
@@ -87,7 +74,7 @@ describe('Origin Approval Slice', () => {
 
       // Setup - accept a request and set choice
       const response = useStore.getState().originApproval.acceptRequest({
-        OriginApproval: { origin },
+        origin,
       });
 
       // Set the required data
@@ -96,35 +83,43 @@ describe('Origin Approval Slice', () => {
       // Send response
       useStore.getState().originApproval.sendResponse();
 
-      await expect(response).resolves.toHaveProperty('OriginApproval');
+      // Verify the response resolves properly
+      await response;
 
       // State should be reset
       const state = useStore.getState().originApproval;
       expect(state.responder).toBeUndefined();
-      expect(state.favIconUrl).toBeUndefined();
-      expect(state.title).toBeUndefined();
-      expect(state.requestOrigin).toBeUndefined();
-      expect(state.choice).toBeUndefined();
+      expect(state.request).toBeUndefined();
+      expect(state.response).toBeUndefined();
     });
 
     test('throws if no responder', () => {
-      expect(() => useStore.getState().originApproval.sendResponse()).toThrow('No responder');
+      // Mock console.error to prevent error output in test
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      expect(() => useStore.getState().originApproval.sendResponse()).toThrow(
+        'No origin approval is pending',
+      );
+
+      consoleErrorSpy.mockRestore();
     });
 
-    test('rejects if missing response data', async () => {
+    test('rejects if missing response data', () => {
       // Setup - accept a request but don't set choice
-      const response = useStore.getState().originApproval.acceptRequest({
-        OriginApproval: { origin: 'https://example.com' },
+      void useStore.getState().originApproval.acceptRequest({
+        origin: 'https://example.com',
       });
 
-      useStore.getState().originApproval.sendResponse();
-
-      // Send response without choice should throw
-      await expect(response).rejects.toThrow('Missing response data');
+      // Send response without setting choice
+      expect(() => useStore.getState().originApproval.sendResponse()).toThrow(
+        'Missing origin approval response',
+      );
 
       // State should be reset
       const state = useStore.getState().originApproval;
       expect(state.responder).toBeUndefined();
+      expect(state.request).toBeUndefined();
+      expect(state.response).toBeUndefined();
     });
   });
 });

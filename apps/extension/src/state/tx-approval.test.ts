@@ -1,4 +1,4 @@
-import { JsonObject } from '@bufbuild/protobuf';
+import { JsonObject, toPlainMessage } from '@bufbuild/protobuf';
 import {
   TransactionPlan,
   TransactionView,
@@ -78,13 +78,9 @@ describe('Transaction Approval Slice', () => {
   test('initial state is empty', () => {
     const state = useStore.getState().txApproval;
     expect(state.responder).toBeUndefined();
-    expect(state.authorizeRequest).toBeUndefined();
-    expect(state.transactionView).toBeUndefined();
-    expect(state.choice).toBeUndefined();
-    expect(state.asSender).toBeUndefined();
-    expect(state.asReceiver).toBeUndefined();
-    expect(state.asPublic).toBeUndefined();
-    expect(state.transactionClassification).toBeUndefined();
+    expect(state.request).toBeUndefined();
+    expect(state.response).toBeUndefined();
+    expect(state.views).toBeUndefined();
   });
 
   describe('acceptRequest()', () => {
@@ -93,14 +89,14 @@ describe('Transaction Approval Slice', () => {
         plan: new TransactionPlan(),
       });
 
-      void useStore.getState().txApproval.acceptRequest({
-        TxApproval: { authorizeRequest: authorizeRequest.toJson() as JsonObject },
-      });
+      void useStore
+        .getState()
+        .txApproval.acceptRequest({ authorizeRequest: authorizeRequest.toJson() as JsonObject });
 
       // Wait for async operations to complete
       await vi.waitFor(() =>
-        expect(useStore.getState().txApproval.authorizeRequest).toEqual(
-          authorizeRequest.toJsonString(),
+        expect(useStore.getState().txApproval.request?.authorizeRequest).toEqual(
+          toPlainMessage(authorizeRequest),
         ),
       );
     });
@@ -112,31 +108,43 @@ describe('Transaction Approval Slice', () => {
 
       // First request
       void useStore.getState().txApproval.acceptRequest({
-        TxApproval: { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+        authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
       // Second request should throw
       await expect(
         useStore.getState().txApproval.acceptRequest({
-          TxApproval: { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+          authorizeRequest: authorizeRequest.toJson() as JsonObject,
         }),
-      ).rejects.toThrow('Another request is still pending');
+      ).rejects.toThrow('Another transaction approval is still pending');
     });
   });
 
   describe('setChoice()', () => {
-    test('sets choice correctly', () => {
+    test('sets choice correctly', async () => {
+      const authorizeRequest = new AuthorizeRequest({
+        plan: new TransactionPlan(),
+      });
+
+      void useStore
+        .getState()
+        .txApproval.acceptRequest({ authorizeRequest: authorizeRequest.toJson() as JsonObject });
+
+      await vi.waitFor(() => expect(useStore.getState().txApproval.responder).toBeDefined());
+
       useStore.getState().txApproval.setChoice(UserChoice.Approved);
-      expect(useStore.getState().txApproval.choice).toBe(UserChoice.Approved);
+      expect(useStore.getState().txApproval.response?.choice).toBe(UserChoice.Approved);
 
       useStore.getState().txApproval.setChoice(UserChoice.Denied);
-      expect(useStore.getState().txApproval.choice).toBe(UserChoice.Denied);
+      expect(useStore.getState().txApproval.response?.choice).toBe(UserChoice.Denied);
     });
   });
 
   describe('sendResponse()', () => {
     test('throws if no responder', () => {
-      expect(() => useStore.getState().txApproval.sendResponse()).toThrow('No responder');
+      expect(() => useStore.getState().txApproval.sendResponse()).toThrow(
+        'No transaction approval is pending',
+      );
     });
 
     test('resets state after sending response', async () => {
@@ -146,7 +154,7 @@ describe('Transaction Approval Slice', () => {
 
       // Setup - accept a request and set choice
       void useStore.getState().txApproval.acceptRequest({
-        TxApproval: { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+        authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
       // have to wait for the request to finish accepting...
@@ -161,39 +169,33 @@ describe('Transaction Approval Slice', () => {
       // State should be reset
       const state = useStore.getState().txApproval;
       expect(state.responder).toBeUndefined();
-      expect(state.authorizeRequest).toBeUndefined();
-      expect(state.transactionView).toBeUndefined();
-      expect(state.choice).toBeUndefined();
-      expect(state.asSender).toBeUndefined();
-      expect(state.asReceiver).toBeUndefined();
-      expect(state.asPublic).toBeUndefined();
-      expect(state.transactionClassification).toBeUndefined();
+      expect(state.request).toBeUndefined();
+      expect(state.response).toBeUndefined();
+      expect(state.views).toBeUndefined();
     });
 
-    test('throws if missing response data', async () => {
+    test('throws if missing response data', () => {
       const authorizeRequest = new AuthorizeRequest({
         plan: new TransactionPlan(),
       });
 
       // Setup - accept a request but don't set choice
 
-      const request = useStore.getState().txApproval.acceptRequest({
-        TxApproval: { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+      void useStore.getState().txApproval.acceptRequest({
+        authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
-      // have to wait for the request to finish accepting...
-      await new Promise(resolve => setTimeout(resolve, 1));
-      useStore.getState().txApproval.sendResponse();
-
       // Should throw when sending response without setting choice
-      await expect(request).rejects.toThrow('Missing response data');
+      expect(() => useStore.getState().txApproval.sendResponse()).toThrow(
+        'Missing transaction approval response',
+      );
 
       // State should be reset after throwing
       const state = useStore.getState().txApproval;
       expect(state.responder).toBeUndefined();
-      expect(state.authorizeRequest).toBeUndefined();
-      expect(state.transactionView).toBeUndefined();
-      expect(state.choice).toBeUndefined();
+      expect(state.request).toBeUndefined();
+      expect(state.response).toBeUndefined();
+      expect(state.views).toBeUndefined();
     });
   });
 });
