@@ -9,8 +9,14 @@ import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 export const OriginApproval = () => {
-  const { requestOrigin, favIconUrl, title, lastRequest, setChoice, sendResponse } =
-    useStore(originApprovalSelector);
+  const {
+    origin: requestOrigin,
+    favIconUrl,
+    title,
+    lastRequest,
+    setChoice,
+    sendResponse,
+  } = useStore(originApprovalSelector);
 
   const approve = () => {
     setChoice(UserChoice.Approved);
@@ -101,7 +107,7 @@ export const OriginApproval = () => {
           </div>
         </div>
         <div className='flex grow flex-col justify-end'>
-          <ApproveDeny approve={approve} deny={deny} ignore={lastRequest && ignore} />
+          <ApproveDeny approve={approve} deny={deny} ignore={lastRequest ? ignore : undefined} />
         </div>
       </div>
     </FadeTransition>

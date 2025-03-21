@@ -14,19 +14,15 @@ export const useTransactionViewSwitcher = (): {
   const [selectedTransactionViewName, setSelectedTransactionViewName] =
     useState<TransactionViewTab>(TransactionViewTab.SENDER);
 
-  const deserializedTransactionViews = useMemo(() => {
-    if (!asSender || !asReceiver || !asPublic) {
-      return {};
-    }
-
-    return {
-      asSender: TransactionView.fromJsonString(asSender),
-      asReceiver: TransactionView.fromJsonString(asReceiver),
-      asPublic: TransactionView.fromJsonString(asPublic),
-    };
-  }, [asSender, asReceiver, asPublic]);
-
-  const selectedTransactionView = deserializedTransactionViews[selectedTransactionViewName];
+  const selectedTransactionView = useMemo(
+    () =>
+      ({
+        asSender,
+        asReceiver,
+        asPublic,
+      })[selectedTransactionViewName],
+    [asSender, asReceiver, asPublic, selectedTransactionViewName],
+  );
 
   return {
     selectedTransactionView,

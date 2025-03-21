@@ -112,21 +112,20 @@ describe('origin approvals', () => {
       mockLocalStorage.get.mockReturnValue(Promise.resolve([]));
       const messageSender = { origin: 'mock://popuptest.example.com', tab: mockTab };
       mockPopup.mockResolvedValue({
-        choice: UserChoice.Approved,
-        date: 123,
-        origin: 'mock://popuptest.example.com',
-      } satisfies OriginRecord);
+        [PopupType.OriginApproval]: {
+          choice: UserChoice.Approved,
+          date: 123,
+          origin: 'mock://popuptest.example.com',
+        },
+      });
 
       await approveSender(messageSender);
 
-      expect(mockPopup).toHaveBeenCalledWith({
-        type: PopupType.OriginApproval,
-        request: {
-          origin: 'mock://popuptest.example.com',
-          favIconUrl: mockTab.favIconUrl,
-          title: mockTab.title,
-          lastRequest: undefined,
-        },
+      expect(mockPopup).toHaveBeenCalledWith(PopupType.OriginApproval, {
+        origin: 'mock://popuptest.example.com',
+        favIconUrl: mockTab.favIconUrl,
+        title: mockTab.title,
+        lastRequest: undefined,
       });
     });
 

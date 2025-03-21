@@ -1,77 +1,108 @@
-import { sessionExtStorage } from './storage/session';
-import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
-import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+import { sessionExtStorage } from './storage/session';
+import { PopupRequest, PopupResponse, PopupType } from './message/popup';
+import { sendPopup } from './message/send-popup';
+import { listenReady } from './message/listen-ready';
 
-type ChromeResponderDroppedMessage =
-  'A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received';
+type PopupGeometry = Required<Pick<chrome.windows.CreateData, 'width' | 'height' | 'top' | 'left'>>;
 
-const isChromeResponderDroppedError = (
-  e: unknown,
-): e is Error & { message: ChromeResponderDroppedMessage } =>
-  e instanceof Error &&
-  e.message ===
-    'A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received';
+const POPUP_READY_TIMEOUT = 60_000;
+const POPUP_PATHS = {
+  [PopupType.TxApproval]: PopupPath.TRANSACTION_APPROVAL,
+  [PopupType.OriginApproval]: PopupPath.ORIGIN_APPROVAL,
+} as const;
+const POPUP_BASE = chrome.runtime.getURL('/popup.html');
 
-export const popup = async <M extends PopupMessage>(
-  req: PopupRequest<M>,
-): Promise<M['response']> => {
-  const popupId = crypto.randomUUID();
-  await spawnPopup(req.type, popupId);
+/**
+ * Launch a popup dialog to obtain a decision from the user. Returns the user
+ * decision, or `null` if the popup is closed without interaction.
+ */
+export const popup = async <M extends PopupType>(
+  popupType: M,
+  request: PopupRequest<M>[M],
+  parent?: chrome.windows.Window,
+): Promise<PopupResponse<M>[M] | null> => {
+  await throwIfNeedsLogin();
+  await throwIfAlreadyOpen(popupType);
 
-  // this is necessary given it takes a bit of time for the popup
-  // to be ready to accept messages from the service worker.
-  await popupReady(popupId);
+  const geometry: PopupGeometry = await Promise.resolve(
+    parent ?? chrome.windows.getLastFocused(),
+  ).then(({ top = 0, left = 0, width = 0 }) => ({
+    width: 400,
+    height: 628,
+    // top right side of parent
+    top: Math.max(0, top),
+    left: Math.max(0, left + width - 400),
+  }));
 
-  const response = await chrome.runtime
-    .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
-    .catch((e: unknown) => {
-      if (isChromeResponderDroppedError(e)) {
-        return null;
-      } else {
-        throw e;
-      }
-    });
+  const id = await spawnPopup(popupType, geometry);
 
-  if (response && 'error' in response) {
-    throw errorFromJson(response.error, undefined, ConnectError.from(response));
+  const popupRequest = { [popupType]: request, id } as PopupRequest<M>;
+  const popupResponse = await sendPopup(popupRequest);
+
+  if (popupResponse == null) {
+    return null;
   } else {
-    return response && response.data;
+    const { [popupType]: response } = popupResponse;
+    return response;
   }
 };
 
-const spawnDetachedPopup = async (url: URL) => {
-  const [hashPath] = url.hash.split('?');
-  await throwIfAlreadyOpen(hashPath!);
+/**
+ * The popup document uses a hash router. Each popup type has a unique path in
+ * the router. The popup id is a query parameter and does not affect routing.
+ */
+const popupUrl = (popupType?: PopupType, id?: string): URL => {
+  const pop = new URL(POPUP_BASE);
 
-  const { top, left, width } = await chrome.windows.getLastFocused();
+  if (popupType) {
+    pop.hash = POPUP_PATHS[popupType];
+  }
 
-  await chrome.windows.create({
-    url: url.href,
-    type: 'popup',
-    width: 400,
-    height: 628,
-    top,
-    // press the window to the right side of screen
-    left: left !== undefined && width !== undefined ? left + (width - 400) : 0,
-  });
+  if (id) {
+    pop.searchParams.set('id', id);
+  }
+
+  return pop;
 };
 
-const throwIfAlreadyOpen = (path: string) =>
-  chrome.runtime
-    .getContexts({
-      documentUrls: [
-        path.startsWith(chrome.runtime.getURL('')) ? path : chrome.runtime.getURL(path),
-      ],
-    })
-    .then(popupContexts => {
-      if (popupContexts.length) {
-        throw Error('Popup already open');
-      }
-    });
+/** Throws if another popup of the same type already exists. */
+const throwIfAlreadyOpen = async (popupType: PopupType) => {
+  // every popup will have the same origin and pathname.
+  // every popup will have a uuid in query parameters.
+  // popups of the same type will have a matching hash.
 
+  // url for comparison
+  const check = popupUrl(popupType);
+
+  const contextUrls = (
+    await chrome.runtime.getContexts({
+      contextTypes: [chrome.runtime.ContextType.POPUP],
+      // the documentUrls filter is not flexible enough, so use documentOrigins
+      documentOrigins: [check.origin],
+    })
+  ).map(
+    // parse for comparison
+    ({ documentUrl }) => (documentUrl ? new URL(documentUrl) : undefined),
+  );
+
+  const popupMatch = contextUrls.find(
+    open =>
+      open &&
+      // pathname identifies popup documents
+      open.pathname === check.pathname &&
+      // hash contains the popup router's path
+      open.hash === check.hash,
+    // don't do uuid comparison: open.search === pop.search
+  );
+
+  if (popupMatch) {
+    throw new Error(`Popup ${popupType} already open`, { cause: popupMatch });
+  }
+};
+
+/** Throws if the user is not logged in. */
 const throwIfNeedsLogin = async () => {
   const loggedIn = await sessionExtStorage.get('passwordKey');
   if (!loggedIn) {
@@ -79,36 +110,17 @@ const throwIfNeedsLogin = async () => {
   }
 };
 
-const spawnPopup = async (pop: PopupType, popupId: string) => {
-  const popUrl = new URL(chrome.runtime.getURL('popup.html'));
-  await throwIfNeedsLogin();
-
-  switch (pop) {
-    // set path as hash since we use a hash router within the popup
-    case PopupType.OriginApproval:
-      popUrl.hash = `${PopupPath.ORIGIN_APPROVAL}?popupId=${popupId}`;
-      return spawnDetachedPopup(popUrl);
-    case PopupType.TxApproval:
-      popUrl.hash = `${PopupPath.TRANSACTION_APPROVAL}?popupId=${popupId}`;
-      return spawnDetachedPopup(popUrl);
-    default:
-      throw Error('Unknown popup type');
-  }
-};
-
-const POPUP_READY_TIMEOUT = 60 * 1000;
-
-const popupReady = (popupId: string): Promise<void> =>
-  new Promise((resolve, reject) => {
-    AbortSignal.timeout(POPUP_READY_TIMEOUT).onabort = reject;
-
-    const idListen = (msg: unknown, _: chrome.runtime.MessageSender, respond: () => void) => {
-      if (msg === popupId) {
-        resolve();
-        chrome.runtime.onMessage.removeListener(idListen);
-        respond();
-      }
-    };
-
-    chrome.runtime.onMessage.addListener(idListen);
+/**
+ * Spawns a popup with a unique id, and resolves the ID when the popup is ready.
+ * Ready promise times out in {@link POPUP_READY_TIMEOUT} milliseconds.
+ */
+const spawnPopup = async (popupType: PopupType, geometry: PopupGeometry): Promise<string> => {
+  const id = crypto.randomUUID();
+  const ready = listenReady(id, AbortSignal.timeout(POPUP_READY_TIMEOUT));
+  await chrome.windows.create({
+    url: popupUrl(popupType, id).href,
+    type: 'popup',
+    ...geometry,
   });
+  return ready;
+};
