@@ -11,7 +11,6 @@ import { AllSlices, initializeStore } from '.';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { PopupType } from '../message/popup';
 
 // Mock transaction view functions
 vi.mock('@penumbra-zone/perspective/plan/view-transaction-plan', () => {
@@ -102,10 +101,7 @@ describe('Transaction Approval Slice', () => {
 
       await expect(() =>
         useStore.getState().txApproval.acceptRequest({
-          type: PopupType.TxApproval,
-          request: {
-            authorizeRequest: authorizeRequest.toJson() as JsonObject,
-          },
+          authorizeRequest: authorizeRequest.toJson() as JsonObject,
         }),
       ).rejects.toThrowError('No found wallet');
 
@@ -114,10 +110,7 @@ describe('Transaction Approval Slice', () => {
 
     test('accepts a request and sets state correctly', async () => {
       void useStore.getState().txApproval.acceptRequest({
-        type: PopupType.TxApproval,
-        request: {
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        },
+        authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
       await waitForAuthorizeRequestSet();
@@ -130,19 +123,13 @@ describe('Transaction Approval Slice', () => {
     test('throws if another request is pending', async () => {
       // First request
       void useStore.getState().txApproval.acceptRequest({
-        type: PopupType.TxApproval,
-        request: {
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        },
+        authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
       // Second request should throw
       await expect(
         useStore.getState().txApproval.acceptRequest({
-          type: PopupType.TxApproval,
-          request: {
-            authorizeRequest: authorizeRequest.toJson() as JsonObject,
-          },
+          authorizeRequest: authorizeRequest.toJson() as JsonObject,
         }),
       ).rejects.toThrow('Another request is still pending');
     });
@@ -151,10 +138,7 @@ describe('Transaction Approval Slice', () => {
   describe('setChoice()', () => {
     test('sets choice correctly', () => {
       void useStore.getState().txApproval.acceptRequest({
-        type: PopupType.TxApproval,
-        request: {
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        },
+        authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
       useStore.getState().txApproval.setChoice(UserChoice.Approved);
@@ -173,10 +157,7 @@ describe('Transaction Approval Slice', () => {
     test('sends response and resets state', async () => {
       // Setup - accept a request
       const sliceResponse = useStore.getState().txApproval.acceptRequest({
-        type: PopupType.TxApproval,
-        request: {
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        },
+        authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
       await waitForAuthorizeRequestSet();
@@ -188,11 +169,8 @@ describe('Transaction Approval Slice', () => {
       useStore.getState().txApproval.sendResponse();
 
       await expect(sliceResponse).resolves.toMatchObject({
-        type: PopupType.TxApproval,
-        data: {
-          authorizeRequest: authorizeRequest.toJson(),
-          choice: UserChoice.Approved,
-        },
+        authorizeRequest: authorizeRequest.toJson(),
+        choice: UserChoice.Approved,
       });
 
       // State should be reset
@@ -205,10 +183,7 @@ describe('Transaction Approval Slice', () => {
     test('rejects if missing response data', async () => {
       // Setup - accept a request but don't set choice
       const request = useStore.getState().txApproval.acceptRequest({
-        type: PopupType.TxApproval,
-        request: {
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        },
+        authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
       await waitForAuthorizeRequestSet();
