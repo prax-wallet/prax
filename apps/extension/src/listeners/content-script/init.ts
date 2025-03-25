@@ -1,4 +1,4 @@
-import { PraxConnection } from '../../message/prax';
+import { PraxConnection } from '../../content-scripts/message/prax-connection';
 import { alreadyApprovedSender } from '../../senders/approve';
 import { assertValidSender } from '../../senders/validate';
 

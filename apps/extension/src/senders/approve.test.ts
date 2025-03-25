@@ -119,14 +119,11 @@ describe('origin approvals', () => {
 
       await approveSender(messageSender);
 
-      expect(mockPopup).toHaveBeenCalledWith({
-        type: PopupType.OriginApproval,
-        request: {
-          origin: 'mock://popuptest.example.com',
-          favIconUrl: mockTab.favIconUrl,
-          title: mockTab.title,
-          lastRequest: undefined,
-        },
+      expect(mockPopup).toHaveBeenCalledWith(PopupType.OriginApproval, {
+        origin: 'mock://popuptest.example.com',
+        favIconUrl: mockTab.favIconUrl,
+        title: mockTab.title,
+        lastRequest: undefined,
       });
     });
 
