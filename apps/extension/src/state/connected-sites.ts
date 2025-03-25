@@ -1,6 +1,7 @@
 import { ExtensionStorage } from '../storage/base';
 import { LocalStorageState, OriginRecord } from '../storage/types';
 import { AllSlices, SliceCreator } from '.';
+import { ControlRequest } from '../message/control';
 
 export interface ConnectedSitesSlice {
   filter?: string;
@@ -27,7 +28,9 @@ export const createConnectedSitesSlice =
         known => known.origin !== siteToDiscard.origin,
       );
       await local.set('knownSites', knownSitesWithoutDiscardedSite);
-      void chrome.runtime.sendMessage({ revoke: siteToDiscard.origin });
+      void chrome.runtime.sendMessage({
+        Revoke: siteToDiscard.origin,
+      } satisfies ControlRequest<'Revoke'>);
     },
   });
 

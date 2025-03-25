@@ -1,15 +1,21 @@
 import { PopupPath } from './routes/popup/paths';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { sessionExtStorage } from './storage/session';
-import { PopupRequest, PopupResponse, PopupType } from './message/popup';
+import {
+  PopupRequest,
+  PopupRequestData,
+  PopupResponse,
+  PopupResponseData,
+  PopupType,
+} from './message/popup';
 import { sendPopup } from './message/send-popup';
 import { listenReady } from './message/listen-ready';
 
 const POPUP_READY_TIMEOUT = 60_000;
-const POPUP_PATHS = {
-  [PopupType.TxApproval]: PopupPath.TRANSACTION_APPROVAL,
-  [PopupType.OriginApproval]: PopupPath.ORIGIN_APPROVAL,
-} as const;
+const POPUP_PATHS: Record<PopupType, PopupPath> = {
+  TxApproval: PopupPath.TRANSACTION_APPROVAL,
+  OriginApproval: PopupPath.ORIGIN_APPROVAL,
+};
 const POPUP_BASE = chrome.runtime.getURL('/popup.html');
 
 /**
@@ -18,8 +24,8 @@ const POPUP_BASE = chrome.runtime.getURL('/popup.html');
  */
 export const popup = async <M extends PopupType>(
   popupType: M,
-  request: PopupRequest<M>[M],
-): Promise<PopupResponse<M>[M] | null> => {
+  request: PopupRequestData<M>,
+): Promise<PopupResponseData<M> | null> => {
   await throwIfNeedsLogin();
 
   const lockGranted = (async lock => {

@@ -12,8 +12,8 @@
 import { contentScriptConnectListener } from './message/listen/content-script-connect';
 import { contentScriptDisconnectListener } from './message/listen/content-script-disconnect';
 import { contentScriptInitListener } from './message/listen/content-script-init';
-import { internalRevokeListener } from './message/listen/internal-revoke';
-import { internalServiceListener } from './message/listen/internal-services';
+import { internalRevokeListener } from './message/listen/control-revoke';
+import { internalServiceListener } from './message/listen/control-services';
 
 // all rpc implementations, local and proxy
 import { getRpcImpls } from './rpc';
