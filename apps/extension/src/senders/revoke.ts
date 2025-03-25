@@ -1,7 +1,7 @@
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { PraxConnection } from '../content-scripts/message/prax-connection';
+import { sendTabs } from '../message/send/tab';
 import { removeOriginRecord } from '../storage/origin';
-import { assertValidSender } from './validate';
 
 /**
  * Request deletion of the origin's permission record, and ask the session
@@ -15,39 +15,19 @@ export const revokeOrigin = (targetOrigin: string) => {
   const storageOperation = removeOriginRecord(targetOrigin);
   const killedSenders = CRSessionManager.killOrigin(targetOrigin);
 
-  /**
-   * The sessions are already dead. But they'll assume disconnect is just chrome
-   * flakiness, and try to wake up for new requests. The killed sessions should
-   * fail to reconnect, but they will keep trying.
-   *
-   * This informs the content scripts they are actually disconnected, so they
-   * can clean up.
-   */
-
-  // messages send by tab id
-  for (const [_, tabKills] of Map.groupBy(killedSenders, s => s.tab?.id)) {
-    // scope to specific document
-    for (const [_, docKills] of Map.groupBy(tabKills, s => s.documentId)) {
-      // scope to specific frame
-      for (const [_, frameKills] of Map.groupBy(docKills, s => s.frameId)) {
-        // the frame's sessions killed all at once
-        const [target] = frameKills;
-        try {
-          // sender should be as valid as when it created the session
-          const { tab, documentId, frameId } = assertValidSender(target);
-
-          // end it
-          void chrome.tabs.sendMessage(tab.id, PraxConnection.End, { documentId, frameId });
-        } catch (invalid) {
-          /**
-           * This should never happen, but if it does, hopefully restarting the
-           * extension will stop anything weird happening.
-           */
-          console.error("Can't end session of invalid sender", target, invalid);
-          console.debug('Restarting extension to invalidate context.');
-          void storageOperation.finally(() => chrome.runtime.reload());
-        }
-      }
-    }
-  }
+  void Promise.all(
+    // The sessions are already dead. But they'll assume disconnect is just chrome
+    // flakiness, and try to wake up for new requests. The killed sessions should
+    // fail to reconnect, but they will keep trying.
+    //
+    // This informs the content scripts they are actually disconnected, so they
+    // can clean up.
+    sendTabs(killedSenders, PraxConnection.End),
+  ).catch(failure => {
+    // This should never happen, but if it does, hopefully restarting the
+    // extension will stop anything weird happening.
+    console.error("Couldn't end all sessions for origin", targetOrigin, failure);
+    console.warn('Restarting extension to invalidate context.');
+    void storageOperation.finally(() => chrome.runtime.reload());
+  });
 };

@@ -1,33 +1,41 @@
-import { PraxConnection } from '../../content-scripts/message/prax-connection';
+import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
+import {
+  isPraxConnectionMessage,
+  PraxConnection,
+} from '../../content-scripts/message/prax-connection';
 import { alreadyApprovedSender } from '../../senders/approve';
-import { revokeOrigin } from '../../senders/revoke';
 import { assertValidSender } from '../../senders/validate';
+import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
+import { revokeOrigin } from '../../senders/revoke';
 
 // listen for page requests for disconnect
-export const praxDisconnectListener: ChromeExtensionMessageEventListener = (
-  req,
-  unvalidatedSender,
-  // this handler will only ever send an empty response
-  respond: (no?: never) => void,
-) => {
-  if (req !== PraxConnection.Disconnect) {
+export const praxDisconnectListener = (
+  req: unknown,
+  unvalidatedSender: chrome.runtime.MessageSender,
+  // this handler will only ever send a null response, or an enumerated failure reason
+  respond: (r: null | PenumbraRequestFailure) => void,
+): boolean => {
+  if (!isPraxConnectionMessage(req) || req !== PraxConnection.Disconnect) {
     // boolean return in handlers signals intent to respond
     return false;
   }
 
   const validSender = assertValidSender(unvalidatedSender);
   void alreadyApprovedSender(validSender).then(hasApproval => {
+    const { origin: targetOrigin } = validSender;
+
     if (!hasApproval) {
-      throw new Error('Sender does not possess approval');
+      if (globalThis.__DEV__) {
+        console.warn('Sender requesting disconnect does not possess approval', validSender);
+      }
+      // this is strange, but session termination still makes sense
+      CRSessionManager.killOrigin(targetOrigin);
+      respond(PenumbraRequestFailure.Denied);
+    } else {
+      revokeOrigin(targetOrigin);
+      respond(null);
     }
-    revokeOrigin(validSender.origin);
-    void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.End, {
-      // end only the specific document
-      frameId: validSender.frameId,
-      documentId: validSender.documentId,
-    });
   });
-  respond();
 
   // boolean return in handlers signals intent to respond
   return true;

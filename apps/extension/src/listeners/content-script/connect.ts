@@ -1,18 +1,22 @@
 import { Code, ConnectError } from '@connectrpc/connect';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { PraxConnection } from '../../content-scripts/message/prax-connection';
+import {
+  isPraxConnectionMessage,
+  PraxConnection,
+} from '../../content-scripts/message/prax-connection';
+import { sendTab } from '../../message/send/tab';
 import { approveSender } from '../../senders/approve';
 import { assertValidSender } from '../../senders/validate';
 
 // listen for page requests for approval
-export const praxConnectListener: ChromeExtensionMessageEventListener = (
-  req,
-  unvalidatedSender,
+export const praxConnectListener = (
+  req: unknown,
+  unvalidatedSender: chrome.runtime.MessageSender,
   // this handler responds with nothing, or an enumerated failure reason
-  respond: (failure?: PenumbraRequestFailure) => void,
-) => {
-  if (req !== PraxConnection.Connect) {
+  respond: (r: null | PenumbraRequestFailure) => void,
+): boolean => {
+  if (!isPraxConnectionMessage(req) || req !== PraxConnection.Connect) {
     // boolean return in handlers signals intent to respond
     return false;
   }
@@ -23,13 +27,10 @@ export const praxConnectListener: ChromeExtensionMessageEventListener = (
     status => {
       // origin is already known, or popup choice was made
       if (status === UserChoice.Approved) {
-        void chrome.tabs.sendMessage(validSender.tab.id, PraxConnection.Init, {
-          // init only the specific document
-          frameId: validSender.frameId,
-          documentId: validSender.documentId,
-        });
+        // init only the specific document
+        void sendTab(validSender, PraxConnection.Init);
         // handler is done
-        respond(/* no failure */);
+        respond(null); // no failure
       } else {
         // any other choice is a denial
         respond(PenumbraRequestFailure.Denied);
@@ -42,9 +43,11 @@ export const praxConnectListener: ChromeExtensionMessageEventListener = (
       }
 
       if (e instanceof ConnectError && e.code === Code.Unauthenticated) {
+        // user did not see a popup.
         // the website should instruct the user to log in
         respond(PenumbraRequestFailure.NeedsLogin);
       } else {
+        // user may not have seen a popup.
         // something strange is happening. either storage is broken, the popup
         // returned an error, the sender is invalid, or someone's misbehaving.
         // obfuscate this rejection with a random delay 2-12 secs
