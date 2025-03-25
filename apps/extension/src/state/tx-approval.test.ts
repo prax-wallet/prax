@@ -11,8 +11,7 @@ import { AllSlices, initializeStore } from '.';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
-import { PopupType, TxApproval } from '../message/popup';
+import { PopupType } from '../message/popup';
 
 // Mock transaction view functions
 vi.mock('@penumbra-zone/perspective/plan/view-transaction-plan', () => {
@@ -71,20 +70,19 @@ describe('Transaction Approval Slice', () => {
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
-  let sliceResponse: Promise<InternalResponse<TxApproval>>;
-  let sendResponse: (r: InternalResponse<TxApproval>) => void;
-
   let authorizeRequest: AuthorizeRequest;
+  const waitForAuthorizeRequestSet = () =>
+    vi.waitFor(() =>
+      expect(useStore.getState().txApproval.authorizeRequest).toEqual(
+        authorizeRequest.toJsonString(),
+      ),
+    );
 
   beforeEach(async () => {
     await localExtStorage.set('wallets', [wallet0]);
     await sessionExtStorage.set('passwordKey', pw);
     useStore = create<AllSlices>()(initializeStore(sessionExtStorage, localExtStorage));
     vi.clearAllMocks();
-
-    const slicePromise = Promise.withResolvers<InternalResponse<TxApproval>>();
-    sliceResponse = slicePromise.promise;
-    sendResponse = slicePromise.resolve;
 
     authorizeRequest = new AuthorizeRequest({
       plan: new TransactionPlan(),
@@ -95,12 +93,7 @@ describe('Transaction Approval Slice', () => {
     const state = useStore.getState().txApproval;
     expect(state.responder).toBeUndefined();
     expect(state.authorizeRequest).toBeUndefined();
-    expect(state.transactionView).toBeUndefined();
     expect(state.choice).toBeUndefined();
-    expect(state.asSender).toBeUndefined();
-    expect(state.asReceiver).toBeUndefined();
-    expect(state.asPublic).toBeUndefined();
-    expect(state.transactionClassification).toBeUndefined();
   });
 
   describe('acceptRequest()', () => {
@@ -108,28 +101,26 @@ describe('Transaction Approval Slice', () => {
       await localExtStorage.set('wallets', []);
 
       await expect(() =>
-        useStore.getState().txApproval.acceptRequest(
-          {
-            type: PopupType.TxApproval,
-            request: {
-              authorizeRequest: authorizeRequest.toJson() as JsonObject,
-            },
-          },
-          sendResponse,
-        ),
-      ).rejects.toThrowError('No found wallet');
-    });
-
-    test('accepts a request and sets state correctly', async () => {
-      await useStore.getState().txApproval.acceptRequest(
-        {
+        useStore.getState().txApproval.acceptRequest({
           type: PopupType.TxApproval,
           request: {
             authorizeRequest: authorizeRequest.toJson() as JsonObject,
           },
+        }),
+      ).rejects.toThrowError('No found wallet');
+
+      expect(useStore.getState().txApproval.authorizeRequest).toBeUndefined();
+    });
+
+    test('accepts a request and sets state correctly', async () => {
+      void useStore.getState().txApproval.acceptRequest({
+        type: PopupType.TxApproval,
+        request: {
+          authorizeRequest: authorizeRequest.toJson() as JsonObject,
         },
-        sendResponse,
-      );
+      });
+
+      await waitForAuthorizeRequestSet();
 
       expect(useStore.getState().txApproval.authorizeRequest).toEqual(
         authorizeRequest.toJsonString(),
@@ -138,42 +129,33 @@ describe('Transaction Approval Slice', () => {
 
     test('throws if another request is pending', async () => {
       // First request
-      await useStore.getState().txApproval.acceptRequest(
-        {
+      void useStore.getState().txApproval.acceptRequest({
+        type: PopupType.TxApproval,
+        request: {
+          authorizeRequest: authorizeRequest.toJson() as JsonObject,
+        },
+      });
+
+      // Second request should throw
+      await expect(
+        useStore.getState().txApproval.acceptRequest({
           type: PopupType.TxApproval,
           request: {
             authorizeRequest: authorizeRequest.toJson() as JsonObject,
           },
-        },
-        sendResponse,
-      );
-
-      // Second request should throw
-      await expect(
-        useStore.getState().txApproval.acceptRequest(
-          {
-            type: PopupType.TxApproval,
-            request: {
-              authorizeRequest: authorizeRequest.toJson() as JsonObject,
-            },
-          },
-          vi.fn(),
-        ),
+        }),
       ).rejects.toThrow('Another request is still pending');
     });
   });
 
   describe('setChoice()', () => {
-    test('sets choice correctly', async () => {
-      await useStore.getState().txApproval.acceptRequest(
-        {
-          type: PopupType.TxApproval,
-          request: {
-            authorizeRequest: authorizeRequest.toJson() as JsonObject,
-          },
+    test('sets choice correctly', () => {
+      void useStore.getState().txApproval.acceptRequest({
+        type: PopupType.TxApproval,
+        request: {
+          authorizeRequest: authorizeRequest.toJson() as JsonObject,
         },
-        sendResponse,
-      );
+      });
 
       useStore.getState().txApproval.setChoice(UserChoice.Approved);
       expect(useStore.getState().txApproval.choice).toBe(UserChoice.Approved);
@@ -184,25 +166,20 @@ describe('Transaction Approval Slice', () => {
   });
 
   describe('sendResponse()', () => {
-    test('throws if no responder', () => {
+    test('throws if no request was accepted', () => {
       expect(() => useStore.getState().txApproval.sendResponse()).toThrow('No responder');
     });
 
-    test('resets state after sending response', async () => {
-      const authorizeRequest = new AuthorizeRequest({
-        plan: new TransactionPlan(),
+    test('sends response and resets state', async () => {
+      // Setup - accept a request
+      const sliceResponse = useStore.getState().txApproval.acceptRequest({
+        type: PopupType.TxApproval,
+        request: {
+          authorizeRequest: authorizeRequest.toJson() as JsonObject,
+        },
       });
 
-      // Setup - accept a request and set choice
-      await useStore.getState().txApproval.acceptRequest(
-        {
-          type: PopupType.TxApproval,
-          request: {
-            authorizeRequest: authorizeRequest.toJson() as JsonObject,
-          },
-        },
-        sendResponse,
-      );
+      await waitForAuthorizeRequestSet();
 
       // Set the choice
       useStore.getState().txApproval.setChoice(UserChoice.Approved);
@@ -222,44 +199,28 @@ describe('Transaction Approval Slice', () => {
       const state = useStore.getState().txApproval;
       expect(state.responder).toBeUndefined();
       expect(state.authorizeRequest).toBeUndefined();
-      expect(state.transactionView).toBeUndefined();
       expect(state.choice).toBeUndefined();
-      expect(state.asSender).toBeUndefined();
-      expect(state.asReceiver).toBeUndefined();
-      expect(state.asPublic).toBeUndefined();
-      expect(state.transactionClassification).toBeUndefined();
     });
 
     test('rejects if missing response data', async () => {
-      const authorizeRequest = new AuthorizeRequest({
-        plan: new TransactionPlan(),
-      });
-
       // Setup - accept a request but don't set choice
-      await useStore.getState().txApproval.acceptRequest(
-        {
-          type: PopupType.TxApproval,
-          request: {
-            authorizeRequest: authorizeRequest.toJson() as JsonObject,
-          },
-        },
-        sendResponse,
-      );
-
-      // Should throw when sending response without setting choice
-      expect(() => useStore.getState().txApproval.sendResponse()).not.toThrow();
-      await expect(sliceResponse).resolves.toMatchObject({
+      const request = useStore.getState().txApproval.acceptRequest({
         type: PopupType.TxApproval,
-        error: {
-          message: 'Missing response data',
+        request: {
+          authorizeRequest: authorizeRequest.toJson() as JsonObject,
         },
       });
 
-      // State should be reset after throwing
+      await waitForAuthorizeRequestSet();
+
+      // Should reject when sending response without setting choice
+      useStore.getState().txApproval.sendResponse();
+      await expect(request).rejects.toThrow('Missing response data');
+
+      // State should be reset
       const state = useStore.getState().txApproval;
       expect(state.responder).toBeUndefined();
       expect(state.authorizeRequest).toBeUndefined();
-      expect(state.transactionView).toBeUndefined();
       expect(state.choice).toBeUndefined();
     });
   });

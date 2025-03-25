@@ -3,21 +3,13 @@ import { AllSlices, initializeStore } from '.';
 import { vi, beforeEach, describe, expect, test } from 'vitest';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { OriginApproval, PopupType } from '../message/popup';
-import { InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import { PopupType } from '../message/popup';
 
 describe('Origin Approval Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
-  let sliceResponse: Promise<InternalResponse<OriginApproval>>;
-  let sendResponse: (r: InternalResponse<OriginApproval>) => void;
-
   beforeEach(() => {
     useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), mockLocalExtStorage()));
-
-    const slicePromise = Promise.withResolvers<InternalResponse<OriginApproval>>();
-    sliceResponse = slicePromise.promise;
-    sendResponse = slicePromise.resolve;
   });
 
   test('initial state is empty', () => {
@@ -37,18 +29,15 @@ describe('Origin Approval Slice', () => {
       const title = 'Example Site';
       const lastRequest = Date.now();
 
-      useStore.getState().originApproval.acceptRequest(
-        {
-          type: PopupType.OriginApproval,
-          request: {
-            origin,
-            favIconUrl,
-            title,
-            lastRequest,
-          },
+      void useStore.getState().originApproval.acceptRequest({
+        type: PopupType.OriginApproval,
+        request: {
+          origin,
+          favIconUrl,
+          title,
+          lastRequest,
         },
-        sendResponse,
-      );
+      });
 
       // Check state was updated
       const state = useStore.getState().originApproval;
@@ -59,19 +48,16 @@ describe('Origin Approval Slice', () => {
       expect(state.lastRequest?.getTime()).toBe(lastRequest);
     });
 
-    test('does not set title if it is equal to origin', () => {
+    test('does not set title if it is just a URL under origin', () => {
       const origin = 'https://example.com';
 
-      useStore.getState().originApproval.acceptRequest(
-        {
-          type: PopupType.OriginApproval,
-          request: {
-            origin,
-            title: origin,
-          },
+      void useStore.getState().originApproval.acceptRequest({
+        type: PopupType.OriginApproval,
+        request: {
+          origin,
+          title: new URL('/some/path.html', origin).href,
         },
-        sendResponse,
-      );
+      });
 
       // Title should be undefined since it starts with the origin
       expect(useStore.getState().originApproval.title).toBeUndefined();
@@ -79,27 +65,21 @@ describe('Origin Approval Slice', () => {
 
     test('throws if another request is pending', () => {
       // First request
-      useStore.getState().originApproval.acceptRequest(
-        {
-          type: PopupType.OriginApproval,
-          request: {
-            origin: 'https://example.com',
-          },
+      void useStore.getState().originApproval.acceptRequest({
+        type: PopupType.OriginApproval,
+        request: {
+          origin: 'https://example.com',
         },
-        sendResponse,
-      );
+      });
 
       // Second request should throw
       expect(() =>
-        useStore.getState().originApproval.acceptRequest(
-          {
-            type: PopupType.OriginApproval,
-            request: {
-              origin: 'https://another.com',
-            },
+        useStore.getState().originApproval.acceptRequest({
+          type: PopupType.OriginApproval,
+          request: {
+            origin: 'https://another.com',
           },
-          sendResponse,
-        ),
+        }),
       ).toThrow('Another request is still pending');
     });
   });
@@ -115,29 +95,30 @@ describe('Origin Approval Slice', () => {
   });
 
   describe('sendResponse()', () => {
+    test('throws if no request was accepted', () => {
+      expect(() => useStore.getState().originApproval.sendResponse()).toThrow('No responder');
+    });
+
     test('sends response and resets state', async () => {
       const origin = 'https://example.com';
       const date = 1234;
       vi.setSystemTime(date);
 
-      // Setup - accept a request and set choice
-      useStore.getState().originApproval.acceptRequest(
-        {
-          type: PopupType.OriginApproval,
-          request: {
-            origin,
-          },
+      // Setup - accept a request
+      const response = useStore.getState().originApproval.acceptRequest({
+        type: PopupType.OriginApproval,
+        request: {
+          origin,
         },
-        sendResponse,
-      );
+      });
 
-      // Set the required data
+      // Set the choice
       useStore.getState().originApproval.setChoice(UserChoice.Approved);
 
       // Send response
       useStore.getState().originApproval.sendResponse();
 
-      await expect(sliceResponse).resolves.toMatchObject({
+      await expect(response).resolves.toMatchObject({
         type: PopupType.OriginApproval,
         data: {
           origin,
@@ -155,29 +136,18 @@ describe('Origin Approval Slice', () => {
       expect(state.choice).toBeUndefined();
     });
 
-    test('throws if no responder', () => {
-      expect(() => useStore.getState().originApproval.sendResponse()).toThrow('No responder');
-    });
-
     test('rejects if missing response data', async () => {
       // Setup - accept a request but don't set choice
-      useStore.getState().originApproval.acceptRequest(
-        {
-          type: PopupType.OriginApproval,
-          request: {
-            origin: 'https://example.com',
-          },
-        },
-        sendResponse,
-      );
-
-      useStore.getState().originApproval.sendResponse();
-
-      // Send response without choice should throw
-      await expect(sliceResponse).resolves.toMatchObject({
+      const response = useStore.getState().originApproval.acceptRequest({
         type: PopupType.OriginApproval,
-        error: { message: 'Missing response data' },
+        request: {
+          origin: 'https://example.com',
+        },
       });
+
+      // Should reject when sending response without setting choice
+      useStore.getState().originApproval.sendResponse();
+      await expect(response).rejects.toThrow('Missing response data');
 
       // State should be reset
       const state = useStore.getState().originApproval;

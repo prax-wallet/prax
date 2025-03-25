@@ -14,14 +14,19 @@ import { ConnectError } from '@connectrpc/connect';
 
 import '@repo/ui/styles/globals.css';
 
-chrome.runtime.onMessage.addListener(
-  (req: unknown, _: chrome.runtime.MessageSender, responder: (x: unknown) => void) => {
-    if (isPopupRequest(req)) {
+const listenPopup = (
+  req: unknown,
+  _: chrome.runtime.MessageSender,
+  responder: (x: unknown) => void,
+) => {
+  if (isPopupRequest(req)) {
+    chrome.runtime.onMessage.removeListener(listenPopup);
+    void (async () => {
       try {
         if (isTxApprovalRequest(req)) {
-          void txApprovalSelector(useStore.getState()).acceptRequest(req, responder);
+          responder(await txApprovalSelector(useStore.getState()).acceptRequest(req));
         } else if (isOriginApprovalRequest(req)) {
-          originApprovalSelector(useStore.getState()).acceptRequest(req, responder);
+          responder(await originApprovalSelector(useStore.getState()).acceptRequest(req));
         } else {
           throw new Error('Unknown popup request');
         }
@@ -31,11 +36,13 @@ chrome.runtime.onMessage.addListener(
           error: errorToJson(ConnectError.from(e), undefined),
         });
       }
-      return true; // instruct chrome runtime to wait for a response
-    }
-    return false; // instruct chrome runtime we will not respond
-  },
-);
+    })();
+
+    return true; // instruct chrome runtime to wait for a response
+  }
+  return false; // instruct chrome runtime we will not respond
+};
+chrome.runtime.onMessage.addListener(listenPopup);
 
 const MainPopup = () => {
   const [queryClient] = useState(() => new QueryClient());
