@@ -62,7 +62,7 @@ const channelTransport = createChannelTransport({
   jsonOptions: { typeRegistry: createRegistry(ViewService) },
 });
 
-const viewClient = createPromiseClient(ViewService, channelTransport);
+const viewClient = createClient(ViewService, channelTransport);
 const { address } = await viewClient.addressByIndex({});
 console.log(bech32mAddress(address));
 ```

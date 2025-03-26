@@ -52,5 +52,37 @@
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.16.0",
     "vitest": "1.x"
+  },
+  "pnpm": {
+    "overrides": {
+      "@penumbra-zone/bech32m": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/bech32m/penumbra-zone-bech32m-15.0.0.tgz",
+      "@penumbra-zone/client": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/client/penumbra-zone-client-26.0.0.tgz",
+      "@penumbra-zone/crypto-web": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/crypto/penumbra-zone-crypto-web-39.0.0.tgz",
+      "@penumbra-zone/getters": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/getters/penumbra-zone-getters-25.0.0.tgz",
+      "@penumbra-zone/perspective": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/perspective/penumbra-zone-perspective-51.0.0.tgz",
+      "@penumbra-zone/protobuf": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/protobuf/penumbra-zone-protobuf-9.0.0.tgz",
+      "@penumbra-zone/services": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/services/penumbra-zone-services-57.0.0.tgz",
+      "@penumbra-zone/storage": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/storage/penumbra-zone-storage-51.0.0.tgz",
+      "@penumbra-zone/transport-chrome": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/transport-chrome/penumbra-zone-transport-chrome-9.0.0.tgz",
+      "@penumbra-zone/transport-dom": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/transport-dom/penumbra-zone-transport-dom-7.5.1.tgz",
+      "@penumbra-zone/types": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/types/penumbra-zone-types-32.0.0.tgz",
+      "@penumbra-zone/wasm": "file:///Users/margulus/temp-desktop/Programming/Repository/Penumbra/web/packages/wasm/penumbra-zone-wasm-43.1.0.tgz"
+    },
+    "peerDependencyRules": {
+      "allowAny": [
+        "@penumbra-zone/bech32m",
+        "@penumbra-zone/client",
+        "@penumbra-zone/crypto-web",
+        "@penumbra-zone/getters",
+        "@penumbra-zone/perspective",
+        "@penumbra-zone/protobuf",
+        "@penumbra-zone/services",
+        "@penumbra-zone/storage",
+        "@penumbra-zone/transport-chrome",
+        "@penumbra-zone/transport-dom",
+        "@penumbra-zone/types",
+        "@penumbra-zone/wasm"
+      ]
+    }
   }
 }

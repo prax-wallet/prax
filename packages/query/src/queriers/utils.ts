@@ -1,11 +1,11 @@
-import { createPromiseClient, PromiseClient } from '@connectrpc/connect';
+import { createClient as createPromiseClient, Client } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { ServiceType } from '@bufbuild/protobuf';
 
 export const createClient = <T extends ServiceType>(
   grpcEndpoint: string,
   serviceType: T,
-): PromiseClient<T> => {
+): Client<T> => {
   const transport = createGrpcWebTransport({
     baseUrl: grpcEndpoint,
   });

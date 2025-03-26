@@ -4,7 +4,7 @@ import { PagePath } from '../../paths';
 import { usePageNav } from '../../../../utils/navigate';
 import { ChainRegistryClient, EntityMetadata } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
-import { createPromiseClient } from '@connectrpc/connect';
+import { createClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { localExtStorage } from '../../../../storage/local';
 import { AppService } from '@penumbra-zone/protobuf';
@@ -54,7 +54,7 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   // Queries for blockHeight regardless of SEED_PHRASE_ORIGIN as a means of testing endpoint for liveness
   const { blockHeight, rpc } = await fetchBlockHeightWithFallback(rpcs.map(r => r.url));
 
-  const { appParameters } = await createPromiseClient(
+  const { appParameters } = await createClient(
     AppService,
     createGrpcWebTransport({ baseUrl: rpc }),
   ).appParameters({}, DEFAULT_TRANSPORT_OPTS);

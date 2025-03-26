@@ -1,7 +1,7 @@
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { createPromiseClient } from '@connectrpc/connect';
+import { createClient } from '@connectrpc/connect';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { localExtStorage } from './storage/local';
 import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
@@ -41,7 +41,7 @@ export const startWalletServices = async () => {
  * @see https://github.com/prax-wallet/prax/pull/65
  */
 const getChainId = async (baseUrl: string) => {
-  const serviceClient = createPromiseClient(AppService, createGrpcWebTransport({ baseUrl }));
+  const serviceClient = createClient(AppService, createGrpcWebTransport({ baseUrl }));
   const params =
     (await serviceClient.appParameters({}).then(
       ({ appParameters }) => appParameters,
