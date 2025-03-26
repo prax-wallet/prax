@@ -45,11 +45,7 @@ export const getRpcImpls = async () => {
     serviceType =>
       [
         serviceType,
-        createProxyImpl(
-          serviceType,
-          createClient(serviceType, webTransport),
-          noContextHandler,
-        ),
+        createProxyImpl(serviceType, createClient(serviceType, webTransport), noContextHandler),
       ] as const,
   );
 
