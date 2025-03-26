@@ -1,5 +1,12 @@
 import { useEffect, useRef } from 'react';
-import { PopupRequest, PopupResponse, PopupType, typeOfPopupRequest } from '../message/popup';
+import {
+  PopupRequest,
+  PopupRequestData,
+  PopupResponse,
+  PopupResponseData,
+  PopupType,
+  typeOfPopupRequest,
+} from '../message/popup';
 import { useStore } from '../state';
 import { listenPopup } from '../message/listen-popup';
 
@@ -7,20 +14,22 @@ const handlePopup = async <T extends PopupType>(
   popupRequest: PopupRequest<T>,
 ): Promise<PopupResponse<T>> => {
   const popupType = typeOfPopupRequest(popupRequest);
-
-  // get popup slice acceptRequest method
   const state = useStore.getState();
-  const acceptRequest: {
-    [k in PopupType]: (request: PopupRequest<k>[k]) => Promise<PopupResponse<k>[k]>;
+
+  // get the relevant slice's acceptRequest method
+  const sliceHandler: {
+    [k in PopupType]: (r: PopupRequestData<k>) => Promise<PopupResponseData<k>>;
   } = {
-    [PopupType.TxApproval]: state.txApproval.acceptRequest,
-    [PopupType.OriginApproval]: state.originApproval.acceptRequest,
+    TxApproval: state.txApproval.acceptRequest,
+    OriginApproval: state.originApproval.acceptRequest,
   };
 
   // handle via slice
-  const popupResponse = {
-    [popupType]: await acceptRequest[popupType](popupRequest[popupType]),
-  } as PopupResponse<T>;
+  const response: PopupResponseData<T> = await sliceHandler[popupType](popupRequest[popupType]);
+
+  const popupResponse: PopupResponse<T> = {
+    [popupType]: response,
+  } as Record<typeof popupType, typeof response>;
 
   return popupResponse;
 };

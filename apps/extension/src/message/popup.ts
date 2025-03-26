@@ -4,16 +4,21 @@ import type { UserChoice } from '@penumbra-zone/types/user-choice';
 import { OriginRecord } from '../storage/types';
 import { JsonValue } from '@bufbuild/protobuf';
 
-export enum PopupType {
+enum PopupEnum {
   TxApproval = 'TxApproval',
   OriginApproval = 'OriginApproval',
 }
+
+export type PopupType = keyof typeof PopupEnum;
 
 export type PopupError = Record<'error', JsonValue>;
 
 export type PopupRequest<M extends PopupType> = { id: string } & Record<M, PopupRequestMap[M]>;
 
 export type PopupResponse<M extends PopupType> = Record<M, PopupResponseMap[M]>;
+
+export type PopupRequestData<M extends PopupType> = PopupRequest<M>[M];
+export type PopupResponseData<M extends PopupType> = PopupResponse<M>[M];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- doesn't narrow the parameter
 export const isPopupRequest = (id: string, req: unknown): req is PopupRequest<any> =>
@@ -22,7 +27,7 @@ export const isPopupRequest = (id: string, req: unknown): req is PopupRequest<an
   Object.keys(req).length === 2 &&
   'id' in req &&
   req.id === id &&
-  Object.keys(req).some(k => k in PopupType);
+  Object.keys(req).some(k => k in PopupEnum);
 
 export const isPopupRequestType = <M extends PopupType>(
   pt: M,
@@ -45,7 +50,7 @@ export const isPopupResponseType = <M extends PopupType>(
 
 export const typeOfPopupRequest = <M extends PopupType>(req: PopupRequest<M>): M => {
   const [key, ...extra] = Object.keys(req).filter(k => k !== 'id');
-  if (!extra.length && key && key in PopupType) {
+  if (!extra.length && key && key in PopupEnum) {
     return key as M;
   }
   throw new TypeError('Unknown popup type', { cause: { req } });

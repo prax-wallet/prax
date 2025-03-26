@@ -19,7 +19,7 @@ import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transa
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import type { ExtensionStorage } from '../storage/base';
 import type { LocalStorageState } from '../storage/types';
-import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
+import { PopupRequestData, PopupResponseData } from '../message/popup';
 
 export interface TxApprovalSlice {
   /**
@@ -29,7 +29,7 @@ export interface TxApprovalSlice {
    * that everything be JSON-serializeable. So we'll store `Stringified`
    * representations of them instead.
    */
-  responder?: PromiseWithResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
+  responder?: PromiseWithResolvers<PopupResponseData<'TxApproval'>>;
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionView?: Stringified<TransactionView>;
   choice?: UserChoice;
@@ -39,9 +39,7 @@ export interface TxApprovalSlice {
   asPublic?: Stringified<TransactionView>;
   transactionClassification?: TransactionClassification;
 
-  acceptRequest: (
-    req: PopupRequest<PopupType.TxApproval>[PopupType.TxApproval],
-  ) => Promise<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
+  acceptRequest: (req: PopupRequestData<'TxApproval'>) => Promise<PopupResponseData<'TxApproval'>>;
 
   setChoice: (choice: UserChoice) => void;
 
@@ -56,8 +54,7 @@ export const createTxApprovalSlice =
       if (existing.responder) {
         throw new Error('Another request is still pending');
       }
-      const responder =
-        Promise.withResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>();
+      const responder = Promise.withResolvers<PopupResponseData<'TxApproval'>>();
       set(state => {
         state.txApproval.responder = responder;
       });

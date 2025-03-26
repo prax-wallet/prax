@@ -1,8 +1,9 @@
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Services } from '@repo/context';
-import { isPraxServicesMessage, ServicesMessage } from '../services';
 import { isInternalSender } from '../../senders/internal';
 import { localExtStorage } from '../../storage/local';
+import { isControlRequest } from '../control';
+import { ServicesRequest } from '../control-services';
 
 export const internalServiceListener = (
   walletServices: Promise<Services>,
@@ -10,12 +11,12 @@ export const internalServiceListener = (
   sender: chrome.runtime.MessageSender,
   respond: (response?: unknown) => void,
 ): boolean => {
-  if (!isInternalSender(sender) || !isPraxServicesMessage(req)) {
+  if (!isInternalSender(sender) || !isControlRequest('Services', req)) {
     return false;
   }
 
-  switch (ServicesMessage[req as keyof typeof ServicesMessage]) {
-    case ServicesMessage.ClearCache:
+  switch (req.Services) {
+    case ServicesRequest.ClearCache:
       void (async () => {
         const { blockProcessor, indexedDb } = await walletServices.then(ws =>
           ws.getWalletServices(),
@@ -30,7 +31,7 @@ export const internalServiceListener = (
         .then(() => respond())
         .finally(() => chrome.runtime.reload());
       break;
-    case ServicesMessage.ChangeNumeraires:
+    case ServicesRequest.ChangeNumeraires:
       void (async () => {
         const { blockProcessor, indexedDb } = await walletServices.then(ws =>
           ws.getWalletServices(),
@@ -45,6 +46,8 @@ export const internalServiceListener = (
         await indexedDb.clearSwapBasedPrices();
       })().then(() => respond());
       break;
+    default:
+      throw new Error('Unknown Services request', { cause: req });
   }
 
   return true;

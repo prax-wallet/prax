@@ -1,11 +1,9 @@
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { AllSlices, SliceCreator } from '.';
-import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
+import { PopupRequestData, PopupResponseData } from '../message/popup';
 
 export interface OriginApprovalSlice {
-  responder?: PromiseWithResolvers<
-    PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]
-  >;
+  responder?: PromiseWithResolvers<PopupResponseData<'OriginApproval'>>;
   favIconUrl?: string;
   title?: string;
   requestOrigin?: string;
@@ -13,8 +11,8 @@ export interface OriginApprovalSlice {
   lastRequest?: Date;
 
   acceptRequest: (
-    req: PopupRequest<PopupType.OriginApproval>[PopupType.OriginApproval],
-  ) => Promise<PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]>;
+    req: PopupRequestData<'OriginApproval'>,
+  ) => Promise<PopupResponseData<'OriginApproval'>>;
 
   setChoice: (attitute: UserChoice) => void;
 
@@ -35,8 +33,7 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
     }
 
     // set responder synchronously
-    const responder =
-      Promise.withResolvers<PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]>();
+    const responder = Promise.withResolvers<PopupResponseData<'OriginApproval'>>();
     set(state => {
       state.originApproval.responder = responder;
     });

@@ -4,7 +4,8 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { ServicesMessage } from '../../../message/services';
+import { ControlRequest } from '../../../message/control';
+import { ServicesRequest } from '../../../message/control-services';
 import debounce from 'lodash/debounce';
 import { randomSort } from '../../utils/random-sort';
 import { isValidUrl } from '../../utils/is-valid-url';
@@ -140,7 +141,9 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
 
       await clearWalletCreationHeight(); // changing chain id means the wallet birthday is no longer valid
       await setGrpcEndpoint(grpcEndpointInput);
-      void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
+      void chrome.runtime.sendMessage({
+        Services: ServicesRequest.ClearCache,
+      } satisfies ControlRequest<'Services'>);
     } else {
       await setGrpcEndpoint(grpcEndpointInput);
     }
