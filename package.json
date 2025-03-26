@@ -29,9 +29,9 @@
     "zip": "pnpm tsx apps/extension/src/utils/zip-extension.ts"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.x",
-    "@connectrpc/connect": "^1.x",
-    "@connectrpc/connect-web": "^1.x"
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.6.1",
+    "@connectrpc/connect-web": "^1.6.1"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.11",

@@ -1,6 +1,6 @@
 import type { ServiceType } from '@bufbuild/protobuf';
 import type { ServiceImpl } from '@connectrpc/connect';
-import { createPromiseClient } from '@connectrpc/connect';
+import { createClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import {
   AppService,
@@ -45,11 +45,7 @@ export const getRpcImpls = async () => {
     serviceType =>
       [
         serviceType,
-        createProxyImpl(
-          serviceType,
-          createPromiseClient(serviceType, webTransport),
-          noContextHandler,
-        ),
+        createProxyImpl(serviceType, createClient(serviceType, webTransport), noContextHandler),
       ] as const,
   );
 
@@ -66,7 +62,7 @@ export const getRpcImpls = async () => {
         TendermintProxyService,
         createProxyImpl(
           TendermintProxyService,
-          createPromiseClient(TendermintProxyService, webTransport),
+          createClient(TendermintProxyService, webTransport),
           noContextHandler,
         ),
       ),

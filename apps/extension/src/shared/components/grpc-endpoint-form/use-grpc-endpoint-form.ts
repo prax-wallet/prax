@@ -1,4 +1,4 @@
-import { Code, ConnectError, createPromiseClient } from '@connectrpc/connect';
+import { Code, ConnectError, createClient } from '@connectrpc/connect';
 import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -67,7 +67,7 @@ export const useGrpcEndpointForm = (isOnboarding: boolean) => {
 
       try {
         setIsValidationLoading(true);
-        const trialClient = createPromiseClient(
+        const trialClient = createClient(
           AppService,
           createGrpcWebTransport({ baseUrl: grpcEndpointInput }),
         );
