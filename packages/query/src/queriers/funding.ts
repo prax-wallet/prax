@@ -1,4 +1,4 @@
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { createClient } from './utils';
 import { FundingService } from '@penumbra-zone/protobuf';
 import { FundingQuerierInterface } from '@penumbra-zone/types/querier';
@@ -9,7 +9,7 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/funding/v1/funding_pb';
 
 export class FundingQuerier implements FundingQuerierInterface {
-  private readonly client: PromiseClient<typeof FundingService>;
+  private readonly client: Client<typeof FundingService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, FundingService);

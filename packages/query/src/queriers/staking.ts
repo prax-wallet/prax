@@ -1,4 +1,4 @@
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { createClient } from './utils';
 import { StakeService } from '@penumbra-zone/protobuf';
 import {
@@ -11,7 +11,7 @@ import {
 import { StakeQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class StakeQuerier implements StakeQuerierInterface {
-  private readonly client: PromiseClient<typeof StakeService>;
+  private readonly client: Client<typeof StakeService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, StakeService);

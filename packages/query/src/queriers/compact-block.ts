@@ -1,4 +1,4 @@
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import {
   CompactBlock,
   CompactBlockRangeRequest,
@@ -11,7 +11,7 @@ import type {
 } from '@penumbra-zone/types/querier';
 
 export class CompactBlockQuerier implements CompactBlockQuerierInterface {
-  private readonly client: PromiseClient<typeof CompactBlockService>;
+  private readonly client: Client<typeof CompactBlockService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, CompactBlockService);

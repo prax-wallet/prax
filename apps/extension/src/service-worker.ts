@@ -15,7 +15,7 @@ import './listeners';
 import { getRpcImpls } from './rpc';
 
 // adapter
-import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';
+import { ConnectRouter, createContextValues, Client } from '@connectrpc/connect';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
@@ -48,8 +48,8 @@ const initHandler = async () => {
   const walletServices = startWalletServices();
   const rpcImpls = await getRpcImpls();
 
-  let custodyClient: PromiseClient<typeof CustodyService> | undefined;
-  let stakeClient: PromiseClient<typeof StakeService> | undefined;
+  let custodyClient: Client<typeof CustodyService> | undefined;
+  let stakeClient: Client<typeof StakeService> | undefined;
 
   return connectChannelAdapter({
     jsonOptions,

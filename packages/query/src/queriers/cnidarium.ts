@@ -1,4 +1,4 @@
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { createClient } from './utils';
 import { CnidariumService } from '@penumbra-zone/protobuf';
 import { KeyValueRequest } from '@penumbra-zone/protobuf/penumbra/cnidarium/v1/cnidarium_pb';
@@ -6,7 +6,7 @@ import { CnidariumQuerierInterface } from '@penumbra-zone/types/querier';
 import { MerkleRoot } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 
 export class CnidariumQuerier implements CnidariumQuerierInterface {
-  private readonly client: PromiseClient<typeof CnidariumService>;
+  private readonly client: Client<typeof CnidariumService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, CnidariumService);

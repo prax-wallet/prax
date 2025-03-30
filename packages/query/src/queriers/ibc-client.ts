@@ -1,4 +1,4 @@
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { createClient } from './utils';
 import { IbcClientService } from '@penumbra-zone/protobuf';
 import {
@@ -8,7 +8,7 @@ import {
 import type { IbcClientQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class IbcClientQuerier implements IbcClientQuerierInterface {
-  private readonly client: PromiseClient<typeof IbcClientService>;
+  private readonly client: Client<typeof IbcClientService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, IbcClientService);
