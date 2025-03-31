@@ -1,4 +1,4 @@
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { createClient } from './utils';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
@@ -11,7 +11,7 @@ declare global {
 }
 
 export class TendermintQuerier implements TendermintQuerierInterface {
-  private readonly client: PromiseClient<typeof TendermintProxyService>;
+  private readonly client: Client<typeof TendermintProxyService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, TendermintProxyService);

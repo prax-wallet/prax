@@ -1,4 +1,4 @@
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { createClient } from './utils';
 import { ShieldedPoolService } from '@penumbra-zone/protobuf';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -10,7 +10,7 @@ declare global {
 }
 
 export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
-  private readonly client: PromiseClient<typeof ShieldedPoolService>;
+  private readonly client: Client<typeof ShieldedPoolService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, ShieldedPoolService);
