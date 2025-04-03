@@ -3,7 +3,6 @@ import { AllSlices, initializeStore } from '.';
 import { vi, beforeEach, describe, expect, test } from 'vitest';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { PopupType } from '../message/popup';
 
 describe('Origin Approval Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -30,13 +29,10 @@ describe('Origin Approval Slice', () => {
       const lastRequest = Date.now();
 
       void useStore.getState().originApproval.acceptRequest({
-        type: PopupType.OriginApproval,
-        request: {
-          origin,
-          favIconUrl,
-          title,
-          lastRequest,
-        },
+        origin,
+        favIconUrl,
+        title,
+        lastRequest,
       });
 
       // Check state was updated
@@ -52,11 +48,8 @@ describe('Origin Approval Slice', () => {
       const origin = 'https://example.com';
 
       void useStore.getState().originApproval.acceptRequest({
-        type: PopupType.OriginApproval,
-        request: {
-          origin,
-          title: new URL('/some/path.html', origin).href,
-        },
+        origin,
+        title: new URL('/some/path.html', origin).href,
       });
 
       // Title should be undefined since it starts with the origin
@@ -66,19 +59,13 @@ describe('Origin Approval Slice', () => {
     test('throws if another request is pending', () => {
       // First request
       void useStore.getState().originApproval.acceptRequest({
-        type: PopupType.OriginApproval,
-        request: {
-          origin: 'https://example.com',
-        },
+        origin: 'https://example.com',
       });
 
       // Second request should throw
       expect(() =>
         useStore.getState().originApproval.acceptRequest({
-          type: PopupType.OriginApproval,
-          request: {
-            origin: 'https://another.com',
-          },
+          origin: 'https://another.com',
         }),
       ).toThrow('Another request is still pending');
     });
@@ -106,10 +93,7 @@ describe('Origin Approval Slice', () => {
 
       // Setup - accept a request
       const response = useStore.getState().originApproval.acceptRequest({
-        type: PopupType.OriginApproval,
-        request: {
-          origin,
-        },
+        origin,
       });
 
       // Set the choice
@@ -119,12 +103,9 @@ describe('Origin Approval Slice', () => {
       useStore.getState().originApproval.sendResponse();
 
       await expect(response).resolves.toMatchObject({
-        type: PopupType.OriginApproval,
-        data: {
-          origin,
-          choice: UserChoice.Approved,
-          date,
-        },
+        origin,
+        choice: UserChoice.Approved,
+        date,
       });
 
       // State should be reset
@@ -139,10 +120,7 @@ describe('Origin Approval Slice', () => {
     test('rejects if missing response data', async () => {
       // Setup - accept a request but don't set choice
       const response = useStore.getState().originApproval.acceptRequest({
-        type: PopupType.OriginApproval,
-        request: {
-          origin: 'https://example.com',
-        },
+        origin: 'https://example.com',
       });
 
       // Should reject when sending response without setting choice
