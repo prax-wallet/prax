@@ -27,9 +27,13 @@ export const popup = async <M extends PopupType>(
       throw new Error(`Popup ${popupType} already open`);
     }
 
+    const popupId = await spawnDetachedPopup(popupType).catch(cause => {
+      throw new Error(`Popup ${popupType} failed to open`, { cause });
+    });
+
     const popupRequest = {
       [popupType]: request,
-      id: await spawnPopup(popupType),
+      id: popupId,
     } as PopupRequest<M>;
 
     return sendPopup(popupRequest);
@@ -79,9 +83,9 @@ const throwIfNeedsLogin = async () => {
  * Spawns a popup with a unique id, and resolves the ID when the popup is ready.
  * Ready promise times out in {@link POPUP_READY_TIMEOUT} milliseconds.
  */
-const spawnPopup = async (popupType: PopupType): Promise<string> => {
-  const id = crypto.randomUUID();
-  const ready = listenReady(id, AbortSignal.timeout(POPUP_READY_TIMEOUT));
+const spawnDetachedPopup = async (popupType: PopupType): Promise<string> => {
+  const popupId = crypto.randomUUID();
+  const ready = listenReady(popupId, AbortSignal.timeout(POPUP_READY_TIMEOUT));
 
   const geometry = await chrome.windows
     .getLastFocused()
@@ -93,11 +97,14 @@ const spawnPopup = async (popupType: PopupType): Promise<string> => {
       left: Math.max(0, left + width - 400),
     }));
 
-  await chrome.windows.create({
-    url: popupUrl(popupType, id).href,
+  const created = await chrome.windows.create({
+    url: popupUrl(popupType, popupId).href,
     type: 'popup',
     ...geometry,
   });
+
+  // window id is guaranteed present after `create`
+  void ready.catch(() => chrome.windows.remove(created.id!));
 
   return ready;
 };
