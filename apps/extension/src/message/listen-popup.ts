@@ -15,9 +15,27 @@ export const listenPopup =
     sendResponse: (response: PopupResponse<any> | PopupError) => void,
   ): boolean => {
     if (isInternalSender(sender) && isPopupRequest(popupId, message)) {
+      document.addEventListener(
+        /** @see https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event */
+        'visibilitychange',
+        () => {
+          if (document.visibilityState === 'hidden') {
+            window.close();
+          }
+        },
+      );
+
+      // Navigation API is available in chrome, but not yet typed.
+      (window as typeof window & { navigation: EventTarget }).navigation.addEventListener(
+        /** @see https://developer.mozilla.org/en-US/docs/Web/API/Navigation/navigate_event */
+        'navigate',
+        () => window.close(),
+      );
+
       void handle(message)
         .catch(e => ({ error: errorToJson(ConnectError.from(e, Code.Internal), undefined) }))
         .then(sendResponse);
+
       return true;
     }
     return false;

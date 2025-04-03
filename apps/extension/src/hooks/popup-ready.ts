@@ -6,23 +6,6 @@ import { listenPopup } from '../message/listen-popup';
 const handlePopup = async <T extends PopupType>(
   popupRequest: PopupRequest<T>,
 ): Promise<PopupResponse<T>> => {
-  document.addEventListener(
-    /** @see https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event */
-    'visibilitychange',
-    () => {
-      if (document.visibilityState === 'hidden') {
-        window.close();
-      }
-    },
-  );
-
-  // Navigation API is available in chrome, but not yet typed.
-  (window as typeof window & { navigation: EventTarget }).navigation.addEventListener(
-    /** @see https://developer.mozilla.org/en-US/docs/Web/API/Navigation/navigate_event */
-    'navigate',
-    () => window.close(),
-  );
-
   const popupType = typeOfPopupRequest(popupRequest);
 
   // get popup slice acceptRequest method
