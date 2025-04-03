@@ -22,6 +22,23 @@ const listenPopup = (
   if (isPopupRequest(req)) {
     chrome.runtime.onMessage.removeListener(listenPopup);
     void (async () => {
+      document.addEventListener(
+        /** @see https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event */
+        'visibilitychange',
+        () => {
+          if (document.visibilityState === 'hidden') {
+            window.close();
+          }
+        },
+      );
+
+      // Navigation API is available in chrome, but not yet typed.
+      (window as typeof window & { navigation: EventTarget }).navigation.addEventListener(
+        /** @see https://developer.mozilla.org/en-US/docs/Web/API/Navigation/navigate_event */
+        'navigate',
+        () => window.close(),
+      );
+
       try {
         if (isTxApprovalRequest(req)) {
           responder(await txApprovalSelector(useStore.getState()).acceptRequest(req));
