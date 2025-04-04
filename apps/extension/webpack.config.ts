@@ -112,7 +112,7 @@ export default ({
 
   return {
     entry: {
-      'injected-listeners': path.join(injectDir, 'injected-listeners.ts'),
+      'injected-session': path.join(injectDir, 'injected-session.ts'),
       'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
       'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
       'page-root': path.join(entryDir, 'page-root.tsx'),
@@ -128,7 +128,7 @@ export default ({
       splitChunks: {
         chunks: chunk => {
           const filesNotToChunk = [
-            'injected-listeners',
+            'injected-session',
             'injected-penumbra-global',
             'service-worker',
             'wasm-build-action',
