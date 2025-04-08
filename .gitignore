@@ -64,3 +64,5 @@ packages/*/package
 apps/extension/chromium-profile
 
 scripts/private
+
+*.tsbuildinfo

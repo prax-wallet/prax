@@ -1,61 +1,37 @@
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import {
-  ActionBuildRequest,
-  ActionBuildResponse,
-  isActionBuildRequest,
-  isOffscreenRequest,
-} from '@penumbra-zone/types/internal-msg/offscreen';
+import type { BuildAction } from '../offscreen-client';
+import { JsonValue } from '@bufbuild/protobuf';
+import { isInternalServiceWorkerSender } from '../senders/internal';
 
-chrome.runtime.onMessage.addListener((req, _sender, respond) => {
-  if (!isOffscreenRequest(req)) {
-    return false;
-  }
-  const { type, request } = req;
-  if (isActionBuildRequest(request)) {
-    void (async () => {
-      try {
-        // propagate errors that occur in unawaited promises
-        const unhandled = Promise.withResolvers<never>();
-        self.addEventListener('unhandledrejection', unhandled.reject, {
-          once: true,
-        });
+const isOffscreenBuildActionRequest = (req?: unknown): req is { Offscreen: BuildAction } =>
+  req != null &&
+  typeof req === 'object' &&
+  'Offscreen' in req &&
+  req.Offscreen != null &&
+  typeof req.Offscreen === 'object' &&
+  'actionPlanIndex' in req.Offscreen;
 
-        const data = await Promise.race([
-          spawnActionBuildWorker(request),
-          unhandled.promise,
-        ]).finally(() => self.removeEventListener('unhandledrejection', unhandled.reject));
-
-        respond({ type, data });
-      } catch (e) {
-        const error = errorToJson(
-          // note that any given promise rejection event probably doesn't
-          // actually involve the specific request it ends up responding to.
-          ConnectError.from(e instanceof PromiseRejectionEvent ? e.reason : e),
-          undefined,
-        );
-        respond({ type, error });
-      }
-    })();
+chrome.runtime.onMessage.addListener((req: unknown, sender, respond) => {
+  if (isInternalServiceWorkerSender(sender) && isOffscreenBuildActionRequest(req)) {
+    void spawnActionBuildWorker(req.Offscreen).then(
+      actionJson => respond(actionJson),
+      (e: unknown) => respond({ error: errorToJson(ConnectError.from(e), undefined) }),
+    );
     return true;
   }
   return false;
 });
 
-const spawnActionBuildWorker = (req: ActionBuildRequest) => {
-  const { promise, resolve, reject } = Promise.withResolvers<ActionBuildResponse>();
+const spawnActionBuildWorker = (req: BuildAction) => {
+  const { promise, resolve, reject } = Promise.withResolvers<JsonValue>();
 
   const worker = new Worker(new URL('../wasm-build-action.ts', import.meta.url));
-  void promise.finally(() => worker.terminate());
 
-  const onWorkerMessage = (e: MessageEvent) => resolve(e.data as ActionBuildResponse);
+  const onWorkerMessage = (e: MessageEvent) => resolve(e.data as JsonValue);
 
-  const onWorkerError = ({ error, filename, lineno, colno, message }: ErrorEvent) =>
-    reject(
-      error instanceof Error
-        ? error
-        : new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`),
-    );
+  const onWorkerError = (ev: ErrorEvent) =>
+    reject(ev.error ?? new Error(ev.message, { cause: ev }));
 
   const onWorkerMessageError = (ev: MessageEvent) => reject(ConnectError.from(ev.data ?? ev));
 
@@ -63,8 +39,7 @@ const spawnActionBuildWorker = (req: ActionBuildRequest) => {
   worker.addEventListener('error', onWorkerError, { once: true });
   worker.addEventListener('messageerror', onWorkerMessageError, { once: true });
 
-  // Send data to web worker
   worker.postMessage(req);
 
-  return promise;
+  return promise.finally(() => worker.terminate());
 };
