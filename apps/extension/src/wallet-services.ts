@@ -4,25 +4,27 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createClient } from '@connectrpc/connect';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { localExtStorage } from './storage/local';
-import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
+import { onboardGrpcEndpoint, onboardWallets } from './storage/onboard';
 import { Services } from '@repo/context';
 import { WalletServices } from '@penumbra-zone/types/services';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { deserializeWallet } from './wallet';
+import { assetIdFromBech32m } from '@penumbra-zone/bech32m/passet';
 
 export const startWalletServices = async () => {
-  const wallet = await onboardWallet();
+  const wallets = await onboardWallets();
+  const wallet = deserializeWallet(wallets[0]!);
   const grpcEndpoint = await onboardGrpcEndpoint();
-  const numeraires = await localExtStorage.get('numeraires');
+  const numeraires = (await localExtStorage.get('numeraires')).map(n => assetIdFromBech32m(n));
   const chainId = await getChainId(grpcEndpoint);
-  const walletCreationBlockHeight = await localExtStorage.get('walletCreationBlockHeight');
 
   const services = new Services({
     grpcEndpoint,
     chainId,
-    walletId: WalletId.fromJsonString(wallet.id),
-    fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
-    numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
-    walletCreationBlockHeight,
+    walletId: new WalletId(wallet.id),
+    fullViewingKey: new FullViewingKey(wallet.fullViewingKey),
+    numeraires: numeraires.map(n => new AssetId(n)),
+    walletCreationBlockHeight: wallet.creationHeight,
   });
 
   void syncLastBlockToStorage(await services.getWalletServices());

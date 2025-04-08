@@ -13,7 +13,7 @@ describe('Generate Slice', () => {
 
   test('the default is empty', () => {
     const { phrase, validationFields, userValidationAttempt } =
-      useStore.getState().seedPhrase.generate;
+      useStore.getState().onboarding.generate;
     expect(phrase).toEqual([]);
     expect(validationFields).toEqual([]);
     expect(userValidationAttempt).toEqual([]);
@@ -23,8 +23,8 @@ describe('Generate Slice', () => {
     test('it populates the right fields', () => {
       useStore
         .getState()
-        .seedPhrase.generate.generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-      const generate = useStore.getState().seedPhrase.generate;
+        .onboarding.generate.generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
+      const generate = useStore.getState().onboarding.generate;
       expect(generate.phrase.length).toBe(12);
       expect(generate.validationFields.length).toBe(3);
       expect(
@@ -36,8 +36,8 @@ describe('Generate Slice', () => {
     test('it works with 24 words too', () => {
       useStore
         .getState()
-        .seedPhrase.generate.generateRandomSeedPhrase(SeedPhraseLength.TWENTY_FOUR_WORDS);
-      const generate = useStore.getState().seedPhrase.generate;
+        .onboarding.generate.generateRandomSeedPhrase(SeedPhraseLength.TWENTY_FOUR_WORDS);
+      const generate = useStore.getState().onboarding.generate;
       expect(generate.phrase.length).toBe(24);
       expect(generate.validationFields.length).toBe(3);
       expect(
@@ -49,18 +49,18 @@ describe('Generate Slice', () => {
 
   describe('updateAttempt', () => {
     test('can add new', () => {
-      useStore.getState().seedPhrase.generate.updateAttempt({ word: 'xyz', index: 10 });
-      expect(useStore.getState().seedPhrase.generate.userValidationAttempt[0]?.word).toBe('xyz');
+      useStore.getState().onboarding.generate.updateAttempt({ word: 'xyz', index: 10 });
+      expect(useStore.getState().onboarding.generate.userValidationAttempt[0]?.word).toBe('xyz');
 
-      useStore.getState().seedPhrase.generate.updateAttempt({ word: 'abc', index: 4 });
-      expect(useStore.getState().seedPhrase.generate.userValidationAttempt[1]?.word).toBe('abc');
+      useStore.getState().onboarding.generate.updateAttempt({ word: 'abc', index: 4 });
+      expect(useStore.getState().onboarding.generate.userValidationAttempt[1]?.word).toBe('abc');
     });
 
     test('can update existing', () => {
-      useStore.getState().seedPhrase.generate.updateAttempt({ word: 'xyz', index: 10 });
-      useStore.getState().seedPhrase.generate.updateAttempt({ word: 'abc', index: 4 });
-      useStore.getState().seedPhrase.generate.updateAttempt({ word: 'tuv', index: 10 });
-      expect(useStore.getState().seedPhrase.generate.userValidationAttempt[0]?.word).toBe('tuv');
+      useStore.getState().onboarding.generate.updateAttempt({ word: 'xyz', index: 10 });
+      useStore.getState().onboarding.generate.updateAttempt({ word: 'abc', index: 4 });
+      useStore.getState().onboarding.generate.updateAttempt({ word: 'tuv', index: 10 });
+      expect(useStore.getState().onboarding.generate.userValidationAttempt[0]?.word).toBe('tuv');
     });
   });
 
@@ -68,19 +68,19 @@ describe('Generate Slice', () => {
     test('detects correct', () => {
       useStore
         .getState()
-        .seedPhrase.generate.generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-      useStore.getState().seedPhrase.generate.validationFields.forEach(({ word, index }) => {
-        useStore.getState().seedPhrase.generate.updateAttempt({ word, index });
+        .onboarding.generate.generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
+      useStore.getState().onboarding.generate.validationFields.forEach(({ word, index }) => {
+        useStore.getState().onboarding.generate.updateAttempt({ word, index });
       });
-      expect(useStore.getState().seedPhrase.generate.userAttemptCorrect()).toBeTruthy();
+      expect(useStore.getState().onboarding.generate.userAttemptCorrect()).toBeTruthy();
     });
 
     test('detects incorrect', () => {
       useStore
         .getState()
-        .seedPhrase.generate.generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-      useStore.getState().seedPhrase.generate.updateAttempt({ word: 'umlaut', index: 3 });
-      expect(useStore.getState().seedPhrase.generate.userAttemptCorrect()).toBeFalsy();
+        .onboarding.generate.generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
+      useStore.getState().onboarding.generate.updateAttempt({ word: 'umlaut', index: 3 });
+      expect(useStore.getState().onboarding.generate.userAttemptCorrect()).toBeFalsy();
     });
   });
 });

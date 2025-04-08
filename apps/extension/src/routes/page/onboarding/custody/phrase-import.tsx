@@ -9,13 +9,13 @@ import {
 } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { cn } from '@repo/ui/lib/utils';
-import { useStore } from '../../../state';
-import { importSelector } from '../../../state/seed-phrase/import';
-import { usePageNav } from '../../../utils/navigate';
-import { ImportForm } from '../../../shared/containers/import-form';
+import { useStore } from '../../../../state';
+import { importSelector } from '../../../../state/onboarding/import';
+import { usePageNav } from '../../../../utils/navigate';
+import { ImportForm } from '../../../../shared/containers/import-form';
 import { FormEvent, MouseEvent } from 'react';
-import { navigateToPasswordPage } from './password/utils';
-import { SEED_PHRASE_ORIGIN } from './password/types';
+import { navigateToPasswordPage } from '../password/utils';
+import { SEED_PHRASE_ORIGIN } from '../password/types';
 
 export const ImportSeedPhrase = () => {
   const navigate = usePageNav();

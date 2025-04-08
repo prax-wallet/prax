@@ -1,10 +1,11 @@
 import { PagePath } from '../paths';
 import { OnboardingStart } from './start';
-import { GenerateSeedPhrase } from './generate';
-import { ConfirmBackup } from './confirm-backup';
-import { ImportSeedPhrase } from './import';
+import { GenerateSeedPhrase } from './custody/phrase-generate/generate';
+import { ConfirmBackup } from './custody/phrase-generate/confirm-backup';
+import { ImportSeedPhrase } from './custody/phrase-import';
 import { OnboardingSuccess } from './success';
 import { SetPassword } from './password';
+import { ConnectLedgerWallet } from './custody/connect-ledger';
 
 export const onboardingRoutes = [
   {
@@ -30,5 +31,9 @@ export const onboardingRoutes = [
   {
     path: PagePath.ONBOARDING_SUCCESS,
     element: <OnboardingSuccess />,
+  },
+  {
+    path: PagePath.CONNECT_LEDGER_WALLET,
+    element: <ConnectLedgerWallet />,
   },
 ];

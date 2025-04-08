@@ -1,5 +1,4 @@
 import { OriginRecord } from '../../../../storage/types';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { Button } from '@repo/ui/components/ui/button';
 import { TrashIcon } from 'lucide-react';
 import { DisplayOriginURL } from '../../../../shared/components/display-origin-url';
@@ -13,7 +12,7 @@ export const KnownSite = ({
 }) => {
   return (
     <div key={site.origin} role='listitem' className='flex items-center justify-between'>
-      {site.choice === UserChoice.Approved && (
+      {site.choice === 'Approved' && (
         <a
           href={site.origin}
           target='_blank'
@@ -23,12 +22,12 @@ export const KnownSite = ({
           <DisplayOriginURL url={new URL(site.origin)} />
         </a>
       )}
-      {site.choice === UserChoice.Denied && (
+      {site.choice === 'Denied' && (
         <span className='brightness-75'>
           <DisplayOriginURL url={new URL(site.origin)} />
         </span>
       )}
-      {site.choice === UserChoice.Ignored && (
+      {site.choice === 'Ignored' && (
         <span className='line-through decoration-red decoration-wavy brightness-75'>
           <DisplayOriginURL url={new URL(site.origin)} />
         </span>

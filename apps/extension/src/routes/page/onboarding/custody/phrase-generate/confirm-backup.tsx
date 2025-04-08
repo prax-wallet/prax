@@ -10,11 +10,11 @@ import {
 } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { Input } from '@repo/ui/components/ui/input';
-import { useStore } from '../../../state';
-import { generateSelector } from '../../../state/seed-phrase/generate';
-import { usePageNav } from '../../../utils/navigate';
-import { navigateToPasswordPage } from './password/utils';
-import { SEED_PHRASE_ORIGIN } from './password/types';
+import { useStore } from '../../../../../state';
+import { generateSelector } from '../../../../../state/onboarding/generate';
+import { usePageNav } from '../../../../../utils/navigate';
+import { navigateToPasswordPage } from '../../password/utils';
+import { SEED_PHRASE_ORIGIN } from '../../password/types';
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();
@@ -39,7 +39,7 @@ export const ConfirmBackup = () => {
           <Button
             variant='gradient'
             disabled={!userAttemptCorrect()}
-            onClick={() => navigateToPasswordPage(navigate, SEED_PHRASE_ORIGIN.NEWLY_GENERATED)}
+            onClick={() => navigateToPasswordPage(navigate, SEED_PHRASE_ORIGIN.GENERATED)}
           >
             Next
           </Button>

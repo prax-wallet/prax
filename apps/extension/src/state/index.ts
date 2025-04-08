@@ -3,7 +3,7 @@ import { createWalletsSlice, WalletsSlice } from './wallets';
 import { immer } from 'zustand/middleware/immer';
 import { customPersist } from './persist';
 import { createPasswordSlice, PasswordSlice } from './password';
-import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
+import { createOnboardingSlice, OnboardingSlice } from './onboarding';
 import { createNetworkSlice, NetworkSlice } from './network';
 import { localExtStorage } from '../storage/local';
 import { LocalStorageState } from '../storage/types';
@@ -18,7 +18,7 @@ import { createNumerairesSlice, NumerairesSlice } from './numeraires';
 export interface AllSlices {
   wallets: WalletsSlice;
   password: PasswordSlice;
-  seedPhrase: SeedPhraseSlice;
+  onboarding: OnboardingSlice;
   network: NetworkSlice;
   numeraires: NumerairesSlice;
   txApproval: TxApprovalSlice;
@@ -41,7 +41,7 @@ export const initializeStore = (
   return immer((setState, getState: () => AllSlices, store) => ({
     wallets: createWalletsSlice(local)(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
-    seedPhrase: createSeedPhraseSlice(setState, getState, store),
+    onboarding: createOnboardingSlice(setState, getState, store),
     network: createNetworkSlice(local)(setState, getState, store),
     numeraires: createNumerairesSlice(local)(setState, getState, store),
     connectedSites: createConnectedSitesSlice(local)(setState, getState, store),

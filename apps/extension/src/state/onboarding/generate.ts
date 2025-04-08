@@ -1,5 +1,5 @@
 import { AllSlices, SliceCreator } from '..';
-import { SeedPhraseSlice } from '.';
+import { OnboardingSlice } from '.';
 import {
   generateSeedPhrase,
   generateValidationFields,
@@ -17,12 +17,12 @@ export interface GenerateFields {
   cleanup: () => void;
 }
 
-export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, get) => ({
+export const createGenerate: SliceCreator<OnboardingSlice['generate']> = (set, get) => ({
   phrase: [],
   validationFields: [],
   userValidationAttempt: [],
   generateRandomSeedPhrase: length => {
-    set(({ seedPhrase: { generate } }) => {
+    set(({ onboarding: { generate } }) => {
       const newSeedPhrase = generateSeedPhrase(length);
       generate.phrase = newSeedPhrase;
       generate.validationFields = generateValidationFields(newSeedPhrase, 3);
@@ -30,14 +30,14 @@ export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, g
     });
   },
   cleanup: () => {
-    set(({ seedPhrase: { generate } }) => {
+    set(({ onboarding: { generate } }) => {
       generate.phrase = [];
       generate.validationFields = [];
       generate.userValidationAttempt = [];
     });
   },
   updateAttempt: attempt => {
-    set(({ seedPhrase: { generate } }) => {
+    set(({ onboarding: { generate } }) => {
       const match = generate.userValidationAttempt.find(v => v.index === attempt.index);
       if (match) {
         match.word = attempt.word;
@@ -47,7 +47,7 @@ export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, g
     });
   },
   userAttemptCorrect: () => {
-    const { userValidationAttempt, validationFields } = get().seedPhrase.generate;
+    const { userValidationAttempt, validationFields } = get().onboarding.generate;
     return (
       userValidationAttempt.length === validationFields.length &&
       userValidationAttempt.every(f => {
@@ -57,4 +57,4 @@ export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, g
   },
 });
 
-export const generateSelector = (state: AllSlices) => state.seedPhrase.generate;
+export const generateSelector = (state: AllSlices) => state.onboarding.generate;

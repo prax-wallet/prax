@@ -52,5 +52,37 @@
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.16.0",
     "vitest": "1.x"
+  },
+  "pnpm": {
+    "overrides": {
+      "@penumbra-zone/bech32m": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/bech32m/penumbra-zone-bech32m-15.0.0.tgz",
+      "@penumbra-zone/client": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/client/penumbra-zone-client-26.0.0.tgz",
+      "@penumbra-zone/crypto-web": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/crypto/penumbra-zone-crypto-web-41.0.1.tgz",
+      "@penumbra-zone/getters": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/getters/penumbra-zone-getters-25.0.1.tgz",
+      "@penumbra-zone/perspective": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/perspective/penumbra-zone-perspective-54.0.0.tgz",
+      "@penumbra-zone/protobuf": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/protobuf/penumbra-zone-protobuf-9.0.0.tgz",
+      "@penumbra-zone/services": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/services/penumbra-zone-services-60.0.0.tgz",
+      "@penumbra-zone/storage": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/storage/penumbra-zone-storage-54.0.0.tgz",
+      "@penumbra-zone/transport-chrome": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/transport-chrome/penumbra-zone-transport-chrome-9.0.0.tgz",
+      "@penumbra-zone/transport-dom": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/transport-dom/penumbra-zone-transport-dom-7.5.1.tgz",
+      "@penumbra-zone/types": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/types/penumbra-zone-types-32.2.1.tgz",
+      "@penumbra-zone/wasm": "file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/wasm/penumbra-zone-wasm-45.1.0.tgz"
+    },
+    "peerDependencyRules": {
+      "allowAny": [
+        "@penumbra-zone/bech32m",
+        "@penumbra-zone/client",
+        "@penumbra-zone/crypto-web",
+        "@penumbra-zone/getters",
+        "@penumbra-zone/perspective",
+        "@penumbra-zone/protobuf",
+        "@penumbra-zone/services",
+        "@penumbra-zone/storage",
+        "@penumbra-zone/transport-chrome",
+        "@penumbra-zone/transport-dom",
+        "@penumbra-zone/types",
+        "@penumbra-zone/wasm"
+      ]
+    }
   }
 }

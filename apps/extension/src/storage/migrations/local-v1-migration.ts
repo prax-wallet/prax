@@ -1,40 +1,27 @@
-import { LocalStorageState, OriginRecord } from '../types';
+import { V1LocalStorageState } from './local-v1';
 import { MigrationFn } from '../base';
 import { WalletJson } from '@penumbra-zone/types/wallet';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
-import { KeyPrintJson } from '@penumbra-zone/crypto-web/encryption';
 import { Stringified } from '@penumbra-zone/types/jsonified';
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { walletIdFromBech32m } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
+import { V0LocalStorageState } from './local-v0';
 
 export enum V0LocalStorageVersion {
   V1 = 'V1',
   V2 = 'V2',
 }
 
-interface StorageItem<T> {
+export interface StorageItem<T> {
   version: V0LocalStorageVersion;
   value: T;
 }
 
-// Note: previous local storage used to key a version on each individual field
-export interface V0LocalStorageState {
-  wallets?: StorageItem<WalletJson[]>;
-  grpcEndpoint?: StorageItem<string | undefined>;
-  frontendUrl?: StorageItem<string | undefined>;
-  passwordKeyPrint?: StorageItem<KeyPrintJson | undefined>;
-  fullSyncHeight?: StorageItem<number | undefined>;
-  knownSites?: StorageItem<OriginRecord[]>;
-  params?: StorageItem<Stringified<AppParameters> | undefined>;
-  numeraires?: StorageItem<Stringified<AssetId>[]>;
-}
-
 // Update LocalStorageState to V1LocalStorageState if there is a version bump
-export const localV0Migration: MigrationFn<V0LocalStorageState, LocalStorageState> = v0 => {
+export const localV0Migration: MigrationFn<V0LocalStorageState, V1LocalStorageState> = v0 => {
   return {
     dbVersion: 1,
     wallets: !v0.wallets

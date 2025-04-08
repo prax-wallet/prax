@@ -27,8 +27,9 @@ export const SetPassword = () => {
         <CardHeader className='items-center'>
           <CardTitle>Create a password</CardTitle>
           <CardDescription className='text-center'>
-            We will use this password to encrypt your data and you&apos;ll need it to unlock your
-            wallet.
+            You&apos;ll need this password to unlock Prax.
+            <br />
+            If you aren&apos;t using a hardware wallet, this password will encrypt your data.
           </CardDescription>
         </CardHeader>
         <CardContent>

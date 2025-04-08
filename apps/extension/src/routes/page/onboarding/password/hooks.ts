@@ -1,17 +1,27 @@
-import { useAddWallet } from '../../../../hooks/onboarding';
+import { useAddLedgerWallet, useAddSeedPhraseWallet } from '../../../../hooks/onboarding';
 import { usePageNav } from '../../../../utils/navigate';
-import { FormEvent, useCallback, useState } from 'react';
+import { FormEvent, useCallback, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getSeedPhraseOrigin, setOnboardingValuesInStorage } from './utils';
 import { PagePath } from '../../paths';
 import { localExtStorage } from '../../../../storage/local';
+import { SEED_PHRASE_ORIGIN } from './types';
 
 export const useFinalizeOnboarding = () => {
-  const addWallet = useAddWallet();
   const navigate = usePageNav();
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
   const location = useLocation();
+
+  const addLedgerWallet = useAddLedgerWallet();
+  const addSeedPhraseWallet = useAddSeedPhraseWallet();
+
+  const seedPhraseFrom = getSeedPhraseOrigin(location);
+
+  const addWallet = useMemo(
+    () => (seedPhraseFrom === SEED_PHRASE_ORIGIN.NONE ? addLedgerWallet : addSeedPhraseWallet),
+    [seedPhraseFrom, addLedgerWallet, addSeedPhraseWallet],
+  );
 
   const handleSubmit = useCallback(async (event: FormEvent, password: string) => {
     event.preventDefault();
@@ -19,8 +29,7 @@ export const useFinalizeOnboarding = () => {
       setLoading(true);
       setError(undefined);
       await addWallet(password);
-      const origin = getSeedPhraseOrigin(location);
-      await setOnboardingValuesInStorage(origin);
+      await setOnboardingValuesInStorage(seedPhraseFrom);
       navigate(PagePath.ONBOARDING_SUCCESS);
     } catch (e) {
       setError(String(e));

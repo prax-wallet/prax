@@ -1,8 +1,7 @@
-import type { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import type { UserChoice } from '@penumbra-zone/types/user-choice';
-import { OriginRecord } from '../storage/types';
+import { OriginRecord, UserChoice } from '../storage/types';
 import { JsonValue } from '@bufbuild/protobuf';
+import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 export enum PopupType {
   TxApproval = 'TxApproval',
@@ -52,7 +51,7 @@ export const typeOfPopupRequest = <M extends PopupType>(req: PopupRequest<M>): M
 };
 
 interface PopupRequestMap {
-  TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
+  TxApproval: { txPlan: Jsonified<TransactionPlan> };
   OriginApproval: {
     origin: string;
     favIconUrl?: string;
@@ -63,7 +62,7 @@ interface PopupRequestMap {
 
 interface PopupResponseMap {
   TxApproval: {
-    authorizeRequest: Jsonified<AuthorizeRequest>;
+    txPlan: Jsonified<TransactionPlan>;
     choice: UserChoice;
   };
   OriginApproval: OriginRecord;

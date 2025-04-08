@@ -1,6 +1,5 @@
 import { Code, ConnectError } from '@connectrpc/connect';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 import {
   isPraxConnectionMessage,
   PraxConnection,
@@ -26,7 +25,7 @@ export const contentScriptConnectListener = (
   void approveSender(validSender).then(
     status => {
       // origin is already known, or popup choice was made
-      if (status === UserChoice.Approved) {
+      if (status === 'Approved') {
         // init only the specific document
         void sendTab(validSender, PraxConnection.Init);
         // handler is done

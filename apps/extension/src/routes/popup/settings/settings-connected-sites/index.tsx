@@ -3,7 +3,6 @@ import { Input } from '@repo/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../../icons/link-gradient';
 import { OriginRecord } from '../../../../storage/types';
 import { AllSlices, useStore } from '../../../../state';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { SettingsScreen } from '../settings-screen';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
 import { allSitesFilteredOutSelector } from '../../../../state/connected-sites';
@@ -20,9 +19,9 @@ const getGroupedSites = (knownSites: OriginRecord[], filter?: string) => {
   const filterFn = (site: OriginRecord) => !filter || site.origin.includes(filter);
 
   return {
-    approvedSites: groupedSites.get(UserChoice.Approved)?.filter(filterFn) ?? [],
-    deniedSites: groupedSites.get(UserChoice.Denied)?.filter(filterFn) ?? [],
-    ignoredSites: groupedSites.get(UserChoice.Ignored)?.filter(filterFn) ?? [],
+    approvedSites: groupedSites.get('Approved')?.filter(filterFn) ?? [],
+    deniedSites: groupedSites.get('Denied')?.filter(filterFn) ?? [],
+    ignoredSites: groupedSites.get('Ignored')?.filter(filterFn) ?? [],
   };
 };
 

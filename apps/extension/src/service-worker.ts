@@ -26,15 +26,15 @@ import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manage
 import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
 import { assertValidSessionPort } from './senders/session';
 
-// context
-import { approverCtx } from '@penumbra-zone/services/ctx/approver';
-import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
+// bad
 import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
-import { skCtx } from '@penumbra-zone/services/ctx/spend-key';
-import { approveTransaction } from './approve-transaction';
+
+// context
+import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
 import { getFullViewingKey } from './ctx/full-viewing-key';
-import { getSpendKey } from './ctx/spend-key';
+import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
 import { getWalletId } from './ctx/wallet-id';
+import { authorizeCtx } from '@penumbra-zone/services/ctx/authorize';
 
 // context clients
 import { CustodyService, StakeService } from '@penumbra-zone/protobuf';
@@ -44,11 +44,11 @@ import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 import { internalTransportOptions } from './transport-options';
 
 // idb, querier, block processor
-import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
 import type { Services } from '@repo/context';
 import { startWalletServices } from './wallet-services';
 
 import { backOff } from 'exponential-backoff';
+import { getAuthorizationData } from './ctx/auth';
 
 let walletServices: Promise<Services>;
 
@@ -78,14 +78,14 @@ const initHandler = async () => {
 
       // remaining context for all services
       contextValues.set(fvkCtx, getFullViewingKey);
-      contextValues.set(servicesCtx, () => walletServices);
       contextValues.set(walletIdCtx, getWalletId);
+
+      contextValues.set(servicesCtx, () => walletServices);
 
       // discriminate context available to specific services
       const { pathname } = new URL(req.url);
       if (pathname.startsWith('/penumbra.custody.v1.Custody')) {
-        contextValues.set(skCtx, getSpendKey);
-        contextValues.set(approverCtx, approveTransaction);
+        contextValues.set(authorizeCtx, getAuthorizationData);
       }
 
       return Promise.resolve({ ...req, contextValues });

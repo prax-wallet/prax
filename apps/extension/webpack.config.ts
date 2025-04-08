@@ -44,6 +44,9 @@ export default ({
 
   const CHROMIUM_PROFILE = process.env['CHROMIUM_PROFILE'];
 
+  const PRAX = JSON.stringify(PRAX_ID);
+  const PRAX_ORIGIN = JSON.stringify(`chrome-extension://${PRAX_ID}`);
+
   /*
    * The DefinePlugin replaces specified tokens with specified values.
    * - These should be declared in `prax.d.ts` for TypeScript awareness.
@@ -51,8 +54,8 @@ export default ({
    * - Replacement is literal, so the values must be stringified.
    */
   const DefinePlugin = new webpack.DefinePlugin({
-    PRAX: JSON.stringify(PRAX_ID),
-    PRAX_ORIGIN: JSON.stringify(`chrome-extension://${PRAX_ID}`),
+    PRAX,
+    PRAX_ORIGIN,
     'globalThis.__DEV__': JSON.stringify(process.env['NODE_ENV'] !== 'production'),
     'globalThis.__ASSERT_ROOT__': JSON.stringify(false),
   });
@@ -112,15 +115,47 @@ export default ({
 
   return {
     entry: {
-      'injected-session': path.join(injectDir, 'injected-session.ts'),
-      'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
-      'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
-      'page-root': path.join(entryDir, 'page-root.tsx'),
-      'popup-root': path.join(entryDir, 'popup-root.tsx'),
-      'service-worker': path.join(srcDir, 'service-worker.ts'),
-      'wasm-build-action': path.join(srcDir, 'wasm-build-action.ts'),
+      'injected-session': {
+        asyncChunks: false,
+        chunkLoading: false,
+        import: path.join(injectDir, 'injected-session.ts'),
+      },
+      'injected-penumbra-global': {
+        asyncChunks: false,
+        chunkLoading: false,
+        import: path.join(injectDir, 'injected-penumbra-global.ts'),
+      },
+      'offscreen-handler': {
+        asyncChunks: true,
+        chunkLoading: 'import',
+        runtime: 'offscreen',
+        import: path.join(entryDir, 'offscreen-handler.ts'),
+      },
+      'page-root': {
+        asyncChunks: true,
+        chunkLoading: 'import',
+        runtime: 'extension-page',
+        import: path.join(entryDir, 'page-root.tsx'),
+      },
+      'popup-root': {
+        asyncChunks: true,
+        chunkLoading: 'import',
+        runtime: 'extension-page',
+        import: path.join(entryDir, 'popup-root.tsx'),
+      },
+      'service-worker': {
+        asyncChunks: false,
+        chunkLoading: 'import',
+        import: path.join(srcDir, 'service-worker.ts'),
+      },
+      'wasm-build-action': {
+        asyncChunks: true,
+        chunkLoading: 'import',
+        import: path.join(srcDir, 'wasm-build-action.ts'),
+      },
     },
     output: {
+      module: true,
       path: path.join(__dirname, 'dist'),
       filename: '[name].js',
     },
@@ -205,6 +240,7 @@ export default ({
       }),
       // html entry points
       new HtmlWebpackPlugin({
+        scriptLoading: 'module',
         favicon: 'public/favicon/icon128.png',
         title: 'Prax Wallet',
         template: 'react-root.html',
@@ -212,6 +248,7 @@ export default ({
         chunks: ['page-root'],
       }),
       new HtmlWebpackPlugin({
+        scriptLoading: 'module',
         title: 'Prax Wallet',
         template: 'react-root.html',
         rootId: 'popup-root',
@@ -219,6 +256,7 @@ export default ({
         chunks: ['popup-root'],
       }),
       new HtmlWebpackPlugin({
+        scriptLoading: 'module',
         title: 'Penumbra Offscreen',
         filename: 'offscreen.html',
         chunks: ['offscreen-handler'],
@@ -229,6 +267,7 @@ export default ({
       WEBPACK_WATCH && CHROMIUM_PROFILE && WebExtReloadPlugin,
     ],
     experiments: {
+      outputModule: true,
       asyncWebAssembly: true,
     },
   };

@@ -4,7 +4,6 @@ import { AllSlices, initializeStore } from '.';
 import { LocalStorageState, OriginRecord } from '../storage/types';
 import { ExtensionStorage } from '../storage/base';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { allSitesFilteredOutSelector } from './connected-sites';
 import { localTestDefaults } from '../utils/test-constants';
 
@@ -68,7 +67,7 @@ describe('Connected Sites Slice', () => {
       test('discarding unknown site has no effect on storage', async () => {
         const deletant: OriginRecord = {
           origin: 'https://test',
-          choice: UserChoice.Ignored,
+          choice: 'Ignored',
           date: Date.now(),
         };
 

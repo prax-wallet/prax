@@ -9,10 +9,10 @@ import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { Input } from '@repo/ui/components/ui/input';
 import { cn } from '@repo/ui/lib/utils';
 import { useCountdown } from 'usehooks-ts';
-import { useStore } from '../../../state';
-import { generateSelector } from '../../../state/seed-phrase/generate';
-import { usePageNav } from '../../../utils/navigate';
-import { PagePath } from '../paths';
+import { useStore } from '../../../../../state';
+import { generateSelector } from '../../../../../state/onboarding/generate';
+import { usePageNav } from '../../../../../utils/navigate';
+import { PagePath } from '../../../paths';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();

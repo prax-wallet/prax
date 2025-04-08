@@ -6,24 +6,27 @@ import { FileTextGradientIcon } from '../../../icons/file-text-gradient';
 import { PasswordInput } from '../../../shared/components/password-input';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
-import { walletsSelector } from '../../../state/wallets';
 import { SettingsScreen } from './settings-screen';
+import { activeWalletSelector } from '../../../state/wallets';
+import { Key } from '@penumbra-zone/crypto-web/encryption';
 
 export const SettingsPassphrase = () => {
-  const { isPassword } = useStore(passwordSelector);
-  const { getSeedPhrase } = useStore(walletsSelector);
+  const { isPassword, key } = useStore(passwordSelector);
+  const wallet = useStore(activeWalletSelector);
 
   const [password, setPassword] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
-  const [phrase, setPhrase] = useState<string[]>([]);
+  const [displayPhrase, setDisplayPhrase] = useState<string[]>();
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     void (async function () {
-      if (await isPassword(password)) {
-        setPassword(''); // Clearing so plaintext password does not hangout in memory
-        setPhrase(await getSeedPhrase());
+      if ((await isPassword(password)) && key && wallet?.encryptedSeedPhrase) {
+        void Key.fromJson(key)
+          .then(passKey => passKey.unseal(wallet.encryptedSeedPhrase!))
+          .then(seedPhrase => setDisplayPhrase(seedPhrase?.split(' ')));
+        setPassword('');
       } else {
         setEnteredIncorrect(true);
       }
@@ -41,7 +44,7 @@ export const SettingsPassphrase = () => {
           <p className='mb-3 flex items-center gap-2 text-rust'>
             <ExclamationTriangleIcon /> Don’t share this phrase with anyone
           </p>
-          {!phrase.length ? (
+          {!displayPhrase ? (
             <PasswordInput
               passwordValue={password}
               label={<p className='font-headline font-semibold text-muted-foreground'>Password</p>}
@@ -61,7 +64,7 @@ export const SettingsPassphrase = () => {
             <div className='flex flex-col gap-2'>
               <p className='font-headline text-base font-semibold'>Recovery secret phrase</p>
               <div className='mb-[6px] grid grid-cols-3 gap-4 rounded-lg border bg-background p-5'>
-                {phrase.map((word, i) => (
+                {displayPhrase.map((word, i) => (
                   <div className='flex' key={i}>
                     <p className='w-5 text-left text-muted-foreground'>{i + 1}.</p>
                     <p className='text-muted-foreground'>{word}</p>
@@ -69,7 +72,7 @@ export const SettingsPassphrase = () => {
                 ))}
               </div>
               <CopyToClipboard
-                text={phrase.join(' ')}
+                text={displayPhrase.join(' ')}
                 label={<span className='font-bold text-muted-foreground'>Copy to clipboard</span>}
                 className='m-auto'
                 isSuccessCopyText
@@ -77,12 +80,10 @@ export const SettingsPassphrase = () => {
             </div>
           )}
         </div>
-        {!phrase.length ? (
+        {displayPhrase && (
           <Button variant='gradient' size='lg' className='w-full' type='submit'>
             Confirm
           </Button>
-        ) : (
-          <></>
         )}
       </form>
     </SettingsScreen>

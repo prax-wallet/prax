@@ -3,10 +3,7 @@ import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Key, KeyPrint } from '@penumbra-zone/crypto-web/encryption';
 import { webcrypto } from 'crypto';
-import { LocalStorageState } from '../storage/types';
-import { ExtensionStorage } from '../storage/base';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
-import { SessionStorageState } from '../storage/session';
 
 vi.stubGlobal('crypto', webcrypto);
 
@@ -17,8 +14,8 @@ describe('Password Slice', () => {
   ];
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
-  let sessionStorage: ExtensionStorage<SessionStorageState>;
-  let localStorage: ExtensionStorage<LocalStorageState>;
+  let sessionStorage: ReturnType<typeof mockSessionExtStorage>;
+  let localStorage: ReturnType<typeof mockLocalExtStorage>;
 
   beforeEach(() => {
     sessionStorage = mockSessionExtStorage();
@@ -32,10 +29,7 @@ describe('Password Slice', () => {
 
   test('password can be set and verified', async () => {
     await useStore.getState().password.setPassword(password);
-    await useStore.getState().wallets.addWallet({
-      label: 'Account #1',
-      seedPhrase,
-    });
+    await useStore.getState().wallets.addSeedPhraseWallet('Account #1', seedPhrase);
 
     // Saves to session storage
     const sessionKey = await sessionStorage.get('passwordKey');
@@ -58,10 +52,7 @@ describe('Password Slice', () => {
 
   test('password key can be set to session storage', async () => {
     await useStore.getState().password.setPassword(password);
-    await useStore.getState().wallets.addWallet({
-      label: 'Account #1',
-      seedPhrase,
-    });
+    await useStore.getState().wallets.addSeedPhraseWallet('Account #1', seedPhrase);
 
     useStore.getState().password.clearSessionPassword();
     const sessionKeyAfterLogout = await sessionStorage.get('passwordKey');
