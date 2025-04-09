@@ -1,4 +1,3 @@
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { AllSlices, SliceCreator } from '.';
 import {
   TransactionPlan,
@@ -30,7 +29,7 @@ export interface TxApprovalSlice {
    * representations of them instead.
    */
   responder?: PromiseWithResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
-  authorizeRequest?: Stringified<AuthorizeRequest>;
+  txPlan?: Stringified<TransactionPlan>;
   transactionView?: Stringified<TransactionView>;
   choice?: UserChoice;
 
@@ -51,7 +50,7 @@ export interface TxApprovalSlice {
 export const createTxApprovalSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<TxApprovalSlice> =>
   (set, get) => ({
-    acceptRequest: async ({ authorizeRequest: authReqJson }) => {
+    acceptRequest: async ({ txPlan: txPlanJson }) => {
       const existing = get().txApproval;
       if (existing.responder) {
         throw new Error('Another request is still pending');
@@ -62,7 +61,7 @@ export const createTxApprovalSlice =
         state.txApproval.responder = responder;
       });
 
-      const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
+      const txPlan = TransactionPlan.fromJson(txPlanJson);
 
       const getMetadata = async (assetId: AssetId) => {
         try {
@@ -79,7 +78,7 @@ export const createTxApprovalSlice =
       }
 
       const transactionView = await viewTransactionPlan(
-        authorizeRequest.plan ?? new TransactionPlan(),
+        txPlan,
         getMetadata,
         FullViewingKey.fromJsonString(wallets[0].fullViewingKey),
       );
@@ -96,7 +95,7 @@ export const createTxApprovalSlice =
       const transactionClassification = classifyTransaction(transactionView);
 
       set(state => {
-        state.txApproval.authorizeRequest = authorizeRequest.toJsonString();
+        state.txApproval.txPlan = txPlan.toJsonString();
         state.txApproval.transactionView = transactionView.toJsonString();
 
         state.txApproval.asSender = asSender.toJsonString();
@@ -121,7 +120,7 @@ export const createTxApprovalSlice =
         responder,
         choice,
         transactionView: transactionViewString,
-        authorizeRequest: authorizeRequestString,
+        txPlan: txPlanString,
       } = get().txApproval;
 
       try {
@@ -130,18 +129,18 @@ export const createTxApprovalSlice =
         }
 
         try {
-          if (choice === undefined || !transactionViewString || !authorizeRequestString) {
+          if (choice === undefined || !transactionViewString || !txPlanString) {
             throw new Error('Missing response data');
           }
 
           // zustand doesn't like jsonvalue so stringify
-          const authorizeRequest = AuthorizeRequest.fromJsonString(
-            authorizeRequestString,
-          ).toJson() as Jsonified<AuthorizeRequest>;
+          const txPlan = TransactionPlan.fromJsonString(
+            txPlanString,
+          ).toJson() as Jsonified<TransactionPlan>;
 
           responder.resolve({
             choice,
-            authorizeRequest,
+            txPlan,
           });
         } catch (e) {
           responder.reject(e);
@@ -149,7 +148,7 @@ export const createTxApprovalSlice =
       } finally {
         set(state => {
           state.txApproval.responder = undefined;
-          state.txApproval.authorizeRequest = undefined;
+          state.txApproval.txPlan = undefined;
           state.txApproval.transactionView = undefined;
           state.txApproval.choice = undefined;
 

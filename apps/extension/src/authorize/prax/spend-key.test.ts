@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
+import { mockLocalExtStorage, mockSessionExtStorage } from '../../storage/mock';
 
 const localExtStorage = mockLocalExtStorage();
 const sessionExtStorage = mockSessionExtStorage();
 
 vi.doMock('../storage/local', async importOriginal => {
-  const mod = await importOriginal<typeof import('../storage/local')>();
+  const mod = await importOriginal<typeof import('../../storage/local')>();
   return {
     ...mod,
     localExtStorage,
@@ -13,7 +13,7 @@ vi.doMock('../storage/local', async importOriginal => {
 });
 
 vi.doMock('../storage/session', async importOriginal => {
-  const mod = await importOriginal<typeof import('../storage/session')>();
+  const mod = await importOriginal<typeof import('../../storage/session')>();
   return {
     ...mod,
     sessionExtStorage,

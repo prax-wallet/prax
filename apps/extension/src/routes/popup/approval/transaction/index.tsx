@@ -2,7 +2,6 @@ import { MetadataFetchFn, TransactionViewComponent } from '@repo/ui/components/u
 import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
 import { ApproveDeny } from '../approve-deny';
@@ -11,7 +10,10 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { TransactionViewTab } from './types';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { viewClient } from '../../../../clients';
-import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  TransactionPlan,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
@@ -41,16 +43,18 @@ const hasTransparentAddress = (txv?: TransactionView): boolean => {
 };
 
 export const TransactionApproval = () => {
-  const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
+  const { txPlan: txPlanString, setChoice, sendResponse } = useStore(txApprovalSelector);
 
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
 
-  if (!authReqString) {
+  if (!txPlanString) {
     return null;
   }
-  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
-  if (!authorizeRequest.plan || !selectedTransactionView) {
+
+  const txPlan = TransactionPlan.fromJsonString(txPlanString);
+
+  if (!selectedTransactionView) {
     return null;
   }
 
@@ -102,7 +106,7 @@ export const TransactionApproval = () => {
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
           <div className='mt-2'>
-            <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
+            <JsonViewer jsonObj={txPlan.toJson() as Jsonified<TransactionPlan>} />
           </div>
         )}
       </div>
