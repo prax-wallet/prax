@@ -7,6 +7,8 @@ import {
   ValidatorInfoResponse,
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
+  ValidatorStatusRequest,
+  ValidatorStatusResponse,
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { StakeQuerierInterface } from '@penumbra-zone/types/querier';
 
@@ -32,5 +34,9 @@ export class StakeQuerier implements StakeQuerierInterface {
 
   validatorPenalty(req: ValidatorPenaltyRequest): Promise<ValidatorPenaltyResponse> {
     return this.client.validatorPenalty(req);
+  }
+
+  validatorStatus(req: ValidatorStatusRequest): Promise<ValidatorStatusResponse> {
+    return this.client.validatorStatus(req);
   }
 }
