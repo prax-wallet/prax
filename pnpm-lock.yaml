@@ -87,8 +87,8 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.6.1(@bufbuild/protobuf@1.10.0))
       '@penumbra-labs/registry':
-        specifier: ^12.4.0
-        version: 12.4.0
+        specifier: ^12.5.1
+        version: 12.5.1
       '@penumbra-zone/bech32m':
         specifier: 15.0.0
         version: 15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
@@ -115,10 +115,10 @@ importers:
         version: link:../../packages/query
       '@penumbra-zone/services':
         specifier: 58.0.0
-        version: 58.0.0(lwnps3n3oehjalevo2lho3xyba)
+        version: 58.0.0(673wiylh7pki5haipub7gl7jim)
       '@penumbra-zone/storage':
         specifier: 52.0.0
-        version: 52.0.0(5utpmncf42yphf7chbsvwfxxwa)
+        version: 52.0.0(42azucridgwd5cto5t7ige5nzi)
       '@penumbra-zone/transport-chrome':
         specifier: 9.0.0
         version: 9.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.6.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.1)
@@ -256,8 +256,8 @@ importers:
         specifier: ^1.10.0
         version: 1.10.0
       '@penumbra-labs/registry':
-        specifier: ^12.4.0
-        version: 12.4.0
+        specifier: ^12.5.1
+        version: 12.5.1
       '@penumbra-zone/bech32m':
         specifier: 15.0.0
         version: 15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
@@ -281,10 +281,10 @@ importers:
         version: link:../query
       '@penumbra-zone/services':
         specifier: 58.0.0
-        version: 58.0.0(lwnps3n3oehjalevo2lho3xyba)
+        version: 58.0.0(673wiylh7pki5haipub7gl7jim)
       '@penumbra-zone/storage':
         specifier: 52.0.0
-        version: 52.0.0(5utpmncf42yphf7chbsvwfxxwa)
+        version: 52.0.0(42azucridgwd5cto5t7ige5nzi)
       '@penumbra-zone/transport-chrome':
         specifier: 9.0.0
         version: 9.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.6.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.1)
@@ -375,8 +375,8 @@ importers:
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@18.3.1))(@types/react@18.3.18)(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: ^12.4.0
-        version: 12.4.0
+        specifier: ^12.5.1
+        version: 12.5.1
       '@penumbra-zone/bech32m':
         specifier: 15.0.0
         version: 15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
@@ -1603,8 +1603,8 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@penumbra-labs/registry@12.4.0':
-    resolution: {integrity: sha512-EGjAuB0vfYUR7Fqgvt4yA4OsR/gbtSzHgP2AeQuF060df94NhnkO/QXRu+jKOK7ykvrHlOV+8HPdNiwxZKE30g==}
+  '@penumbra-labs/registry@12.5.1':
+    resolution: {integrity: sha512-2JPKJ2iGUfS0z5yQE6VgFifZYwpnvv3qGMojji8QL9/oqCHxSST9Yy1UyWgG/LYO1EV4GFUl2QMvXH84Z8XxXA==}
 
   '@penumbra-zone/bech32m@15.0.0':
     resolution: {integrity: sha512-IA2bMsoXIOkZeU5BOmxJvl3d6h/kbVQYM8AIbz3MkRSHaIKfobvx/W4fLjoBbGqZwKo+dwCSYVA2O7WYNzJV6g==}
@@ -9245,7 +9245,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@penumbra-labs/registry@12.4.0': {}
+  '@penumbra-labs/registry@12.5.1': {}
 
   '@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
@@ -9315,7 +9315,7 @@ snapshots:
     dependencies:
       '@bufbuild/protobuf': 1.10.0
 
-  '@penumbra-zone/services@58.0.0(lwnps3n3oehjalevo2lho3xyba)':
+  '@penumbra-zone/services@58.0.0(673wiylh7pki5haipub7gl7jim)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.6.1(@bufbuild/protobuf@1.10.0)
@@ -9323,15 +9323,15 @@ snapshots:
       '@penumbra-zone/crypto-web': 40.0.0(@penumbra-zone/types@32.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters': 25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/protobuf': 9.0.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/storage': 52.0.0(5utpmncf42yphf7chbsvwfxxwa)
+      '@penumbra-zone/storage': 52.0.0(42azucridgwd5cto5t7ige5nzi)
       '@penumbra-zone/transport-dom': 7.5.1
       '@penumbra-zone/types': 32.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/wasm': 44.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@32.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))
 
-  '@penumbra-zone/storage@52.0.0(5utpmncf42yphf7chbsvwfxxwa)':
+  '@penumbra-zone/storage@52.0.0(42azucridgwd5cto5t7ige5nzi)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
-      '@penumbra-labs/registry': 12.4.0
+      '@penumbra-labs/registry': 12.5.1
       '@penumbra-zone/bech32m': 15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/getters': 25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/protobuf': 9.0.0(@bufbuild/protobuf@1.10.0)
