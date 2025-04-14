@@ -1,25 +1,27 @@
+import { toPlainMessage } from '@bufbuild/protobuf';
+import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
+import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
+import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { AssetId, Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AuctionId } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
-import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import {
   Action,
   Transaction,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
-import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
-import {
-  getExchangeRateFromValidatorInfoResponse,
-  getIdentityKeyFromValidatorInfoResponse,
-} from '@penumbra-zone/getters/validator-info-response';
-import { addAmounts, toDecimalExchangeRate } from '@penumbra-zone/types/amount';
+import { addAmounts } from '@penumbra-zone/types/amount';
 import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/block-processor';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
@@ -29,22 +31,13 @@ import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { backOff } from 'exponential-backoff';
+import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
 import { updatePricesFromSwaps } from './helpers/price-indexer';
 import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end';
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
-import { RootQuerier } from './root-querier';
-import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
-import { toPlainMessage } from '@bufbuild/protobuf';
-import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
-import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
-import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
-import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
-import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { RootQuerier } from './root-querier';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -52,6 +45,8 @@ declare global {
   // eslint-disable-next-line no-var -- expected globals
   var __ASSERT_ROOT__: boolean | undefined;
 }
+
+const PRE_GENESIS = -1n;
 
 const isSwapRecordWithSwapCommitment = (
   r?: unknown,
@@ -114,6 +109,42 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.walletCreationBlockHeight = walletCreationBlockHeight;
   }
 
+  /**
+   * If a local genesis block for the current chain is available, use that
+   * instead of downloading it.
+   *
+   * Genesis will have:
+   *
+   * - height 0
+   * - epochIndex 0
+   * - epochRoot undefined
+   * - appParametersUpdated true
+   * - blockRoot bytes32
+   * - fmdParameters precisionBits=0 asOfBlockHeight=1
+   * - gasPrices {possibly zeroed values}
+   * - altGasPrices [likely not empty]
+   * - nullifiers [empty]
+   * - proposalStarted false
+   * - statePayloads [0.source.source.case='genesis', likely others]
+   * - swapOutputs [empty]
+   *
+   * It needs no special-case processing.
+   */
+  private async *streamBlocks(currentHeight: bigint) {
+    let startHeight = currentHeight + 1n;
+
+    if (startHeight === this.genesisBlock?.height) {
+      yield this.genesisBlock;
+      startHeight++;
+    }
+
+    yield* this.querier.compactBlock.compactBlockRange({
+      startHeight,
+      keepAlive: true,
+      abortSignal: this.abortController.signal,
+    });
+  }
+
   // If sync() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
   public sync = (): Promise<void> =>
@@ -149,11 +180,6 @@ export class BlockProcessor implements BlockProcessorInterface {
    * - iterate
    */
   private async syncAndStore() {
-    const PRE_GENESIS_SYNC_HEIGHT = -1n;
-
-    // start at next block, or genesis if height is undefined
-    let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? PRE_GENESIS_SYNC_HEIGHT;
-
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
     let latestKnownBlockHeight = await backOff(
@@ -167,78 +193,51 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
-    // handle the special case where no syncing has been done yet, and
-    // prepares for syncing and checks for a bundled genesis block,
-    // which can save time by avoiding an initial network request.
-    if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
-      // create first epoch
-      await this.indexedDb.addEpoch(0n);
+    let currentHeight = await this.indexedDb.getFullSyncHeight();
+    let currentEpoch =
+      currentHeight && (await this.indexedDb.getEpochByHeight(currentHeight)).index;
 
-      // initialize validator info at genesis
-      // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
-      void this.updateValidatorInfos(0n);
-
-      // conditional only runs if there is a bundled genesis block provided for the chain
-      if (this.genesisBlock?.height === currentHeight + 1n) {
-        currentHeight = this.genesisBlock.height;
-
-        // Set the trial decryption flag for the genesis compact block
-        const skipTrialDecrypt = shouldSkipTrialDecrypt(
-          this.walletCreationBlockHeight,
-          currentHeight,
-        );
-
-        await this.processBlock({
-          compactBlock: this.genesisBlock,
-          latestKnownBlockHeight: latestKnownBlockHeight,
-          skipTrialDecrypt,
-        });
-      }
-    }
+    currentHeight ??= PRE_GENESIS;
+    currentEpoch ??= PRE_GENESIS;
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
-    for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
-      startHeight: currentHeight + 1n,
-      keepAlive: true,
-      abortSignal: this.abortController.signal,
-    })) {
+    for await (const compactBlock of this.streamBlocks(currentHeight)) {
+      if (compactBlock.height > latestKnownBlockHeight) {
+        latestKnownBlockHeight = compactBlock.height;
+      }
       // confirm block height to prevent corruption of local state
-      if (compactBlock.height === currentHeight + 1n) {
-        currentHeight = compactBlock.height;
-      } else {
+      if (compactBlock.height !== currentHeight) {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      // Set the trial decryption flag for all other compact blocks
-      const skipTrialDecrypt = shouldSkipTrialDecrypt(
-        this.walletCreationBlockHeight,
-        currentHeight,
-      );
+      if (compactBlock.epochIndex !== currentEpoch) {
+        throw new Error(`Unexpected epoch index: ${compactBlock.epochIndex} at ${currentEpoch}`);
+      }
 
-      await this.processBlock({
-        compactBlock: compactBlock,
-        latestKnownBlockHeight: latestKnownBlockHeight,
-        skipTrialDecrypt,
-      });
+      if (compactBlock.height === 0n) {
+        void this.indexedDb.updateValidatorInfo(this.querier.stake.allValidatorInfos());
+        // await this.handleGenesis(compactBlock);
+      }
 
-      // We only query Tendermint for the latest known block height once, when
-      // the block processor starts running. Once we're caught up, though, the
-      // chain will of course continue adding blocks, and we'll keep processing
-      // them. So, we need to update `latestKnownBlockHeight` once we've passed
-      // it.
-      if (compactBlock.height > latestKnownBlockHeight) {
-        latestKnownBlockHeight = compactBlock.height;
+      await this.processBlock({ compactBlock, latestKnownBlockHeight });
+
+      currentHeight++;
+      if (compactBlock.epochRoot) {
+        currentEpoch++;
+        await this.indexedDb.addEpoch({ index: currentEpoch, startHeight: currentHeight });
+
+        await this.indexedDb.updateValidatorInfo(this.querier.stake.allValidatorInfos());
       }
     }
   }
 
   // logic for processing a compact block
-  private async processBlock({
-    compactBlock,
-    latestKnownBlockHeight,
-    skipTrialDecrypt = false,
-  }: ProcessBlockParams) {
+  private async processBlock({ compactBlock, latestKnownBlockHeight }: ProcessBlockParams) {
+    const skipTrialDecrypt = shouldSkipTrialDecrypt(
+      this.walletCreationBlockHeight,
+      compactBlock.height,
+    );
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
     }
@@ -385,11 +384,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       );
     }
 
-    // The presence of `epochRoot` indicates that this is the final block of the current epoch.
-    if (compactBlock.epochRoot) {
-      await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
-    }
-
     if (globalThis.__ASSERT_ROOT__) {
       await this.assertRootValid(compactBlock.height);
     }
@@ -473,28 +467,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
 
     return undefined;
-  }
-
-  private async saveAndReturnDelegationMetadata(
-    identityKey: IdentityKey,
-  ): Promise<Metadata | undefined> {
-    const delegationTokenAssetId = new AssetId({
-      altBaseDenom: `udelegation_${bech32mIdentityKey(identityKey)}`,
-    });
-
-    const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(delegationTokenAssetId);
-    if (metadataAlreadyInDb) {
-      return metadataAlreadyInDb;
-    }
-
-    const generatedMetadata = getDelegationTokenMetadata(identityKey);
-
-    const customized = customizeSymbol(generatedMetadata);
-    await this.indexedDb.saveAssetsMetadata({
-      ...customized,
-      penumbraAssetId: getAssetId(customized),
-    });
-    return generatedMetadata;
   }
 
   // Nullifier is published in network when a note is spent or swap is claimed.
@@ -768,67 +740,6 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async saveTransactions(height: bigint, relevantTx: RelevantTx[]) {
     for (const { id, data } of relevantTx) {
       await this.indexedDb.saveTransaction(id, height, data);
-    }
-  }
-
-  private async handleEpochTransition(
-    endHeightOfPreviousEpoch: bigint,
-    latestKnownBlockHeight: bigint,
-  ): Promise<void> {
-    const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
-    await this.indexedDb.addEpoch(nextEpochStartHeight);
-
-    const { sctParams } = (await this.indexedDb.getAppParams()) ?? {};
-    const nextEpochIsLatestKnownEpoch =
-      sctParams && latestKnownBlockHeight - nextEpochStartHeight < sctParams.epochDuration;
-
-    // If we're doing a full sync from block 0, there could be hundreds or even
-    // thousands of epoch transitions in the chain already. If we update
-    // validator infos on every epoch transition, we'd be making tons of
-    // unnecessary calls to the RPC node for validator infos. Instead, we'll
-    // only get updated validator infos once we're within the latest known
-    // epoch.
-    if (nextEpochIsLatestKnownEpoch) {
-      void this.updateValidatorInfos(nextEpochStartHeight);
-    }
-  }
-
-  private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
-    // It's important to clear the table so any stale (jailed, tombstoned, etc) entries are filtered out.
-    await this.indexedDb.clearValidatorInfos();
-
-    for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
-      if (!validatorInfoResponse.validatorInfo) {
-        continue;
-      }
-
-      await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
-
-      await this.updatePriceForValidatorDelegationToken(
-        validatorInfoResponse,
-        nextEpochStartHeight,
-      );
-    }
-  }
-
-  private async updatePriceForValidatorDelegationToken(
-    validatorInfoResponse: ValidatorInfoResponse,
-    nextEpochStartHeight: bigint,
-  ) {
-    const identityKey = getIdentityKeyFromValidatorInfoResponse(validatorInfoResponse);
-
-    const metadata = await this.saveAndReturnDelegationMetadata(identityKey);
-
-    if (metadata) {
-      const assetId = getAssetId(metadata);
-      const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
-
-      await this.indexedDb.updatePrice(
-        assetId,
-        this.stakingAssetId,
-        toDecimalExchangeRate(exchangeRate),
-        nextEpochStartHeight,
-      );
     }
   }
 }
