@@ -21,9 +21,7 @@ export const ValueWithAddress = ({
     {addressView && (
       <div className='flex items-center gap-2 overflow-hidden'>
         <span className='whitespace-nowrap font-mono text-sm italic text-foreground'>{label}</span>
-        <div className='max-w-[150px] truncate'>
-          <AddressViewComponent view={addressView} />
-        </div>
+        <AddressViewComponent view={addressView} />
       </div>
     )}
   </div>

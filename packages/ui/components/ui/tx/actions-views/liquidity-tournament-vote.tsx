@@ -29,7 +29,7 @@ export const LiquidityTournamentVoteComponent = ({
               <ValueViewComponent view={value.liquidityTournamentVote.value.note?.value} />
             </ValueWithAddress>
             {value.liquidityTournamentVote.value.vote && (
-              <ActionDetails.Row label='Liquidity Tournament Vote'>
+              <ActionDetails.Row label='Voting power'>
                 <ValueViewComponent view={globalValueView} />
               </ActionDetails.Row>
             )}
