@@ -14,7 +14,7 @@ export const SpendViewComponent = ({ value }: { value: SpendView }) => {
       <ViewBox
         label='Spend'
         visibleContent={
-          <div className='flex items-center justify-between gap-3'>
+          <div className='flex items-center justify-between gap-x-3 gap-y-0 flex-wrap'>
             <ValueViewComponent view={note.value} />
             <ValueWithAddress addressView={address} label='from'>
               <></>
