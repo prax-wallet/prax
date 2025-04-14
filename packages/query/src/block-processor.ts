@@ -227,7 +227,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         currentEpoch++;
         await this.indexedDb.addEpoch({ index: currentEpoch, startHeight: currentHeight });
 
-        await this.indexedDb.updateValidatorInfo(this.querier.stake.allValidatorInfos());
+        if (compactBlock.height === 0n || latestKnownBlockHeight === compactBlock.height) {
+          await this.indexedDb.updateValidatorInfo(this.querier.stake.allValidatorInfos());
+        }
       }
     }
   }
