@@ -231,6 +231,10 @@ export class BlockProcessor implements BlockProcessorInterface {
           await this.indexedDb.updateValidatorInfo(this.querier.stake.allValidatorInfos());
         }
       }
+
+      if (globalThis.__ASSERT_ROOT__) {
+        await this.assertRootValid(compactBlock.height);
+      }
     }
   }
 
@@ -384,10 +388,6 @@ export class BlockProcessor implements BlockProcessorInterface {
         compactBlock.swapOutputs,
         compactBlock.height,
       );
-    }
-
-    if (globalThis.__ASSERT_ROOT__) {
-      await this.assertRootValid(compactBlock.height);
     }
   }
 
@@ -743,5 +743,87 @@ export class BlockProcessor implements BlockProcessorInterface {
     for (const { id, data } of relevantTx) {
       await this.indexedDb.saveTransaction(id, height, data);
     }
+  }
+
+  private async handleEpochTransition(
+    endHeightOfPreviousEpoch: bigint,
+    latestKnownBlockHeight: bigint,
+  ): Promise<void> {
+    const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
+    await this.indexedDb.addEpoch(nextEpochStartHeight);
+
+    const { sctParams } = (await this.indexedDb.getAppParams()) ?? {};
+    const nextEpochIsLatestKnownEpoch =
+      sctParams && latestKnownBlockHeight - nextEpochStartHeight < sctParams.epochDuration;
+
+    // If we're doing a full sync from block 0, there could be hundreds or even
+    // thousands of epoch transitions in the chain already. If we update
+    // validator infos on every epoch transition, we'd be making tons of
+    // unnecessary calls to the RPC node for validator infos. Instead, we'll
+    // only get updated validator infos once we're within the latest known
+    // epoch.
+    if (nextEpochIsLatestKnownEpoch) {
+      void this.updateValidatorInfos(nextEpochStartHeight);
+    }
+  }
+
+  private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
+    // It's important to clear the table so any stale (jailed, tombstoned, etc) entries are filtered out.
+    await this.indexedDb.clearValidatorInfos();
+
+    for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
+      if (!validatorInfoResponse.validatorInfo) {
+        continue;
+      }
+
+      await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
+
+      await this.updatePriceForValidatorDelegationToken(
+        validatorInfoResponse,
+        nextEpochStartHeight,
+      );
+    }
+  }
+
+  private async updatePriceForValidatorDelegationToken(
+    validatorInfoResponse: ValidatorInfoResponse,
+    nextEpochStartHeight: bigint,
+  ) {
+    const identityKey = getIdentityKeyFromValidatorInfoResponse(validatorInfoResponse);
+
+    const metadata = await this.saveAndReturnDelegationMetadata(identityKey);
+
+    if (metadata) {
+      const assetId = getAssetId(metadata);
+      const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
+
+      await this.indexedDb.updatePrice(
+        assetId,
+        this.stakingAssetId,
+        toDecimalExchangeRate(exchangeRate),
+        nextEpochStartHeight,
+      );
+    }
+  }
+  private async saveAndReturnDelegationMetadata(
+    identityKey: IdentityKey,
+  ): Promise<Metadata | undefined> {
+    const delegationTokenAssetId = new AssetId({
+      altBaseDenom: `udelegation_${bech32mIdentityKey(identityKey)}`,
+    });
+
+    const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(delegationTokenAssetId);
+    if (metadataAlreadyInDb) {
+      return metadataAlreadyInDb;
+    }
+
+    const generatedMetadata = getDelegationTokenMetadata(identityKey);
+
+    const customized = customizeSymbol(generatedMetadata);
+    await this.indexedDb.saveAssetsMetadata({
+      ...customized,
+      penumbraAssetId: getAssetId(customized),
+    });
+    return generatedMetadata;
   }
 }
