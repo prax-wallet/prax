@@ -32,6 +32,8 @@ each respective package.
 - [Install pnpm](https://pnpm.io/installation) (probably via corepack)
 - Install Google Chrome (Chromium works but we have encountered behavioral differences)
 
+Or you can use [nix](https://nixos.org/download/) to create a devshell via `nix develop`.
+
 ### Building
 
 Once you have all these tools, you can
