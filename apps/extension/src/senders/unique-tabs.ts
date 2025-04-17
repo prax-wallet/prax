@@ -2,16 +2,17 @@
  * Produces a subset of senders with unique script contexts from a larger
  * collection of senders that may have overlapping script contexts.
  */
-export const uniqueTabs = <S extends chrome.runtime.MessageSender>(senders: Iterable<S>) =>
+export const uniqueTabs = <S extends chrome.runtime.MessageSender>(targets: Iterable<S>) =>
   (function* () {
     // scope by tab id
-    for (const [_, senderTabs] of Map.groupBy(senders, s => s.tab?.id)) {
+    for (const [_, senderTabs] of Map.groupBy(targets, s => s.tab?.id)) {
       // scope by document id
       for (const [_, senderDocs] of Map.groupBy(senderTabs, s => s.documentId)) {
         // scope by frame id
         for (const [_, senderFrames] of Map.groupBy(senderDocs, s => s.frameId)) {
           // any given frame's sessions are all controlled by a single content
-          // script, so by now these should all be comparable.
+          // script, so by now these should all be comparable. assert this and
+          // yield a single target representing this group.
           yield senderFrames.reduce(assertSameContentScript);
         }
       }
@@ -19,24 +20,24 @@ export const uniqueTabs = <S extends chrome.runtime.MessageSender>(senders: Iter
   })();
 
 /**
- * Senders sharing the same content script context should possess the same tab
- * id, document id, and frame id.
+ * Senders sharing the same content script context should have the same tab id,
+ * document id, and frame id.
  */
 const assertSameContentScript = <B extends chrome.runtime.MessageSender>(
-  senderA: chrome.runtime.MessageSender,
-  senderB: B,
+  targetA: chrome.runtime.MessageSender,
+  targetB: B,
 ) => {
-  if (senderA.tab?.id !== senderB.tab?.id) {
-    throw new Error('Sender tab mismatch', { cause: { senderA, senderB } });
+  if (targetA.tab?.id !== targetB.tab?.id) {
+    throw new Error('Target tab mismatch', { cause: { targetA, targetB } });
   }
 
-  if (senderA.documentId !== senderB.documentId) {
-    throw new Error('Sender document mismatch', { cause: { senderA, senderB } });
+  if (targetA.documentId !== targetB.documentId) {
+    throw new Error('Target document mismatch', { cause: { targetA, targetB } });
   }
 
-  if (senderA.frameId !== senderB.frameId) {
-    throw new Error('Sender frame mismatch', { cause: { senderA, senderB } });
+  if (targetA.frameId !== targetB.frameId) {
+    throw new Error('Target frame mismatch', { cause: { targetA, targetB } });
   }
 
-  return senderB;
+  return targetB;
 };

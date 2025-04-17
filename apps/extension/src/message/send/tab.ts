@@ -3,23 +3,29 @@ import { suppressChromeResponderDroppedError } from '../../utils/chrome-errors';
 import { uniqueTabs } from '../../senders/unique-tabs';
 
 export const sendTab = async (
-  sender: chrome.runtime.MessageSender,
+  target: chrome.runtime.MessageSender,
   message: PraxConnection,
 ): Promise<null> => {
-  const { documentId, frameId } = sender;
+  const { documentId, frameId } = target;
+
+  if (target.tab?.id == null) {
+    throw new ReferenceError('Target is not a tab', { cause: target });
+  }
 
   const response: unknown = await chrome.tabs
-    .sendMessage(sender.tab!.id!, message, { documentId, frameId })
+    .sendMessage(target.tab.id, message, { documentId, frameId })
     .catch(suppressChromeResponderDroppedError);
 
   if (response != null) {
-    throw new Error('Unexpected response from tab', { cause: { sender, message, response } });
+    throw new Error('Unexpected response from tab', {
+      cause: { target, message, response },
+    });
   }
 
   return null;
 };
 
 export const sendTabs = (
-  senders: Iterable<chrome.runtime.MessageSender>,
+  targets: Iterable<chrome.runtime.MessageSender>,
   message: PraxConnection,
-) => Array.from(uniqueTabs(senders)).map(sender => sendTab(sender, message));
+) => Array.from(uniqueTabs(targets)).map(t => sendTab(t, message));
