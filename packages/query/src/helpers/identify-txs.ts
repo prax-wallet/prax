@@ -140,24 +140,6 @@ export const getNullifiersFromActions = (tx: Transaction): Nullifier[] => {
     .filter(isDefined);
 };
 
-export const getVotingNullifiersFromActions = (tx: Transaction): Nullifier[] => {
-  if (!tx.body?.actions) {
-    return [];
-  }
-
-  return tx.body.actions
-    .flatMap(({ action }) => {
-      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- TODO: Fix eslint issue
-      switch (action.case) {
-        case 'actionLiquidityTournamentVote':
-          return action.value.body?.nullifier;
-        default:
-          return;
-      }
-    })
-    .filter(isDefined);
-};
-
 export interface RelevantTx {
   id: TransactionId;
   data: Transaction;
