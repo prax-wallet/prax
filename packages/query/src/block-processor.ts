@@ -606,6 +606,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     transaction: Transaction,
     transactionId: TransactionId,
     epochIndex: bigint,
+    subaccount?: AddressIndex,
   ) {
     const totalVoteWeightByAssetId = new Map<AssetId, Amount>();
     let incentivizedAssetMetadata: Metadata | undefined = undefined;
@@ -656,6 +657,7 @@ export class BlockProcessor implements BlockProcessorInterface {
           totalVoteWeightValue,
           undefined,
           undefined,
+          subaccount,
         );
       }
     }
@@ -667,6 +669,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async identifyLiquidityTournamentRewards(
     recordsByCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
     epochIndex: bigint,
+    subaccount?: AddressIndex,
   ) {
     // Collect all distinct reward-bearing notes – we're checking if the note records
     // commitment source is from the liquidity tournament, indicating a reward.
@@ -683,7 +686,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     // If we found rewards, fetching the existing votes.
     if (rewardRecords.length > 0) {
       // Retrieve the existing liquidity tournament votes for the specified epoch.
-      const existingVotes = await this.indexedDb.getLQTHistoricalVotesByEpoch(epochIndex);
+      const existingVotes = await this.indexedDb.getLQTHistoricalVotesByEpoch(
+        epochIndex,
+        subaccount,
+      );
 
       for (const rewardValue of rewardRecords) {
         if (rewardValue) {
@@ -710,6 +716,7 @@ export class BlockProcessor implements BlockProcessorInterface {
                 existingVote.VoteValue,
                 rewardValue.amount,
                 existingVote.id,
+                subaccount,
               );
             }
           }
