@@ -19,7 +19,7 @@
     "@cosmjs/stargate": "^0.32.4",
     "@penumbra-zone/bech32m": "15.0.0",
     "@penumbra-zone/protobuf": "9.0.0",
-    "@penumbra-zone/wasm": "45.0.2"
+    "@penumbra-zone/wasm": "45.1.0"
   },
   "peerDependencies": {
     "@penumbra-zone/getters": "25.0.1",
