@@ -572,8 +572,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     // For certain actions embedded in the transaction, it's preferable to process the transaction,
     // for instance aggregating voting weight across multiple liquidity tournament (LQT) voting actions
     // into a single vote before saving it to the database.
-    for (const { id, data } of txs) {
-      await Promise.all([this.identifyLiquidityTournamentVotes(data, id, epochIndex)]);
+    for (const { id, subaccount, data } of txs) {
+      await Promise.all([this.identifyLiquidityTournamentVotes(data, id, epochIndex, subaccount)]);
     }
 
     // Identify liquidity tournament rewards associated with votes in the current epoch.
@@ -657,7 +657,7 @@ export class BlockProcessor implements BlockProcessorInterface {
           totalVoteWeightValue,
           undefined,
           undefined,
-          subaccount,
+          subaccount?.account,
         );
       }
     }
@@ -688,7 +688,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // Retrieve the existing liquidity tournament votes for the specified epoch.
       const existingVotes = await this.indexedDb.getLQTHistoricalVotesByEpoch(
         epochIndex,
-        subaccount,
+        subaccount?.account,
       );
 
       for (const rewardValue of rewardRecords) {
@@ -716,7 +716,7 @@ export class BlockProcessor implements BlockProcessorInterface {
                 existingVote.VoteValue,
                 rewardValue.amount,
                 existingVote.id,
-                subaccount,
+                existingVote.subaccount,
               );
             }
           }
