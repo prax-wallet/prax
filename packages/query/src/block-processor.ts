@@ -695,8 +695,7 @@ export class BlockProcessor implements BlockProcessorInterface {
           // If the reward asset ID from the SNR matches the existing vote’s asset ID,
           // we can confidently apply the reward to that vote.
           if (
-            rewardValue.note?.value &&
-            rewardValue.note?.value.assetId?.equals(existingVote.VoteValue.assetId)
+            rewardValue.note?.value?.assetId?.equals(existingVote.VoteValue.assetId)
           ) {
             // Update the received reward for each corresponding vote in the epoch.
             //
