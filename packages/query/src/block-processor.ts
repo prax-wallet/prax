@@ -669,16 +669,14 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async identifyLiquidityTournamentRewards(
     recordsByCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
     epochIndex: bigint,
-    subaccount?: AddressIndex,
   ) {
     // Collect all distinct reward-bearing notes – we're checking if the note records
     // commitment source is from the liquidity tournament, indicating a reward.
-    const rewardRecords: Value[] = [];
+    const rewardRecords: SpendableNoteRecord[] = [];
     for (const [, spendableNoteRecord] of recordsByCommitment) {
       if (spendableNoteRecord.source?.source.case === 'lqt' && 'note' in spendableNoteRecord) {
-        const rewardValue = spendableNoteRecord.note?.value;
-        if (rewardValue) {
-          rewardRecords.push(rewardValue);
+        if (spendableNoteRecord.note?.value) {
+          rewardRecords.push(spendableNoteRecord);
         }
       }
     }
@@ -686,39 +684,40 @@ export class BlockProcessor implements BlockProcessorInterface {
     // If we found rewards, fetching the existing votes.
     if (rewardRecords.length > 0) {
       // Retrieve the existing liquidity tournament votes for the specified epoch.
-      const existingVotes = await this.indexedDb.getLQTHistoricalVotes(
-        epochIndex,
-        subaccount?.account,
-      );
-
       for (const rewardValue of rewardRecords) {
-        if (rewardValue) {
-          for (const existingVote of existingVotes) {
-            // This check rehydrates the reward value corresponding to the correct vote.
-            // If the reward asset ID from the SNR matches the existing vote’s asset ID,
-            // we can confidently apply the reward to that vote.
-            if (rewardValue.assetId?.equals(existingVote.VoteValue.assetId)) {
-              // Update the received reward for each corresponding vote in the epoch.
-              //
-              // Note: Each vote has an associated reward; however, the rewards are not cumulative —
-              // the same reward applies to all votes for a given delegation.
-              //
-              // For example, if a user delegates to multiple validators, their votes will be tracked
-              // separately per delegation. Each delegation may receive rewards in a different `delUM`
-              // denomination, depending on the validator it was delegated to.
-              //
-              // As a result, the corresponding rewards will be denominated separately, using the
-              // respective asset ID associated with each delegation's validator.
-              await this.indexedDb.saveLQTHistoricalVote(
-                epochIndex,
-                existingVote.TransactionId,
-                existingVote.AssetMetadata,
-                existingVote.VoteValue,
-                rewardValue.amount,
-                existingVote.id,
-                existingVote.subaccount,
-              );
-            }
+        const existingVotes = await this.indexedDb.getLQTHistoricalVotes(
+          epochIndex,
+          rewardValue.addressIndex?.account,
+        );
+
+        for (const existingVote of existingVotes) {
+          // This check rehydrates the reward value corresponding to the correct vote.
+          // If the reward asset ID from the SNR matches the existing vote’s asset ID,
+          // we can confidently apply the reward to that vote.
+          if (
+            rewardValue.note?.value &&
+            rewardValue.note?.value.assetId?.equals(existingVote.VoteValue.assetId)
+          ) {
+            // Update the received reward for each corresponding vote in the epoch.
+            //
+            // Note: Each vote has an associated reward; however, the rewards are not cumulative —
+            // the same reward applies to all votes for a given delegation.
+            //
+            // For example, if a user delegates to multiple validators, their votes will be tracked
+            // separately per delegation. Each delegation may receive rewards in a different `delUM`
+            // denomination, depending on the validator it was delegated to.
+            //
+            // As a result, the corresponding rewards will be denominated separately, using the
+            // respective asset ID associated with each delegation's validator.
+            await this.indexedDb.saveLQTHistoricalVote(
+              epochIndex,
+              existingVote.TransactionId,
+              existingVote.AssetMetadata,
+              existingVote.VoteValue,
+              rewardValue.note.value.amount,
+              existingVote.id,
+              existingVote.subaccount,
+            );
           }
         }
       }
