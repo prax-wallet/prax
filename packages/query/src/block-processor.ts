@@ -694,9 +694,7 @@ export class BlockProcessor implements BlockProcessorInterface {
           // This check rehydrates the reward value corresponding to the correct vote.
           // If the reward asset ID from the SNR matches the existing vote’s asset ID,
           // we can confidently apply the reward to that vote.
-          if (
-            rewardValue.note?.value?.assetId?.equals(existingVote.VoteValue.assetId)
-          ) {
+          if (rewardValue.note?.value?.assetId?.equals(existingVote.VoteValue.assetId)) {
             // Update the received reward for each corresponding vote in the epoch.
             //
             // Note: Each vote has an associated reward; however, the rewards are not cumulative —
