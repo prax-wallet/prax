@@ -686,7 +686,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // If we found rewards, fetching the existing votes.
     if (rewardRecords.length > 0) {
       // Retrieve the existing liquidity tournament votes for the specified epoch.
-      const existingVotes = await this.indexedDb.getLQTHistoricalVotesByEpoch(
+      const existingVotes = await this.indexedDb.getLQTHistoricalVotes(
         epochIndex,
         subaccount?.account,
       );
