@@ -3,7 +3,7 @@ import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone
 import { Key } from '@penumbra-zone/crypto-web/encryption';
 import { ExtensionStorage } from '@repo/prax-storage/base';
 import { LocalStorageState } from '@repo/prax-storage/types';
-import { Wallet, WalletCreate } from '@penumbra-zone/types/wallet';
+import { Wallet, WalletCreate } from '@repo/prax-storage/wallet';
 
 export interface WalletsSlice {
   all: Wallet[];
@@ -17,7 +17,7 @@ export const createWalletsSlice =
     return {
       all: [],
       addWallet: async ({ label, seedPhrase }) => {
-        const seedPhraseStr = seedPhrase.join(' ');
+        const seedPhraseStr = seedPhrase?.join(' ') ?? '';
         const spendKey = generateSpendKey(seedPhraseStr);
         const fullViewingKey = getFullViewingKey(spendKey);
 
@@ -33,7 +33,8 @@ export const createWalletsSlice =
           label,
           walletId.toJsonString(),
           fullViewingKey.toJsonString(),
-          { encryptedSeedPhrase },
+          'SeedPhrase',
+          encryptedSeedPhrase,
         );
 
         set(state => {
@@ -56,7 +57,7 @@ export const createWalletsSlice =
           throw new Error('no wallet set');
         }
 
-        const decryptedSeedPhrase = await key.unseal(activeWallet.custody.encryptedSeedPhrase);
+        const decryptedSeedPhrase = await key.unseal(activeWallet.encryptedSeedPhrase!);
         if (!decryptedSeedPhrase) {
           throw new Error('Unable to decrypt seed phrase with password');
         }
