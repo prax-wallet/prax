@@ -9,6 +9,7 @@ import { passwordSelector } from '../../../state/password';
 import { SettingsScreen } from './settings-screen';
 import { activeWalletSelector } from '../../../state/wallets';
 import { Key } from '@penumbra-zone/crypto-web/encryption';
+import { Box } from '@penumbra-zone/types/box';
 
 export const SettingsPassphrase = () => {
   const { isPassword, key } = useStore(passwordSelector);
@@ -24,7 +25,11 @@ export const SettingsPassphrase = () => {
     void (async function () {
       if ((await isPassword(password)) && key && wallet?.encryptedSeedPhrase) {
         void Key.fromJson(key)
-          .then(passKey => passKey.unseal(wallet.encryptedSeedPhrase!))
+          .then(passKey => {
+            const { nonce, cipherText } = wallet.encryptedSeedPhrase!;
+            const box = new Box(nonce, cipherText);
+            return passKey.unseal(box);
+          })
           .then(seedPhrase => setDisplayPhrase(seedPhrase?.split(' ')));
         setPassword('');
       } else {

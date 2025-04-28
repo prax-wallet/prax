@@ -27,7 +27,9 @@ export const getSpendKey = async () => {
   const passKey = await getPassKey();
   const encryptedSeedPhrase = await getEncryptedSeedPhrase();
 
-  const seedPhrase = await passKey.unseal(encryptedSeedPhrase);
+  const seedPhrase = await passKey.unseal(
+    new Box(encryptedSeedPhrase.nonce, encryptedSeedPhrase.cipherText),
+  );
   if (!seedPhrase) {
     throw new ConnectError('Unable to decrypt seed phrase', Code.Unauthenticated);
   }
