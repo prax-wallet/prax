@@ -8,10 +8,6 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
-  "files": [
-    "src/",
-    "*.md"
-  ],
   "exports": {
     "./*": "./src/*.ts"
   },
