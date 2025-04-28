@@ -8,6 +8,7 @@ import { getSpendKey } from './spend-key';
 import { popup } from '../../popup';
 import { PopupType } from '../../message/popup';
 import { Jsonified } from '@penumbra-zone/types/jsonified';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export const authorize = async (
   txPlan: TransactionPlan,
@@ -27,7 +28,7 @@ export const authorize = async (
   }
 
   const choice = popupResponse?.choice;
-  if (choice !== 'Approved') {
+  if (choice !== UserChoice.Approved) {
     throw new ConnectError('Transaction was not approved', Code.PermissionDenied);
   }
 

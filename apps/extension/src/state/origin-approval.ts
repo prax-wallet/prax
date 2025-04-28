@@ -1,6 +1,6 @@
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { AllSlices, SliceCreator } from '.';
 import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
-import { UserChoice } from '../storage/types';
 
 export interface OriginApprovalSlice {
   responder?: PromiseWithResolvers<

@@ -11,6 +11,7 @@ import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { getWalletId } from '@penumbra-zone/wasm/keys';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 // Mock transaction view functions
 vi.mock('@penumbra-zone/perspective/plan/view-transaction-plan', () => {
@@ -136,11 +137,11 @@ describe('Transaction Approval Slice', () => {
         txPlan: txPlan.toJson() as JsonObject,
       });
 
-      useStore.getState().txApproval.setChoice('Approved');
-      expect(useStore.getState().txApproval.choice).toBe('Approved');
+      useStore.getState().txApproval.setChoice(UserChoice.Approved);
+      expect(useStore.getState().txApproval.choice).toBe(UserChoice.Approved);
 
-      useStore.getState().txApproval.setChoice('Denied');
-      expect(useStore.getState().txApproval.choice).toBe('Denied');
+      useStore.getState().txApproval.setChoice(UserChoice.Denied);
+      expect(useStore.getState().txApproval.choice).toBe(UserChoice.Denied);
     });
   });
 
@@ -158,14 +159,14 @@ describe('Transaction Approval Slice', () => {
       await waitForTransactionPlanSet();
 
       // Set the choice
-      useStore.getState().txApproval.setChoice('Approved');
+      useStore.getState().txApproval.setChoice(UserChoice.Approved);
 
       // Send response
       useStore.getState().txApproval.sendResponse();
 
       await expect(sliceResponse).resolves.toMatchObject({
         txPlan: txPlan.toJson(),
-        choice: 'Approved',
+        choice: UserChoice.Approved,
       });
 
       // State should be reset

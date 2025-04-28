@@ -1,7 +1,7 @@
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { PopupType } from '../message/popup';
 import { popup } from '../popup';
 import { getOriginRecord, upsertOriginRecord } from '../storage/origin';
-import { UserChoice } from '../storage/types';
 import { ValidSender } from './validate';
 
 /**
@@ -11,7 +11,7 @@ import { ValidSender } from './validate';
  * @returns true if an existing record indicates this sender is approved
  */
 export const alreadyApprovedSender = async (validSender: ValidSender): Promise<boolean> =>
-  getOriginRecord(validSender.origin).then(r => r?.choice === 'Approved');
+  getOriginRecord(validSender.origin).then(r => r?.choice === UserChoice.Approved);
 
 /**
  * Obtain the approval status of an origin, for use by connection request
@@ -27,11 +27,11 @@ export const approveSender = async (approve: {
   const existingRecord = await getOriginRecord(approve.origin);
 
   switch (existingRecord?.choice) {
-    case 'Approved':
-    case 'Ignored':
+    case UserChoice.Approved:
+    case UserChoice.Ignored:
       return existingRecord.choice;
 
-    case 'Denied':
+    case UserChoice.Denied:
     case undefined: {
       const popupResponse = await popup(PopupType.OriginApproval, {
         origin: approve.origin,
@@ -46,7 +46,7 @@ export const approveSender = async (approve: {
       }
 
       // return choice, or default denial
-      return popupResponse?.choice ?? 'Denied';
+      return popupResponse?.choice ?? UserChoice.Denied;
     }
   }
 };

@@ -16,9 +16,10 @@ import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v
 import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import type { ExtensionStorage } from '../storage/base';
-import type { LocalStorageState, UserChoice } from '../storage/types';
+import type { LocalStorageState } from '../storage/types';
 import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
 import { deserializeWallet } from '../wallet';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export interface TxApprovalSlice {
   /**

@@ -13,6 +13,7 @@ import {
   TransactionPlan,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ?? new ChainRegistryClient().bundled.globals().stakingAssetId;
@@ -54,13 +55,13 @@ export const TransactionApproval = () => {
   }
 
   const approve = () => {
-    setChoice('Approved');
+    setChoice(UserChoice.Approved);
     sendResponse();
     window.close();
   };
 
   const deny = () => {
-    setChoice('Denied');
+    setChoice(UserChoice.Denied);
     sendResponse();
     window.close();
   };

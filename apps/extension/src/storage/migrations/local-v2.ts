@@ -1,3 +1,4 @@
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { ExtensionStorageDefaults } from '../base';
 
 export interface V2LocalStorageState {
@@ -7,7 +8,7 @@ export interface V2LocalStorageState {
   grpcEndpoint: string | undefined;
   knownSites: {
     origin: string;
-    choice: 'Approved' | 'Denied' | 'Ignored';
+    choice: UserChoice.Approved | UserChoice.Denied | UserChoice.Ignored;
     date: number;
   }[];
   numeraires: `passet1${string}`[];

@@ -7,6 +7,7 @@ import {
 import { sendTab } from '../send/tab';
 import { approveSender } from '../../senders/approve';
 import { assertValidSender } from '../../senders/validate';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 // listen for page requests for approval
 export const contentScriptConnectListener = (
@@ -25,7 +26,7 @@ export const contentScriptConnectListener = (
   void approveSender(validSender).then(
     status => {
       // origin is already known, or popup choice was made
-      if (status === 'Approved') {
+      if (status === UserChoice.Approved) {
         // init only the specific document
         void sendTab(validSender, PraxConnection.Init);
         // handler is done

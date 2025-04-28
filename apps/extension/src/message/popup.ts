@@ -1,7 +1,8 @@
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { OriginRecord, UserChoice } from '../storage/types';
+import { OriginRecord } from '../storage/types';
 import { JsonValue } from '@bufbuild/protobuf';
 import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export enum PopupType {
   TxApproval = 'TxApproval',

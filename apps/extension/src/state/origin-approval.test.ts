@@ -2,6 +2,7 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import { vi, beforeEach, describe, expect, test } from 'vitest';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 describe('Origin Approval Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -72,11 +73,11 @@ describe('Origin Approval Slice', () => {
 
   describe('setChoice()', () => {
     test('sets choice correctly', () => {
-      useStore.getState().originApproval.setChoice('Approved');
-      expect(useStore.getState().originApproval.choice).toBe('Approved');
+      useStore.getState().originApproval.setChoice(UserChoice.Approved);
+      expect(useStore.getState().originApproval.choice).toBe(UserChoice.Approved);
 
-      useStore.getState().originApproval.setChoice('Denied');
-      expect(useStore.getState().originApproval.choice).toBe('Denied');
+      useStore.getState().originApproval.setChoice(UserChoice.Denied);
+      expect(useStore.getState().originApproval.choice).toBe(UserChoice.Denied);
     });
   });
 
@@ -96,14 +97,14 @@ describe('Origin Approval Slice', () => {
       });
 
       // Set the choice
-      useStore.getState().originApproval.setChoice('Approved');
+      useStore.getState().originApproval.setChoice(UserChoice.Approved);
 
       // Send response
       useStore.getState().originApproval.sendResponse();
 
       await expect(response).resolves.toMatchObject({
         origin,
-        choice: 'Approved',
+        choice: UserChoice.Approved,
         date,
       });
 

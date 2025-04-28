@@ -2,5 +2,5 @@ import type { V2LocalStorageState as LocalStorageState } from './migrations/loca
 
 export type { LocalStorageState };
 export type OriginRecord = LocalStorageState['knownSites'][number];
-export type UserChoice = LocalStorageState['knownSites'][number]['choice'];
+// export type UserChoice = LocalStorageState['knownSites'][number]['choice'];
 export type WalletRecord = LocalStorageState['wallets'][number];

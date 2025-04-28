@@ -6,25 +6,26 @@ import { LinkGradientIcon } from '../../../icons/link-gradient';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import { cn } from '@repo/ui/lib/utils';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export const OriginApproval = () => {
   const { requestOrigin, favIconUrl, title, lastRequest, setChoice, sendResponse } =
     useStore(originApprovalSelector);
 
   const approve = () => {
-    setChoice('Approved');
+    setChoice(UserChoice.Approved);
     sendResponse();
     window.close();
   };
 
   const deny = () => {
-    setChoice('Denied');
+    setChoice(UserChoice.Denied);
     sendResponse();
     window.close();
   };
 
   const ignore = () => {
-    setChoice('Ignored');
+    setChoice(UserChoice.Ignored);
     sendResponse();
     window.close();
   };
