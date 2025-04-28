@@ -10,16 +10,17 @@ import {
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { cn } from '@repo/ui/lib/utils';
 import { usePageNav } from '../../../../utils/navigate';
-import { DEFAULT_PATH, PenumbraApp, ResponseFvk } from '@zondax/ledger-penumbra';
+import { DEFAULT_PATH, PenumbraApp, ResponseAddress, ResponseFvk } from '@zondax/ledger-penumbra';
 import { useCallback, useEffect, useState } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mFullViewingKey } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { ledgerUSBVendorId } from '@ledgerhq/devices/lib-es/index';
 import { SEED_PHRASE_ORIGIN } from '../password/types';
 import { navigateToPasswordPage } from '../password/utils';
 import { useStore } from '../../../../state';
 import { ledgerSelector } from '../../../../state/onboarding/ledger';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 const LedgerIcon = ({ className }: { className?: string }) => (
   <svg
@@ -49,10 +50,12 @@ export const ConnectLedgerWallet = () => {
   const navigate = usePageNav();
 
   const [ledgerConnectionPending, setLedgerConnectionPending] = useState(false);
-  const [ledgerPenumbraApp, setLedgerPenumbraApp] = useState<PenumbraApp | Error>();
+  const [ledgerFailure, setLedgerFailure] = useState<Error | null>(null);
+  const [ledgerPenumbraApp, setLedgerPenumbraApp] = useState<PenumbraApp>();
   const [ledgerFVK, setLedgerFVK] = useState<ResponseFvk | null>(null);
+  const [ledgerAddress, setLedgerAddress] = useState<ResponseAddress | null>(null);
 
-  const { fullViewingKey, setFullViewingKey } = useStore(ledgerSelector);
+  const { fullViewingKey, address, setFullViewingKey, setAddress } = useStore(ledgerSelector);
 
   const attemptLedgerConnection = useCallback(async () => {
     setLedgerConnectionPending(true);
@@ -60,16 +63,28 @@ export const ConnectLedgerWallet = () => {
       const usbTransport = await connectLedger();
       const penumbraApp = new PenumbraApp(usbTransport);
       setLedgerPenumbraApp(penumbraApp);
-      const fvk = await penumbraApp.getFVK(DEFAULT_PATH, { account: 0 });
-      setLedgerFVK(fvk);
     } catch (cause) {
-      setLedgerPenumbraApp(
+      setLedgerFailure(
         cause instanceof Error ? cause : new Error(`Unknown failure: ${String(cause)}`, { cause }),
       );
     } finally {
       setLedgerConnectionPending(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (ledgerPenumbraApp) {
+      void ledgerPenumbraApp.getFVK(DEFAULT_PATH, { account: 0 }).then(fvk => setLedgerFVK(fvk));
+    }
+  }, [ledgerPenumbraApp]);
+
+  useEffect(() => {
+    if (ledgerPenumbraApp) {
+      void ledgerPenumbraApp
+        .getAddress(DEFAULT_PATH, { account: 0 })
+        .then(address => setLedgerAddress(address));
+    }
+  }, [ledgerPenumbraApp]);
 
   useEffect(() => {
     if (ledgerFVK) {
@@ -79,7 +94,13 @@ export const ConnectLedgerWallet = () => {
       fvk.inner.set(ledgerFVK.nk, 32);
       setFullViewingKey(fvk);
     }
-  }, [ledgerFVK]);
+    if (ledgerAddress?.address) {
+      console.log('ledgerAddress', ledgerAddress);
+      const address = new Address({});
+      address.inner.set(ledgerAddress.address, 0);
+      setAddress(address);
+    }
+  }, [ledgerFVK, ledgerAddress]);
 
   return (
     <FadeTransition>
@@ -88,10 +109,8 @@ export const ConnectLedgerWallet = () => {
         <CardHeader className='items-center'>
           <CardTitle className='font-semibold'>Connect Ledger</CardTitle>
           <CardDescription>
-            {ledgerPenumbraApp instanceof Error && (
-              <span className='text-error'>
-                Ledger failed to connect: {ledgerPenumbraApp.message}
-              </span>
+            {ledgerFailure && (
+              <span className='text-error'>Ledger failed to connect: {ledgerFailure.message}</span>
             )}
             {!ledgerPenumbraApp && <>Activate your Ledger wallet.</>}
             {ledgerPenumbraApp && !fullViewingKey && (
@@ -101,6 +120,7 @@ export const ConnectLedgerWallet = () => {
               <>
                 Successfully connected to Ledger device.
                 {bech32mFullViewingKey(fullViewingKey)}
+                {address && bech32mAddress(address)}
               </>
             )}
           </CardDescription>

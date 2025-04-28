@@ -3,8 +3,6 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 /* eslint-disable no-bitwise */
 
-export const DEFAULT_PATH = "m/44'/6532'/0";
-
 const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
 
 export function convertBits(

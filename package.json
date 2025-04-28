@@ -81,6 +81,18 @@
         "@penumbra-zone/transport-chrome",
         "@penumbra-zone/transport-dom",
         "@penumbra-zone/types",
+        "@penumbra-zone/wasm",
+        "@penumbra-zone/bech32m",
+        "@penumbra-zone/client",
+        "@penumbra-zone/crypto-web",
+        "@penumbra-zone/getters",
+        "@penumbra-zone/perspective",
+        "@penumbra-zone/protobuf",
+        "@penumbra-zone/services",
+        "@penumbra-zone/storage",
+        "@penumbra-zone/transport-chrome",
+        "@penumbra-zone/transport-dom",
+        "@penumbra-zone/types",
         "@penumbra-zone/wasm"
       ]
     }
