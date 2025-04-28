@@ -1,6 +1,6 @@
 import { AllSlices, SliceCreator } from '.';
-import { ExtensionStorage } from '../storage/base';
-import { LocalStorageState } from '../storage/types';
+import { ExtensionStorage } from '@repo/prax-storage/base';
+import { LocalStorageState } from '@repo/prax-storage/types';
 
 export interface DefaultFrontendSlice {
   url?: string;

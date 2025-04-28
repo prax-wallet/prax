@@ -1,0 +1,29 @@
+{
+  "name": "@repo/prax-storage",
+  "version": "0.0.1",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
+  "files": [
+    "src/",
+    "*.md"
+  ],
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "devDependencies": {
+    "@penumbra-labs/registry": "^12.5.1",
+    "@penumbra-zone/bech32m": "15.0.0",
+    "@penumbra-zone/crypto-web": "41.0.1",
+    "@penumbra-zone/protobuf": "9.0.0",
+    "@penumbra-zone/types": "32.2.1",
+    "@types/chrome": "0.0.270",
+    "@types/lodash": "^4.17.13",
+    "immer": "^10.1.1",
+    "lodash": "^4.17.21"
+  }
+}

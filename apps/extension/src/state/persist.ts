@@ -2,9 +2,9 @@ import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { AllSlices } from '.';
 import { produce } from 'immer';
 
-import { localExtStorage } from '../storage/local';
-import { LocalStorageState } from '../storage/types';
-import { sessionExtStorage, SessionStorageState } from '../storage/session';
+import { localExtStorage } from '@repo/prax-storage/local';
+import { LocalStorageState } from '@repo/prax-storage/types';
+import { sessionExtStorage, SessionStorageState } from '@repo/prax-storage/session';
 import { walletsFromJson } from '@penumbra-zone/types/wallet';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 

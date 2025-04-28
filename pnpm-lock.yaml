@@ -137,6 +137,9 @@ importers:
       '@repo/context':
         specifier: workspace:*
         version: link:../../packages/context
+      '@repo/prax-storage':
+        specifier: workspace:*
+        version: link:../../packages/prax-storage
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -321,6 +324,36 @@ importers:
       '@penumbra-zone/wasm':
         specifier: 45.1.0
         version: 45.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@32.2.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@25.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))
+
+  packages/prax-storage:
+    devDependencies:
+      '@penumbra-labs/registry':
+        specifier: ^12.5.1
+        version: 12.5.1
+      '@penumbra-zone/bech32m':
+        specifier: 15.0.0
+        version: 15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/crypto-web':
+        specifier: 41.0.1
+        version: 41.0.1(@penumbra-zone/types@32.2.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@25.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/protobuf':
+        specifier: 9.0.0
+        version: 9.0.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/types':
+        specifier: 32.2.1
+        version: 32.2.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@25.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@15.0.0(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@9.0.0(@bufbuild/protobuf@1.10.0))
+      '@types/chrome':
+        specifier: 0.0.270
+        version: 0.0.270
+      '@types/lodash':
+        specifier: ^4.17.13
+        version: 4.17.13
+      immer:
+        specifier: ^10.1.1
+        version: 10.1.1
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
 
   packages/query:
     dependencies:

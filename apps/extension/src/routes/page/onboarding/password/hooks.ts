@@ -4,7 +4,7 @@ import { FormEvent, useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getSeedPhraseOrigin, setOnboardingValuesInStorage } from './utils';
 import { PagePath } from '../../paths';
-import { localExtStorage } from '../../../../storage/local';
+import { localExtStorage } from '@repo/prax-storage/local';
 
 export const useFinalizeOnboarding = () => {
   const addWallet = useAddWallet();
