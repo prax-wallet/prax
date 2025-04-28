@@ -2,7 +2,6 @@ import type { ServiceType } from '@bufbuild/protobuf';
 import type { ServiceImpl } from '@connectrpc/connect';
 import { createClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-
 import {
   AppService,
   CompactBlockService,
@@ -19,12 +18,10 @@ import {
   TendermintProxyService,
   ViewService,
 } from '@penumbra-zone/protobuf';
-
 import { custodyImpl } from '@penumbra-zone/services/custody-service';
 import { sctImpl } from '@penumbra-zone/services/sct-service';
 import { stakeImpl } from '@penumbra-zone/services/stake-service';
 import { viewImpl } from '@penumbra-zone/services/view-service';
-
 import { createProxyImpl, noContextHandler } from '@penumbra-zone/transport-dom/proxy';
 import { onboardGrpcEndpoint } from '../storage/onboard';
 import { rethrowImplErrors } from './rethrow-impl-errors';

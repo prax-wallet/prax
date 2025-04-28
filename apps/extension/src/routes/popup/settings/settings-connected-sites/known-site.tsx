@@ -1,8 +1,8 @@
 import { OriginRecord } from '../../../../storage/types';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { Button } from '@repo/ui/components/ui/button';
 import { TrashIcon } from 'lucide-react';
 import { DisplayOriginURL } from '../../../../shared/components/display-origin-url';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export const KnownSite = ({
   site,

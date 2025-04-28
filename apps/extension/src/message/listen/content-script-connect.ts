@@ -1,5 +1,6 @@
 import { Code, ConnectError } from '@connectrpc/connect';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import {
   isPraxConnectionMessage,
   PraxConnection,
@@ -7,7 +8,6 @@ import {
 import { sendTab } from '../send/tab';
 import { approveSender } from '../../senders/approve';
 import { assertValidSender } from '../../senders/validate';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 // listen for page requests for approval
 export const contentScriptConnectListener = (

@@ -4,9 +4,9 @@ import { AllSlices, initializeStore } from '.';
 import { LocalStorageState, OriginRecord } from '../storage/types';
 import { ExtensionStorage } from '../storage/base';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { allSitesFilteredOutSelector } from './connected-sites';
 import { localTestDefaults } from '../utils/test-constants';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 describe('Connected Sites Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

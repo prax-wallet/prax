@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { approveSender } from './approve';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { OriginRecord } from '../storage/types';
 import { PopupType } from '../message/popup';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 const mockLocalStorage = vi.hoisted(() => ({
   get: vi.fn(),
