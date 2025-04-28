@@ -46,3 +46,9 @@ export const onboardWallets = async (): Promise<NonNullable<LocalStorageState['w
     localExtStorage.addListener(storageListener);
   });
 };
+
+export const onboardWallet = async () => {
+  const [wallet0] = await onboardWallets();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- lol
+  return wallet0!;
+};

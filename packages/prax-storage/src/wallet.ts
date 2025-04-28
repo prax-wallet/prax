@@ -1,5 +1,4 @@
-import { Box, BoxJson } from './box';
-import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Box } from './box';
 
 export interface WalletCreate {
   label: string;
@@ -11,21 +10,25 @@ export interface WalletCreate {
 // Stored in chrome.local.storage
 export interface WalletJson {
   label: string;
-  id: Stringified<WalletId>;
-  fullViewingKey: Stringified<FullViewingKey>;
-  type: 'SeedPhrase';
-  encryptedSeedPhrase?: BoxJson;
+  id: string; // Stringified<'WalletId'>;
+  type: string;
+  fullViewingKey: string; // Stringified<'FullViewingKey'>;
+  encryptedSeedPhrase: null | { nonce: string; cipherText: string };
 }
 
 // Stored in zustand memory
 export class Wallet {
   constructor(
     readonly label: string,
-    readonly id: Stringified<WalletId>,
-    readonly fullViewingKey: Stringified<FullViewingKey>,
-    readonly type: 'SeedPhrase',
-    readonly encryptedSeedPhrase?: Box,
-  ) {}
+    readonly id: string, // Stringified<WalletId>,
+    readonly fullViewingKey: string, // Stringified<FullViewingKey>,
+    readonly walletType: string,
+    readonly encryptedSeedPhrase: Box | null,
+  ) {
+    if (walletType !== 'SeedPhrase' || !encryptedSeedPhrase) {
+      throw new TypeError('Not a SeedPhrase wallet');
+    }
+  }
 
   static fromJson(obj: WalletJson): Wallet {
     return new Wallet(
@@ -33,7 +36,7 @@ export class Wallet {
       obj.id,
       obj.fullViewingKey,
       obj.type,
-      obj.encryptedSeedPhrase ? Box.fromJson(obj.encryptedSeedPhrase) : undefined,
+      obj.encryptedSeedPhrase ? Box.fromJson(obj.encryptedSeedPhrase) : null,
     );
   }
 
@@ -42,8 +45,8 @@ export class Wallet {
       label: this.label,
       id: this.id,
       fullViewingKey: this.fullViewingKey,
-      type: this.type,
-      encryptedSeedPhrase: this.encryptedSeedPhrase?.toJson(),
+      type: this.walletType,
+      encryptedSeedPhrase: this.encryptedSeedPhrase?.toJson() ?? null,
     };
   }
 }

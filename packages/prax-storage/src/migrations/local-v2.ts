@@ -10,16 +10,16 @@ export interface V2LocalStorageState {
     choice: 'Approved' | 'Denied' | 'Ignored';
     date: number;
   }[];
-  numeraires: Stringified<'AssetId'>[];
-  params: Stringified<'AppParameters'> | undefined;
+  numeraires: string[]; // Stringified<'AssetId'>[];
+  params: string | undefined; // Stringified<'AppParameters'>
   passwordKeyPrint: { hash: string; salt: string } | undefined;
   wallets: {
     label: string;
-    id: `penumbrawalletid1${string}`;
-    type: 'Ledger' | 'SeedPhrase';
-    fullViewingKey: `penumbrafullviewingkey1${string}`;
+    id: string; // Stringified<'WalletId'>;
+    // type: 'Ledger' | 'SeedPhrase';
+    type: string;
+    fullViewingKey: string; // Stringified<'FullViewingKey'>;
     encryptedSeedPhrase: null | { nonce: string; cipherText: string };
-    creationHeight?: number;
   }[];
 }
 

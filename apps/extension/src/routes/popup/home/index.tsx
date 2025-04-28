@@ -62,11 +62,7 @@ export const PopupIndex = () => {
 
           <div className='flex flex-col gap-4'>
             {activeWallet && (
-              <SelectAccount
-                index={index}
-                setIndex={setIndex}
-                getAddrByIndex={getAddrByIndex(activeWallet)}
-              />
+              <SelectAccount index={index} setIndex={setIndex} activeAddress={activeAddress} />
             )}
           </div>
 

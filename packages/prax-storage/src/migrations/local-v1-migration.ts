@@ -24,11 +24,10 @@ export interface StorageItem<T> {
 export const localV0Migration: MigrationFn<V0LocalStorageState, V1LocalStorageState> = v0 => {
   return {
     dbVersion: 1,
-    wallets: !v0.wallets
-      ? []
-      : v0.wallets.version === V0LocalStorageVersion.V1
+    wallets:
+      v0.wallets?.version === V0LocalStorageVersion.V1
         ? migrateFvkType(v0.wallets)
-        : v0.wallets.value,
+        : (v0.wallets?.value ?? []),
     grpcEndpoint: validateOrReplaceEndpoint(v0.grpcEndpoint?.value, v0.params?.value),
     frontendUrl: validateOrReplaceFrontend(v0.frontendUrl?.value),
     passwordKeyPrint: v0.passwordKeyPrint?.value,
@@ -61,7 +60,7 @@ const migrateFvkType = (wallets: V0LocalStorageState['wallets']): WalletJson[] =
 // Context: https://github.com/prax-wallet/web/issues/166
 const validateOrReplaceEndpoint = (
   oldEndpoint: string | undefined,
-  jsonStrParams: Stringified<AppParameters> | undefined,
+  jsonStrParams: Stringified<'AppParameters'> | undefined,
 ): string | undefined => {
   // If they don't have one set, it's likely they didn't go through onboarding
   if (!oldEndpoint) {

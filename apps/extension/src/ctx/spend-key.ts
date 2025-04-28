@@ -17,7 +17,7 @@ export const getSpendKey = async () => {
     throw new ConnectError('No wallet found');
   }
 
-  const seedBox = Box.fromJson(wallet0.custody.encryptedSeedPhrase);
+  const seedBox = Box.fromJson(wallet0.encryptedSeedPhrase!);
   const seedPhrase = await passKey.unseal(seedBox);
   if (!seedPhrase) {
     throw new ConnectError('Unable to decrypt seed phrase', Code.Unauthenticated);
