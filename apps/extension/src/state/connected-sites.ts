@@ -1,5 +1,5 @@
-import { ExtensionStorage } from '../storage/base';
-import { LocalStorageState, OriginRecord } from '../storage/types';
+import { ExtensionStorage } from '@repo/prax-storage/base';
+import { LocalStorageState, OriginRecord } from '@repo/prax-storage/types';
 import { AllSlices, SliceCreator } from '.';
 
 export interface ConnectedSitesSlice {

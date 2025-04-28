@@ -1,4 +1,4 @@
-import { OriginRecord } from '../../../../storage/types';
+import { OriginRecord } from '@repo/prax-storage/types';
 import { useStore } from '../../../../state';
 import { KnownSite } from './known-site';
 

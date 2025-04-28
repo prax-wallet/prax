@@ -1,7 +1,7 @@
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { PopupType } from '../message/popup';
 import { popup } from '../popup';
-import { getOriginRecord, upsertOriginRecord } from '../storage/origin';
+import { getOriginRecord, upsertOriginRecord } from '@repo/prax-storage/origin';
 import { ValidSender } from './validate';
 
 /**

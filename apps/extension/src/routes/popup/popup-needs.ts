@@ -1,7 +1,7 @@
 import { redirect } from 'react-router-dom';
 import { PopupPath } from './paths';
-import { localExtStorage } from '../../storage/local';
-import { sessionExtStorage } from '../../storage/session';
+import { localExtStorage } from '@repo/prax-storage/local';
+import { sessionExtStorage } from '@repo/prax-storage/session';
 
 export const needsLogin = async (): Promise<Response | null> => {
   const password = await sessionExtStorage.get('passwordKey');
