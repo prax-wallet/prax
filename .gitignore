@@ -67,4 +67,5 @@ apps/extension/chromium-profile
 
 scripts/private
 
-*.tsbuildinfo
+# nix
+/result

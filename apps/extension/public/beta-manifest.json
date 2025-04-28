@@ -33,8 +33,7 @@
     "open_in_tab": true
   },
   "background": {
-    "service_worker": "service-worker.js",
-    "type": "module"
+    "service_worker": "service-worker.js"
   },
   "web_accessible_resources": [
     {
