@@ -37,11 +37,10 @@ export interface V0LocalStorageState {
 export const localV0Migration: MigrationFn<V0LocalStorageState, LocalStorageState> = v0 => {
   return {
     dbVersion: 1,
-    wallets: !v0.wallets
-      ? []
-      : v0.wallets.version === V0LocalStorageVersion.V1
+    wallets:
+      v0.wallets?.version === V0LocalStorageVersion.V1
         ? migrateFvkType(v0.wallets)
-        : v0.wallets.value,
+        : (v0.wallets?.value ?? []),
     grpcEndpoint: validateOrReplaceEndpoint(v0.grpcEndpoint?.value, v0.params?.value),
     frontendUrl: validateOrReplaceFrontend(v0.frontendUrl?.value),
     passwordKeyPrint: v0.passwordKeyPrint?.value,
