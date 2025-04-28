@@ -1,5 +1,5 @@
-import { LocalStorageState } from '../storage/types';
-import { ExtensionStorage } from '../storage/base';
+import { LocalStorageState } from '@repo/prax-storage/types';
+import { ExtensionStorage } from '@repo/prax-storage/base';
 import { AllSlices, SliceCreator } from '.';
 
 export interface NetworkSlice {

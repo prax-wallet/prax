@@ -1,6 +1,6 @@
 import { WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { localExtStorage } from '../storage/local';
+import { localExtStorage } from '@repo/prax-storage/local';
 
 export const getWalletId = async () => {
   const wallet0 = (await localExtStorage.get('wallets'))[0];
