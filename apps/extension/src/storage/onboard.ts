@@ -1,6 +1,5 @@
 import { Listener } from './base';
 import { localExtStorage } from './local';
-import { WalletJson } from '@penumbra-zone/types/wallet';
 import { LocalStorageState } from './types';
 
 /**
@@ -8,19 +7,21 @@ import { LocalStorageState } from './types';
  * endpoint yet. So we'll wait until they've chosen one to start trying to make
  * requests against it.
  */
-export const onboardGrpcEndpoint = async (): Promise<string> => {
+export const onboardGrpcEndpoint = async (): Promise<
+  NonNullable<LocalStorageState['grpcEndpoint']>
+> => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-  if (grpcEndpoint) {
+  if (grpcEndpoint?.length) {
     return grpcEndpoint;
   }
 
   return new Promise(resolve => {
-    const storageListener = (changes: Record<string, { newValue?: unknown }>) => {
-      const rpcEndpoint = changes['grpcEndpoint']?.newValue as
+    const storageListener: Listener = changes => {
+      const grpcEndpoint = changes['grpcEndpoint']?.newValue as
         | LocalStorageState['grpcEndpoint']
         | undefined;
-      if (rpcEndpoint) {
-        resolve(rpcEndpoint);
+      if (grpcEndpoint?.length) {
+        resolve(grpcEndpoint);
         localExtStorage.removeListener(storageListener);
       }
     };
@@ -28,18 +29,17 @@ export const onboardGrpcEndpoint = async (): Promise<string> => {
   });
 };
 
-export const onboardWallet = async (): Promise<WalletJson> => {
+export const onboardWallets = async (): Promise<NonNullable<LocalStorageState['wallets']>> => {
   const wallets = await localExtStorage.get('wallets');
-  if (wallets[0]) {
-    return wallets[0];
+  if (wallets.length) {
+    return wallets;
   }
 
   return new Promise(resolve => {
     const storageListener: Listener = changes => {
       const wallets = changes['wallets']?.newValue as LocalStorageState['wallets'] | undefined;
-      const initialWallet = wallets?.[0];
-      if (initialWallet) {
-        resolve(initialWallet);
+      if (wallets?.length) {
+        resolve(wallets);
         localExtStorage.removeListener(storageListener);
       }
     };

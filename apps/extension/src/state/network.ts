@@ -14,6 +14,7 @@ export interface NetworkSlice {
 export const createNetworkSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<NetworkSlice> =>
   set => {
+    const getWallets = () => local.get('wallets');
     return {
       grpcEndpoint: undefined,
       fullSyncHeight: undefined,
@@ -26,7 +27,11 @@ export const createNetworkSlice =
         await local.set('grpcEndpoint', endpoint);
       },
       clearWalletCreationHeight: async () => {
-        await local.remove('walletCreationBlockHeight');
+        const wallets = await getWallets();
+        await local.set(
+          'wallets',
+          wallets.map(w => ({ ...w, creationHeight: undefined })),
+        );
       },
       setChainId: (chainId: string) => {
         set(state => {

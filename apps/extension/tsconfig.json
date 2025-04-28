@@ -7,7 +7,7 @@
     "declarationMap": false,
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["chrome"],
+    "types": ["chrome", "w3c-web-usb"],
     "moduleResolution": "bundler"
   }
 }

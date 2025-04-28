@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import { Input } from '@repo/ui/components/ui/input';
 import { cn } from '@repo/ui/lib/utils';
 import { useStore } from '../../state';
-import { generateSelector } from '../../state/seed-phrase/generate';
-import { importSelector } from '../../state/seed-phrase/import';
+import { generateSelector } from '../../state/onboarding/generate';
+import { importSelector } from '../../state/onboarding/import';
 import { WordLengthToogles } from './word-length-toogles';
 
 export const ImportForm = () => {

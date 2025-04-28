@@ -1,19 +1,23 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
+import { mockLocalExtStorage, mockSessionExtStorage } from '../../storage/mock';
+import { getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
+import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
+import { bech32mFullViewingKey } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 
 const localExtStorage = mockLocalExtStorage();
 const sessionExtStorage = mockSessionExtStorage();
 
-vi.doMock('../storage/local', async importOriginal => {
-  const mod = await importOriginal<typeof import('../storage/local')>();
+vi.doMock('../../storage/local', async importOriginal => {
+  const mod = await importOriginal<typeof import('../../storage/local')>();
   return {
     ...mod,
     localExtStorage,
   };
 });
 
-vi.doMock('../storage/session', async importOriginal => {
-  const mod = await importOriginal<typeof import('../storage/session')>();
+vi.doMock('../../storage/session', async importOriginal => {
+  const mod = await importOriginal<typeof import('../../storage/session')>();
   return {
     ...mod,
     sessionExtStorage,
@@ -32,18 +36,20 @@ describe('Authorize request handler', () => {
     ]),
   };
 
+  const fvk = getFullViewingKey(new SpendKey(sk0));
+  const wid = getWalletId(fvk);
+
   const wallet0 = {
     label: 'mock',
-    id: 'mock',
-    fullViewingKey: 'mock',
-    custody: {
-      encryptedSeedPhrase: {
-        cipherText:
-          'di37XH8dpSbuBN9gwGB6hgAJycWVqozf3UB6O3mKTtimp8DsC0ZZRNEaf1hNi2Eu2pu1dF1f+vHAnisk3W4mRggAVUNtO0gvD8jcM0RhzGVEZnUlZuRR1TtoQDFXzmo=',
-        nonce: 'MUyDW2GHSeZYVF4f',
-      },
+    id: bech32mWalletId(wid),
+    type: 'SeedPhrase',
+    fullViewingKey: bech32mFullViewingKey(fvk),
+    encryptedSeedPhrase: {
+      cipherText:
+        'di37XH8dpSbuBN9gwGB6hgAJycWVqozf3UB6O3mKTtimp8DsC0ZZRNEaf1hNi2Eu2pu1dF1f+vHAnisk3W4mRggAVUNtO0gvD8jcM0RhzGVEZnUlZuRR1TtoQDFXzmo=',
+      nonce: 'MUyDW2GHSeZYVF4f',
     },
-  };
+  } as const;
 
   const pw = {
     _inner: {
@@ -66,7 +72,7 @@ describe('Authorize request handler', () => {
 
   test('should fail if no wallet is present', async () => {
     await localExtStorage.set('wallets', []);
-    await expect(getSpendKey()).rejects.toThrow('No wallet found');
+    await expect(getSpendKey()).rejects.toThrow('No seed phrase available');
   });
 
   test('should fail if user is not logged in extension', async () => {

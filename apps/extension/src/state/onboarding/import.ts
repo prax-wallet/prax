@@ -1,5 +1,5 @@
 import { AllSlices, SliceCreator } from '..';
-import { SeedPhraseSlice } from '.';
+import { OnboardingSlice } from '.';
 import {
   isInWordList,
   SeedPhraseLength,
@@ -14,44 +14,44 @@ export interface ImportFields {
   phraseIsValid: () => boolean;
 }
 
-export const createImport: SliceCreator<SeedPhraseSlice['import']> = (set, get) => ({
+export const createImport: SliceCreator<OnboardingSlice['import']> = (set, get) => ({
   phrase: [],
   update: (text, position) => {
     const words = text.trim().split(' ');
 
     // Extend phrase length if trying to paste in one that's longer
-    if (words.length > get().seedPhrase.import.phrase.length) {
-      get().seedPhrase.import.setLength(SeedPhraseLength.TWENTY_FOUR_WORDS);
+    if (words.length > get().onboarding.import.phrase.length) {
+      get().onboarding.import.setLength(SeedPhraseLength.TWENTY_FOUR_WORDS);
     }
 
     // If attempting to add entire seed phrase, spread through the subsequent fields
-    words.slice(0, get().seedPhrase.import.phrase.length - position).forEach((word, i) => {
+    words.slice(0, get().onboarding.import.phrase.length - position).forEach((word, i) => {
       set(state => {
-        state.seedPhrase.import.phrase[position + i] = word;
+        state.onboarding.import.phrase[position + i] = word;
       });
     });
   },
   setLength: (length: SeedPhraseLength) => {
     const desiredLength = length === SeedPhraseLength.TWELVE_WORDS ? 12 : 24;
-    const currLength = get().seedPhrase.import.phrase.length;
+    const currLength = get().onboarding.import.phrase.length;
 
     if (currLength === desiredLength) {
       return;
     }
     if (currLength < desiredLength) {
-      set(({ seedPhrase }) => {
-        seedPhrase.import.phrase = seedPhrase.import.phrase.concat(
+      set(({ onboarding }) => {
+        onboarding.import.phrase = onboarding.import.phrase.concat(
           new Array(desiredLength - currLength).fill(''),
         );
       });
     } else {
-      set(({ seedPhrase }) => {
-        seedPhrase.import.phrase = seedPhrase.import.phrase.slice(0, desiredLength);
+      set(({ onboarding }) => {
+        onboarding.import.phrase = onboarding.import.phrase.slice(0, desiredLength);
       });
     }
   },
   wordIsValid: word => isInWordList(word),
-  phraseIsValid: () => validateSeedPhrase(get().seedPhrase.import.phrase),
+  phraseIsValid: () => validateSeedPhrase(get().onboarding.import.phrase),
 });
 
-export const importSelector = (state: AllSlices) => state.seedPhrase.import;
+export const importSelector = (state: AllSlices) => state.onboarding.import;

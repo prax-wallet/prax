@@ -5,8 +5,8 @@ import { produce } from 'immer';
 import { localExtStorage } from '../storage/local';
 import { LocalStorageState } from '../storage/types';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
-import { walletsFromJson } from '@penumbra-zone/types/wallet';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { deserializeWallet } from '../wallet';
 
 export type Middleware = <
   T,
@@ -27,7 +27,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
   void (async function () {
     // Part 1: Get storage values and sync them to store
     const passwordKey = await sessionExtStorage.get('passwordKey');
-    const wallets = await localExtStorage.get('wallets');
+    const [wallet0] = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
     const knownSites = await localExtStorage.get('knownSites');
     const frontendUrl = await localExtStorage.get('frontendUrl');
@@ -36,7 +36,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
     set(
       produce((state: AllSlices) => {
         state.password.key = passwordKey;
-        state.wallets.all = walletsFromJson(wallets);
+        state.wallets.active = wallet0 && deserializeWallet(wallet0);
         state.network.grpcEndpoint = grpcEndpoint;
         state.connectedSites.knownSites = knownSites;
         state.defaultFrontend.url = frontendUrl;
@@ -60,10 +60,11 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
 
 function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
   if (changes['wallets']) {
-    const wallets = changes['wallets'].newValue as LocalStorageState['wallets'] | undefined;
+    const [wallet0] =
+      (changes['wallets'].newValue as LocalStorageState['wallets'] | undefined) ?? [];
     set(
       produce((state: AllSlices) => {
-        state.wallets.all = wallets ? walletsFromJson(wallets) : [];
+        state.wallets.active = wallet0 && deserializeWallet(wallet0);
       }),
     );
   }

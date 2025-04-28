@@ -1,0 +1,36 @@
+import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { ExtensionStorageDefaults } from '../base';
+
+export interface V2LocalStorageState {
+  dbVersion: number;
+  frontendUrl: string | undefined;
+  fullSyncHeight: number | undefined;
+  grpcEndpoint: string | undefined;
+  knownSites: {
+    origin: string;
+    choice: UserChoice.Approved | UserChoice.Denied | UserChoice.Ignored;
+    date: number;
+  }[];
+  numeraires: `passet1${string}`[];
+  params: string | undefined; // Stringified<AppParameters>
+  passwordKeyPrint: { hash: string; salt: string } | undefined;
+  wallets: {
+    label: string;
+    id: `penumbrawalletid1${string}`;
+    type: 'Ledger' | 'SeedPhrase';
+    fullViewingKey: `penumbrafullviewingkey1${string}`;
+    encryptedSeedPhrase: null | { nonce: string; cipherText: string };
+    creationHeight?: number;
+  }[];
+}
+
+export const V2LocalDefaults: ExtensionStorageDefaults<V2LocalStorageState> = {
+  frontendUrl: undefined,
+  fullSyncHeight: undefined,
+  grpcEndpoint: undefined,
+  knownSites: [],
+  numeraires: [],
+  params: undefined,
+  passwordKeyPrint: undefined,
+  wallets: [],
+};

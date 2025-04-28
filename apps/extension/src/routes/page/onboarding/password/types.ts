@@ -1,8 +1,9 @@
 export enum SEED_PHRASE_ORIGIN {
   IMPORTED = 'IMPORTED',
-  NEWLY_GENERATED = 'NEWLY_GENERATED',
+  GENERATED = 'GENERATED',
+  NONE = 'NONE',
 }
 
 export interface LocationState {
-  origin?: SEED_PHRASE_ORIGIN;
+  seedPhrase?: SEED_PHRASE_ORIGIN;
 }

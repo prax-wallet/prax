@@ -9,15 +9,16 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { localExtStorage } from '../../../../storage/local';
 import { AppService } from '@penumbra-zone/protobuf';
 import { fetchBlockHeightWithFallback } from '../../../../hooks/latest-block-height';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 
 export const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
   const state = location.state as Partial<LocationState> | undefined;
   if (
     state &&
-    typeof state.origin === 'string' &&
-    Object.values(SEED_PHRASE_ORIGIN).includes(state.origin)
+    typeof state.seedPhrase === 'string' &&
+    Object.values(SEED_PHRASE_ORIGIN).includes(state.seedPhrase)
   ) {
-    return state.origin;
+    return state.seedPhrase;
   }
   // Default to IMPORTED if the origin is not valid as it won't generate a walletCreationHeight
   return SEED_PHRASE_ORIGIN.IMPORTED;
@@ -25,8 +26,8 @@ export const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
 
 export const navigateToPasswordPage = (
   nav: ReturnType<typeof usePageNav>,
-  origin: SEED_PHRASE_ORIGIN,
-) => nav(PagePath.SET_PASSWORD, { state: { origin } });
+  seedPhrase?: SEED_PHRASE_ORIGIN,
+) => nav(PagePath.SET_PASSWORD, { state: { seedPhrase } });
 
 // A request-level timeout that supersedes the channel transport-level timeout to prevent hanging requests.
 const DEFAULT_TRANSPORT_OPTS = { timeoutMs: 5000 };
@@ -62,8 +63,9 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
     throw new Error('No chain id');
   }
 
-  if (seedPhraseOrigin === SEED_PHRASE_ORIGIN.NEWLY_GENERATED) {
-    await localExtStorage.set('walletCreationBlockHeight', blockHeight);
+  if (seedPhraseOrigin === SEED_PHRASE_ORIGIN.GENERATED) {
+    console.log('not using creation blockHeight', blockHeight);
+    // await localExtStorage.set('walletCreationBlockHeight', blockHeight);
   }
 
   const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
@@ -72,6 +74,6 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   await localExtStorage.set('frontendUrl', selectedFrontend.url);
   await localExtStorage.set(
     'numeraires',
-    numeraires.map(n => n.toJsonString()),
+    numeraires.map(n => bech32mAssetId(n)),
   );
 };

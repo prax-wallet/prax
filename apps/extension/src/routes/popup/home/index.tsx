@@ -1,17 +1,15 @@
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { SelectAccount } from '@repo/ui/components/ui/select';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
-import { Wallet } from '@penumbra-zone/types/wallet';
 import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
 import { localExtStorage } from '../../../storage/local';
-import { getActiveWallet } from '../../../state/wallets';
+import { fvkSelector } from '../../../state/wallets';
 import { needsLogin, needsOnboard } from '../popup-needs';
 import { ValidateAddress } from './validate-address';
 import { FrontendLink } from './frontend-link';
 import { AssetsTable } from './assets-table';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -32,22 +30,21 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
   };
 };
 
-const getAddrByIndex =
-  (wallet?: Wallet) =>
-  (index: number, ephemeral: boolean): Address => {
-    if (!wallet) {
-      throw new Error('No active wallet');
-    }
-
-    const fullViewingKey = FullViewingKey.fromJsonString(wallet.fullViewingKey);
-    return ephemeral
-      ? getEphemeralByIndex(fullViewingKey, index)
-      : getAddressByIndex(fullViewingKey, index);
-  };
-
 export const PopupIndex = () => {
-  const activeWallet = useStore(getActiveWallet);
-  const [index, setIndex] = useState<number>(0);
+  const fvk = useStore(fvkSelector);
+
+  const [addressIndex, setAddressIndex] = useState<number>(0);
+  const [addressEphemeral, setAddressEphemeral] = useState<boolean>(false);
+
+  const address = useMemo(() => {
+    if (!fvk) {
+      return;
+    } else if (addressEphemeral) {
+      return getEphemeralByIndex(fvk, addressIndex);
+    } else {
+      return getAddressByIndex(fvk, addressIndex);
+    }
+  }, [fvk, addressIndex, addressEphemeral]);
 
   return (
     <>
@@ -61,11 +58,13 @@ export const PopupIndex = () => {
           <IndexHeader />
 
           <div className='flex flex-col gap-4'>
-            {activeWallet && (
+            {fvk && (
               <SelectAccount
-                index={index}
-                setIndex={setIndex}
-                getAddrByIndex={getAddrByIndex(activeWallet)}
+                address={address}
+                ephemeral={addressEphemeral}
+                setEphemeral={setAddressEphemeral}
+                index={addressIndex}
+                setIndex={setAddressIndex}
               />
             )}
           </div>
@@ -74,7 +73,7 @@ export const PopupIndex = () => {
 
           <FrontendLink />
 
-          <AssetsTable account={index} />
+          <AssetsTable account={addressIndex} />
         </div>
       </div>
     </>

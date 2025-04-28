@@ -3,6 +3,7 @@ import { AllSlices, SliceCreator } from '.';
 import { ExtensionStorage } from '../storage/base';
 import { Stringified } from '@penumbra-zone/types/jsonified';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 
 export interface NumerairesSlice {
   selectedNumeraires: Stringified<AssetId>[];
@@ -25,8 +26,13 @@ export const createNumerairesSlice =
           }
         });
       },
+
       saveNumeraires: async () => {
-        await local.set('numeraires', get().numeraires.selectedNumeraires);
+        const selectedNumeraires = get().numeraires.selectedNumeraires;
+        await local.set(
+          'numeraires',
+          selectedNumeraires.map(s => bech32mAssetId(AssetId.fromJsonString(s))),
+        );
       },
     };
   };

@@ -1,10 +1,10 @@
-import { LocalStorageState } from '../storage/types';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { LocalStorageState } from '../storage/types';
 
 export const EXAMPLE_MINIFRONT_URL = 'https://app.example.com';
 
 export const localTestDefaults: LocalStorageState = {
-  dbVersion: 1,
+  dbVersion: 2,
   wallets: [],
   fullSyncHeight: undefined,
   knownSites: [{ origin: EXAMPLE_MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
@@ -13,5 +13,4 @@ export const localTestDefaults: LocalStorageState = {
   passwordKeyPrint: undefined,
   frontendUrl: EXAMPLE_MINIFRONT_URL,
   numeraires: [],
-  walletCreationBlockHeight: 0,
 };

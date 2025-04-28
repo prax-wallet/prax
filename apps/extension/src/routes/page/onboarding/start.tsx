@@ -39,6 +39,13 @@ export const OnboardingStart = () => {
           >
             Import existing wallet
           </Button>
+          <Button
+            variant='secondary'
+            className='w-full'
+            onClick={() => navigate(PagePath.CONNECT_LEDGER_WALLET)}
+          >
+            Connect Ledger
+          </Button>
         </CardContent>
       </Card>
     </FadeTransition>
