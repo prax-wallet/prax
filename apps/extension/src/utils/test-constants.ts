@@ -13,5 +13,4 @@ export const localTestDefaults: LocalStorageState = {
   passwordKeyPrint: undefined,
   frontendUrl: EXAMPLE_MINIFRONT_URL,
   numeraires: [],
-  walletCreationBlockHeight: 0,
 };
