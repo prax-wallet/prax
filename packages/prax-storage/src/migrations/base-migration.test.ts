@@ -44,7 +44,7 @@ interface MockV2State {
 }
 
 const mockV0toV1Migration = async (prev: MockV0State): Promise<MockV1State> => {
-  await new Promise(resolve => setTimeout(resolve, 0));
+  await new Promise(resolve => void setTimeout(resolve, 0));
 
   return {
     dbVersion: 1,
