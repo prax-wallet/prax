@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { MockStorageArea } from '../mock';
 import { ExtensionStorage } from '../base';
-import { localDefaults } from '../local';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { walletIdFromBech32m } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
-import { LocalStorageState } from '../types';
-import { localV0Migration, V0LocalStorageState, V0LocalStorageVersion } from './local-v1-migration';
+import { V1LocalDefaults, V1LocalStorageState } from './local-v1';
+import { localV0Migration, V0LocalStorageVersion } from './local-v1-migration';
+import { V0LocalStorageState } from './local-v0';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
@@ -19,13 +19,13 @@ const bech32WalletId =
 
 describe('v1 old local schema migrations', () => {
   let rawStorage: MockStorageArea;
-  let v1ExtStorage: ExtensionStorage<LocalStorageState>;
+  let v1ExtStorage: ExtensionStorage<V1LocalStorageState>;
 
   beforeEach(() => {
     rawStorage = new MockStorageArea();
-    v1ExtStorage = new ExtensionStorage<LocalStorageState>({
+    v1ExtStorage = new ExtensionStorage<V1LocalStorageState>({
       storage: rawStorage,
-      defaults: localDefaults,
+      defaults: V1LocalDefaults,
       version: {
         current: 1,
         migrations: {
@@ -103,13 +103,13 @@ describe('v1 old local schema migrations', () => {
 
 describe('v1 old schema: migrate walletId and fullViewingKey', () => {
   let rawStorage: MockStorageArea;
-  let v1ExtStorage: ExtensionStorage<LocalStorageState>;
+  let v1ExtStorage: ExtensionStorage<V1LocalStorageState>;
 
   beforeEach(() => {
     rawStorage = new MockStorageArea();
-    v1ExtStorage = new ExtensionStorage<LocalStorageState>({
+    v1ExtStorage = new ExtensionStorage<V1LocalStorageState>({
       storage: rawStorage,
-      defaults: localDefaults,
+      defaults: V1LocalDefaults,
       version: {
         current: 1,
         migrations: {
@@ -187,13 +187,13 @@ describe('v1 old schema: migrate walletId and fullViewingKey', () => {
 
 describe('v2 old schema: validate grpc & frontendUrl', () => {
   let rawStorage: MockStorageArea;
-  let v1ExtStorage: ExtensionStorage<LocalStorageState>;
+  let v1ExtStorage: ExtensionStorage<V1LocalStorageState>;
 
   beforeEach(() => {
     rawStorage = new MockStorageArea();
-    v1ExtStorage = new ExtensionStorage<LocalStorageState>({
+    v1ExtStorage = new ExtensionStorage<V1LocalStorageState>({
       storage: rawStorage,
-      defaults: localDefaults,
+      defaults: V1LocalDefaults,
       version: {
         current: 1,
         migrations: {
