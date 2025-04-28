@@ -26,8 +26,12 @@ export const getOrPairUsb = async () => {
 export const getFirstUsb = () => getOrPairUsb().then(([dev]) => dev!);
 
 export class LedgerPenumbra {
-  static connect = async (dev: USBDevice): Promise<LedgerPenumbra> =>
+  static claimUSB = async (dev: USBDevice): Promise<LedgerPenumbra> =>
     new LedgerPenumbra(new PenumbraApp(await TransportWebUSB.open(dev)));
+
+  async releaseUSB() {
+    return this.app.transport.close();
+  }
 
   constructor(private readonly app: PenumbraApp) {}
 

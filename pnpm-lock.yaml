@@ -1653,7 +1653,7 @@ packages:
       '@penumbra-zone/protobuf': file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/protobuf/penumbra-zone-protobuf-9.0.0.tgz
 
   '@penumbra-zone/client@file:../../penumbra-zone/web/packages/client/penumbra-zone-client-26.0.0.tgz':
-    resolution: {integrity: sha512-tAB7V1vehMpij0TuCFoEvRDnccBLMa1No79WB93uUbvzW6UfFzZCrFdpxWfDcCx89y4cRZWAyaHeq+u5tNckLA==, tarball: file:../../penumbra-zone/web/packages/client/penumbra-zone-client-26.0.0.tgz}
+    resolution: {integrity: sha512-76R6ur/SyfjpO7T9ErsmIn5UloTGjqsFnRv691f339j3EVjRzNmczWHUQMHEy+RzvXhgnys3E1zYADjhLzg7rQ==, tarball: file:../../penumbra-zone/web/packages/client/penumbra-zone-client-26.0.0.tgz}
     version: 26.0.0
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
@@ -1671,7 +1671,7 @@ packages:
       '@penumbra-zone/types': file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/types/penumbra-zone-types-32.2.1.tgz
 
   '@penumbra-zone/getters@file:../../penumbra-zone/web/packages/getters/penumbra-zone-getters-25.0.1.tgz':
-    resolution: {integrity: sha512-Q1+ZJL18y4X3NWM+DhpcHUdLfUY0bnrcp+QB9q9IRkPQEws3quY4nUVdLiTrCpaAW96aC3KwZNXjHfjHYO5U3g==, tarball: file:../../penumbra-zone/web/packages/getters/penumbra-zone-getters-25.0.1.tgz}
+    resolution: {integrity: sha512-2K913sBwyqafoiV8f32O2BdJAoPxKdDRFZSYX08lwbv6DxXnYWDoZiCChRB2W9eNabJK2R760gdBGYBSiSlpOA==, tarball: file:../../penumbra-zone/web/packages/getters/penumbra-zone-getters-25.0.1.tgz}
     version: 25.0.1
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
@@ -1682,7 +1682,7 @@ packages:
     resolution: {integrity: sha512-yrHg5jcKf2DFim06qgAEOvTjQbI2IjLtywZ+Bn77IazpH8BLy4jb5sF+/IqlFp1bFIacWNsMEP+/KdoGsXkC0A==}
 
   '@penumbra-zone/perspective@file:../../penumbra-zone/web/packages/perspective/penumbra-zone-perspective-54.0.0.tgz':
-    resolution: {integrity: sha512-pP589yP3cAYWE/3ASqYWsK4Q8PFBG1FM7X4iT8FGyUZ5RLPUWUn5oTBFrr7Ou3SkDoG/9yyNEmZPSYk4ibbb5Q==, tarball: file:../../penumbra-zone/web/packages/perspective/penumbra-zone-perspective-54.0.0.tgz}
+    resolution: {integrity: sha512-w68Wg0vmpue0alw65nUubcCu9Rs1ajJrmfyfg7yVzM/b0Czwh7DYwNQWt0JY37FEMYdKKEX5JQ7oD2VQainFkA==, tarball: file:../../penumbra-zone/web/packages/perspective/penumbra-zone-perspective-54.0.0.tgz}
     version: 54.0.0
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
@@ -1692,13 +1692,13 @@ packages:
       '@penumbra-zone/wasm': file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/wasm/penumbra-zone-wasm-45.1.0.tgz
 
   '@penumbra-zone/protobuf@file:../../penumbra-zone/web/packages/protobuf/penumbra-zone-protobuf-9.0.0.tgz':
-    resolution: {integrity: sha512-S73uLaXy2+iOJ4WmhlDj6QpSP8TK6df1c4nrsVla0BeTdKqX6nJnzx71MSOLHC3r0Es5IK4vlb9VK8kQUFgA6Q==, tarball: file:../../penumbra-zone/web/packages/protobuf/penumbra-zone-protobuf-9.0.0.tgz}
+    resolution: {integrity: sha512-qPbWw6euTiN6UFRFuMH/FTwieMoFUgMWwiHoX+A1B6Ix+JfDpDiAaWombLqdnRcqwBihRgLki7SejfjVyyGpog==, tarball: file:../../penumbra-zone/web/packages/protobuf/penumbra-zone-protobuf-9.0.0.tgz}
     version: 9.0.0
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
 
   '@penumbra-zone/services@file:../../penumbra-zone/web/packages/services/penumbra-zone-services-60.0.0.tgz':
-    resolution: {integrity: sha512-henfLVLeKruUi5dxV2kiQVRobjImdTpT3BbV2gM8kzwTzGnsUKiP6XGQG6oAMMRGIgHKlyjQDAnE5SjGO8NPYg==, tarball: file:../../penumbra-zone/web/packages/services/penumbra-zone-services-60.0.0.tgz}
+    resolution: {integrity: sha512-JmSo9lZElJKDRYhh2vKi0wDHewx/84mIPKXJMH5wqnyO+GXGrotJmPqvOtCbwZY0DoK6k2pf91QyqxaXehaHCQ==, tarball: file:../../penumbra-zone/web/packages/services/penumbra-zone-services-60.0.0.tgz}
     version: 60.0.0
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
@@ -1713,7 +1713,7 @@ packages:
       '@penumbra-zone/wasm': file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/wasm/penumbra-zone-wasm-45.1.0.tgz
 
   '@penumbra-zone/storage@file:../../penumbra-zone/web/packages/storage/penumbra-zone-storage-54.0.0.tgz':
-    resolution: {integrity: sha512-XylL7zBrEhBLf3ommddktN9LaQr+UHGy6/UjV9hRyoiR023S32u1H0alcbWVfydRwaeMzyffT68+Ee9Vrv8tww==, tarball: file:../../penumbra-zone/web/packages/storage/penumbra-zone-storage-54.0.0.tgz}
+    resolution: {integrity: sha512-k3nBa1EOmOAROOSH3+5DWF1Q07THdCz0GDG/aFJvchw92WvrHAgo0kpIiZ5vKwvOGEvg9wCSLR8qpB0L3rge1w==, tarball: file:../../penumbra-zone/web/packages/storage/penumbra-zone-storage-54.0.0.tgz}
     version: 54.0.0
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
@@ -1737,7 +1737,7 @@ packages:
     version: 7.5.1
 
   '@penumbra-zone/types@file:../../penumbra-zone/web/packages/types/penumbra-zone-types-32.2.1.tgz':
-    resolution: {integrity: sha512-2hdGOzMpfvRGnnxSXlnCsXad8P7+iv0qvzXatrX5uOOC/StzAqSLo11l2uaHZARs06DuGj1eX0LJ1jGJ1xBvYw==, tarball: file:../../penumbra-zone/web/packages/types/penumbra-zone-types-32.2.1.tgz}
+    resolution: {integrity: sha512-zPCg5W4k215mcRE1Z96TOXJ4iJjvOwI3ee9Mgx3bCVh08YAjjBv6jRUZArUks8KAJCM7azUUgPm9vcT6/+Dpgg==, tarball: file:../../penumbra-zone/web/packages/types/penumbra-zone-types-32.2.1.tgz}
     version: 32.2.1
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
@@ -1746,7 +1746,7 @@ packages:
       '@penumbra-zone/protobuf': file:///Users/yet/Developer/github.com/penumbra-zone/web/packages/protobuf/penumbra-zone-protobuf-9.0.0.tgz
 
   '@penumbra-zone/wasm@file:../../penumbra-zone/web/packages/wasm/penumbra-zone-wasm-45.1.0.tgz':
-    resolution: {integrity: sha512-l2FuYHkSyqXEfHTyjha0vEwT4+gziUjAvpX/2atvvGCvoYW3UNMnfPVtfhozYW5xqzL4ektCE+XLdQviU2pWOA==, tarball: file:../../penumbra-zone/web/packages/wasm/penumbra-zone-wasm-45.1.0.tgz}
+    resolution: {integrity: sha512-Rb7RYSlkpcCOW27hK/8ennTiRd56zLehLCSi6ZvCW+fx0POO4O3I2PQoTWIz38t91vqo7qKU+uE9zo201DhaFw==, tarball: file:../../penumbra-zone/web/packages/wasm/penumbra-zone-wasm-45.1.0.tgz}
     version: 45.1.0
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0

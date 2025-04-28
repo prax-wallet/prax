@@ -12,9 +12,8 @@ export const authorize = async (
     signal.addEventListener('abort', () => reject(signal.reason as Error));
   });
 
-  const auth = getFirstUsb()
-    .then(dev => LedgerPenumbra.connect(dev))
-    .then(ledger => ledger.sign(txPlan));
+  const ledger = getFirstUsb().then(dev => LedgerPenumbra.claimUSB(dev));
+  const auth = ledger.then(l => l.sign(txPlan));
 
-  return await Promise.race([auth, cancel]);
+  return await Promise.race([auth, cancel]).finally(() => void ledger.then(l => l.releaseUSB()));
 };

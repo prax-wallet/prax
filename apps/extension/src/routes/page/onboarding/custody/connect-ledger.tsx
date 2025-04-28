@@ -51,7 +51,7 @@ export const ConnectLedgerWallet = () => {
     setLedgerConnectionPending(true);
     try {
       const dev = await getFirstUsb();
-      setLedgerPenumbra(await LedgerPenumbra.connect(dev));
+      setLedgerPenumbra(await LedgerPenumbra.claimUSB(dev));
     } catch (cause) {
       setLedgerFailure(
         cause instanceof Error ? cause : new Error(`Unknown failure: ${String(cause)}`, { cause }),
