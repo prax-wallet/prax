@@ -24,26 +24,14 @@ import type { PenumbraProvider } from '@penumbra-zone/client/provider';
 import { PenumbraState } from '@penumbra-zone/client/state';
 import { PenumbraSymbol } from '@penumbra-zone/client/symbol';
 
-import { PraxConnection } from '../message/prax';
 import {
   isPraxEndMessageEvent,
   isPraxFailureMessageEvent,
   isPraxPortMessageEvent,
-  PraxMessage,
   unwrapPraxMessageEvent,
-} from './message-event';
-
-const connectMessage = {
-  [PRAX]: PraxConnection.Connect,
-} satisfies PraxMessage<PraxConnection.Connect>;
-
-const disconnectMessage = {
-  [PRAX]: PraxConnection.Disconnect,
-} satisfies PraxMessage<PraxConnection.Disconnect>;
-
-const initMessage = {
-  [PRAX]: PraxConnection.Init,
-} satisfies PraxMessage<PraxConnection.Init>;
+} from './message/prax-message-event';
+import { PraxConnection } from './message/prax-connection';
+import { sendWindow } from './message/send-window';
 
 class PraxInjection {
   private static singleton?: PraxInjection = new PraxInjection();
@@ -57,14 +45,6 @@ class PraxInjection {
   private stateEvents = new EventTarget();
 
   private injection: Readonly<PenumbraProvider> = Object.freeze({
-    /**
-     * Meet the 'request' method of the old page API to mitigate incompatibility
-     * with pd v0.80.0's bundled minifront. This prevents connection failure.
-     * @todo Remove when bundled frontends are updated beyond `a31d54a`
-     * @issue https://github.com/prax-wallet/web/issues/175
-     */
-    request: () => this.postConnectRequest(),
-
     connect: () => this.postConnectRequest(),
     disconnect: () => this.postDisconnectRequest(),
     isConnected: () => this.presentState === PenumbraState.Connected,
@@ -80,7 +60,7 @@ class PraxInjection {
     }
 
     void this.listenPortMessage();
-    window.postMessage(initMessage, '/');
+    sendWindow(PraxConnection.Init);
   }
 
   private setConnected() {
@@ -102,13 +82,13 @@ class PraxInjection {
 
   private postConnectRequest() {
     const attempt = this.listenPortMessage();
-    window.postMessage(connectMessage, '/', []);
+    sendWindow(PraxConnection.Connect);
     return attempt;
   }
 
   private postDisconnectRequest() {
     const attempt = this.listenEndMessage();
-    window.postMessage(disconnectMessage, '/', []);
+    sendWindow(PraxConnection.Disconnect);
     return attempt;
   }
 
