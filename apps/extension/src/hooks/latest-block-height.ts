@@ -19,7 +19,7 @@ export const fetchBlockHeightWithFallback = async (
   }
 
   // Define a canconcial default RPC
-  const defaultRpc = 'Radiant Commons';
+  const defaultRpc = 'https://penumbra-1.radiantcommons.com';
 
   let selectedGrpc = endpoints.find(endpoint => endpoint === defaultRpc);
 
