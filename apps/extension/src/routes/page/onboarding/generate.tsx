@@ -8,7 +8,6 @@ import { CopyToClipboard } from '@repo/ui/components/ui/copy-to-clipboard';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { Input } from '@repo/ui/components/ui/input';
 import { cn } from '@repo/ui/lib/utils';
-import { useCountdown } from 'usehooks-ts';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
@@ -17,11 +16,10 @@ import { PagePath } from '../paths';
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
   const { phrase, generateRandomSeedPhrase } = useStore(generateSelector);
-  const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
 
   const onSubmit = () => {
-    navigate(PagePath.CONFIRM_BACKUP);
+    navigate(PagePath.SET_PASSWORD);
   };
 
   // On render, asynchronously generate a new seed phrase
@@ -29,8 +27,7 @@ export const GenerateSeedPhrase = () => {
     if (!phrase.length) {
       generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
     }
-    startCountdown();
-  }, [generateRandomSeedPhrase, phrase.length, startCountdown]);
+  }, [generateRandomSeedPhrase, phrase.length]);
 
   return (
     <FadeTransition>
@@ -85,17 +82,12 @@ export const GenerateSeedPhrase = () => {
           </div>
 
           {reveal ? (
-            <Button className='mt-4' variant='gradient' onClick={onSubmit} disabled={count !== 0}>
+            <Button className='mt-4' variant='gradient' onClick={onSubmit}>
               I have backed this up
             </Button>
           ) : (
-            <Button
-              className='mt-4'
-              variant='gradient'
-              onClick={() => setReveal(true)}
-              disabled={count !== 0}
-            >
-              Reveal phrase {count !== 0 && `(${count})`}
+            <Button className='mt-4' variant='gradient' onClick={() => setReveal(true)}>
+              Reveal phrase
             </Button>
           )}
         </CardContent>
