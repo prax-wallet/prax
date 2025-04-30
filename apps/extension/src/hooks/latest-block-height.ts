@@ -21,7 +21,7 @@ export const fetchBlockHeightWithFallback = async (
   // Define a canconcial default RPC
   const defaultRpc = 'https://penumbra-1.radiantcommons.com';
 
-  let selectedGrpc = endpoints.find(endpoint => endpoint === defaultRpc);
+  let selectedGrpc: string | undefined = endpoints.find(endpoint => endpoint === defaultRpc);
 
   // If default RPC is not found, randomly sample an RPC endpoint from the chain registry
   if (!selectedGrpc) {
