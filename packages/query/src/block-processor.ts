@@ -171,6 +171,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     // prepares for syncing and checks for a bundled genesis block,
     // which can save time by avoiding an initial network request.
     if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
+
+      // STUB SCT CALL
+      // let frontier = await this.querier.sct.sctFrontier(new SctFrontierRequest({ withProof: true }))
+
       // create first epoch
       await this.indexedDb.addEpoch(0n);
 
