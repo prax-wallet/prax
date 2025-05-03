@@ -17,7 +17,7 @@
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-labs/registry": "^12.7.0",
+    "@penumbra-labs/registry": "^12.5.1",
     "@penumbra-zone/bech32m": "16.0.0",
     "@penumbra-zone/crypto-web": "42.0.0",
     "@penumbra-zone/getters": "26.0.0",

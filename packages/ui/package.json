@@ -29,7 +29,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@penumbra-labs/registry": "^12.7.0",
+    "@penumbra-labs/registry": "^12.5.1",
     "@penumbra-zone/bech32m": "16.0.0",
     "@penumbra-zone/getters": "26.0.0",
     "@penumbra-zone/perspective": "55.0.0",
