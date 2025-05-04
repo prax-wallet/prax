@@ -4,7 +4,7 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { Nullifier, SctFrontierRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   Action,
@@ -172,8 +172,11 @@ export class BlockProcessor implements BlockProcessorInterface {
     // which can save time by avoiding an initial network request.
     if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
 
-      // STUB SCT CALL
-      // let frontier = await this.querier.sct.sctFrontier(new SctFrontierRequest({ withProof: true }))
+      // Responds with a parsing error when requesting a merkle proof (it performs an internal fallible conversion).
+      let frontier = await this.querier.sct.sctFrontier(new SctFrontierRequest({ withProof: false }))
+
+      // query wasm method to load sct frontier into view server
+      await this.viewServer.getSctFrontier(frontier);
 
       // create first epoch
       await this.indexedDb.addEpoch(0n);
