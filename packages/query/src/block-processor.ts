@@ -172,11 +172,14 @@ export class BlockProcessor implements BlockProcessorInterface {
     // which can save time by avoiding an initial network request.
     if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
 
-      // Responds with a parsing error when requesting a merkle proof (it performs an internal fallible conversion).
+      // responds with a parsing error when requesting a merkle proof (it performs an internal fallible conversion).
       let frontier = await this.querier.sct.sctFrontier(new SctFrontierRequest({ withProof: false }))
+      console.log("frontier: ", frontier)
 
       // query wasm method to load sct frontier into view server
       await this.viewServer.getSctFrontier(frontier);
+
+      // todo: add rpc call to gas prices for fresh wallets
 
       // create first epoch
       await this.indexedDb.addEpoch(0n);

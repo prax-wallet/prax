@@ -8,6 +8,7 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { SctFrontierRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 export interface ServicesConfig {
   readonly chainId: string;
@@ -105,10 +106,16 @@ export class Services implements ServicesInterface {
       throw new Error('Cannot initialize viewServer without epoch duration');
     }
 
+    // TODO: we'll likely want to perform the SCT frontier call here for fresh wallets, directly
+    // without crossing back over the wasm binary and rountripping. Check wallet creation height. 
+    
+    let compact_frontier = await querier.sct.sctFrontier(new SctFrontierRequest({ withProof: false }))
+
     const viewServer = await ViewServer.initialize({
       fullViewingKey,
       getStoredTree: () => indexedDb.getStateCommitmentTree(),
       idbConstants: indexedDb.constants(),
+      compact_frontier
     });
 
     // Dynamically fetch binary file for genesis compact block
