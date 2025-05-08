@@ -45,7 +45,7 @@ import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
+import { assetIdFromBaseDenom } from '@penumbra-zone/wasm/asset';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -624,8 +624,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         // Incentivized asset the votes are associated with.
         const denom = action.value.body.incentivized?.denom;
         if (denom) {
-          const hash = await sha256Hash(new TextEncoder().encode(denom));
-          incentivizedAsset = new AssetId({ inner: hash });
+          incentivizedAsset = assetIdFromBaseDenom(denom);
         }
 
         // Aggregate voting weight for each delegation token's asset ID.
