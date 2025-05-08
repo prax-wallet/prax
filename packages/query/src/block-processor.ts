@@ -609,7 +609,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     subaccount?: AddressIndex,
   ) {
     const totalVoteWeightByAssetId = new Map<AssetId, Amount>();
-    let incentivizedAssetMetadata: Metadata | undefined = undefined;
+    let incentivizedAsset: AssetId | undefined;
 
     for (const { action } of transaction.body?.actions ?? []) {
       if (action.case === 'actionLiquidityTournamentVote' && action.value.body?.value) {
@@ -621,14 +621,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         }
 
         // Incentivized asset the votes are associated with.
-        if (!incentivizedAssetMetadata) {
-          const incentivizedTokenAssetId = new AssetId({
-            altBaseDenom: action.value.body.incentivized?.denom,
-          });
-
-          incentivizedAssetMetadata =
-            await this.indexedDb.getAssetsMetadata(incentivizedTokenAssetId);
-        }
+        incentivizedAsset = new AssetId({
+          altBaseDenom: action.value.body.incentivized?.denom,
+        });
 
         // Aggregate voting weight for each delegation token's asset ID.
         const currentVoteTotalByAssetId =
@@ -649,11 +644,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       // One DB save per delegation asset ID, potentially spanning multiple actions within the same transaction.
       // Initially, the voting reward will be empty.
-      if (incentivizedAssetMetadata) {
+      if (incentivizedAsset) {
         await this.indexedDb.saveLQTHistoricalVote(
+          incentivizedAsset,
           epochIndex,
           transactionId,
-          incentivizedAssetMetadata,
           totalVoteWeightValue,
           undefined,
           undefined,
@@ -707,9 +702,9 @@ export class BlockProcessor implements BlockProcessorInterface {
             // As a result, the corresponding rewards will be denominated separately, using the
             // respective asset ID associated with each delegation's validator.
             await this.indexedDb.saveLQTHistoricalVote(
+              existingVote.incentivizedAsset,
               epochIndex,
               existingVote.TransactionId,
-              existingVote.AssetMetadata,
               existingVote.VoteValue,
               rewardValue.note.value.amount,
               existingVote.id,
