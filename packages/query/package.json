@@ -27,11 +27,11 @@
     "@connectrpc/connect": "^1.6.1",
     "@connectrpc/connect-web": "^1.6.1",
     "@penumbra-zone/bech32m": "16.0.0",
-    "@penumbra-zone/crypto-web": "42.0.0",
+    "@penumbra-zone/crypto-web": "43.0.0",
     "@penumbra-zone/getters": "26.0.0",
     "@penumbra-zone/protobuf": "10.0.0",
-    "@penumbra-zone/types": "33.0.0",
-    "@penumbra-zone/wasm": "46.0.0",
+    "@penumbra-zone/types": "33.1.0",
+    "@penumbra-zone/wasm": "47.0.0",
     "exponential-backoff": "^3.1.1"
   },
   "engine": {
