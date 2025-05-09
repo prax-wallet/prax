@@ -2,7 +2,7 @@ import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb
 import { Services } from '@repo/context';
 import { isPraxServicesMessage, ServicesMessage } from '../services';
 import { isInternalSender } from '../../senders/internal';
-import { localExtStorage } from '../../storage/local';
+import { localExtStorage } from '@repo/prax-storage/local';
 
 export const internalServiceListener = (
   walletServices: Promise<Services>,

@@ -5,7 +5,7 @@ import { Wallet } from '@penumbra-zone/types/wallet';
 import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
-import { localExtStorage } from '../../../storage/local';
+import { localExtStorage } from '@repo/prax-storage/local';
 import { getActiveWallet } from '../../../state/wallets';
 import { needsLogin, needsOnboard } from '../popup-needs';
 import { ValidateAddress } from './validate-address';

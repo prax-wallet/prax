@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { LocalStorageState } from '../storage/types';
-import { ExtensionStorage } from '../storage/base';
-import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
+import { LocalStorageState } from '@repo/prax-storage/types';
+import { ExtensionStorage } from '@repo/prax-storage/base';
+import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/prax-storage/mock';
 
 describe('Default Frontend Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

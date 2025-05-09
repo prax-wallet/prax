@@ -42,9 +42,9 @@ export type ExtensionStorageDefaults<T extends { dbVersion: number }> = Required
 export interface RequiredMigrations {
   // Explicitly require key 0 representing a special key for migrating from
   // a state prior to the current implementation.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- EXISTING USE
   0: MigrationFn<any, any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- EXISTING USE
   [key: number]: MigrationFn<any, any>; // Additional numeric keys
 }
 
@@ -115,19 +115,18 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
   /**
    * Removes key/value from db (waits on ongoing migration). If there is a default, sets that.
    */
-  async remove<K extends keyof T>(key: K): Promise<void> {
+  async remove(key: Exclude<keyof T, 'dbVersion'>): Promise<void> {
     await this.withDbLock(async () => {
       // Prevent removing dbVersion
       if (key === 'dbVersion') {
         throw new Error('Cannot remove dbVersion');
       }
 
-      const specificKey = key as K & Exclude<keyof T, 'dbVersion'>;
-      const defaultValue = this.defaults[specificKey];
+      const defaultValue = this.defaults[key];
       if (defaultValue !== undefined) {
-        await this._set({ [specificKey]: defaultValue } as Record<K, T[K]>);
+        await this._set({ [key]: defaultValue } as Record<typeof key, T[typeof key]>);
       } else {
-        await this.storage.remove(String(specificKey));
+        await this.storage.remove(String(key));
       }
     });
   }
@@ -182,9 +181,9 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
 
     const currentDbState = await this.storage.get();
     // Migrations save the database intermediate states hard to type
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- EXISTING USE
     const nextState = await migrationFn(currentDbState);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- EXISTING USE
     await this._set(nextState);
 
     return storedVersion + 1;
