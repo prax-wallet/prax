@@ -18,8 +18,9 @@ export const fetchBlockHeightWithFallback = async (
     throw new Error('All RPC endpoints failed to fetch the block height.');
   }
 
-  // Define a canonical default RPC
-  const defaultRpc = 'https://penumbra-1.radiantcommons.com';
+  // Define a canonical default RPC 
+  // TODO: using testnet rpc as default for testing purposes
+  const defaultRpc = 'https://testnet.plinfra.net';
 
   let selectedGrpc: string | undefined = endpoints.find(endpoint => endpoint === defaultRpc);
 
