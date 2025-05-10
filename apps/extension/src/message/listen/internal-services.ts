@@ -25,6 +25,7 @@ export const internalServiceListener = (
           localExtStorage.remove('params'),
           indexedDb.clear(),
           localExtStorage.remove('fullSyncHeight'),
+          localExtStorage.remove('compactFrontierBlockHeight'),
         ]);
       })()
         .then(() => respond())

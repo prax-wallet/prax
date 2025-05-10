@@ -7,7 +7,7 @@ import { sample } from 'lodash';
 import { createClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { localExtStorage } from '../../../../storage/local';
-import { AppService } from '@penumbra-zone/protobuf';
+import { AppService, SctService } from '@penumbra-zone/protobuf';
 import { fetchBlockHeightWithFallback } from '../../../../hooks/latest-block-height';
 
 export const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
@@ -65,6 +65,13 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
 
   if (seedPhraseOrigin === SEED_PHRASE_ORIGIN.NEWLY_GENERATED) {
     await localExtStorage.set('walletCreationBlockHeight', blockHeight);
+
+    const compactFrontier = await createClient(
+      SctService,
+      createGrpcWebTransport({ baseUrl: rpc }),
+    ).sctFrontier({ withProof: false }, DEFAULT_TRANSPORT_OPTS);
+
+    await localExtStorage.set('compactFrontierBlockHeight', Number(compactFrontier.height));
   }
 
   const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
