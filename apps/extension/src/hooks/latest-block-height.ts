@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { sample } from 'lodash';
 import { createClient, Transport } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
@@ -18,19 +17,9 @@ export const fetchBlockHeightWithFallback = async (
     throw new Error('All RPC endpoints failed to fetch the block height.');
   }
 
-  // Define a canonical default RPC 
-  // TODO: using testnet rpc as default for testing purposes
-  const defaultRpc = 'https://testnet.plinfra.net';
-
-  let selectedGrpc: string | undefined = endpoints.find(endpoint => endpoint === defaultRpc);
-
-  // If default RPC is not found, randomly sample an RPC endpoint from the chain registry
-  if (!selectedGrpc) {
-    selectedGrpc = sample(endpoints);
-  }
-  if (!selectedGrpc) {
-    throw new Error('No RPC endpoints found.');
-  }
+  // Define a canonical default RPC
+  // TODO: using testnet rpc as default for testing purposes. this will be reverted.
+  const selectedGrpc = 'https://testnet.plinfra.net';
 
   try {
     const blockHeight = await fetchBlockHeightWithTimeout(selectedGrpc, transport);
