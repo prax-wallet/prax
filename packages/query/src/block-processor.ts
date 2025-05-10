@@ -46,6 +46,7 @@ import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/t
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { CurrentGasPricesRequest } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -71,12 +72,14 @@ interface QueryClientProps {
   numeraires: AssetId[];
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
+  walletCreationBlockHeight: number | undefined;
   compactFrontierBlockHeight: number | undefined;
 }
 
 interface ProcessBlockParams {
   compactBlock: CompactBlock;
   latestKnownBlockHeight: bigint;
+  skipTrialDecrypt?: boolean;
 }
 
 const POSITION_STATES: PositionState[] = [
@@ -94,6 +97,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
   private readonly genesisBlock: CompactBlock | undefined;
+  private readonly walletCreationBlockHeight: number | undefined;
   private readonly compactFrontierBlockHeight: number | undefined;
 
   constructor({
@@ -103,6 +107,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     numeraires,
     stakingAssetId,
     genesisBlock,
+    walletCreationBlockHeight,
     compactFrontierBlockHeight,
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
@@ -111,6 +116,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
     this.stakingAssetId = stakingAssetId;
     this.genesisBlock = genesisBlock;
+    this.walletCreationBlockHeight = walletCreationBlockHeight;
     this.compactFrontierBlockHeight = compactFrontierBlockHeight;
   }
 
@@ -203,9 +209,16 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
 
+        // Set the trial decryption flag for the genesis compact block
+        const skipTrialDecrypt = shouldSkipTrialDecrypt(
+          this.walletCreationBlockHeight,
+          currentHeight,
+        );
+
         await this.processBlock({
           compactBlock: this.genesisBlock,
           latestKnownBlockHeight: latestKnownBlockHeight,
+          skipTrialDecrypt,
         });
       }
     }
@@ -224,9 +237,16 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
+      // Set the trial decryption flag for all other compact blocks
+      const skipTrialDecrypt = shouldSkipTrialDecrypt(
+        this.walletCreationBlockHeight,
+        currentHeight,
+      );
+
       await this.processBlock({
         compactBlock: compactBlock,
         latestKnownBlockHeight: latestKnownBlockHeight,
+        skipTrialDecrypt,
       });
 
       // We only query Tendermint for the latest known block height once, when
@@ -241,7 +261,11 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   // logic for processing a compact block
-  private async processBlock({ compactBlock, latestKnownBlockHeight }: ProcessBlockParams) {
+  private async processBlock({
+    compactBlock,
+    latestKnownBlockHeight,
+    skipTrialDecrypt = false,
+  }: ProcessBlockParams) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
     }
@@ -267,7 +291,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // - decrypts new notes
     // - decrypts new swaps
     // - updates idb with advice
-    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
+    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, skipTrialDecrypt);
 
     // flushing is slow, avoid it until
     // - wasm says

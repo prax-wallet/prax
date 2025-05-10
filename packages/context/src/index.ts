@@ -109,6 +109,7 @@ export class Services implements ServicesInterface {
       indexedDb,
       stakingAssetId: registryClient.bundled.globals().stakingAssetId,
       numeraires,
+      walletCreationBlockHeight,
       compactFrontierBlockHeight,
     });
 
