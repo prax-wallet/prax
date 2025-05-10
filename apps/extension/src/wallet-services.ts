@@ -15,6 +15,7 @@ export const startWalletServices = async () => {
   const numeraires = await localExtStorage.get('numeraires');
   const chainId = await getChainId(grpcEndpoint);
   const walletCreationBlockHeight = await localExtStorage.get('walletCreationBlockHeight');
+  const compactFrontierBlockHeight = await localExtStorage.get('compactFrontierBlockHeight');
 
   const services = new Services({
     grpcEndpoint,
@@ -23,6 +24,7 @@ export const startWalletServices = async () => {
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
     numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
     walletCreationBlockHeight,
+    compactFrontierBlockHeight,
   });
 
   void syncLastBlockToStorage(await services.getWalletServices());

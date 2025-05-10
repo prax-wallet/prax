@@ -16,6 +16,7 @@ export interface ServicesConfig {
   readonly fullViewingKey: FullViewingKey;
   readonly numeraires: AssetId[];
   readonly walletCreationBlockHeight: number | undefined;
+  readonly compactFrontierBlockHeight: number | undefined;
 }
 
 export class Services implements ServicesInterface {
@@ -44,9 +45,9 @@ export class Services implements ServicesInterface {
   // originally served as a proxy for effectuating this distinction, enabling the block processor
   // to skip heavy cryptographic operations like trial decryption and merkle tree operations like
   // poseidon hashing on TCT insertions. Now, the wallet birthday serves a different purpose:
-  // identifying fresh wallets and performing a one-time request to retrieve the state commitment
-  // tree frontier. This frontier is injecting into into the view server state from which normal
-  // block processor syncing can resume.
+  // identifying fresh wallets and performing a one-time request to retrieve the SCT frontier.
+  // This snapshot is injected into into the view server state from which normal
+  // block processor syncing can then resume.
   private async initializeWalletServices(): Promise<WalletServices> {
     const {
       chainId,
@@ -55,6 +56,7 @@ export class Services implements ServicesInterface {
       fullViewingKey,
       numeraires,
       walletCreationBlockHeight,
+      compactFrontierBlockHeight,
     } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const registryClient = new ChainRegistryClient();
@@ -65,28 +67,26 @@ export class Services implements ServicesInterface {
     });
 
     let viewServer: ViewServer | undefined;
-    const getStoredTree = () => indexedDb.getStateCommitmentTree();
-    let compactFrontierBlockHeight: bigint | undefined;
 
     // We want to gate the type of initialization we do here
     let fullSyncHeight = await indexedDb.getFullSyncHeight();
-    if (!fullSyncHeight && walletCreationBlockHeight) {
+    if (!fullSyncHeight && walletCreationBlockHeight && compactFrontierBlockHeight) {
+      // Request compact frontier from full node (~1KB payload)
       let compact_frontier = await querier.sct.sctFrontier(
         new SctFrontierRequest({ withProof: false }),
       );
       await indexedDb.saveFullSyncHeight(compact_frontier.height);
-      compactFrontierBlockHeight = compact_frontier.height;
 
       viewServer = await ViewServer.initialize_from_snapshot({
         fullViewingKey,
-        getStoredTree,
+        getStoredTree: () => indexedDb.getStateCommitmentTree(),
         idbConstants: indexedDb.constants(),
         compact_frontier,
       });
     } else {
       viewServer = await ViewServer.initialize({
         fullViewingKey,
-        getStoredTree,
+        getStoredTree: () => indexedDb.getStateCommitmentTree(),
         idbConstants: indexedDb.constants(),
       });
     }
