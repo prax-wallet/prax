@@ -4,7 +4,7 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { Nullifier, SctFrontierRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   Action,
@@ -41,10 +41,11 @@ import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
 import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
-import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { CurrentGasPricesRequest } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -70,13 +71,12 @@ interface QueryClientProps {
   numeraires: AssetId[];
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
-  walletCreationBlockHeight: number | undefined;
+  compactFrontierBlockHeight: bigint | undefined;
 }
 
 interface ProcessBlockParams {
   compactBlock: CompactBlock;
   latestKnownBlockHeight: bigint;
-  skipTrialDecrypt?: boolean;
 }
 
 const POSITION_STATES: PositionState[] = [
@@ -94,7 +94,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
   private readonly genesisBlock: CompactBlock | undefined;
-  private readonly walletCreationBlockHeight: number | undefined;
+  private readonly compactFrontierBlockHeight: bigint | undefined;
 
   constructor({
     indexedDb,
@@ -103,7 +103,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     numeraires,
     stakingAssetId,
     genesisBlock,
-    walletCreationBlockHeight,
+    compactFrontierBlockHeight,
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
@@ -111,7 +111,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
     this.stakingAssetId = stakingAssetId;
     this.genesisBlock = genesisBlock;
-    this.walletCreationBlockHeight = walletCreationBlockHeight;
+    this.compactFrontierBlockHeight = compactFrontierBlockHeight;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
@@ -167,17 +167,31 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
+    // Frontier ops
+    if (this.compactFrontierBlockHeight) {
+      // Q. still need to fetch and save the alternative gas prices.
+      let gasPrices = await this.querier.fee.currentGasPrices(new CurrentGasPricesRequest({}));
+      await this.indexedDb.saveGasPrices({
+        ...toPlainMessage(gasPrices.gasPrices!),
+        assetId: toPlainMessage(this.stakingAssetId),
+      });
+
+      // Q. is there an RPC for fetching FMD parameters? temporarily stubbing.
+      await this.indexedDb.saveFmdParams(
+        new FmdParameters({
+          precisionBits: 0,
+          asOfBlockHeight: 360n,
+        }),
+      );
+
+      let appParams = await this.querier.app.appParams();
+      await this.indexedDb.saveAppParams(appParams);
+    }
+
     // handle the special case where no syncing has been done yet, and
     // prepares for syncing and checks for a bundled genesis block,
     // which can save time by avoiding an initial network request.
     if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
-
-      // Responds with a parsing error when requesting a merkle proof (it performs an internal fallible conversion).
-      let frontier = await this.querier.sct.sctFrontier(new SctFrontierRequest({ withProof: false }))
-
-      // query wasm method to load sct frontier into view server
-      await this.viewServer.getSctFrontier(frontier);
-
       // create first epoch
       await this.indexedDb.addEpoch(0n);
 
@@ -189,16 +203,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
 
-        // Set the trial decryption flag for the genesis compact block
-        const skipTrialDecrypt = shouldSkipTrialDecrypt(
-          this.walletCreationBlockHeight,
-          currentHeight,
-        );
-
         await this.processBlock({
           compactBlock: this.genesisBlock,
           latestKnownBlockHeight: latestKnownBlockHeight,
-          skipTrialDecrypt,
         });
       }
     }
@@ -217,16 +224,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      // Set the trial decryption flag for all other compact blocks
-      const skipTrialDecrypt = shouldSkipTrialDecrypt(
-        this.walletCreationBlockHeight,
-        currentHeight,
-      );
-
       await this.processBlock({
         compactBlock: compactBlock,
         latestKnownBlockHeight: latestKnownBlockHeight,
-        skipTrialDecrypt,
       });
 
       // We only query Tendermint for the latest known block height once, when
@@ -241,11 +241,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   // logic for processing a compact block
-  private async processBlock({
-    compactBlock,
-    latestKnownBlockHeight,
-    skipTrialDecrypt = false,
-  }: ProcessBlockParams) {
+  private async processBlock({ compactBlock, latestKnownBlockHeight }: ProcessBlockParams) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
     }
@@ -271,7 +267,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // - decrypts new notes
     // - decrypts new swaps
     // - updates idb with advice
-    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, skipTrialDecrypt);
+    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
 
     // flushing is slow, avoid it until
     // - wasm says

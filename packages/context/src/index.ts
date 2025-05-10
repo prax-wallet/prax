@@ -5,9 +5,9 @@ import { ViewServer } from '@penumbra-zone/wasm/view-server';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/services';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { SctFrontierRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 export interface ServicesConfig {
   readonly chainId: string;
@@ -39,50 +39,14 @@ export class Services implements ServicesInterface {
     return this.walletServicesPromise;
   }
 
-  /**
-   * Attempt to fetch parameters from the remote fullnode, or fall back to known
-   * parameters in indexedDb.
-   *
-   * Will throw to abort if the remote node reports an unexpected chainId.
-   *
-   * @returns `AppParameters`
-   */
-  private async getParams(indexedDb: IndexedDb, querier: RootQuerier): Promise<AppParameters> {
-    // try to read params from idb
-    const storedParams = await indexedDb.getAppParams();
-
-    // try to fetch params from network
-    const queriedParams = await querier.app.appParams().catch(() => undefined);
-
-    // verify params by chainId
-    if (
-      storedParams?.chainId &&
-      queriedParams?.chainId &&
-      storedParams.chainId !== queriedParams.chainId
-    ) {
-      // fail mismatch
-      const badChainIdMsg =
-        'Local chainId does not match the remote chainId. Your local state may\
-        be invalid, or you may be connecting to the wrong chain. You cannot use\
-        this RPC endpoint without clearing your local chain state.';
-      // log flamboyantly
-      console.error(`%c${badChainIdMsg}`, 'font-weight: bold; font-size: 2em;', {
-        storedParams,
-        queriedParams,
-      });
-      throw new Error(badChainIdMsg);
-    } else if (storedParams?.chainId) {
-      // stored params exist and are ok.  if there were updates, the block
-      // processor will handle those at the appropriate time.
-      return storedParams;
-    } else if (queriedParams?.chainId) {
-      // none stored, but fetched are ok.
-      return queriedParams;
-    } else {
-      throw new Error('No available chainId');
-    }
-  }
-
+  // In the current construction, there's isn't an idiomatic way to distinguish between different
+  // wallet states (ie. fresh versus existing wallets) past the onboarding phase. The wallet birthday
+  // originally served as a proxy for effectuating this distinction, enabling the block processor
+  // to skip heavy cryptographic operations like trial decryption and merkle tree operations like
+  // poseidon hashing on TCT insertions. Now, the wallet birthday serves a different purpose:
+  // identifying fresh wallets and performing a one-time request to retrieve the state commitment
+  // tree frontier. This frontier is injecting into into the view server state from which normal
+  // block processor syncing can resume.
   private async initializeWalletServices(): Promise<WalletServices> {
     const {
       chainId,
@@ -100,16 +64,36 @@ export class Services implements ServicesInterface {
       registryClient,
     });
 
-    const { sctParams } = await this.getParams(indexedDb, querier);
-    if (!sctParams?.epochDuration) {
-      throw new Error('Cannot initialize viewServer without epoch duration');
+    let viewServer: ViewServer | undefined;
+    const getStoredTree = () => indexedDb.getStateCommitmentTree();
+    let compactFrontierBlockHeight: bigint | undefined;
+
+    // We want to gate the type of initialization we do here
+    let fullSyncHeight = await indexedDb.getFullSyncHeight();
+    if (!fullSyncHeight && walletCreationBlockHeight) {
+      let compact_frontier = await querier.sct.sctFrontier(
+        new SctFrontierRequest({ withProof: false }),
+      );
+      await indexedDb.saveFullSyncHeight(compact_frontier.height);
+      compactFrontierBlockHeight = compact_frontier.height;
+
+      viewServer = await ViewServer.initialize_from_snapshot({
+        fullViewingKey,
+        getStoredTree,
+        idbConstants: indexedDb.constants(),
+        compact_frontier,
+      });
+    } else {
+      viewServer = await ViewServer.initialize({
+        fullViewingKey,
+        getStoredTree,
+        idbConstants: indexedDb.constants(),
+      });
     }
 
-    const viewServer = await ViewServer.initialize({
-      fullViewingKey,
-      getStoredTree: () => indexedDb.getStateCommitmentTree(),
-      idbConstants: indexedDb.constants(),
-    });
+    // Q. do we need to explicitly save the SCT to storage, or does initializing the view server do that for us already? forgot.
+    // Q. why does refreshing cache increasing stored hashes in the table??
+    // todo: we need to save the `compactFrontierBlockHeight` field to local extension storage.
 
     // Dynamically fetch binary file for genesis compact block
     const response = await fetch('./penumbra-1-genesis.bin');
@@ -125,7 +109,7 @@ export class Services implements ServicesInterface {
       indexedDb,
       stakingAssetId: registryClient.bundled.globals().stakingAssetId,
       numeraires,
-      walletCreationBlockHeight,
+      compactFrontierBlockHeight,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };
