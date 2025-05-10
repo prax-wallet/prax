@@ -20,7 +20,8 @@ export const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
     return state.origin;
   }
   // Default to IMPORTED if the origin is not valid as it won't generate a walletCreationHeight
-  return SEED_PHRASE_ORIGIN.IMPORTED;
+  // TODO: we temporarily bypass this for testing purposes. q. what would cause the origin to be invalidated?
+  return SEED_PHRASE_ORIGIN.NEWLY_GENERATED;
 };
 
 export const navigateToPasswordPage = (
