@@ -210,6 +210,10 @@ export class BlockProcessor implements BlockProcessorInterface {
           }),
         );
       }
+
+      // Finally, persist the frontier to IndexedDB.
+      let flush = this.viewServer.flushUpdates();
+      await this.indexedDb.saveScanResult(flush);
     }
 
     // handle the special case where no syncing has been done yet, and
