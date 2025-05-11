@@ -44,7 +44,6 @@ import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/co
 import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { CurrentGasPricesRequest } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 
@@ -173,25 +172,43 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
-    // Frontier ops
-    if (this.compactFrontierBlockHeight) {
-      // Q. still need to fetch and save the alternative gas prices.
-      let gasPrices = await this.querier.fee.currentGasPrices(new CurrentGasPricesRequest({}));
-      await this.indexedDb.saveGasPrices({
-        ...toPlainMessage(gasPrices.gasPrices!),
-        assetId: toPlainMessage(this.stakingAssetId),
-      });
+    // Check that 'currentHeight' and 'compactFrontierBlockHeight' local extension
+    // storage parameters match, signifying that this wallet was freshly generated
+    // and triggering a one-time parameter initialization that would have otherwise occured
+    // from fields pulled directly from the compact blocks. Otherwise, current height
+    // is set to 'PRE_GENESIS_SYNC_HEIGHT' which will set of normal genesis syncing.
 
-      // Q. is there an RPC for fetching FMD parameters? temporarily stubbing.
-      await this.indexedDb.saveFmdParams(
-        new FmdParameters({
-          precisionBits: 0,
-          asOfBlockHeight: 360n,
-        }),
-      );
-
+    if (this.compactFrontierBlockHeight && this.compactFrontierBlockHeight >= currentHeight) {
+      // Pull the app parameters from the full node, which other parameter setting (gas prices
+      // for instance) will be derived from, rather than making additional network requests.
       let appParams = await this.querier.app.appParams();
       await this.indexedDb.saveAppParams(appParams);
+
+      if (appParams.feeParams?.fixedGasPrices) {
+        await this.indexedDb.saveGasPrices({
+          ...toPlainMessage(appParams.feeParams?.fixedGasPrices),
+          assetId: toPlainMessage(this.stakingAssetId),
+        });
+      }
+
+      if (appParams.feeParams?.fixedAltGasPrices) {
+        for (const altGasFee of appParams.feeParams?.fixedAltGasPrices) {
+          if (altGasFee && altGasFee.assetId)
+            await this.indexedDb.saveGasPrices({
+              ...toPlainMessage(altGasFee),
+              assetId: toPlainMessage(altGasFee.assetId),
+            });
+        }
+      }
+
+      if (appParams.shieldedPoolParams?.fmdMetaParams) {
+        await this.indexedDb.saveFmdParams(
+          new FmdParameters({
+            precisionBits: 0,
+            asOfBlockHeight: appParams.shieldedPoolParams?.fmdMetaParams.fmdGracePeriodBlocks,
+          }),
+        );
+      }
     }
 
     // handle the special case where no syncing has been done yet, and

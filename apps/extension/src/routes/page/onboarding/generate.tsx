@@ -11,7 +11,8 @@ import { cn } from '@repo/ui/lib/utils';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
-import { PagePath } from '../paths';
+import { SEED_PHRASE_ORIGIN } from './password/types';
+import { navigateToPasswordPage } from './password/utils';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
@@ -19,7 +20,7 @@ export const GenerateSeedPhrase = () => {
   const [reveal, setReveal] = useState(false);
 
   const onSubmit = () => {
-    navigate(PagePath.SET_PASSWORD);
+    navigateToPasswordPage(navigate, SEED_PHRASE_ORIGIN.NEWLY_GENERATED);
   };
 
   // On render, asynchronously generate a new seed phrase

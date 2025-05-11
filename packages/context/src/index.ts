@@ -68,10 +68,31 @@ export class Services implements ServicesInterface {
 
     let viewServer: ViewServer | undefined;
 
-    // We want to gate the type of initialization we do here
+    // 'fullSyncHeight' will always be undefined after onboarding independent
+    // of the wallet type. On subsequent service worker inits, the field will
+    // be defined. The additional cost paid here is a single storage access.
     let fullSyncHeight = await indexedDb.getFullSyncHeight();
+
+    // Gate the type of initialization we perform here:
+    //
+    // * If the wallet is freshly generated, the other storage parameters in
+    //   the first conditional will be set. in the case, the wallet saves
+    //   the 'fullSyncHeight', pull the state commitment frontier snapshot
+    //   from the full node, and instructs the block processor to start syncing
+    //   from that snapshot height.
+    //
+    // * After a normal normal service worker lifecycle termination <> initialization
+    //   game, wallet serices will be triggered and the service worker will pull
+    //   the latest state commitment tree state from storage to initialize the
+    //   view server and resume block processor.
+    //
+    // * After a cache reset, wallet serices will be triggered and block prcoessing
+    //   will initiate genesis sync, taking advantage of the existing "wallet birthday"
+    //   acceleration techniques.
+
     if (!fullSyncHeight && walletCreationBlockHeight && compactFrontierBlockHeight) {
-      // Request compact frontier from full node (~1KB payload)
+      // Request frontier snapshot from full node (~1KB payload) and initialize
+      // the view server from that snapshot.
       let compact_frontier = await querier.sct.sctFrontier(
         new SctFrontierRequest({ withProof: false }),
       );
@@ -84,6 +105,7 @@ export class Services implements ServicesInterface {
         compact_frontier,
       });
     } else {
+      // Initialize the view server from existing IndexedDB storage.
       viewServer = await ViewServer.initialize({
         fullViewingKey,
         getStoredTree: () => indexedDb.getStateCommitmentTree(),
@@ -91,11 +113,8 @@ export class Services implements ServicesInterface {
       });
     }
 
-    // Q. do we need to explicitly save the SCT to storage, or does initializing the view server do that for us already? forgot.
-    // Q. why does refreshing cache increasing stored hashes in the table??
-    // todo: we need to save the `compactFrontierBlockHeight` field to local extension storage.
-
-    // Dynamically fetch binary file for genesis compact block
+    // Dynamically fetch the 'local' genesis file from the exentsion's
+    // static assets.
     const response = await fetch('./penumbra-1-genesis.bin');
     const genesisBinaryData = await response.arrayBuffer();
 
