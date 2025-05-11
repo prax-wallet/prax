@@ -157,7 +157,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     const PRE_GENESIS_SYNC_HEIGHT = -1n;
 
     // start at next block, or genesis if height is undefined
-    let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? PRE_GENESIS_SYNC_HEIGHT;
+    const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
+    let currentHeight = fullSyncHeight ?? PRE_GENESIS_SYNC_HEIGHT;
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -178,7 +179,11 @@ export class BlockProcessor implements BlockProcessorInterface {
     // from fields pulled directly from the compact blocks. Otherwise, current height
     // is set to 'PRE_GENESIS_SYNC_HEIGHT' which will set of normal genesis syncing.
 
-    if (this.compactFrontierBlockHeight && this.compactFrontierBlockHeight >= currentHeight) {
+    if (
+      this.compactFrontierBlockHeight &&
+      this.compactFrontierBlockHeight >= currentHeight &&
+      fullSyncHeight !== undefined
+    ) {
       // Pull the app parameters from the full node, which other parameter setting (gas prices
       // for instance) will be derived from, rather than making additional network requests.
       const appParams = await this.querier.app.appParams();

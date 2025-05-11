@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { sample } from 'lodash';
 import { createClient, Transport } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
@@ -6,9 +7,10 @@ import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 
 // Utility function to fetch the block height by randomly querying one of the RPC endpoints
-// from the chain registry (if default is unavailable), using a recursive callback to try
-// another endpoint for liveness if the current one fails. Additionally, this implements a
-// timeout mechanism at the request level to avoid hanging from stalled requests.
+// from the chain registry, using a recursive callback to try another endpoint if the current
+// one fails. Additionally, this implements a timeout mechanism at the request level to avoid
+// hanging from stalled requests.
+
 export const fetchBlockHeightWithFallback = async (
   endpoints: string[],
   transport?: Transport, // Deps injection mostly for unit tests
@@ -17,16 +19,18 @@ export const fetchBlockHeightWithFallback = async (
     throw new Error('All RPC endpoints failed to fetch the block height.');
   }
 
-  // Define a canonical default RPC
-  // TODO: using testnet rpc as default for testing purposes. this will be reverted.
-  const selectedGrpc = 'https://testnet.plinfra.net';
+  // Randomly select an RPC endpoint from the chain registry
+  const randomGrpcEndpoint = sample(endpoints);
+  if (!randomGrpcEndpoint) {
+    throw new Error('No RPC endpoints found.');
+  }
 
   try {
-    const blockHeight = await fetchBlockHeightWithTimeout(selectedGrpc, transport);
-    return { blockHeight, rpc: selectedGrpc };
+    const blockHeight = await fetchBlockHeightWithTimeout(randomGrpcEndpoint, transport);
+    return { blockHeight, rpc: randomGrpcEndpoint };
   } catch (e) {
     // Remove the current endpoint from the list and retry with remaining endpoints
-    const remainingEndpoints = endpoints.filter(endpoint => endpoint !== selectedGrpc);
+    const remainingEndpoints = endpoints.filter(endpoint => endpoint !== randomGrpcEndpoint);
     return fetchBlockHeightWithFallback(remainingEndpoints, transport);
   }
 };
