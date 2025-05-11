@@ -12,8 +12,7 @@
     "scripts",
     "files",
     "exports",
-    "publishConfig",
-    "pnpm"
+    "publishConfig"
   ],
   "dependencyTypes": [
     "dev",
@@ -44,15 +43,16 @@
   ],
   "versionGroups": [
     {
-      "label": "Ensure @bufbuild and @connectrpc don't upgrade yet",
-      "packages": [
-        "**"
-      ],
-      "dependencies": [
-        "@bufbuild/**",
-        "@connectrpc/**"
-      ],
-      "pinVersion": "^1.x"
+      "label": "Pin @connectrpc for compatibility",
+      "packages": ["**"],
+      "dependencies": ["@connectrpc/**"],
+      "pinVersion": "^1.6.1"
+    },
+    {
+      "label": "Pin @bufbuild for compatibility",
+      "packages": ["**"],
+      "dependencies": ["@bufbuild/**"],
+      "pinVersion": "^1.10.0"
     },
     {
       "label": "Use workspace protocol for local packages",

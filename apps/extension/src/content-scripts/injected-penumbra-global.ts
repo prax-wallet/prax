@@ -19,30 +19,19 @@
 
 import '@penumbra-zone/client/global';
 
-import { createPenumbraStateEvent, type PenumbraProvider } from '@penumbra-zone/client';
+import { createPenumbraStateEvent } from '@penumbra-zone/client/event';
+import type { PenumbraProvider } from '@penumbra-zone/client/provider';
 import { PenumbraState } from '@penumbra-zone/client/state';
 import { PenumbraSymbol } from '@penumbra-zone/client/symbol';
 
-import { PraxConnection } from '../message/prax';
 import {
   isPraxEndMessageEvent,
   isPraxFailureMessageEvent,
   isPraxPortMessageEvent,
-  PraxMessage,
   unwrapPraxMessageEvent,
-} from './message-event';
-
-const connectMessage = {
-  [PRAX]: PraxConnection.Connect,
-} satisfies PraxMessage<PraxConnection.Connect>;
-
-const disconnectMessage = {
-  [PRAX]: PraxConnection.Disconnect,
-} satisfies PraxMessage<PraxConnection.Disconnect>;
-
-const initMessage = {
-  [PRAX]: PraxConnection.Init,
-} satisfies PraxMessage<PraxConnection.Init>;
+} from './message/prax-message-event';
+import { PraxConnection } from './message/prax-connection';
+import { sendWindow } from './message/send-window';
 
 class PraxInjection {
   private static singleton?: PraxInjection = new PraxInjection();
@@ -51,25 +40,14 @@ class PraxInjection {
     return new PraxInjection().injection;
   }
 
-  private port?: MessagePort;
   private presentState: PenumbraState = PenumbraState.Disconnected;
   private manifestUrl = `${PRAX_ORIGIN}/manifest.json`;
   private stateEvents = new EventTarget();
 
   private injection: Readonly<PenumbraProvider> = Object.freeze({
-    /**
-     * Meet the 'request' method of the old page API to mitigate incompatibility
-     * with pd v0.80.0's bundled minifront. This prevents connection failure.
-     * @todo Remove when bundled frontends are updated beyond `a31d54a`
-     * @issue https://github.com/prax-wallet/web/issues/175
-     */
-    request: async () => {
-      await Promise.resolve(this.port ?? this.postConnectRequest());
-    },
-
-    connect: () => Promise.resolve(this.port ?? this.postConnectRequest()),
+    connect: () => this.postConnectRequest(),
     disconnect: () => this.postDisconnectRequest(),
-    isConnected: () => Boolean(this.port && this.presentState === PenumbraState.Connected),
+    isConnected: () => this.presentState === PenumbraState.Connected,
     state: () => this.presentState,
     manifest: String(this.manifestUrl),
     addEventListener: this.stateEvents.addEventListener.bind(this.stateEvents),
@@ -80,38 +58,47 @@ class PraxInjection {
     if (PraxInjection.singleton) {
       return PraxInjection.singleton;
     }
+
     void this.listenPortMessage();
-    window.postMessage(initMessage, '/');
+    sendWindow(PraxConnection.Init);
   }
 
-  private setConnected(port: MessagePort) {
-    this.port = port;
+  private setConnected() {
+    window.addEventListener('message', this.ambientEndListener);
     this.presentState = PenumbraState.Connected;
     this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private setDisconnected() {
-    this.port = undefined;
+    window.removeEventListener('message', this.ambientEndListener);
     this.presentState = PenumbraState.Disconnected;
     this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private setPending() {
-    this.port = undefined;
     this.presentState = PenumbraState.Pending;
     this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
   }
 
   private postConnectRequest() {
     const attempt = this.listenPortMessage();
-    window.postMessage(connectMessage, '/', []);
+    sendWindow(PraxConnection.Connect);
+    return attempt;
+  }
+
+  private postDisconnectRequest() {
+    const attempt = this.listenEndMessage();
+    sendWindow(PraxConnection.Disconnect);
     return attempt;
   }
 
   private listenPortMessage() {
-    this.setPending();
+    if (this.presentState !== PenumbraState.Connected) {
+      this.setPending();
+    }
 
     const connection = Promise.withResolvers<MessagePort>();
+
     const listener = (msg: MessageEvent<unknown>) => {
       if (msg.origin === window.origin) {
         if (isPraxPortMessageEvent(msg)) {
@@ -124,17 +111,23 @@ class PraxInjection {
       }
     };
 
+    window.addEventListener('message', listener);
+
     void connection.promise
-      .then(port => this.setConnected(port))
+      .then(() => this.setConnected())
       .catch(() => this.setDisconnected())
       .finally(() => window.removeEventListener('message', listener));
-    window.addEventListener('message', listener);
 
     return connection.promise;
   }
 
-  private postDisconnectRequest() {
+  private listenEndMessage() {
+    window.removeEventListener('message', this.ambientEndListener);
+
+    this.setDisconnected();
+
     const disconnection = Promise.withResolvers<void>();
+
     const listener = (msg: MessageEvent<unknown>) => {
       if (msg.origin === window.origin) {
         if (isPraxEndMessageEvent(msg)) {
@@ -147,14 +140,20 @@ class PraxInjection {
       }
     };
 
-    this.setDisconnected();
-    void disconnection.promise.finally(() => window.removeEventListener('message', listener));
     window.addEventListener('message', listener);
 
-    window.postMessage(disconnectMessage, '/');
+    void disconnection.promise.finally(() => window.removeEventListener('message', listener));
 
     return disconnection.promise;
   }
+
+  private ambientEndListener = (msg: MessageEvent<unknown>) => {
+    if (msg.origin === window.origin) {
+      if (isPraxEndMessageEvent(msg)) {
+        this.setDisconnected();
+      }
+    }
+  };
 }
 
 // inject prax

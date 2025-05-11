@@ -44,7 +44,7 @@ describe('v1 old local schema migrations', () => {
         custody: { encryptedSeedPhrase: { nonce: '', cipherText: '' } },
       },
     ];
-    const grpcEndpointVal = 'https://penumbra.stakewith.binary.builders';
+    const grpcEndpointVal = 'https://grpc.penumbra.silentvalidator.com';
     const frontendUrlVal = 'https://stake.with.starlingcyber.net';
     const passwordKeyPrintVal = { hash: 'xyz', salt: 'abc' };
     const fullSyncHeightVal = 13524524;

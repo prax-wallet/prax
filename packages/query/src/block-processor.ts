@@ -1,4 +1,4 @@
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetId, Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AuctionId } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import {
   PositionState,
@@ -6,7 +6,10 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { Action } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  Action,
+  Transaction,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
@@ -16,7 +19,7 @@ import {
   getExchangeRateFromValidatorInfoResponse,
   getIdentityKeyFromValidatorInfoResponse,
 } from '@penumbra-zone/getters/validator-info-response';
-import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
+import { addAmounts, toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/block-processor';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
@@ -31,7 +34,7 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
 import { RootQuerier } from './root-querier';
-import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 import { toPlainMessage } from '@bufbuild/protobuf';
 import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
@@ -40,6 +43,9 @@ import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { assetIdFromBaseDenom } from '@penumbra-zone/wasm/asset';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -405,7 +411,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // if a new record involves a state commitment, scan all block tx
     if (spentNullifiers.size || recordsByCommitment.size) {
-      // this is a network query
+      // compact block doesn't store transactions data, this query request it by rpc call
       const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
 
       // Filter down to transactions & note records in block relevant to user
@@ -420,7 +426,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // TODO: this is the second time we save these records, after "saveScanResult"
       await this.saveRecoveredCommitmentSources(recoveredSourceRecords);
 
-      await this.processTransactions(relevantTxs);
+      await this.processTransactions(relevantTxs, recordsByCommitment, compactBlock.epochIndex);
 
       // at this point txinfo can be generated and saved. this will resolve
       // pending broadcasts, and populate the transaction list.
@@ -590,7 +596,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   // Nullifier is published in network when a note is spent or swap is claimed.
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
-    const spentNullifiers = new Set<Nullifier>();
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
     const readOperations = [];
     const writeOperations = [];
 
@@ -614,8 +620,8 @@ export class BlockProcessor implements BlockProcessorInterface {
         continue;
       }
 
-      spentNullifiers.add(nullifier);
-
+      // if the nullifier in the compact block matches the spendable note payload's nullifier
+      // we decoded, then mark it as spent at the relavant block height.
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
         const writePromise = this.indexedDb.saveSpendableNote({
@@ -631,6 +637,8 @@ export class BlockProcessor implements BlockProcessorInterface {
         });
         writeOperations.push(writePromise);
       }
+
+      spentNullifiers.set(nullifier, record);
     }
 
     // Await all writes in parallel
@@ -641,14 +649,32 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   /**
    * Identify various pieces of data from the transaction that we need to save,
-   * such as metadata, liquidity positions, etc.
+   * such as metadata, liquidity positions, liquidity tournament votes and rewards, etc.
    */
-  private async processTransactions(txs: RelevantTx[]) {
-    for (const { data } of txs) {
+  private async processTransactions(
+    txs: RelevantTx[],
+    recordsByCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
+    epochIndex: bigint,
+  ) {
+    // Process individual actions in each relevant transaction
+    for (const { data, subaccount } of txs) {
       for (const { action } of data.body?.actions ?? []) {
-        await Promise.all([this.identifyAuctionNfts(action), this.identifyLpNftPositions(action)]);
+        await Promise.all([
+          this.identifyAuctionNfts(action),
+          this.identifyLpNftPositions(action, subaccount),
+        ]);
       }
     }
+
+    // For certain actions embedded in the transaction, it's preferable to process the transaction,
+    // for instance aggregating voting weight across multiple liquidity tournament (LQT) voting actions
+    // into a single vote before saving it to the database.
+    for (const { id, subaccount, data } of txs) {
+      await Promise.all([this.identifyLiquidityTournamentVotes(data, id, epochIndex, subaccount)]);
+    }
+
+    // Identify liquidity tournament rewards associated with votes in the current epoch.
+    await this.identifyLiquidityTournamentRewards(recordsByCommitment, epochIndex);
   }
 
   /**
@@ -671,6 +697,124 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   /**
+   * Identify liquidity tournament votes.
+   */
+  private async identifyLiquidityTournamentVotes(
+    transaction: Transaction,
+    transactionId: TransactionId,
+    epochIndex: bigint,
+    subaccount?: AddressIndex,
+  ) {
+    const totalVoteWeightByAssetId = new Map<AssetId, Amount>();
+    let incentivizedAsset: AssetId | undefined;
+
+    for (const { action } of transaction.body?.actions ?? []) {
+      if (action.case === 'actionLiquidityTournamentVote' && action.value.body?.value) {
+        const currentVoteAmount = action.value.body.value.amount;
+        const currentVoteAssetId = action.value.body.value.assetId;
+
+        if (!currentVoteAmount || !currentVoteAssetId) {
+          continue;
+        }
+
+        // Incentivized asset the votes are associated with.
+        const denom = action.value.body.incentivized?.denom;
+        if (denom) {
+          incentivizedAsset = assetIdFromBaseDenom(denom);
+        }
+
+        // Aggregate voting weight for each delegation token's asset ID.
+        const currentVoteTotalByAssetId =
+          totalVoteWeightByAssetId.get(currentVoteAssetId) ?? new Amount({ lo: 0n, hi: 0n });
+        const newVoteTotal = new Amount({
+          ...addAmounts(currentVoteTotalByAssetId, currentVoteAmount),
+        });
+        totalVoteWeightByAssetId.set(currentVoteAssetId, newVoteTotal);
+      }
+    }
+
+    // Save the aggregated vote for each assetId in the historical voting table, indexed by epoch.
+    for (const [delegationAssetId, voteWeight] of totalVoteWeightByAssetId.entries()) {
+      const totalVoteWeightValue = new Value({
+        amount: voteWeight,
+        assetId: delegationAssetId,
+      });
+
+      // One DB save per delegation asset ID, potentially spanning multiple actions within the same transaction.
+      // Initially, the voting reward will be empty.
+      if (incentivizedAsset) {
+        await this.indexedDb.saveLQTHistoricalVote(
+          incentivizedAsset,
+          epochIndex,
+          transactionId,
+          totalVoteWeightValue,
+          undefined,
+          undefined,
+          subaccount?.account,
+        );
+      }
+    }
+  }
+
+  /**
+   * Identify liquidity tournament rewards.
+   */
+  private async identifyLiquidityTournamentRewards(
+    recordsByCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
+    epochIndex: bigint,
+  ) {
+    // Collect all distinct reward-bearing notes – we're checking if the note records
+    // commitment source is from the liquidity tournament, indicating a reward.
+    const rewardRecords: SpendableNoteRecord[] = [];
+    for (const [, spendableNoteRecord] of recordsByCommitment) {
+      if (spendableNoteRecord.source?.source.case === 'lqt' && 'note' in spendableNoteRecord) {
+        if (spendableNoteRecord.note?.value) {
+          rewardRecords.push(spendableNoteRecord);
+        }
+      }
+    }
+
+    // If we found rewards, fetching the existing votes.
+    if (rewardRecords.length > 0) {
+      // Retrieve the existing liquidity tournament votes for the specified epoch.
+      for (const rewardValue of rewardRecords) {
+        const existingVotes = await this.indexedDb.getLQTHistoricalVotes(
+          epochIndex,
+          rewardValue.addressIndex?.account,
+        );
+
+        for (const existingVote of existingVotes) {
+          // This check rehydrates the reward value corresponding to the correct vote.
+          // If the reward asset ID from the SNR matches the existing vote’s asset ID,
+          // we can confidently apply the reward to that vote.
+          if (rewardValue.note?.value?.assetId?.equals(existingVote.VoteValue.assetId)) {
+            // Update the received reward for each corresponding vote in the epoch.
+            //
+            // Note: Each vote has an associated reward; however, the rewards are not cumulative —
+            // the same reward applies to all votes for a given delegation.
+            //
+            // For example, if a user delegates to multiple validators, their votes will be tracked
+            // separately per delegation. Each delegation may receive rewards in a different `delUM`
+            // denomination, depending on the validator it was delegated to.
+            //
+            // As a result, the corresponding rewards will be denominated separately, using the
+            // respective asset ID associated with each delegation's validator.
+            await this.indexedDb.saveLQTHistoricalVote(
+              existingVote.incentivizedAsset,
+              epochIndex,
+              existingVote.TransactionId,
+              existingVote.VoteValue,
+              rewardValue.note.value.amount,
+              existingVote.id,
+              existingVote.subaccount,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * during wasm tx info generation later, wasm independently queries idb for
    * asset metadata, so we have to pre-populate. LpNft position states aren't
    * known by the chain so aren't populated by identifyNewAssets
@@ -678,7 +822,7 @@ export class BlockProcessor implements BlockProcessorInterface {
    * - generate all possible position state metadata
    * - update idb
    */
-  private async identifyLpNftPositions(action: Action['action']) {
+  private async identifyLpNftPositions(action: Action['action'], subaccount?: AddressIndex) {
     if (action.case === 'positionOpen' && action.value.position) {
       for (const state of POSITION_STATES) {
         const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
@@ -693,12 +837,14 @@ export class BlockProcessor implements BlockProcessorInterface {
       await this.indexedDb.addPosition(
         computePositionId(action.value.position),
         action.value.position,
+        subaccount,
       );
     }
     if (action.case === 'positionClose' && action.value.positionId) {
       await this.indexedDb.updatePosition(
         action.value.positionId,
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        subaccount,
       );
     }
     if (action.case === 'positionWithdraw' && action.value.positionId) {
@@ -714,7 +860,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         penumbraAssetId: getAssetId(metadata),
       });
 
-      await this.indexedDb.updatePosition(action.value.positionId, positionState);
+      await this.indexedDb.updatePosition(action.value.positionId, positionState, subaccount);
     }
   }
 

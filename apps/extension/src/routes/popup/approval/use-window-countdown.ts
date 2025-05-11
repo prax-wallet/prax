@@ -5,9 +5,12 @@ import { useCountdown } from 'usehooks-ts';
  * A hook that counts down each second from a given number only when the window is focused.
  * If the window is out of focus, the countdown will reset and start from the beginning.
  */
-export const useWindowCountdown = (wait = 0) => {
+export const useWindowCountdown = () => {
   const [count, { startCountdown, stopCountdown, resetCountdown }] = useCountdown({
-    countStart: wait,
+    countStart: 0.5,
+    countStop: 0,
+    intervalMs: 500,
+    isIncrement: false,
   });
 
   const onFocus = () => {

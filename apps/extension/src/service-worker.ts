@@ -8,17 +8,23 @@
  * - session manager for rpc entry
  */
 
-// side-effectful import attaches listeners
-import './listeners';
+// listeners
+import { contentScriptConnectListener } from './message/listen/content-script-connect';
+import { contentScriptDisconnectListener } from './message/listen/content-script-disconnect';
+import { contentScriptInitListener } from './message/listen/content-script-init';
+import { internalRevokeListener } from './message/listen/internal-revoke';
+import { internalServiceListener } from './message/listen/internal-services';
+import { externalEasterEggListener } from './message/listen/external-easteregg';
 
 // all rpc implementations, local and proxy
 import { getRpcImpls } from './rpc';
 
 // adapter
-import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';
+import { ConnectRouter, createContextValues, Client } from '@connectrpc/connect';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
+import { assertValidSessionPort } from './senders/session';
 
 // context
 import { approverCtx } from '@penumbra-zone/services/ctx/approver';
@@ -27,28 +33,31 @@ import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
 import { skCtx } from '@penumbra-zone/services/ctx/spend-key';
 import { approveTransaction } from './approve-transaction';
 import { getFullViewingKey } from './ctx/full-viewing-key';
-import { getWalletId } from './ctx/wallet-id';
 import { getSpendKey } from './ctx/spend-key';
+import { getWalletId } from './ctx/wallet-id';
 
 // context clients
-import { StakeService, CustodyService } from '@penumbra-zone/protobuf';
+import { CustodyService, StakeService } from '@penumbra-zone/protobuf';
 import { custodyClientCtx } from '@penumbra-zone/services/ctx/custody-client';
 import { stakeClientCtx } from '@penumbra-zone/services/ctx/stake-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 import { internalTransportOptions } from './transport-options';
 
 // idb, querier, block processor
-import { startWalletServices } from './wallet-services';
 import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
+import type { Services } from '@repo/context';
+import { startWalletServices } from './wallet-services';
 
 import { backOff } from 'exponential-backoff';
 
+let walletServices: Promise<Services>;
+
 const initHandler = async () => {
-  const walletServices = startWalletServices();
+  walletServices = startWalletServices();
   const rpcImpls = await getRpcImpls();
 
-  let custodyClient: PromiseClient<typeof CustodyService> | undefined;
-  let stakeClient: PromiseClient<typeof StakeService> | undefined;
+  let custodyClient: Client<typeof CustodyService> | undefined;
+  let stakeClient: Client<typeof StakeService> | undefined;
 
   return connectChannelAdapter({
     jsonOptions,
@@ -95,4 +104,34 @@ const handler = await backOff(() => initHandler(), {
   },
 });
 
-CRSessionManager.init(PRAX, handler);
+CRSessionManager.init(PRAX, handler, assertValidSessionPort);
+
+// listen for content script activity
+chrome.runtime.onMessage.addListener(contentScriptConnectListener);
+chrome.runtime.onMessage.addListener(contentScriptDisconnectListener);
+chrome.runtime.onMessage.addListener(contentScriptInitListener);
+
+// listen for internal revoke controls
+chrome.runtime.onMessage.addListener(internalRevokeListener);
+
+// listen for internal service controls
+chrome.runtime.onMessage.addListener((req, sender, respond) =>
+  internalServiceListener(walletServices, req, sender, respond),
+);
+
+// listen for external messages
+chrome.runtime.onMessageExternal.addListener(externalEasterEggListener);
+
+// https://developer.chrome.com/docs/extensions/reference/api/alarms
+void chrome.alarms.create('blockSync', {
+  periodInMinutes: 30,
+  delayInMinutes: 0,
+});
+
+chrome.alarms.onAlarm.addListener(alarm => {
+  if (alarm.name === 'blockSync') {
+    if (globalThis.__DEV__) {
+      console.info('Background sync scheduled');
+    }
+  }
+});

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { sample } from 'lodash';
-import { createPromiseClient, Transport } from '@connectrpc/connect';
+import { createClient, Transport } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
 import { useStore } from '../state';
@@ -42,7 +42,7 @@ export const fetchBlockHeightWithTimeout = async (
   transport = createGrpcWebTransport({ baseUrl: grpcEndpoint }),
   timeoutMs = 3000,
 ): Promise<number> => {
-  const tendermintClient = createPromiseClient(TendermintProxyService, transport);
+  const tendermintClient = createClient(TendermintProxyService, transport);
 
   const result = await tendermintClient.getStatus({}, { signal: AbortSignal.timeout(timeoutMs) });
   if (!result.syncInfo) {
@@ -53,7 +53,7 @@ export const fetchBlockHeightWithTimeout = async (
 
 // Fetch the block height from a specific RPC endpoint.
 export const fetchBlockHeight = async (grpcEndpoint: string): Promise<number> => {
-  const tendermintClient = createPromiseClient(
+  const tendermintClient = createClient(
     TendermintProxyService,
     createGrpcWebTransport({ baseUrl: grpcEndpoint }),
   );

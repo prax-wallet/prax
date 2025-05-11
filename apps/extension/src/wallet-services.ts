@@ -1,15 +1,13 @@
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { createPromiseClient } from '@connectrpc/connect';
+import { createClient } from '@connectrpc/connect';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { localExtStorage } from './storage/local';
 import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
 import { Services } from '@repo/context';
-import { ServicesMessage } from './message/services';
 import { WalletServices } from '@penumbra-zone/types/services';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { isInternalSender } from './senders/internal';
 
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
@@ -27,21 +25,24 @@ export const startWalletServices = async () => {
     walletCreationBlockHeight,
   });
 
-  const { blockProcessor, indexedDb } = await services.getWalletServices();
-  void syncLastBlockToStorage({ indexedDb });
-  attachServiceControlListener({ blockProcessor, indexedDb });
+  void syncLastBlockToStorage(await services.getWalletServices());
 
   return services;
 };
 
 /**
- * Get the chain id from local storage, or the rpc endpoint if no chain id is in
- * local storage.
+ * Get chainId from the rpc endpoint, or fall back to chainId from storage.
+ *
+ * It's possible that the remote endpoint may suddenly serve a new chainId.
+ * @see https://github.com/prax-wallet/prax/pull/65
  */
 const getChainId = async (baseUrl: string) => {
+  const serviceClient = createClient(AppService, createGrpcWebTransport({ baseUrl }));
   const params =
-    (await createPromiseClient(AppService, createGrpcWebTransport({ baseUrl })).appParameters({}))
-      .appParameters ??
+    (await serviceClient.appParameters({}).then(
+      ({ appParameters }) => appParameters,
+      () => undefined,
+    )) ??
     (await localExtStorage
       .get('params')
       .then(jsonParams => (jsonParams ? AppParameters.fromJsonString(jsonParams) : undefined)));
@@ -69,43 +70,3 @@ const syncLastBlockToStorage = async ({ indexedDb }: Pick<WalletServices, 'index
     await localExtStorage.set('fullSyncHeight', Number(update.value));
   }
 };
-
-/**
- * Listen for service control messages
- */
-const attachServiceControlListener = ({
-  blockProcessor,
-  indexedDb,
-}: Pick<WalletServices, 'blockProcessor' | 'indexedDb'>) =>
-  chrome.runtime.onMessage.addListener((req, sender, respond) => {
-    if (!isInternalSender(sender) || !(req in ServicesMessage)) {
-      return false;
-    }
-    switch (ServicesMessage[req as keyof typeof ServicesMessage]) {
-      case ServicesMessage.ClearCache:
-        void (async () => {
-          blockProcessor.stop('clearCache');
-          await Promise.allSettled([
-            localExtStorage.remove('params'),
-            indexedDb.clear(),
-            localExtStorage.remove('fullSyncHeight'),
-          ]);
-        })()
-          .then(() => respond())
-          .finally(() => chrome.runtime.reload());
-        break;
-      case ServicesMessage.ChangeNumeraires:
-        void (async () => {
-          const newNumeraires = await localExtStorage.get('numeraires');
-          blockProcessor.setNumeraires(newNumeraires.map(n => AssetId.fromJsonString(n)));
-          /**
-           * Changing numeraires causes all BSOD-based prices to be removed.
-           * This means that some new blocks will need to be scanned to get prices for the new numeraires.
-           * It also means that immediately after changing numeraires user will not see any equivalent BSOD-based prices.
-           */
-          await indexedDb.clearSwapBasedPrices();
-        })().then(() => respond());
-        break;
-    }
-    return true;
-  });

@@ -16,6 +16,7 @@ import { FungibleTokenPacketData } from '@penumbra-zone/protobuf/penumbra/core/c
 import { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { parseIntoAddr } from '@penumbra-zone/types/address';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const BLANK_TX_SOURCE = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
@@ -23,6 +24,7 @@ export const BLANK_TX_SOURCE = new CommitmentSource({
 
 /**
  * Identifies if a tx has a relay action of which the receiver is the user.
+ *
  * In terms of minting notes in the shielded pool, three IBC actions are relevant:
  * - MsgRecvPacket (containing an ICS20 inbound transfer)
  * - MsgAcknowledgement (containing an error acknowledgement, thus triggering a refund on our end)
@@ -31,47 +33,49 @@ export const BLANK_TX_SOURCE = new CommitmentSource({
 const hasRelevantIbcRelay = (
   tx: Transaction,
   isControlledAddr: ViewServerInterface['isControlledAddress'],
-) => {
-  return tx.body?.actions.some(action => {
-    if (action.action.case !== 'ibcRelayAction') {
+): boolean => {
+  return (
+    tx.body?.actions.some(action => {
+      if (action.action.case !== 'ibcRelayAction') {
+        return false;
+      }
+
+      const rawAction = action.action.value.rawAction;
+      if (!rawAction) {
+        return false;
+      }
+
+      if (rawAction.is(MsgRecvPacket.typeName)) {
+        const recvPacket = new MsgRecvPacket();
+        rawAction.unpackTo(recvPacket);
+        if (!recvPacket.packet) {
+          return false;
+        }
+        return isControlledByUser(recvPacket.packet, isControlledAddr, 'receiver');
+      }
+
+      if (rawAction.is(MsgAcknowledgement.typeName)) {
+        const ackPacket = new MsgAcknowledgement();
+        rawAction.unpackTo(ackPacket);
+        if (!ackPacket.packet) {
+          return false;
+        }
+        return isControlledByUser(ackPacket.packet, isControlledAddr, 'sender');
+      }
+
+      if (rawAction.is(MsgTimeout.typeName)) {
+        const timeout = new MsgTimeout();
+        rawAction.unpackTo(timeout);
+        if (!timeout.packet) {
+          return false;
+        }
+        return isControlledByUser(timeout.packet, isControlledAddr, 'sender');
+      }
+
+      // Not a potentially relevant ibc relay action
       return false;
-    }
-
-    const rawAction = action.action.value.rawAction;
-    if (!rawAction) {
-      return false;
-    }
-
-    if (rawAction.is(MsgRecvPacket.typeName)) {
-      const recvPacket = new MsgRecvPacket();
-      rawAction.unpackTo(recvPacket);
-      if (!recvPacket.packet) {
-        return false;
-      }
-      return isControlledByUser(recvPacket.packet, isControlledAddr, 'receiver');
-    }
-
-    if (rawAction.is(MsgAcknowledgement.typeName)) {
-      const ackPacket = new MsgAcknowledgement();
-      rawAction.unpackTo(ackPacket);
-      if (!ackPacket.packet) {
-        return false;
-      }
-      return isControlledByUser(ackPacket.packet, isControlledAddr, 'sender');
-    }
-
-    if (rawAction.is(MsgTimeout.typeName)) {
-      const timeout = new MsgTimeout();
-      rawAction.unpackTo(timeout);
-      if (!timeout.packet) {
-        return false;
-      }
-      return isControlledByUser(timeout.packet, isControlledAddr, 'sender');
-    }
-
-    // Not a potentially relevant ibc relay action
-    return false;
-  });
+    }) ?? false
+  );
 };
 
 // Determines if the packet data points to the user as the receiver
@@ -139,6 +143,7 @@ export const getNullifiersFromActions = (tx: Transaction): Nullifier[] => {
 export interface RelevantTx {
   id: TransactionId;
   data: Transaction;
+  subaccount?: AddressIndex;
 }
 
 type RecoveredSourceRecords = (SpendableNoteRecord | SwapRecord)[];
@@ -147,28 +152,69 @@ const generateTxId = async (tx: Transaction): Promise<TransactionId> => {
   return new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
 };
 
+const isSpendableNoteRecord = (
+  note: SpendableNoteRecord | SwapRecord,
+): note is SpendableNoteRecord => {
+  return note.getType().typeName === SpendableNoteRecord.typeName;
+};
+const getAddressIndexFromNote = (
+  note: SpendableNoteRecord | SwapRecord,
+): AddressIndex | undefined => {
+  if (isSpendableNoteRecord(note)) {
+    return note.addressIndex;
+  }
+  return undefined;
+};
+
+/**
+ * Takes a transaction and compares its actions to previously-found nullifiers and state commitments,
+ * which point to SpendableNoteRecords and SwapRecords. If matches, creates txId and tries to get a subaccount.
+ */
 const searchRelevant = async (
   tx: Transaction,
-  spentNullifiers: Set<Nullifier>,
+  spentNullifiers: Map<Nullifier, SpendableNoteRecord | SwapRecord>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
   isControlledAddr: ViewServerInterface['isControlledAddress'],
 ): Promise<
   { relevantTx: RelevantTx; recoveredSourceRecords: RecoveredSourceRecords } | undefined
 > => {
-  let txId: TransactionId | undefined; // If set, that means this tx is relevant and should be returned to the caller
+  let txId: TransactionId | undefined;
+  let subaccount: AddressIndex | undefined;
   const recoveredSourceRecords: RecoveredSourceRecords = [];
 
+  // we need to identify which transaction is specifically relevant to the user. We check,
+  // known nullifiers and state commitments that we knew were ours. Recall that we maintain
+  // a mapping between nullifiers and state commitments to their associated SpendableNoteRecords and SwapRecords.
+  // We compared these known nullifiers and state commitments against those embedded in transaction actions,
+  // then rehydrated the relevant transaction sources for the SNRs and returned the relevant transaction.
+  //
+  // We checked nullifiers in [spend, swapClaim] actions and state commitments in [output, swap, swapClaim] actions.
+  // However, if you inspect the intersection of these actions, you'll notice that spends will always be associated
+  // with outputs (expect for spend), and swapClaims contain both nullifiers and commitments. Therefore, we don't need
+  // to check nullifiers? But in fact, we need nullifiers because what if for instance we sent our entire balance to
+  // another external account, which will only produce spends (and not outputs) relevent to us.
+  //
+  // We only need to rehydrate the transaction sources for SNRs, as the other source variants (eg. LQT) are already populated.
+
+  // matches spend/swapClaim transaction actions with nullifiers
   const txNullifiers = getNullifiersFromActions(tx);
-  for (const spentNullifier of spentNullifiers) {
-    if (txNullifiers.some(txNullifier => spentNullifier.equals(txNullifier))) {
+  for (const [spentNullifier, spendableNoteRecord] of spentNullifiers) {
+    const nullifier = txNullifiers.find(txNullifier => spentNullifier.equals(txNullifier));
+    if (nullifier) {
       txId ??= await generateTxId(tx);
+      subaccount = getAddressIndexFromNote(spendableNoteRecord);
     }
   }
 
+  // matches transaction actions [output, swap, swapClaim] with state commitments
   const txCommitments = getCommitmentsFromActions(tx);
   for (const [stateCommitment, spendableNoteRecord] of commitmentRecords) {
     if (txCommitments.some(txCommitment => stateCommitment.equals(txCommitment))) {
+      // the nullish coalescing operator allows us to skip recomputation if the transaction
+      // hash for the corresponding spendableNoteRecord has already been computed, as
+      // all spendableNoteRecord's checked here are associated with the same transaction.
       txId ??= await generateTxId(tx);
+      subaccount = getAddressIndexFromNote(spendableNoteRecord);
 
       // Blank sources can be recovered by associating them with the transaction
       if (BLANK_TX_SOURCE.equals(spendableNoteRecord.source)) {
@@ -181,13 +227,15 @@ const searchRelevant = async (
     }
   }
 
+  // finds if either source or destination of an IBC relay action is controlled by the user
   if (hasRelevantIbcRelay(tx, isControlledAddr)) {
     txId ??= await generateTxId(tx);
   }
 
+  // if set, that means this tx is relevant and should be returned to the caller
   if (txId) {
     return {
-      relevantTx: { id: txId, data: tx },
+      relevantTx: { id: txId, data: tx, subaccount },
       recoveredSourceRecords,
     };
   }
@@ -195,10 +243,12 @@ const searchRelevant = async (
   return undefined;
 };
 
-// identify transactions that involve a new record by comparing nullifiers and state commitments
-// also returns records with recovered sources
+/**
+ * Identifies transactions relevant to a user by comparing nullifiers and state commitments.
+ * Also returns records with recovered sources.
+ */
 export const identifyTransactions = async (
-  spentNullifiers: Set<Nullifier>,
+  spentNullifiers: Map<Nullifier, SpendableNoteRecord | SwapRecord>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
   blockTx: Transaction[],
   isControlledAddr: ViewServerInterface['isControlledAddress'],

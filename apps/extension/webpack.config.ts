@@ -70,7 +70,7 @@ export default ({
             keepProfileChanges: Boolean(CHROMIUM_PROFILE),
             profileCreateIfMissing: Boolean(CHROMIUM_PROFILE),
             sourceDir: options.output.path,
-            startUrl: 'https://localhost:5173/',
+            startUrl: 'http://localhost:5173/',
           });
           this.webExtRun.registerCleanup(() => (this.webExtRun = undefined));
         },
@@ -94,7 +94,7 @@ export default ({
               // --ignore-scripts because syncpack doesn't like to run under
               // webpack for some reason. watch out for post-install scripts that
               // dependencies might need.
-              ['-w', 'install', '--ignore-scripts'],
+              ['-w', 'install', '--ignore-scripts', '--offline'],
               { stdio: 'inherit' },
             );
             pnpmInstall.on('exit', code => {
@@ -112,9 +112,8 @@ export default ({
 
   return {
     entry: {
-      'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
+      'injected-session': path.join(injectDir, 'injected-session.ts'),
       'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
-      'injected-request-listener': path.join(injectDir, 'injected-request-listener.ts'),
       'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
       'page-root': path.join(entryDir, 'page-root.tsx'),
       'popup-root': path.join(entryDir, 'popup-root.tsx'),
@@ -129,9 +128,8 @@ export default ({
       splitChunks: {
         chunks: chunk => {
           const filesNotToChunk = [
-            'injected-connection-port',
+            'injected-session',
             'injected-penumbra-global',
-            'injected-request-listner',
             'service-worker',
             'wasm-build-action',
           ];
@@ -228,7 +226,7 @@ export default ({
       // watch tarballs for changes
       WEBPACK_WATCH && new WatchExternalFilesPlugin({ files: localPackages }),
       WEBPACK_WATCH && PnpmInstallPlugin,
-      CHROMIUM_PROFILE && WebExtReloadPlugin,
+      WEBPACK_WATCH && CHROMIUM_PROFILE && WebExtReloadPlugin,
     ],
     experiments: {
       asyncWebAssembly: true,

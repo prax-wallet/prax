@@ -1,4 +1,4 @@
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { createClient } from './utils';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
@@ -6,7 +6,7 @@ import { AppService } from '@penumbra-zone/protobuf';
 import type { AppQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class AppQuerier implements AppQuerierInterface {
-  private readonly client: PromiseClient<typeof AppService>;
+  private readonly client: Client<typeof AppService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, AppService);

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Prax wallet BETA",
-  "version": "15.0.0",
+  "version": "18.2.0",
   "description": "THIS EXTENSION IS FOR BETA TESTING",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhxDXNrlRB72kw+MeeofiBvJuuSkcMI+ZshYS9jve+Zhm0YlYUF/3mriz1D7jdK/U11EjKYMYCTQQEDLmSdQ8Q52ur3ei4u4gjyEpl/+QnjciR7msoziKH48Bia1U+wd53eW3TWNP/vpSJiBsAfOisEPox6w4lC5a03aCXV3xtkzfW0rebZrOLf1xhZD8mc4N9LU289E3cYRlBmfI4qxkBM1r7t9N4KsXle3VWXSn18joKzgzAWK+VhZtZu3xrwMQGpUqn+KyYFvawSGmYdDsnT6y0KS96V3CPp6rQHNfjItB/F4d1JQv1tskc959jiK9CuGbU57D9JHJ+1C9aOb0BwIDAQAB",
   "minimum_chrome_version": "119",
@@ -17,8 +17,9 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://localhost/*"],
-      "js": ["injected-connection-port.js", "injected-request-listener.js"],
-      "run_at": "document_start"
+      "js": ["injected-session.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED"
     },
     {
       "matches": ["https://*/*", "http://localhost/*"],
@@ -40,7 +41,7 @@
       "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["storage", "unlimitedStorage", "offscreen"],
+  "permissions": ["storage", "unlimitedStorage", "offscreen", "alarms"],
   "host_permissions": ["<all_urls>"],
   "externally_connectable": {
     "matches": ["<all_urls>"]
