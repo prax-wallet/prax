@@ -181,23 +181,24 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (this.compactFrontierBlockHeight && this.compactFrontierBlockHeight >= currentHeight) {
       // Pull the app parameters from the full node, which other parameter setting (gas prices
       // for instance) will be derived from, rather than making additional network requests.
-      let appParams = await this.querier.app.appParams();
+      const appParams = await this.querier.app.appParams();
       await this.indexedDb.saveAppParams(appParams);
 
       if (appParams.feeParams?.fixedGasPrices) {
         await this.indexedDb.saveGasPrices({
-          ...toPlainMessage(appParams.feeParams?.fixedGasPrices),
+          ...toPlainMessage(appParams.feeParams.fixedGasPrices),
           assetId: toPlainMessage(this.stakingAssetId),
         });
       }
 
       if (appParams.feeParams?.fixedAltGasPrices) {
-        for (const altGasFee of appParams.feeParams?.fixedAltGasPrices) {
-          if (altGasFee && altGasFee.assetId)
+        for (const altGasFee of appParams.feeParams.fixedAltGasPrices) {
+          if (altGasFee.assetId) {
             await this.indexedDb.saveGasPrices({
               ...toPlainMessage(altGasFee),
               assetId: toPlainMessage(altGasFee.assetId),
             });
+          }
         }
       }
 
@@ -205,7 +206,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveFmdParams(
           new FmdParameters({
             precisionBits: 0,
-            asOfBlockHeight: appParams.shieldedPoolParams?.fmdMetaParams.fmdGracePeriodBlocks,
+            asOfBlockHeight: appParams.shieldedPoolParams.fmdMetaParams.fmdGracePeriodBlocks,
           }),
         );
       }

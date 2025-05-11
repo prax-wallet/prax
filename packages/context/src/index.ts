@@ -71,7 +71,7 @@ export class Services implements ServicesInterface {
     // 'fullSyncHeight' will always be undefined after onboarding independent
     // of the wallet type. On subsequent service worker inits, the field will
     // be defined. The additional cost paid here is a single storage access.
-    let fullSyncHeight = await indexedDb.getFullSyncHeight();
+    const fullSyncHeight = await indexedDb.getFullSyncHeight();
 
     // Gate the type of initialization we perform here:
     //
@@ -93,7 +93,7 @@ export class Services implements ServicesInterface {
     if (!fullSyncHeight && walletCreationBlockHeight && compactFrontierBlockHeight) {
       // Request frontier snapshot from full node (~1KB payload) and initialize
       // the view server from that snapshot.
-      let compact_frontier = await querier.sct.sctFrontier(
+      const compact_frontier = await querier.sct.sctFrontier(
         new SctFrontierRequest({ withProof: false }),
       );
       await indexedDb.saveFullSyncHeight(compact_frontier.height);
