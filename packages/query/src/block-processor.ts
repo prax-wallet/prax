@@ -244,7 +244,9 @@ export class BlockProcessor implements BlockProcessorInterface {
           }
 
           // critically, we yield the JS event loop after each chunk iteration.
-          await new Promise(r => setTimeout(r, 0));
+          await new Promise<void>(resolve => {
+            setTimeout(resolve, 0);
+          });
         }
       }
     }
