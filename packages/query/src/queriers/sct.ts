@@ -3,8 +3,6 @@ import { createClient } from './utils';
 import { SctService } from '@penumbra-zone/protobuf';
 import { SctQuerierInterface } from '@penumbra-zone/types/querier';
 import {
-  SctFrontierRequest,
-  SctFrontierResponse,
   TimestampByHeightRequest,
   TimestampByHeightResponse,
   SctFrontierRequest,
