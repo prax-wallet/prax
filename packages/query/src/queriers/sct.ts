@@ -3,10 +3,10 @@ import { createClient } from './utils';
 import { SctService } from '@penumbra-zone/protobuf';
 import { SctQuerierInterface } from '@penumbra-zone/types/querier';
 import {
-  SctFrontierRequest,
-  SctFrontierResponse,
   TimestampByHeightRequest,
   TimestampByHeightResponse,
+  SctFrontierRequest,
+  SctFrontierResponse,
 } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 export class SctQuerier implements SctQuerierInterface {

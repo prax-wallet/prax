@@ -36,10 +36,11 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   const { rpcs, frontends } = await chainRegistryClient.remote.globals();
 
   // Define a canconcial default frontend
-  const defaultFront = 'Radiant Commons';
+  const defaultFrontend = 'Radiant Commons';
+  const defaultDex = 'https://dex.penumbra.zone';
 
   let selectedFrontend: EntityMetadata | undefined = frontends.find(
-    frontend => frontend.name === defaultFront,
+    frontend => frontend.name === defaultFrontend,
   );
 
   // If default frontend is not found, randomly select a frontend
@@ -69,7 +70,10 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
 
   await localExtStorage.set('grpcEndpoint', rpc);
-  await localExtStorage.set('frontendUrl', selectedFrontend.url);
+
+  // override default frontend url with redirection to veil
+  await localExtStorage.set('frontendUrl', defaultDex);
+
   await localExtStorage.set(
     'numeraires',
     numeraires.map(n => n.toJsonString()),
