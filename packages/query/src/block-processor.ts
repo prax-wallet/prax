@@ -225,7 +225,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       }
 
       // Finally, persist the frontier to IndexedDB.
-      let flush = this.viewServer.flushUpdates();
+      const flush = this.viewServer.flushUpdates();
       await this.indexedDb.saveScanResult(flush);
     }
 
