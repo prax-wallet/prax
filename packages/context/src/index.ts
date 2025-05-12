@@ -90,20 +90,32 @@ export class Services implements ServicesInterface {
     //   will initiate genesis sync, taking advantage of the existing "wallet birthday"
     //   acceleration techniques.
 
+    // note: we try-catch the snapshot initialization to fallback to normal initialization
+    // if it fails for any reason to not block onboarding completion.
     if (!fullSyncHeight && walletCreationBlockHeight && compactFrontierBlockHeight) {
-      // Request frontier snapshot from full node (~1KB payload) and initialize
-      // the view server from that snapshot.
-      const compact_frontier = await querier.sct.sctFrontier(
-        new SctFrontierRequest({ withProof: false }),
-      );
-      await indexedDb.saveFullSyncHeight(compact_frontier.height);
+      try {
+        // Request frontier snapshot from full node (~1KB payload) and initialize
+        // the view server from that snapshot.
+        const compact_frontier = await querier.sct.sctFrontier(
+          new SctFrontierRequest({ withProof: false }),
+        );
 
-      viewServer = await ViewServer.initialize_from_snapshot({
-        fullViewingKey,
-        getStoredTree: () => indexedDb.getStateCommitmentTree(),
-        idbConstants: indexedDb.constants(),
-        compact_frontier,
-      });
+        await indexedDb.saveFullSyncHeight(compact_frontier.height);
+
+        viewServer = await ViewServer.initialize_from_snapshot({
+          fullViewingKey,
+          getStoredTree: () => indexedDb.getStateCommitmentTree(),
+          idbConstants: indexedDb.constants(),
+          compact_frontier,
+        });
+      } catch (error) {
+        // Fall back to normal initialization
+        viewServer = await ViewServer.initialize({
+          fullViewingKey,
+          getStoredTree: () => indexedDb.getStateCommitmentTree(),
+          idbConstants: indexedDb.constants(),
+        });
+      }
     } else {
       // Initialize the view server from existing IndexedDB storage.
       viewServer = await ViewServer.initialize({
