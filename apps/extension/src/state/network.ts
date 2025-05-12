@@ -8,6 +8,7 @@ export interface NetworkSlice {
   chainId?: string;
   setGRPCEndpoint: (endpoint: string) => Promise<void>;
   clearWalletCreationHeight: () => Promise<void>;
+  clearCompactFrontierBlockHeight: () => Promise<void>;
   setChainId: (chainId: string) => void;
 }
 
@@ -27,6 +28,9 @@ export const createNetworkSlice =
       },
       clearWalletCreationHeight: async () => {
         await local.remove('walletCreationBlockHeight');
+      },
+      clearCompactFrontierBlockHeight: async () => {
+        await local.remove('compactFrontierBlockHeight');
       },
       setChainId: (chainId: string) => {
         set(state => {

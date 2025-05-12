@@ -1,6 +1,4 @@
 import { PopupLoaderData } from '../routes/popup/home';
-import { useStore } from '../state';
-import { networkSelector } from '../state/network';
 import { useLoaderData } from 'react-router-dom';
 import { useLatestBlockHeight } from './latest-block-height';
 
@@ -19,10 +17,10 @@ const tryGetMax = (a?: number, b?: number): number | undefined => {
 // There is a slight delay with Zustand loading up the last block synced.
 // To prevent the screen flicker, we use a loader to read it from chrome.storage.local.
 const useFullSyncHeight = (): number | undefined => {
+  // Always fetch the block height from storage to indicate current sync progress.
   const { fullSyncHeight: localHeight } = useLoaderData() as PopupLoaderData;
-  const { fullSyncHeight: memoryHeight } = useStore(networkSelector);
 
-  return tryGetMax(localHeight, memoryHeight);
+  return localHeight;
 };
 
 export const useSyncProgress = () => {
