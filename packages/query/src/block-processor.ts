@@ -78,6 +78,7 @@ interface ProcessBlockParams {
   compactBlock: CompactBlock;
   latestKnownBlockHeight: bigint;
   skipTrialDecrypt?: boolean;
+  skipScanBlock?: boolean;
 }
 
 const POSITION_STATES: PositionState[] = [
@@ -152,6 +153,12 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async syncAndStore() {
     const PRE_GENESIS_SYNC_HEIGHT = -1n;
 
+    // Chunking policy is ~3x larger than the maximum number of state payloads that are supported
+    // inside a compact block (~100KB). We don't neccessarily need to determine the optimal chunk
+    // size, rather it needs to be sufficiently small that devices can handle crossing the syncing
+    // hurdle of processing the genesis block.
+    const GENESIS_CHUNK_SIZE = 500;
+
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? PRE_GENESIS_SYNC_HEIGHT;
 
@@ -183,17 +190,64 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
 
-        // Set the trial decryption flag for the genesis compact block
+        // determine whether to skip trial decryption at genesis
         const skipTrialDecrypt = shouldSkipTrialDecrypt(
           this.walletCreationBlockHeight,
           currentHeight,
         );
 
-        await this.processBlock({
-          compactBlock: this.genesisBlock,
-          latestKnownBlockHeight: latestKnownBlockHeight,
-          skipTrialDecrypt,
-        });
+        // genesis sync requires crossing the wasm-boundary and performing heavy cryptographic operations
+        // on ~32K state payloads in the compact block. Consequently, the block processor can't yield to
+        // the event loop to finish setting up the listeners responsible for initializing neccessary content
+        // scripts while performing this operation, leaving the service worker continuously busy with genesis
+        // block sync.
+        //
+        // to prevent blocking the single-threaded service worker runtime, iterate through the genesis block's
+        // state payloads in manageable chunks. This approach segments the computationally intensive tasks of
+        // trial decryption and merkle poseidon hashing.
+        for (
+          let start = 0;
+          start < this.genesisBlock.statePayloads.length;
+          start += GENESIS_CHUNK_SIZE
+        ) {
+          // slice out a subset of state payloads
+          const chunkedPayloads = this.genesisBlock.statePayloads.slice(
+            start,
+            start + GENESIS_CHUNK_SIZE,
+          );
+
+          const chunkedBlock = new CompactBlock({
+            ...toPlainMessage(this.genesisBlock),
+            statePayloads: chunkedPayloads,
+          });
+
+          // trial decrypts a chunk, according to some chunking policy, of the genesis block.
+          await this.viewServer.scanGenesisChunk(BigInt(start), chunkedBlock, skipTrialDecrypt);
+
+          // after trial decrypting all the chunks, check if this is the last chunk
+          // in the batch.
+          if (start + GENESIS_CHUNK_SIZE >= this.genesisBlock.statePayloads.length) {
+            // processes the accumulated genesis notes by constructing the state commitment tree
+            // and persisting relevant transaction data.
+            await this.viewServer.genesisAdvice(this.genesisBlock);
+
+            // process the compact block as normal, with the only difference being that we can avoid rescanning
+            // the compact black again and skip that operation. Additionally, we enforce that regardless of the
+            // standard flushing conditions, we *always* flush the genesis block to storage for safety. This will
+            // eventually need to be done anyways, so might as well flush directly after processing the entire block.
+            await this.processBlock({
+              compactBlock: this.genesisBlock,
+              latestKnownBlockHeight: latestKnownBlockHeight,
+              skipTrialDecrypt,
+              skipScanBlock: true,
+            });
+          }
+
+          // critically, we yield the JS event loop after each chunk iteration.
+          await new Promise<void>(resolve => {
+            setTimeout(resolve, 0);
+          });
+        }
       }
     }
 
@@ -211,7 +265,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      // Set the trial decryption flag for all other compact blocks
+      // set the trial decryption flag for all other compact blocks
       const skipTrialDecrypt = shouldSkipTrialDecrypt(
         this.walletCreationBlockHeight,
         currentHeight,
@@ -234,11 +288,14 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  // logic for processing a compact block
+  /**
+   * Logic for processing a compact block.
+   */
   private async processBlock({
     compactBlock,
     latestKnownBlockHeight,
     skipTrialDecrypt = false,
+    skipScanBlock = false,
   }: ProcessBlockParams) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
@@ -265,7 +322,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     // - decrypts new notes
     // - decrypts new swaps
     // - updates idb with advice
-    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, skipTrialDecrypt);
+    const scannerWantsFlush = skipScanBlock
+      ? true
+      : await this.viewServer.scanBlock(compactBlock, skipTrialDecrypt);
 
     // flushing is slow, avoid it until
     // - wasm says
