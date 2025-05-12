@@ -222,11 +222,7 @@ export class BlockProcessor implements BlockProcessorInterface {
           });
 
           // trial decrypts a chunk, according to some chunking policy, of the genesis block.
-          await this.viewServer.trialDecryptGenesisChunk(
-            BigInt(start),
-            chunkedBlock,
-            skipTrialDecrypt,
-          );
+          await this.viewServer.scanGenesisChunk(BigInt(start), chunkedBlock, skipTrialDecrypt);
 
           // after trial decrypting all the chunks, check if this is the last chunk
           // in the batch.
