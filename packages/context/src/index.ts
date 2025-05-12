@@ -108,7 +108,7 @@ export class Services implements ServicesInterface {
           idbConstants: indexedDb.constants(),
           compact_frontier,
         });
-      } catch (error) {
+      } catch {
         // Fall back to normal initialization
         viewServer = await ViewServer.initialize({
           fullViewingKey,
