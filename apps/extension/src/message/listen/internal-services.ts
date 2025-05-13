@@ -25,6 +25,14 @@ export const internalServiceListener = (
           localExtStorage.remove('params'),
           indexedDb.clear(),
           localExtStorage.remove('fullSyncHeight'),
+
+          // Side-effect of resetting the cache strips the database and resets the user state.
+          // This flag gates whether the wallet pulls the 'latest' state commitment tree frontier
+          // from the full node, and removing this flag is neccessary to prevent that. On cache
+          // resets during its lifecycle, the wallet will still use the 'walletCreationBlockHeight'
+          // flag (canonically refered to as the wallet birthday) to fall back to the original
+          // sync acceleration affordances provided by that flag.
+          localExtStorage.remove('compactFrontierBlockHeight'),
         ]);
       })()
         .then(() => respond())

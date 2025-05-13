@@ -9,6 +9,7 @@ import type { RootQuerierInterface } from '@penumbra-zone/types/querier';
 import { AuctionQuerier } from './queriers/auction';
 import { SctQuerier } from './queriers/sct';
 import { FundingQuerier } from './queriers/funding';
+import { FeeQuerier } from './queriers/fee';
 
 // Given the amount of query services, this root querier aggregates them all
 // to make it easier for consumers
@@ -23,6 +24,7 @@ export class RootQuerier implements RootQuerierInterface {
   readonly cnidarium: CnidariumQuerier;
   readonly auction: AuctionQuerier;
   readonly funding: FundingQuerier;
+  readonly fee: FeeQuerier;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.app = new AppQuerier({ grpcEndpoint });
@@ -35,5 +37,6 @@ export class RootQuerier implements RootQuerierInterface {
     this.cnidarium = new CnidariumQuerier({ grpcEndpoint });
     this.auction = new AuctionQuerier({ grpcEndpoint });
     this.funding = new FundingQuerier({ grpcEndpoint });
+    this.fee = new FeeQuerier({ grpcEndpoint });
   }
 }

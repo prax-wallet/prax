@@ -8,6 +8,7 @@ import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
 import { Services } from '@repo/context';
 import { WalletServices } from '@penumbra-zone/types/services';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { isSentinel } from './utils/sentinal';
 
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
@@ -15,6 +16,7 @@ export const startWalletServices = async () => {
   const numeraires = await localExtStorage.get('numeraires');
   const chainId = await getChainId(grpcEndpoint);
   const walletCreationBlockHeight = await localExtStorage.get('walletCreationBlockHeight');
+  const compactFrontierBlockHeight = await localExtStorage.get('compactFrontierBlockHeight');
 
   const services = new Services({
     grpcEndpoint,
@@ -23,6 +25,7 @@ export const startWalletServices = async () => {
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
     numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
     walletCreationBlockHeight,
+    compactFrontierBlockHeight,
   });
 
   void syncLastBlockToStorage(await services.getWalletServices());
@@ -62,11 +65,16 @@ const getChainId = async (baseUrl: string) => {
  * Later used in Zustand store
  */
 const syncLastBlockToStorage = async ({ indexedDb }: Pick<WalletServices, 'indexedDb'>) => {
-  const fullSyncHeightDb = await indexedDb.getFullSyncHeight();
-  await localExtStorage.set('fullSyncHeight', Number(fullSyncHeightDb));
+  const dbHeight = await indexedDb.getFullSyncHeight();
 
-  const subscription = indexedDb.subscribe('FULL_SYNC_HEIGHT');
-  for await (const update of subscription) {
-    await localExtStorage.set('fullSyncHeight', Number(update.value));
+  if (!isSentinel(dbHeight)) {
+    await localExtStorage.set('fullSyncHeight', Number(dbHeight));
+  }
+
+  const sub = indexedDb.subscribe('FULL_SYNC_HEIGHT');
+  for await (const { value } of sub) {
+    if (!isSentinel(value)) {
+      await localExtStorage.set('fullSyncHeight', Number(value));
+    }
   }
 };

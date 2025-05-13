@@ -41,10 +41,11 @@ import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
 import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
-import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 import { identifyTransactions, RelevantTx } from './helpers/identify-txs';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt';
 import { assetIdFromBaseDenom } from '@penumbra-zone/wasm/asset';
 
 declare global {
@@ -72,6 +73,7 @@ interface QueryClientProps {
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
   walletCreationBlockHeight: number | undefined;
+  compactFrontierBlockHeight: number | undefined;
 }
 
 interface ProcessBlockParams {
@@ -97,6 +99,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private syncPromise: Promise<void> | undefined;
   private readonly genesisBlock: CompactBlock | undefined;
   private readonly walletCreationBlockHeight: number | undefined;
+  private readonly compactFrontierBlockHeight: number | undefined;
 
   constructor({
     indexedDb,
@@ -106,6 +109,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     stakingAssetId,
     genesisBlock,
     walletCreationBlockHeight,
+    compactFrontierBlockHeight,
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
@@ -114,6 +118,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.stakingAssetId = stakingAssetId;
     this.genesisBlock = genesisBlock;
     this.walletCreationBlockHeight = walletCreationBlockHeight;
+    this.compactFrontierBlockHeight = compactFrontierBlockHeight;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
@@ -160,7 +165,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     const GENESIS_CHUNK_SIZE = 500;
 
     // start at next block, or genesis if height is undefined
-    let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? PRE_GENESIS_SYNC_HEIGHT;
+    const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
+    let currentHeight = fullSyncHeight ?? PRE_GENESIS_SYNC_HEIGHT;
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -174,6 +180,54 @@ export class BlockProcessor implements BlockProcessorInterface {
       },
       { retry: () => true },
     );
+
+    // Check that 'currentHeight' and 'compactFrontierBlockHeight' local extension
+    // storage parameters match, signifying that this wallet was freshly generated
+    // and triggering a one-time parameter initialization that would have otherwise occured
+    // from fields pulled directly from the compact blocks. Otherwise, current height
+    // is set to 'PRE_GENESIS_SYNC_HEIGHT' which will set of normal genesis syncing.
+
+    if (
+      this.compactFrontierBlockHeight &&
+      this.compactFrontierBlockHeight >= currentHeight &&
+      fullSyncHeight !== undefined
+    ) {
+      // Pull the app parameters from the full node, which other parameter setting (gas prices
+      // for instance) will be derived from, rather than making additional network requests.
+      const appParams = await this.querier.app.appParams();
+      await this.indexedDb.saveAppParams(appParams);
+
+      if (appParams.feeParams?.fixedGasPrices) {
+        await this.indexedDb.saveGasPrices({
+          ...toPlainMessage(appParams.feeParams.fixedGasPrices),
+          assetId: toPlainMessage(this.stakingAssetId),
+        });
+      }
+
+      if (appParams.feeParams?.fixedAltGasPrices) {
+        for (const altGasFee of appParams.feeParams.fixedAltGasPrices) {
+          if (altGasFee.assetId) {
+            await this.indexedDb.saveGasPrices({
+              ...toPlainMessage(altGasFee),
+              assetId: toPlainMessage(altGasFee.assetId),
+            });
+          }
+        }
+      }
+
+      if (appParams.shieldedPoolParams?.fmdMetaParams) {
+        await this.indexedDb.saveFmdParams(
+          new FmdParameters({
+            precisionBits: 0,
+            asOfBlockHeight: appParams.shieldedPoolParams.fmdMetaParams.fmdGracePeriodBlocks,
+          }),
+        );
+      }
+
+      // Finally, persist the frontier to IndexedDB.
+      const flush = this.viewServer.flushUpdates();
+      await this.indexedDb.saveScanResult(flush);
+    }
 
     // handle the special case where no syncing has been done yet, and
     // prepares for syncing and checks for a bundled genesis block,

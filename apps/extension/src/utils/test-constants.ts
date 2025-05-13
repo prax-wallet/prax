@@ -14,4 +14,5 @@ export const localTestDefaults: LocalStorageState = {
   frontendUrl: EXAMPLE_MINIFRONT_URL,
   numeraires: [],
   walletCreationBlockHeight: 0,
+  compactFrontierBlockHeight: 0,
 };

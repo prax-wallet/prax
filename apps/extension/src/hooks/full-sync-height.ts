@@ -1,8 +1,8 @@
 import { PopupLoaderData } from '../routes/popup/home';
-import { useStore } from '../state';
-import { networkSelector } from '../state/network';
 import { useLoaderData } from 'react-router-dom';
 import { useLatestBlockHeight } from './latest-block-height';
+import { useStore } from '../state';
+import { networkSelector } from '../state/network';
 
 const tryGetMax = (a?: number, b?: number): number | undefined => {
   // Height can be 0n which is falsy, so should compare to undefined state

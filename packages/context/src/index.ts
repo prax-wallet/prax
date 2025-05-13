@@ -5,9 +5,9 @@ import { ViewServer } from '@penumbra-zone/wasm/view-server';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/services';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { SctFrontierRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 export interface ServicesConfig {
   readonly chainId: string;
@@ -16,6 +16,7 @@ export interface ServicesConfig {
   readonly fullViewingKey: FullViewingKey;
   readonly numeraires: AssetId[];
   readonly walletCreationBlockHeight: number | undefined;
+  readonly compactFrontierBlockHeight: number | undefined;
 }
 
 export class Services implements ServicesInterface {
@@ -39,50 +40,14 @@ export class Services implements ServicesInterface {
     return this.walletServicesPromise;
   }
 
-  /**
-   * Attempt to fetch parameters from the remote fullnode, or fall back to known
-   * parameters in indexedDb.
-   *
-   * Will throw to abort if the remote node reports an unexpected chainId.
-   *
-   * @returns `AppParameters`
-   */
-  private async getParams(indexedDb: IndexedDb, querier: RootQuerier): Promise<AppParameters> {
-    // try to read params from idb
-    const storedParams = await indexedDb.getAppParams();
-
-    // try to fetch params from network
-    const queriedParams = await querier.app.appParams().catch(() => undefined);
-
-    // verify params by chainId
-    if (
-      storedParams?.chainId &&
-      queriedParams?.chainId &&
-      storedParams.chainId !== queriedParams.chainId
-    ) {
-      // fail mismatch
-      const badChainIdMsg =
-        'Local chainId does not match the remote chainId. Your local state may\
-        be invalid, or you may be connecting to the wrong chain. You cannot use\
-        this RPC endpoint without clearing your local chain state.';
-      // log flamboyantly
-      console.error(`%c${badChainIdMsg}`, 'font-weight: bold; font-size: 2em;', {
-        storedParams,
-        queriedParams,
-      });
-      throw new Error(badChainIdMsg);
-    } else if (storedParams?.chainId) {
-      // stored params exist and are ok.  if there were updates, the block
-      // processor will handle those at the appropriate time.
-      return storedParams;
-    } else if (queriedParams?.chainId) {
-      // none stored, but fetched are ok.
-      return queriedParams;
-    } else {
-      throw new Error('No available chainId');
-    }
-  }
-
+  // In the current construction, there's isn't an idiomatic way to distinguish between different
+  // wallet states (ie. fresh versus existing wallets) past the onboarding phase. The wallet birthday
+  // originally served as a proxy for effectuating this distinction, enabling the block processor
+  // to skip heavy cryptographic operations like trial decryption and merkle tree operations like
+  // poseidon hashing on TCT insertions. Now, the wallet birthday serves a different purpose:
+  // identifying fresh wallets and performing a one-time request to retrieve the SCT frontier.
+  // This snapshot is injected into into the view server state from which normal
+  // block processor syncing can then resume.
   private async initializeWalletServices(): Promise<WalletServices> {
     const {
       chainId,
@@ -91,6 +56,7 @@ export class Services implements ServicesInterface {
       fullViewingKey,
       numeraires,
       walletCreationBlockHeight,
+      compactFrontierBlockHeight,
     } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const registryClient = new ChainRegistryClient();
@@ -100,18 +66,67 @@ export class Services implements ServicesInterface {
       registryClient,
     });
 
-    const { sctParams } = await this.getParams(indexedDb, querier);
-    if (!sctParams?.epochDuration) {
-      throw new Error('Cannot initialize viewServer without epoch duration');
+    let viewServer: ViewServer | undefined;
+
+    // 'fullSyncHeight' will always be undefined after onboarding independent
+    // of the wallet type. On subsequent service worker inits, the field will
+    // be defined. The additional cost paid here is a single storage access.
+    const fullSyncHeight = await indexedDb.getFullSyncHeight();
+
+    // Gate the type of initialization we perform here:
+    //
+    // * If the wallet is freshly generated, the other storage parameters in
+    //   the first conditional will be set. in the case, the wallet saves
+    //   the 'fullSyncHeight', pull the state commitment frontier snapshot
+    //   from the full node, and instructs the block processor to start syncing
+    //   from that snapshot height.
+    //
+    // * After a normal normal service worker lifecycle termination <> initialization
+    //   game, wallet serices will be triggered and the service worker will pull
+    //   the latest state commitment tree state from storage to initialize the
+    //   view server and resume block processor.
+    //
+    // * After a cache reset, wallet serices will be triggered and block prcoessing
+    //   will initiate genesis sync, taking advantage of the existing "wallet birthday"
+    //   acceleration techniques.
+
+    // note: we try-catch the snapshot initialization to fallback to normal initialization
+    // if it fails for any reason to not block onboarding completion.
+    if (!fullSyncHeight && walletCreationBlockHeight && compactFrontierBlockHeight) {
+      try {
+        // Request frontier snapshot from full node (~1KB payload) and initialize
+        // the view server from that snapshot.
+        const compact_frontier = await querier.sct.sctFrontier(
+          new SctFrontierRequest({ withProof: false }),
+        );
+
+        await indexedDb.saveFullSyncHeight(compact_frontier.height);
+
+        viewServer = await ViewServer.initialize_from_snapshot({
+          fullViewingKey,
+          getStoredTree: () => indexedDb.getStateCommitmentTree(),
+          idbConstants: indexedDb.constants(),
+          compact_frontier,
+        });
+      } catch {
+        // Fall back to normal initialization
+        viewServer = await ViewServer.initialize({
+          fullViewingKey,
+          getStoredTree: () => indexedDb.getStateCommitmentTree(),
+          idbConstants: indexedDb.constants(),
+        });
+      }
+    } else {
+      // Initialize the view server from existing IndexedDB storage.
+      viewServer = await ViewServer.initialize({
+        fullViewingKey,
+        getStoredTree: () => indexedDb.getStateCommitmentTree(),
+        idbConstants: indexedDb.constants(),
+      });
     }
 
-    const viewServer = await ViewServer.initialize({
-      fullViewingKey,
-      getStoredTree: () => indexedDb.getStateCommitmentTree(),
-      idbConstants: indexedDb.constants(),
-    });
-
-    // Dynamically fetch binary file for genesis compact block
+    // Dynamically fetch the 'local' genesis file from the exentsion's
+    // static assets.
     const response = await fetch('./penumbra-1-genesis.bin');
     const genesisBinaryData = await response.arrayBuffer();
 
@@ -126,6 +141,7 @@ export class Services implements ServicesInterface {
       stakingAssetId: registryClient.bundled.globals().stakingAssetId,
       numeraires,
       walletCreationBlockHeight,
+      compactFrontierBlockHeight,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };

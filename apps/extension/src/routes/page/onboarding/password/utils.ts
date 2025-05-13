@@ -7,7 +7,7 @@ import { sample } from 'lodash';
 import { createClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { localExtStorage } from '../../../../storage/local';
-import { AppService } from '@penumbra-zone/protobuf';
+import { AppService, SctService } from '@penumbra-zone/protobuf';
 import { fetchBlockHeightWithFallback } from '../../../../hooks/latest-block-height';
 
 export const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
@@ -19,7 +19,7 @@ export const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
   ) {
     return state.origin;
   }
-  // Default to IMPORTED if the origin is not valid as it won't generate a walletCreationHeight
+
   return SEED_PHRASE_ORIGIN.IMPORTED;
 };
 
@@ -64,15 +64,29 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   }
 
   if (seedPhraseOrigin === SEED_PHRASE_ORIGIN.NEWLY_GENERATED) {
+    // Block processor identifier for denoting whether the wallet is freshly generated.
     await localExtStorage.set('walletCreationBlockHeight', blockHeight);
+
+    // Wallet services identifier for denoting whether the wallet is freshly generated
+    // and should fetch the frontier snapshot.
+    try {
+      const compactFrontier = await createClient(
+        SctService,
+        createGrpcWebTransport({ baseUrl: rpc }),
+      ).sctFrontier({ withProof: false }, DEFAULT_TRANSPORT_OPTS);
+      await localExtStorage.set('compactFrontierBlockHeight', Number(compactFrontier.height));
+    } catch (error) {
+      // Fallback: use current block height as a reasonable default
+      await localExtStorage.set('compactFrontierBlockHeight', blockHeight);
+    }
   }
 
-  const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
-
+  // Safety: set these fields before in case there's an issue fetching the remote registry.
   await localExtStorage.set('grpcEndpoint', rpc);
-
   // override default frontend url with redirection to veil
   await localExtStorage.set('frontendUrl', defaultDex);
+
+  const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
 
   await localExtStorage.set(
     'numeraires',

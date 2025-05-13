@@ -17,6 +17,7 @@ import {
   StakeService,
   TendermintProxyService,
   ViewService,
+  FeeService,
 } from '@penumbra-zone/protobuf';
 import { custodyImpl } from '@penumbra-zone/services/custody-service';
 import { sctImpl } from '@penumbra-zone/services/sct-service';
@@ -41,6 +42,7 @@ export const getRpcImpls = async () => {
     IbcConnectionService,
     ShieldedPoolService,
     SimulationService,
+    FeeService,
   ].map(
     serviceType =>
       [

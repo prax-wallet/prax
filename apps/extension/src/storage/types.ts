@@ -26,4 +26,5 @@ export interface LocalStorageState {
   params: Stringified<AppParameters> | undefined;
   numeraires: Stringified<AssetId>[];
   walletCreationBlockHeight: number | undefined;
+  compactFrontierBlockHeight: number | undefined;
 }
