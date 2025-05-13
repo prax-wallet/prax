@@ -1,7 +1,7 @@
 import type { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import type { UserChoice } from '@penumbra-zone/types/user-choice';
-import { OriginRecord } from '@repo/prax-storage/types';
+import { OriginRecord } from '@repo/storage-chrome/types';
 import { JsonValue } from '@bufbuild/protobuf';
 
 export enum PopupType {

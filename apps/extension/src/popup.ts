@@ -1,6 +1,6 @@
 import { PopupPath } from './routes/popup/paths';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { sessionExtStorage } from '@repo/prax-storage/session';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { PopupRequest, PopupResponse, PopupType } from './message/popup';
 import { sendPopup } from './message/send-popup';
 import { listenReady } from './message/listen-ready';

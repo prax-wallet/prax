@@ -1,19 +1,19 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/prax-storage/mock';
+import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
 
 const localExtStorage = mockLocalExtStorage();
 const sessionExtStorage = mockSessionExtStorage();
 
-vi.doMock('@repo/prax-storage/local', async importOriginal => {
-  const mod = await importOriginal<typeof import('@repo/prax-storage/local')>();
+vi.doMock('@repo/storage-chrome/local', async importOriginal => {
+  const mod = await importOriginal<typeof import('@repo/storage-chrome/local')>();
   return {
     ...mod,
     localExtStorage,
   };
 });
 
-vi.doMock('@repo/prax-storage/session', async importOriginal => {
-  const mod = await importOriginal<typeof import('@repo/prax-storage/session')>();
+vi.doMock('@repo/storage-chrome/session', async importOriginal => {
+  const mod = await importOriginal<typeof import('@repo/storage-chrome/session')>();
   return {
     ...mod,
     sessionExtStorage,

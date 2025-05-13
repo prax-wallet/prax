@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { LocalStorageState } from '@repo/prax-storage/types';
-import { ExtensionStorage } from '@repo/prax-storage/base';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/prax-storage/mock';
+import { LocalStorageState } from '@repo/storage-chrome/types';
+import { ExtensionStorage } from '@repo/storage-chrome/base';
+import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
 
 describe('Default Frontend Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

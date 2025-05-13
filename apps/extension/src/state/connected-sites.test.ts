@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { LocalStorageState, OriginRecord } from '@repo/prax-storage/types';
-import { ExtensionStorage } from '@repo/prax-storage/base';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/prax-storage/mock';
+import { LocalStorageState, OriginRecord } from '@repo/storage-chrome/types';
+import { ExtensionStorage } from '@repo/storage-chrome/base';
+import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { allSitesFilteredOutSelector } from './connected-sites';
 import { localTestDefaults } from '../utils/test-constants';

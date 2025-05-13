@@ -1,7 +1,7 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import { vi, beforeEach, describe, expect, test } from 'vitest';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/prax-storage/mock';
+import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 describe('Origin Approval Slice', () => {
