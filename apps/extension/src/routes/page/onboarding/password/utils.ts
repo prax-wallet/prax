@@ -6,7 +6,7 @@ import { ChainRegistryClient, EntityMetadata } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
 import { createClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { localExtStorage } from '@repo/prax-storage/local';
+import { localExtStorage } from '@repo/storage-chrome/local';
 import { AppService, SctService } from '@penumbra-zone/protobuf';
 import { fetchBlockHeightWithFallback } from '../../../../hooks/latest-block-height';
 

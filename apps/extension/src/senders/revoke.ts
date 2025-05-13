@@ -1,7 +1,7 @@
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { PraxConnection } from '../content-scripts/message/prax-connection';
 import { sendTabs } from '../message/send/tab';
-import { removeOriginRecord } from '@repo/prax-storage/origin';
+import { removeOriginRecord } from '@repo/storage-chrome/origin';
 
 /**
  * Request deletion of the origin's permission record, and ask the session

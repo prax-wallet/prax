@@ -1,5 +1,5 @@
 ---
-'@repo/prax-storage': major
+'@repo/storage-chrome': major
 ---
 
 move storage to internal package

@@ -1,7 +1,7 @@
 import { Code, ConnectError } from '@connectrpc/connect';
 import { Key } from '@penumbra-zone/crypto-web/encryption';
-import { localExtStorage } from '@repo/prax-storage/local';
-import { sessionExtStorage } from '@repo/prax-storage/session';
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { Box } from '@penumbra-zone/types/box';
 import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 

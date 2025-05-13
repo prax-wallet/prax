@@ -1,4 +1,4 @@
-import { OriginRecord } from '@repo/prax-storage/types';
+import { OriginRecord } from '@repo/storage-chrome/types';
 import { useStore } from '../../../../state';
 import { KnownSite } from './known-site';
 
