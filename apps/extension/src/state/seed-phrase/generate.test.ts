@@ -2,7 +2,7 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { SeedPhraseLength } from '@penumbra-zone/crypto-web/mnemonic';
-import { mockLocalExtStorage, mockSessionExtStorage } from '../../storage/mock';
+import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
 
 describe('Generate Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

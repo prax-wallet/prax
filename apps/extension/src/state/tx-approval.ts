@@ -17,8 +17,8 @@ import {
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import type { ExtensionStorage } from '../storage/base';
-import type { LocalStorageState } from '../storage/types';
+import type { ExtensionStorage } from '@repo/storage-chrome/base';
+import type { LocalStorageState } from '@repo/storage-chrome/types';
 import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
 
 export interface TxApprovalSlice {

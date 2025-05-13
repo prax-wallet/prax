@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { LocalStorageState } from '../storage/types';
-import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
-import { ExtensionStorage } from '../storage/base';
+import { LocalStorageState } from '@repo/storage-chrome/types';
+import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
+import { ExtensionStorage } from '@repo/storage-chrome/base';
 
 describe('Network Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
