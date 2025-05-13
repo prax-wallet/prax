@@ -27,14 +27,15 @@ import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
 import { assertValidSessionPort } from './senders/session';
 
 // context
-import { approverCtx } from '@penumbra-zone/services/ctx/approver';
 import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
 import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
-import { skCtx } from '@penumbra-zone/services/ctx/spend-key';
-import { approveTransaction } from './approve-transaction';
 import { getFullViewingKey } from './ctx/full-viewing-key';
-import { getSpendKey } from './ctx/spend-key';
 import { getWalletId } from './ctx/wallet-id';
+
+// custody context
+import { authorizeCtx } from '@repo/custody-chrome/ctx/authorize';
+import { approveTransaction } from './approve-transaction';
+import { approveCtx } from '@repo/custody-chrome/ctx/approve';
 
 // context clients
 import { CustodyService, StakeService } from '@penumbra-zone/protobuf';
@@ -49,6 +50,7 @@ import type { Services } from '@repo/context';
 import { startWalletServices } from './wallet-services';
 
 import { backOff } from 'exponential-backoff';
+import { authorizeChrome } from './ctx/authorize-chrome';
 
 let walletServices: Promise<Services>;
 
@@ -84,8 +86,8 @@ const initHandler = async () => {
       // discriminate context available to specific services
       const { pathname } = new URL(req.url);
       if (pathname.startsWith('/penumbra.custody.v1.Custody')) {
-        contextValues.set(skCtx, getSpendKey);
-        contextValues.set(approverCtx, approveTransaction);
+        contextValues.set(approveCtx, approveTransaction);
+        contextValues.set(authorizeCtx, authorizeChrome);
       }
 
       return Promise.resolve({ ...req, contextValues });

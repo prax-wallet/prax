@@ -18,11 +18,13 @@ import {
   TendermintProxyService,
   ViewService,
 } from '@penumbra-zone/protobuf';
-import { custodyImpl } from '@penumbra-zone/services/custody-service';
+
 import { sctImpl } from '@penumbra-zone/services/sct-service';
 import { stakeImpl } from '@penumbra-zone/services/stake-service';
 import { viewImpl } from '@penumbra-zone/services/view-service';
 import { createProxyImpl, noContextHandler } from '@penumbra-zone/transport-dom/proxy';
+import { custodyImpl } from '@repo/custody-chrome';
+
 import { onboardGrpcEndpoint } from '@repo/storage-chrome/onboard';
 import { rethrowImplErrors } from './rethrow-impl-errors';
 

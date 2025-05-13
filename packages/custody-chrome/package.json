@@ -1,0 +1,26 @@
+{
+  "name": "@repo/custody-chrome",
+  "version": "0.0.1",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./ctx/*": "./src/ctx/*.ts"
+  },
+  "devDependencies": {
+    "@penumbra-labs/registry": "^12.7.0",
+    "@penumbra-zone/bech32m": "17.0.0",
+    "@penumbra-zone/crypto-web": "44.0.0",
+    "@penumbra-zone/getters": "27.0.0",
+    "@penumbra-zone/protobuf": "10.1.0",
+    "@penumbra-zone/services": "64.0.0",
+    "@penumbra-zone/types": "34.0.0",
+    "@penumbra-zone/wasm": "48.0.0",
+    "@repo/storage-chrome": "workspace:*",
+    "@types/chrome": "0.0.270"
+  }
+}

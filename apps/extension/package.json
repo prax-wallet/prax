@@ -35,6 +35,7 @@
     "@penumbra-zone/wasm": "48.0.0",
     "@radix-ui/react-icons": "^1.3.2",
     "@repo/context": "workspace:*",
+    "@repo/custody-chrome": "workspace:*",
     "@repo/storage-chrome": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "5.55.0",
