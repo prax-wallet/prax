@@ -346,6 +346,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       // The presence of `epochRoot` indicates that this is the final block of the current epoch.
       if (compactBlock.epochRoot) {
         currentEpoch++;
+        currentHeight++; // todo: think about this.
+
         this.handleEpochTransition(
           compactBlock.height,
           latestKnownBlockHeight,
@@ -363,6 +365,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       // chain will of course continue adding blocks, and we'll keep processing
       // them. So, we need to update `latestKnownBlockHeight` once we've passed
       // it.
+      //
+      // todo: think about moving this to top of loop and downstream side-effects
+      // like flush checks being false.
       if (compactBlock.height > latestKnownBlockHeight) {
         latestKnownBlockHeight = compactBlock.height;
       }
@@ -927,10 +932,10 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async handleEpochTransition(
     endHeightOfPreviousEpoch: bigint,
     latestKnownBlockHeight: bigint,
-    currentEpoch: bigint,
-    currentHeight: bigint,
+    nextEpochStart: bigint,
+    nextHeightStart: bigint,
   ): Promise<void> {
-    await this.indexedDb.addEpoch({ index: currentEpoch, startHeight: currentHeight });
+    await this.indexedDb.addEpoch({ index: nextEpochStart, startHeight: nextHeightStart });
 
     // TODO: seperately remove the estimation happening here and make
     // validator status updates actually atomic using indexedDB method.
