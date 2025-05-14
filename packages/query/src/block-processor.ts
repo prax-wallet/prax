@@ -4,7 +4,10 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import {
+  EpochByHeightRequest,
+  Nullifier,
+} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   Action,
@@ -177,8 +180,20 @@ export class BlockProcessor implements BlockProcessorInterface {
     // start at next block, or genesis if height is undefined
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     let currentHeight = fullSyncHeight ?? PRE_GENESIS_SYNC_HEIGHT;
+
+    // detects if this is a freshly created wallet that skipped historical sync
+    // by comparing the sync progress with the compact block frontier height.
+    const isFreshWallet =
+      this.compactFrontierBlockHeight !== undefined &&
+      fullSyncHeight !== undefined &&
+      this.compactFrontierBlockHeight >= currentHeight;
+
+    // if we're not pre-genesis and not a fresh wallet, fetch the epoch from IndexedDB.
+    // otherwise, default to epoch 0.
     let currentEpoch =
-      currentHeight && (await this.indexedDb.getEpochByHeight(currentHeight)).index;
+      currentHeight !== PRE_GENESIS_SYNC_HEIGHT && !isFreshWallet
+        ? (await this.indexedDb.getEpochByHeight(currentHeight))!.index
+        : 0n;
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -198,12 +213,22 @@ export class BlockProcessor implements BlockProcessorInterface {
     // and triggering a one-time parameter initialization that would have otherwise occured
     // from fields pulled directly from the compact blocks. Otherwise, current height
     // is set to 'PRE_GENESIS_SYNC_HEIGHT' which will set of normal genesis syncing.
+    if (isFreshWallet) {
+      // One of the neccessary steps here to seed the database with the first epoch
+      // is a one-time request to fetch the epoch for the corresponding frontier
+      // block height from the full node, and save it to storage.
+      const remoteEpoch = await this.querier.sct.epochByBlockHeight(
+        new EpochByHeightRequest({ height: currentHeight }),
+      );
 
-    if (
-      this.compactFrontierBlockHeight &&
-      this.compactFrontierBlockHeight >= currentHeight &&
-      fullSyncHeight !== undefined
-    ) {
+      await this.indexedDb.addEpoch({
+        index: remoteEpoch.epoch?.index!,
+        startHeight: currentHeight,
+      });
+      if (remoteEpoch.epoch?.index) {
+        currentEpoch = remoteEpoch.epoch?.index;
+      }
+
       // Pull the app parameters from the full node, which other parameter setting (gas prices
       // for instance) will be derived from, rather than making additional network requests.
       const appParams = await this.querier.app.appParams();
@@ -245,7 +270,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // prepares for syncing and checks for a bundled genesis block,
     // which can save time by avoiding an initial network request.
     if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
-      // create first epoch
+      // add the first epoch for the genesis block
       await this.indexedDb.addEpoch({ index: 0n, startHeight: 0n });
 
       // initialize validator info at genesis
@@ -346,7 +371,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // The presence of `epochRoot` indicates that this is the final block of the current epoch.
       if (compactBlock.epochRoot) {
         currentEpoch++;
-        currentHeight++; // todo: think about this.
+        // currentHeight++; // todo: think about this.
 
         this.handleEpochTransition(
           compactBlock.height,
