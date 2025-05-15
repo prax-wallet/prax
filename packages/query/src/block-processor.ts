@@ -4,7 +4,10 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import {
+  EpochByHeightRequest,
+  Nullifier,
+} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   Action,
@@ -168,6 +171,13 @@ export class BlockProcessor implements BlockProcessorInterface {
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     let currentHeight = fullSyncHeight ?? PRE_GENESIS_SYNC_HEIGHT;
 
+    // detects if this is a freshly created wallet that skipped historical sync
+    // by comparing the sync progress with the compact block frontier height.
+    const isFreshWallet =
+      this.compactFrontierBlockHeight &&
+      fullSyncHeight !== undefined &&
+      this.compactFrontierBlockHeight >= currentHeight;
+
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
     let latestKnownBlockHeight = await backOff(
@@ -187,11 +197,22 @@ export class BlockProcessor implements BlockProcessorInterface {
     // from fields pulled directly from the compact blocks. Otherwise, current height
     // is set to 'PRE_GENESIS_SYNC_HEIGHT' which will set of normal genesis syncing.
 
-    if (
-      this.compactFrontierBlockHeight &&
-      this.compactFrontierBlockHeight >= currentHeight &&
-      fullSyncHeight !== undefined
-    ) {
+    if (isFreshWallet) {
+      // One of the neccessary steps here to seed the database with the first epoch
+      // is a one-time request to fetch the epoch for the corresponding frontier
+      // block height from the full node, and save it to storage.
+      const remoteEpoch = await this.querier.sct.epochByBlockHeight(
+        new EpochByHeightRequest({ height: currentHeight }),
+      );
+
+      if (remoteEpoch.epoch) {
+        // Persist the remote epoch to storage using its actual index and start height.
+        await this.indexedDb.addRemoteEpoch(remoteEpoch.epoch.startHeight, remoteEpoch.epoch.index);
+
+        // Trigger a validator info update starting from the epoch's starting height.
+        await this.updateValidatorInfos(remoteEpoch.epoch.startHeight);
+      }
+
       // Pull the app parameters from the full node, which other parameter setting (gas prices
       // for instance) will be derived from, rather than making additional network requests.
       const appParams = await this.querier.app.appParams();
