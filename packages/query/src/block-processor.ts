@@ -371,7 +371,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       // The presence of `epochRoot` indicates that this is the final block of the current epoch.
       if (compactBlock.epochRoot) {
         currentEpoch++;
-        // currentHeight++; // todo: think about this.
 
         this.handleEpochTransition(
           compactBlock.height,
