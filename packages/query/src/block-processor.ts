@@ -4,7 +4,10 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import {
+  EpochByHeightRequest,
+  Nullifier,
+} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   Action,
@@ -54,6 +57,14 @@ declare global {
   // eslint-disable-next-line no-var -- expected globals
   var __ASSERT_ROOT__: boolean | undefined;
 }
+
+const PRE_GENESIS_SYNC_HEIGHT = -1n;
+
+// Chunking policy is ~3x larger than the maximum number of state payloads that are supported
+// inside a compact block (~100KB). We don't neccessarily need to determine the optimal chunk
+// size, rather it needs to be sufficiently small that devices can handle crossing the syncing
+// hurdle of processing the genesis block.
+const GENESIS_CHUNK_SIZE = 500;
 
 const isSwapRecordWithSwapCommitment = (
   r?: unknown,
@@ -121,6 +132,16 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.compactFrontierBlockHeight = compactFrontierBlockHeight;
   }
 
+  private async *streamBlocks(currentHeight: bigint) {
+    let startHeight = currentHeight + 1n;
+
+    yield* this.querier.compactBlock.compactBlockRange({
+      startHeight,
+      keepAlive: true,
+      abortSignal: this.abortController.signal,
+    });
+  }
+
   // If sync() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
   public sync = (): Promise<void> =>
@@ -156,17 +177,23 @@ export class BlockProcessor implements BlockProcessorInterface {
    * - iterate
    */
   private async syncAndStore() {
-    const PRE_GENESIS_SYNC_HEIGHT = -1n;
-
-    // Chunking policy is ~3x larger than the maximum number of state payloads that are supported
-    // inside a compact block (~100KB). We don't neccessarily need to determine the optimal chunk
-    // size, rather it needs to be sufficiently small that devices can handle crossing the syncing
-    // hurdle of processing the genesis block.
-    const GENESIS_CHUNK_SIZE = 500;
-
     // start at next block, or genesis if height is undefined
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     let currentHeight = fullSyncHeight ?? PRE_GENESIS_SYNC_HEIGHT;
+
+    // detects if this is a freshly created wallet that skipped historical sync
+    // by comparing the sync progress with the compact block frontier height.
+    const isFreshWallet =
+      this.compactFrontierBlockHeight !== undefined &&
+      fullSyncHeight !== undefined &&
+      this.compactFrontierBlockHeight >= currentHeight;
+
+    // if we're not pre-genesis and not a fresh wallet, fetch the epoch from IndexedDB.
+    // otherwise, default to epoch 0.
+    let currentEpoch =
+      currentHeight !== PRE_GENESIS_SYNC_HEIGHT && !isFreshWallet
+        ? (await this.indexedDb.getEpochByHeight(currentHeight))!.index
+        : 0n;
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -186,12 +213,22 @@ export class BlockProcessor implements BlockProcessorInterface {
     // and triggering a one-time parameter initialization that would have otherwise occured
     // from fields pulled directly from the compact blocks. Otherwise, current height
     // is set to 'PRE_GENESIS_SYNC_HEIGHT' which will set of normal genesis syncing.
+    if (isFreshWallet) {
+      // One of the neccessary steps here to seed the database with the first epoch
+      // is a one-time request to fetch the epoch for the corresponding frontier
+      // block height from the full node, and save it to storage.
+      const remoteEpoch = await this.querier.sct.epochByBlockHeight(
+        new EpochByHeightRequest({ height: currentHeight }),
+      );
 
-    if (
-      this.compactFrontierBlockHeight &&
-      this.compactFrontierBlockHeight >= currentHeight &&
-      fullSyncHeight !== undefined
-    ) {
+      await this.indexedDb.addEpoch({
+        index: remoteEpoch.epoch?.index!,
+        startHeight: currentHeight,
+      });
+      if (remoteEpoch.epoch?.index) {
+        currentEpoch = remoteEpoch.epoch?.index;
+      }
+
       // Pull the app parameters from the full node, which other parameter setting (gas prices
       // for instance) will be derived from, rather than making additional network requests.
       const appParams = await this.querier.app.appParams();
@@ -233,14 +270,14 @@ export class BlockProcessor implements BlockProcessorInterface {
     // prepares for syncing and checks for a bundled genesis block,
     // which can save time by avoiding an initial network request.
     if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
-      // create first epoch
-      await this.indexedDb.addEpoch(0n);
+      // add the first epoch for the genesis block
+      await this.indexedDb.addEpoch({ index: 0n, startHeight: 0n });
 
       // initialize validator info at genesis
       // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
       void this.updateValidatorInfos(0n);
 
-      // conditional only runs if there is a bundled genesis block provided for the chain
+      // conditional only runs if there is a bundled genesis block provided for the mainnet chain
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
 
@@ -307,16 +344,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
-    for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
-      startHeight: currentHeight + 1n,
-      keepAlive: true,
-      abortSignal: this.abortController.signal,
-    })) {
+    for await (const compactBlock of this.streamBlocks(currentHeight)) {
       // confirm block height to prevent corruption of local state
       if (compactBlock.height === currentHeight + 1n) {
         currentHeight = compactBlock.height;
       } else {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
+      }
+
+      if (compactBlock.epochIndex !== currentEpoch) {
+        throw new Error(`Unexpected epoch index: ${compactBlock.epochIndex} at ${currentEpoch}`);
       }
 
       // set the trial decryption flag for all other compact blocks
@@ -331,11 +368,30 @@ export class BlockProcessor implements BlockProcessorInterface {
         skipTrialDecrypt,
       });
 
+      // The presence of `epochRoot` indicates that this is the final block of the current epoch.
+      if (compactBlock.epochRoot) {
+        currentEpoch++;
+
+        this.handleEpochTransition(
+          compactBlock.height,
+          latestKnownBlockHeight,
+          currentEpoch,
+          currentHeight,
+        );
+      }
+
+      if (globalThis.__ASSERT_ROOT__) {
+        await this.assertRootValid(compactBlock.height);
+      }
+
       // We only query Tendermint for the latest known block height once, when
       // the block processor starts running. Once we're caught up, though, the
       // chain will of course continue adding blocks, and we'll keep processing
       // them. So, we need to update `latestKnownBlockHeight` once we've passed
       // it.
+      //
+      // todo: think about moving this to top of loop and downstream side-effects
+      // like flush checks being false.
       if (compactBlock.height > latestKnownBlockHeight) {
         latestKnownBlockHeight = compactBlock.height;
       }
@@ -497,15 +553,6 @@ export class BlockProcessor implements BlockProcessorInterface {
         compactBlock.swapOutputs,
         compactBlock.height,
       );
-    }
-
-    // The presence of `epochRoot` indicates that this is the final block of the current epoch.
-    if (compactBlock.epochRoot) {
-      await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
-    }
-
-    if (globalThis.__ASSERT_ROOT__) {
-      await this.assertRootValid(compactBlock.height);
     }
   }
 
@@ -909,10 +956,14 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async handleEpochTransition(
     endHeightOfPreviousEpoch: bigint,
     latestKnownBlockHeight: bigint,
+    nextEpochStart: bigint,
+    nextHeightStart: bigint,
   ): Promise<void> {
-    const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
-    await this.indexedDb.addEpoch(nextEpochStartHeight);
+    await this.indexedDb.addEpoch({ index: nextEpochStart, startHeight: nextHeightStart });
 
+    // TODO: seperately remove the estimation happening here and make
+    // validator status updates actually atomic using indexedDB method.
+    const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
     const { sctParams } = (await this.indexedDb.getAppParams()) ?? {};
     const nextEpochIsLatestKnownEpoch =
       sctParams && latestKnownBlockHeight - nextEpochStartHeight < sctParams.epochDuration;
