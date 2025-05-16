@@ -7,6 +7,8 @@ import {
   TimestampByHeightResponse,
   SctFrontierRequest,
   SctFrontierResponse,
+  EpochByHeightRequest,
+  EpochByHeightResponse,
 } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 export class SctQuerier implements SctQuerierInterface {
@@ -22,5 +24,9 @@ export class SctQuerier implements SctQuerierInterface {
 
   sctFrontier(req: SctFrontierRequest): Promise<SctFrontierResponse> {
     return this.client.sctFrontier(req);
+  }
+
+  epochByBlockHeight(req: EpochByHeightRequest): Promise<EpochByHeightResponse> {
+    return this.client.epochByHeight(req);
   }
 }
