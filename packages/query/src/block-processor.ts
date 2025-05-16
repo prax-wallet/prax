@@ -5,6 +5,7 @@ import {
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import {
+  Epoch,
   EpochByHeightRequest,
   Nullifier,
 } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
@@ -207,7 +208,9 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       if (remoteEpoch.epoch) {
         // Persist the remote epoch to storage using its actual index and start height.
-        await this.indexedDb.addEpoch(remoteEpoch.epoch.startHeight, remoteEpoch.epoch.index);
+        await this.indexedDb.addEpoch(
+          new Epoch({ startHeight: remoteEpoch.epoch.startHeight, index: remoteEpoch.epoch.index }),
+        );
 
         // Trigger a validator info update starting from the epoch's starting height.
         await this.updateValidatorInfos(remoteEpoch.epoch.startHeight);
@@ -255,7 +258,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // which can save time by avoiding an initial network request.
     if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
       // create first epoch
-      await this.indexedDb.addEpoch(0n, 0n);
+      await this.indexedDb.addEpoch(new Epoch({ startHeight: 0n, index: 0n }));
 
       // initialize validator info at genesis
       // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
@@ -939,7 +942,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
 
     const nextEpochIndex = epochIndex + 1n;
-    await this.indexedDb.addEpoch(nextEpochStartHeight, nextEpochIndex);
+    await this.indexedDb.addEpoch(
+      new Epoch({ startHeight: nextEpochStartHeight, index: nextEpochIndex }),
+    );
 
     const { sctParams } = (await this.indexedDb.getAppParams()) ?? {};
     const nextEpochIsLatestKnownEpoch =
