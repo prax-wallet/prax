@@ -207,7 +207,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       if (remoteEpoch.epoch) {
         // Persist the remote epoch to storage using its actual index and start height.
-        await this.indexedDb.addRemoteEpoch(remoteEpoch.epoch.startHeight, remoteEpoch.epoch.index);
+        await this.indexedDb.addEpoch(remoteEpoch.epoch.startHeight, remoteEpoch.epoch.index);
 
         // Trigger a validator info update starting from the epoch's starting height.
         await this.updateValidatorInfos(remoteEpoch.epoch.startHeight);
@@ -255,7 +255,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // which can save time by avoiding an initial network request.
     if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
       // create first epoch
-      await this.indexedDb.addEpoch(0n);
+      await this.indexedDb.addEpoch(0n, 0n);
 
       // initialize validator info at genesis
       // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
@@ -522,7 +522,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // The presence of `epochRoot` indicates that this is the final block of the current epoch.
     if (compactBlock.epochRoot) {
-      await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
+      await this.handleEpochTransition(
+        compactBlock.height,
+        latestKnownBlockHeight,
+        compactBlock.epochIndex,
+      );
     }
 
     if (globalThis.__ASSERT_ROOT__) {
@@ -930,9 +934,11 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async handleEpochTransition(
     endHeightOfPreviousEpoch: bigint,
     latestKnownBlockHeight: bigint,
+    epochIndex: bigint,
   ): Promise<void> {
     const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
-    await this.indexedDb.addEpoch(nextEpochStartHeight);
+
+    await this.indexedDb.addEpoch(nextEpochStartHeight, epochIndex);
 
     const { sctParams } = (await this.indexedDb.getAppParams()) ?? {};
     const nextEpochIsLatestKnownEpoch =
