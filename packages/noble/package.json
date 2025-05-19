@@ -16,7 +16,7 @@
     ".": "./src/client.ts"
   },
   "dependencies": {
-    "@cosmjs/stargate": "^0.32.4",
+    "@cosmjs/stargate": "^0.33.1",
     "@penumbra-zone/bech32m": "17.0.0",
     "@penumbra-zone/protobuf": "10.1.0",
     "@penumbra-zone/wasm": "50.0.0"
