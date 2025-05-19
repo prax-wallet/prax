@@ -26,6 +26,9 @@ importers:
       '@penumbra-zone/configs':
         specifier: 1.1.0
         version: 1.1.0(@types/eslint@9.6.1)(@typescript-eslint/parser@8.16.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.5.4))(jiti@1.21.6)(prettier@3.4.2)(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.10.2)(typescript@5.5.4)))(typescript@5.5.4)(vitest@1.6.0(@types/node@22.10.2)(@vitest/browser@1.6.0)(jsdom@25.0.1)(terser@5.34.1))
+      '@repo/mock-chrome':
+        specifier: workspace:*
+        version: link:packages/mock-chrome
       '@repo/tailwind-config':
         specifier: workspace:*
         version: link:packages/tailwind-config
@@ -303,6 +306,15 @@ importers:
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
+
+  packages/mock-chrome:
+    devDependencies:
+      '@types/chrome':
+        specifier: 0.0.270
+        version: 0.0.270
+      vitest:
+        specifier: 1.x
+        version: 1.6.0(@types/node@22.10.2)(@vitest/browser@1.6.0)(jsdom@25.0.1)(terser@5.34.1)
 
   packages/noble:
     dependencies:
