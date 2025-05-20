@@ -7,6 +7,6 @@ export default defineConfig({
         execArgv: ['--experimental-wasm-modules'],
       },
     },
-    setupFiles: ['./src/utils/tests-setup.js'],
+    setupFiles: ['./tests-setup.ts'],
   },
 });

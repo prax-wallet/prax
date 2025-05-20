@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { approveSender } from './approve';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { OriginRecord } from '../storage/types';
+import { OriginRecord } from '@repo/storage-chrome/types';
 import { PopupType } from '../message/popup';
 
 const mockLocalStorage = vi.hoisted(() => ({
   get: vi.fn(),
   set: vi.fn(),
 }));
-vi.mock('../storage/local', () => ({ localExtStorage: mockLocalStorage }));
+vi.mock('@repo/storage-chrome/local', () => ({ localExtStorage: mockLocalStorage }));
 
 const mockPopup = vi.hoisted(() => vi.fn());
 vi.mock('../popup', () => ({

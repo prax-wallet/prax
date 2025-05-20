@@ -1,0 +1,17 @@
+{
+  "name": "@repo/mock-chrome",
+  "version": "0.0.1",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.0.270",
+    "vitest": "1.x"
+  }
+}
