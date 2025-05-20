@@ -1,56 +1,26 @@
-import { MetadataFetchFn, TransactionViewComponent } from '@repo/ui/components/ui/tx';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import type { Jsonified } from '@penumbra-zone/types/jsonified';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
+import { TransactionViewComponent } from '@repo/ui/components/ui/tx';
 import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
-import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import { ApproveDeny } from '../approve-deny';
+import { getMetadata } from './get-metadata';
+import { hasAltGasFee } from './has-alt-gas-fee';
+import { hasTransparentAddress } from './has-transparent-address';
+import { TransactionViewTab } from './types';
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
-import { ApproveDeny } from '../approve-deny';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
-import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { TransactionViewTab } from './types';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { viewClient } from '../../../../clients';
-import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-
-const getMetadata: MetadataFetchFn = async ({ assetId }) => {
-  const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
-
-  const { denomMetadata } = await viewClient.assetMetadataById({ assetId: feeAssetId });
-  return denomMetadata;
-};
-
-const hasAltGasFee = (txv?: TransactionView): boolean => {
-  const { stakingAssetId } = new ChainRegistryClient().bundled.globals();
-  let feeAssetId = txv?.bodyView?.transactionParameters?.fee?.assetId;
-  if (feeAssetId === undefined) {
-    feeAssetId = stakingAssetId;
-  }
-
-  return feeAssetId.equals(stakingAssetId);
-};
-
-const hasTransparentAddress = (txv?: TransactionView): boolean => {
-  return (
-    txv?.bodyView?.actionViews.some(
-      action =>
-        action.actionView.case === 'ics20Withdrawal' &&
-        action.actionView.value.useTransparentAddress,
-    ) ?? false
-  );
-};
+import { ConnectError } from '@connectrpc/connect';
 
 export const TransactionApproval = () => {
-  const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
+  const { authorizeRequest, setChoice, sendResponse, invalidPlan } = useStore(txApprovalSelector);
 
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
 
-  if (!authReqString) {
-    return null;
-  }
-  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
-  if (!authorizeRequest.plan || !selectedTransactionView) {
+  if (!authorizeRequest?.plan || !selectedTransactionView) {
     return null;
   }
 
@@ -73,18 +43,28 @@ export const TransactionApproval = () => {
           Confirm Transaction
         </h1>
       </div>
+
       <div className='grow overflow-auto p-4'>
+        {invalidPlan && (
+          <div className='mb-4 rounded border content-center border-red-500 p-2 text-sm text-red-500 text-center'>
+            <h2>⚠ Invalid Transaction</h2>
+            <p>
+              {invalidPlan instanceof ConnectError ? invalidPlan.rawMessage : invalidPlan.message}
+            </p>
+          </div>
+        )}
+
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
           <>
             {hasTransparentAddress(selectedTransactionView) && (
-              <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
-                <span className='block text-center font-bold'>⚠ Privacy Warning</span>
+              <div className='mb-4 rounded border content-center border-yellow-500 p-2 text-sm text-yellow-500'>
+                <h2>⚠ Privacy Warning</h2>
                 <p>This transaction uses a transparent address which may reduce privacy.</p>
               </div>
             )}
             {!hasAltGasFee(selectedTransactionView) && (
-              <div className='mb-4 rounded border border-yellow-500 p-2 text-sm text-yellow-500'>
-                <span className='block text-center font-bold'>⚠ Privacy Warning</span>
+              <div className='mb-4 rounded border content-center border-yellow-500 p-2 text-sm text-yellow-500'>
+                <h2>⚠ Privacy Warning</h2>
                 <p>
                   Transaction uses a non-native fee token. To reduce gas costs and protect your
                   privacy, maintain an UM balance for fees.
@@ -93,6 +73,7 @@ export const TransactionApproval = () => {
             )}
           </>
         )}
+
         <ViewTabs
           defaultValue={selectedTransactionViewName}
           onValueChange={setSelectedTransactionViewName}
@@ -102,13 +83,16 @@ export const TransactionApproval = () => {
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
           <div className='mt-2'>
-            <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
+            <JsonViewer
+              jsonObj={
+                new AuthorizeRequest(authorizeRequest).toJson() as Jsonified<AuthorizeRequest>
+              }
+            />
           </div>
         )}
       </div>
-
       <div className='border-t border-gray-700 p-0'>
-        <ApproveDeny approve={approve} deny={deny} wait={3} />
+        <ApproveDeny approve={invalidPlan ? undefined : approve} deny={deny} wait={3} />
       </div>
     </div>
   );
