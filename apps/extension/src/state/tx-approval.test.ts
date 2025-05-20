@@ -1,16 +1,21 @@
-import { JsonObject } from '@bufbuild/protobuf';
+import { JsonObject, toPlainMessage } from '@bufbuild/protobuf';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
+import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
+  ActionPlan,
   TransactionPlan,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
 import { beforeEach, describe, expect, MockedFunction, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
-import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
-import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { PopupRequest, PopupType } from '../message/popup';
 
 // Mock transaction view functions
 vi.mock('@penumbra-zone/perspective/plan/view-transaction-plan', () => {
@@ -63,29 +68,39 @@ const pw = {
   },
 };
 
+const addressAsBech32 =
+  'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
+
+const address = new Address(addressFromBech32m(addressAsBech32));
+
+const assetId = new AssetId({ inner: new Uint8Array() });
+
+const spend = new ActionPlan({
+  action: {
+    case: 'spend',
+    value: { note: { address, value: { amount: { hi: 1n, lo: 0n }, assetId } } },
+  },
+});
+
+const plan = new TransactionPlan({ actions: [spend] });
+
 describe('Transaction Approval Slice', () => {
   const sessionExtStorage = mockSessionExtStorage();
   const localExtStorage = mockLocalExtStorage();
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
-  let authorizeRequest: AuthorizeRequest;
-  const waitForAuthorizeRequestSet = () =>
-    vi.waitFor(() =>
-      expect(useStore.getState().txApproval.authorizeRequest).toEqual(
-        authorizeRequest.toJsonString(),
-      ),
-    );
+  const authorizeRequest = new AuthorizeRequest({ plan });
+
+  const txApprovalRequest = {
+    authorizeRequest: authorizeRequest.toJson() as JsonObject,
+  } satisfies PopupRequest<PopupType.TxApproval>[PopupType.TxApproval];
 
   beforeEach(async () => {
     await localExtStorage.set('wallets', [wallet0]);
     await sessionExtStorage.set('passwordKey', pw);
     useStore = create<AllSlices>()(initializeStore(sessionExtStorage, localExtStorage));
     vi.clearAllMocks();
-
-    authorizeRequest = new AuthorizeRequest({
-      plan: new TransactionPlan(),
-    });
   });
 
   test('initial state is empty', () => {
@@ -93,6 +108,7 @@ describe('Transaction Approval Slice', () => {
     expect(state.responder).toBeUndefined();
     expect(state.authorizeRequest).toBeUndefined();
     expect(state.choice).toBeUndefined();
+    expect(state.invalidPlan).toBeUndefined();
   });
 
   describe('acceptRequest()', () => {
@@ -100,46 +116,39 @@ describe('Transaction Approval Slice', () => {
       await localExtStorage.set('wallets', []);
 
       await expect(() =>
-        useStore.getState().txApproval.acceptRequest({
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        }),
+        useStore.getState().txApproval.acceptRequest(txApprovalRequest),
       ).rejects.toThrowError('No found wallet');
 
       expect(useStore.getState().txApproval.authorizeRequest).toBeUndefined();
+      expect(useStore.getState().txApproval.invalidPlan).toBeUndefined();
     });
 
     test('accepts a request and sets state correctly', async () => {
-      void useStore.getState().txApproval.acceptRequest({
-        authorizeRequest: authorizeRequest.toJson() as JsonObject,
-      });
+      void useStore.getState().txApproval.acceptRequest(txApprovalRequest);
 
-      await waitForAuthorizeRequestSet();
+      await vi.waitFor(() => expect(useStore.getState().txApproval.authorizeRequest).toBeDefined());
 
       expect(useStore.getState().txApproval.authorizeRequest).toEqual(
-        authorizeRequest.toJsonString(),
+        toPlainMessage(authorizeRequest),
       );
     });
 
     test('throws if another request is pending', async () => {
       // First request
-      void useStore.getState().txApproval.acceptRequest({
-        authorizeRequest: authorizeRequest.toJson() as JsonObject,
-      });
+      void useStore.getState().txApproval.acceptRequest(txApprovalRequest);
+
+      await vi.waitFor(() => expect(useStore.getState().txApproval.authorizeRequest).toBeDefined());
 
       // Second request should throw
-      await expect(
-        useStore.getState().txApproval.acceptRequest({
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        }),
-      ).rejects.toThrow('Another request is still pending');
+      await expect(useStore.getState().txApproval.acceptRequest(txApprovalRequest)).rejects.toThrow(
+        'Another request is still pending',
+      );
     });
   });
 
   describe('setChoice()', () => {
     test('sets choice correctly', () => {
-      void useStore.getState().txApproval.acceptRequest({
-        authorizeRequest: authorizeRequest.toJson() as JsonObject,
-      });
+      void useStore.getState().txApproval.acceptRequest(txApprovalRequest);
 
       useStore.getState().txApproval.setChoice(UserChoice.Approved);
       expect(useStore.getState().txApproval.choice).toBe(UserChoice.Approved);
@@ -160,7 +169,7 @@ describe('Transaction Approval Slice', () => {
         authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
-      await waitForAuthorizeRequestSet();
+      await vi.waitFor(() => expect(useStore.getState().txApproval.authorizeRequest).toBeDefined());
 
       // Set the choice
       useStore.getState().txApproval.setChoice(UserChoice.Approved);
@@ -178,6 +187,7 @@ describe('Transaction Approval Slice', () => {
       expect(state.responder).toBeUndefined();
       expect(state.authorizeRequest).toBeUndefined();
       expect(state.choice).toBeUndefined();
+      expect(state.invalidPlan).toBeUndefined();
     });
 
     test('rejects if missing response data', async () => {
@@ -186,7 +196,7 @@ describe('Transaction Approval Slice', () => {
         authorizeRequest: authorizeRequest.toJson() as JsonObject,
       });
 
-      await waitForAuthorizeRequestSet();
+      await vi.waitFor(() => expect(useStore.getState().txApproval.authorizeRequest).toBeDefined());
 
       // Should reject when sending response without setting choice
       useStore.getState().txApproval.sendResponse();
@@ -197,6 +207,24 @@ describe('Transaction Approval Slice', () => {
       expect(state.responder).toBeUndefined();
       expect(state.authorizeRequest).toBeUndefined();
       expect(state.choice).toBeUndefined();
+      expect(state.invalidPlan).toBeUndefined();
+    });
+
+    test('rejects if the plan fails validation, even if the choice is somehow approved', async () => {
+      const invalidRequest = new AuthorizeRequest({ plan: new TransactionPlan() });
+
+      const request = useStore.getState().txApproval.acceptRequest({
+        authorizeRequest: invalidRequest.toJson() as JsonObject,
+      });
+
+      await vi.waitFor(() => expect(useStore.getState().txApproval.authorizeRequest).toBeDefined());
+
+      useStore.getState().txApproval.setChoice(UserChoice.Ignored);
+      useStore.getState().txApproval.sendResponse();
+
+      await expect(request).rejects.toThrow(
+        ConnectError.from(new ReferenceError('No actions planned'), Code.InvalidArgument),
+      );
     });
   });
 });

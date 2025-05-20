@@ -6,13 +6,8 @@ import { authorizePlan } from '@penumbra-zone/wasm/build';
 import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
-import { assertValidActionPlans } from './assert-valid-plan';
-import { getFullViewingKey } from './full-viewing-key';
 
 export const authorizeChrome = async (plan: TransactionPlan) => {
-  const fvk = await getFullViewingKey();
-  assertValidActionPlans(plan.actions, fvk);
-
   const passKeyJson = await sessionExtStorage.get('passwordKey');
   if (!passKeyJson) {
     throw new ConnectError('User must login', Code.Unauthenticated);
