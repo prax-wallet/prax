@@ -140,6 +140,9 @@ importers:
       '@repo/context':
         specifier: workspace:*
         version: link:../../packages/context
+      '@repo/custody-chrome':
+        specifier: workspace:*
+        version: link:../../packages/custody-chrome
       '@repo/storage-chrome':
         specifier: workspace:*
         version: link:../../packages/storage-chrome
@@ -306,6 +309,39 @@ importers:
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
+
+  packages/custody-chrome:
+    devDependencies:
+      '@penumbra-labs/registry':
+        specifier: ^12.7.2
+        version: 12.7.2
+      '@penumbra-zone/bech32m':
+        specifier: 17.0.0
+        version: 17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/crypto-web':
+        specifier: 46.0.0
+        version: 46.0.0(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/getters':
+        specifier: 27.0.0
+        version: 27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf':
+        specifier: 10.1.0
+        version: 10.1.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/services':
+        specifier: 66.0.0
+        version: 66.0.0(6cs4scnwnuejky7azn3uohrbku)
+      '@penumbra-zone/types':
+        specifier: 34.2.0
+        version: 34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/wasm':
+        specifier: 50.0.0
+        version: 50.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.0(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.0(@bufbuild/protobuf@1.10.0)))
+      '@repo/storage-chrome':
+        specifier: workspace:*
+        version: link:../storage-chrome
+      '@types/chrome':
+        specifier: 0.0.270
+        version: 0.0.270
 
   packages/mock-chrome:
     devDependencies:
