@@ -1,16 +1,15 @@
 import { alreadyApprovedSender } from './approve';
-import { assertValidSender, type ValidSender } from './validate';
-import { type InternalSender, isInternalSender } from './internal';
+import { isValidExternalSender, type ValidExternalSender } from './external';
+import { type ValidInternalSender, isValidInternalSender } from './internal';
 
-export const assertValidSessionPort = async (port: chrome.runtime.Port) => {
-  if (isInternalSender(port.sender)) {
-    return port as chrome.runtime.Port & { sender: InternalSender };
+export const validateSessionPort = async (port: chrome.runtime.Port) => {
+  if (isValidInternalSender(port.sender)) {
+    return port as chrome.runtime.Port & { sender: ValidInternalSender };
   }
 
-  const validSender = assertValidSender(port.sender);
-  if (await alreadyApprovedSender(validSender)) {
-    return port as chrome.runtime.Port & { sender: ValidSender };
+  if (isValidExternalSender(port.sender) && (await alreadyApprovedSender(port.sender))) {
+    return port as chrome.runtime.Port & { sender: ValidExternalSender };
   }
 
-  throw new Error('Session sender is not approved', { cause: port.sender?.origin });
+  throw new Error('Session sender is not approved', { cause: port.sender });
 };

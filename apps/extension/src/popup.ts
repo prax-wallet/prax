@@ -39,11 +39,11 @@ export const popup = async <M extends PopupType>(
     return sendPopup(popupRequest);
   }) satisfies LockGrantedCallback;
 
-  const popupResponse: PopupResponse<M> | null = await (navigator.locks.request(
+  const popupResponse = await navigator.locks.request(
     popupType,
     { ifAvailable: true, mode: 'exclusive' },
     lockGranted,
-  ) as ReturnType<typeof lockGranted>);
+  );
 
   if (popupResponse == null) {
     return null;

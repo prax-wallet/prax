@@ -7,28 +7,30 @@ import {
 } from '../../content-scripts/message/prax-connection';
 import { sendTab } from '../send/tab';
 import { approveSender } from '../../senders/approve';
-import { assertValidSender } from '../../senders/validate';
+import { isValidExternalSender } from '../../senders/external';
 
 // listen for page requests for approval
 export const contentScriptConnectListener = (
   req: unknown,
-  unvalidatedSender: chrome.runtime.MessageSender,
+  sender: chrome.runtime.MessageSender,
   // this handler responds with nothing, or an enumerated failure reason
   respond: (r: null | PenumbraRequestFailure) => void,
 ): boolean => {
-  if (!isPraxConnectionMessage(req) || req !== PraxConnection.Connect) {
+  if (
+    !isPraxConnectionMessage(req) ||
+    req !== PraxConnection.Connect ||
+    !isValidExternalSender(sender)
+  ) {
     // boolean return in handlers signals intent to respond
     return false;
   }
 
-  const validSender = assertValidSender(unvalidatedSender);
-
-  void approveSender(validSender).then(
+  void approveSender(sender).then(
     status => {
       // origin is already known, or popup choice was made
       if (status === UserChoice.Approved) {
         // init only the specific document
-        void sendTab(validSender, PraxConnection.Init);
+        void sendTab(sender, PraxConnection.Init);
         // handler is done
         respond(null); // no failure
       } else {
