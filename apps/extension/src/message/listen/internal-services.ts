@@ -1,7 +1,7 @@
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Services } from '@repo/context';
 import { isPraxServicesMessage, ServicesMessage } from '../services';
-import { isInternalSender } from '../../senders/internal';
+import { isValidInternalSender } from '../../senders/internal';
 import { localExtStorage } from '@repo/storage-chrome/local';
 
 export const internalServiceListener = (
@@ -10,7 +10,7 @@ export const internalServiceListener = (
   sender: chrome.runtime.MessageSender,
   respond: (response?: unknown) => void,
 ): boolean => {
-  if (!isInternalSender(sender) || !isPraxServicesMessage(req)) {
+  if (!isValidInternalSender(sender) || !isPraxServicesMessage(req)) {
     return false;
   }
 

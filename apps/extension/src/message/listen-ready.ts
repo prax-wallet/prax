@@ -1,4 +1,4 @@
-import { isInternalSender } from '../senders/internal';
+import { isValidInternalSender } from '../senders/internal';
 
 export const listenReady = <I extends string>(id: I, signal?: AbortSignal): Promise<I> => {
   const { promise: ready, resolve, reject } = Promise.withResolvers<I>();
@@ -8,12 +8,12 @@ export const listenReady = <I extends string>(id: I, signal?: AbortSignal): Prom
     sender: chrome.runtime.MessageSender,
     respond: (response: null) => void,
   ): boolean => {
-    if (isInternalSender(sender) && id === msg) {
-      resolve(id);
-      respond(null);
-      return true;
+    if (!isValidInternalSender(sender) || id !== msg) {
+      return false;
     }
-    return false;
+    resolve(id);
+    respond(null);
+    return true;
   };
 
   signal?.addEventListener('abort', () => reject(signal.reason));

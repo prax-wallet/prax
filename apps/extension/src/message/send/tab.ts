@@ -6,18 +6,14 @@ export const sendTab = async (
   target: chrome.runtime.MessageSender,
   message: PraxConnection,
 ): Promise<null> => {
-  const { documentId, frameId } = target;
-
-  if (target.tab?.id == null) {
-    throw new ReferenceError('Target is not a tab', { cause: target });
-  }
+  const { documentId, frameId, tab } = target;
 
   const response: unknown = await chrome.tabs
-    .sendMessage(target.tab.id, message, { documentId, frameId })
+    .sendMessage(tab!.id!, message, { documentId, frameId })
     .catch(suppressChromeResponderDroppedError);
 
   if (response != null) {
-    throw new Error('Unexpected response from tab', {
+    throw new TypeError('Unexpected response from tab', {
       cause: { target, message, response },
     });
   }
@@ -25,7 +21,11 @@ export const sendTab = async (
   return null;
 };
 
-export const sendTabs = (
+export function* sendTabs(
   targets: Iterable<chrome.runtime.MessageSender>,
   message: PraxConnection,
-) => Array.from(uniqueTabs(targets)).map(t => sendTab(t, message));
+) {
+  for (const target of uniqueTabs(targets)) {
+    yield sendTab(target, message);
+  }
+}
