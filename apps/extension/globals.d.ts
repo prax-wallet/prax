@@ -1,5 +1,19 @@
 declare global {
   /**
+   * Speculation Rules API is available in chrome.  Other browsers don't support
+   * this yet, so it's not in typescript's DOM lib.
+   *
+   * We use the `Document.prerendering` attribute. We also use the
+   * `prerenderingchange` event, but that doesn't need typing.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/prerendering
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/prerenderingchange_event
+   */
+  interface Document {
+    readonly prerendering?: boolean;
+  }
+
+  /**
    * Navigation API is available in chrome.  Other browsers don't support this
    * yet, so it's not in typescript's DOM lib.
    *
