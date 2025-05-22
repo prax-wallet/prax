@@ -24,7 +24,7 @@ import { ConnectRouter, createContextValues, Client } from '@connectrpc/connect'
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
-import { assertValidSessionPort } from './senders/session';
+import { validateSessionPort } from './senders/session';
 
 // context
 import { approverCtx } from '@penumbra-zone/services/ctx/approver';
@@ -104,7 +104,7 @@ const handler = await backOff(() => initHandler(), {
   },
 });
 
-CRSessionManager.init(PRAX, handler, assertValidSessionPort);
+CRSessionManager.init(PRAX, handler, validateSessionPort);
 
 // listen for content script activity
 chrome.runtime.onMessage.addListener(contentScriptConnectListener);
