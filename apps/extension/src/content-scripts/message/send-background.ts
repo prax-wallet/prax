@@ -1,9 +1,41 @@
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
-import type { PraxConnection } from './prax-connection';
+import { PraxConnection } from './prax-connection';
+import { prerendering } from './prerendering';
 
-export const sendBackground = async (
+/**
+ * Private lock, only shared locally among importers in the same runtime.
+ * @note Can't use `navigator.locks` because it would escape the content script.
+ */
+let lock: Promise<null | PenumbraRequestFailure> = Promise.resolve(null);
+let steal = new AbortController();
+
+/**
+ * Send a connection lifecycle message to the extension service worker.
+ *
+ * @note not async to avoid reentrancy
+ */
+export const sendBackground = (message: PraxConnection): Promise<null | PenumbraRequestFailure> => {
+  // disconnect can jump the queue
+  if (message === PraxConnection.Disconnect) {
+    steal.abort();
+    steal = new AbortController();
+  }
+
+  // capture present signal within the closure
+  const stolen = steal.signal;
+
+  return (lock = // update the lock
+    // wait for turn without failure
+    lock.catch().then(() => {
+      stolen.throwIfAborted();
+      return innerSendBackground(message);
+    }));
+};
+
+const innerSendBackground = async (
   message: PraxConnection,
 ): Promise<null | PenumbraRequestFailure> => {
+  await prerendering;
   try {
     const praxResponse: unknown = await chrome.runtime.sendMessage(message);
 
