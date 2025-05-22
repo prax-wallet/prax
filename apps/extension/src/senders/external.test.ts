@@ -1,17 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { assertValidSender } from './validate';
+import { assertValidExternalSender } from './external';
 
 describe('assertValidSender', () => {
   const mockValid: chrome.runtime.MessageSender = {
     tab: { id: 1 } as chrome.tabs.Tab,
     frameId: 0,
     documentId: 'mockId',
+    documentLifecycle: 'active',
     origin: 'https://example.com:1234',
     url: 'https://user:pass@example.com:1234/some/pa;th%20%22%00?query=arg&another=value&et;c+2+22%20#hash#hash%in',
   };
 
-  it('successfully returns the same sender if all conditions are met', () => {
-    expect(assertValidSender(mockValid)).toMatchObject(mockValid);
+  it('succeeds if all conditions are met', () => {
+    expect(() => assertValidExternalSender(mockValid)).not.toThrow();
   });
 
   it('succeeds when host contains ipv4 address', () => {
@@ -20,7 +21,7 @@ describe('assertValidSender', () => {
       origin: 'https://10.20.30.40',
       url: 'https://10.20.30.40/index.html',
     };
-    expect(assertValidSender(ipv6Origin)).toMatchObject(ipv6Origin);
+    expect(() => assertValidExternalSender(ipv6Origin)).not.toThrow();
   });
 
   it('succeeds when host contains ipv6 address', () => {
@@ -29,16 +30,16 @@ describe('assertValidSender', () => {
       origin: 'https://[fedc:ba98:7654:3210:fedc:ba98:7654:3210]',
       url: 'https://[fedc:ba98:7654:3210:fedc:ba98:7654:3210]/index.html',
     };
-    expect(assertValidSender(ipv6Origin)).toMatchObject(ipv6Origin);
+    expect(() => assertValidExternalSender(ipv6Origin)).not.toThrow();
   });
 
   it('throws if sender undefined', () => {
-    expect(() => assertValidSender(undefined)).toThrow('Sender undefined');
+    expect(() => assertValidExternalSender(undefined)).toThrow('Sender undefined');
   });
 
   it('throws if sender is not a tab', () => {
     const tabless = { ...mockValid, tab: undefined };
-    expect(() => assertValidSender(tabless)).toThrow('Sender is not a tab');
+    expect(() => assertValidExternalSender(tabless)).toThrow('Sender is not a tab');
   });
 
   it('throws if sender is not a top-level frame', () => {
@@ -46,7 +47,7 @@ describe('assertValidSender', () => {
       ...mockValid,
       frameId: 1,
     };
-    expect(() => assertValidSender(iframed)).toThrow('Sender is not a top-level frame');
+    expect(() => assertValidExternalSender(iframed)).toThrow('Sender is not a top-level frame');
   });
 
   it('throws if sender is not a document', () => {
@@ -54,7 +55,15 @@ describe('assertValidSender', () => {
       ...mockValid,
       documentId: undefined,
     };
-    expect(() => assertValidSender(notDoc)).toThrow('Sender is not a document');
+    expect(() => assertValidExternalSender(notDoc)).toThrow('Sender is not a document');
+  });
+
+  it('throws if sender is not active', () => {
+    const inactive: chrome.runtime.MessageSender = {
+      ...mockValid,
+      documentLifecycle: 'prerender',
+    };
+    expect(() => assertValidExternalSender(inactive)).toThrow('Sender is not active');
   });
 
   it('throws if sender has no origin', () => {
@@ -62,7 +71,7 @@ describe('assertValidSender', () => {
       ...mockValid,
       origin: undefined,
     };
-    expect(() => assertValidSender(originless)).toThrow('Sender has no origin');
+    expect(() => assertValidExternalSender(originless)).toThrow('Sender has no origin');
   });
 
   it('throws if sender origin is unparseable', () => {
@@ -70,7 +79,7 @@ describe('assertValidSender', () => {
       ...mockValid,
       origin: 'lol,',
     };
-    expect(() => assertValidSender(unparseableOrigin)).toThrow('Invalid URL');
+    expect(() => assertValidExternalSender(unparseableOrigin)).toThrow('Invalid URL');
   });
 
   it("throws if sender origin can't roundtrip", () => {
@@ -79,7 +88,7 @@ describe('assertValidSender', () => {
       // cyrillic lookalike for latin 'a' in hostname
       origin: 'https://exаmple.com',
     };
-    expect(() => assertValidSender(invalidOrigin)).toThrow('Sender origin is invalid');
+    expect(() => assertValidExternalSender(invalidOrigin)).toThrow('Sender origin is invalid');
   });
 
   it('throws if sender origin contains path', () => {
@@ -88,7 +97,7 @@ describe('assertValidSender', () => {
       // trailing slash is a path, not part of an origin
       origin: 'https://example.com/',
     };
-    expect(() => assertValidSender(invalidOrigin)).toThrow('Sender origin is invalid');
+    expect(() => assertValidExternalSender(invalidOrigin)).toThrow('Sender origin is invalid');
   });
 
   it('throws if sender protocol is not allowlisted', () => {
@@ -96,7 +105,7 @@ describe('assertValidSender', () => {
       ...mockValid,
       origin: 'http://example.com',
     };
-    expect(() => assertValidSender(invalidProtocol)).toThrow('Sender protocol is not');
+    expect(() => assertValidExternalSender(invalidProtocol)).toThrow('Sender protocol is not');
   });
 
   it(`throws if sender protocol is http and origin is localhost but not in dev mode`, () => {
@@ -106,17 +115,16 @@ describe('assertValidSender', () => {
       origin: 'http://localhost:8000',
       url: 'http://localhost:8000/index.html',
     };
-    expect(assertValidSender(localhostSender)).toMatchObject(localhostSender);
+    expect(() => assertValidExternalSender(localhostSender)).not.toThrow();
   });
 
-  it(`succeeds if sender protocol is http and origin is localhost in dev mode`, () => {
-    globalThis.__DEV__ = true;
+  it('succeeds if sender protocol is not https, but is http and origin is localhost', () => {
     const localhostSender: chrome.runtime.MessageSender = {
       ...mockValid,
       origin: 'http://localhost',
       url: 'http://localhost/index.html',
     };
-    expect(assertValidSender(localhostSender)).toMatchObject(localhostSender);
+    expect(() => assertValidExternalSender(localhostSender)).not.toThrow();
   });
 
   it(`succeeds if sender protocol is http and origin is localhost with port specified in dev mode`, () => {
@@ -126,7 +134,7 @@ describe('assertValidSender', () => {
       origin: 'http://localhost:8000',
       url: 'http://localhost:8000/index.html',
     };
-    expect(assertValidSender(localhostSender)).toMatchObject(localhostSender);
+    expect(() => assertValidExternalSender(localhostSender)).not.toThrow();
   });
 
   it('throws if sender has no URL', () => {
@@ -134,7 +142,7 @@ describe('assertValidSender', () => {
       ...mockValid,
       url: undefined,
     };
-    expect(() => assertValidSender(urlless)).toThrow('Sender has no URL');
+    expect(() => assertValidExternalSender(urlless)).toThrow('Sender has no URL');
   });
 
   it("throws if sender URL can't roundtrip", () => {
@@ -144,7 +152,7 @@ describe('assertValidSender', () => {
       origin: 'https://example.invalid',
       url: 'https://‮sdrawkcab%2Fmoc.elpmaxe@example.su/',
     };
-    expect(() => assertValidSender(invalidUrl)).toThrow('Sender URL is invalid');
+    expect(() => assertValidExternalSender(invalidUrl)).toThrow('Sender URL is invalid');
   });
 
   it('throws if sender URL has unexpected host', () => {
@@ -153,7 +161,7 @@ describe('assertValidSender', () => {
       origin: 'https://example.com',
       url: 'https://example.net/some/path',
     };
-    expect(() => assertValidSender(different)).toThrow('Sender URL has unexpected origin');
+    expect(() => assertValidExternalSender(different)).toThrow('Sender URL has unexpected origin');
   });
 
   it('throws if sender URL has unexpected port', () => {
@@ -162,7 +170,7 @@ describe('assertValidSender', () => {
       origin: 'https://example.com',
       url: 'https://example.com:123/some/path',
     };
-    expect(() => assertValidSender(different)).toThrow('Sender URL has unexpected origin');
+    expect(() => assertValidExternalSender(different)).toThrow('Sender URL has unexpected origin');
   });
 
   it('throws if sender URL is missing expected port', () => {
@@ -171,6 +179,6 @@ describe('assertValidSender', () => {
       origin: 'https://example.com:999',
       url: 'https://example.com/some/path',
     };
-    expect(() => assertValidSender(different)).toThrow('Sender URL has unexpected origin');
+    expect(() => assertValidExternalSender(different)).toThrow('Sender URL has unexpected origin');
   });
 });

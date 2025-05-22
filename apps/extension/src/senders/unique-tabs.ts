@@ -2,7 +2,9 @@
  * Produces a subset of senders with unique script contexts from a larger
  * collection of senders that may have overlapping script contexts.
  */
-export function* uniqueTabs<S extends chrome.runtime.MessageSender>(targets: Iterable<S>) {
+export function* uniqueTabs<S extends chrome.runtime.MessageSender>(
+  targets: Iterable<S>,
+): Generator<S> {
   // scope by tab id
   for (const [_, senderTabs] of Map.groupBy(targets, s => s.tab?.id)) {
     // scope by document id
@@ -12,7 +14,7 @@ export function* uniqueTabs<S extends chrome.runtime.MessageSender>(targets: Ite
         // any given frame's sessions are all controlled by a single content
         // script, so by now these should all be comparable. assert this and
         // yield a single target representing this group.
-        yield senderFrames.reduce(assertSameContentScript);
+        yield senderFrames.reduce(reduceSameContentScript);
       }
     }
   }
@@ -22,7 +24,7 @@ export function* uniqueTabs<S extends chrome.runtime.MessageSender>(targets: Ite
  * Senders sharing the same content script context should have the same tab id,
  * document id, and frame id.
  */
-const assertSameContentScript = <B extends chrome.runtime.MessageSender>(
+const reduceSameContentScript = <B extends chrome.runtime.MessageSender>(
   targetA: chrome.runtime.MessageSender,
   targetB: B,
 ) => {
