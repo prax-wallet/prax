@@ -39,9 +39,8 @@ Or you can use [nix](https://nixos.org/download/) to create a devshell via `nix 
 Once you have all these tools, you can
 
 ```sh
-git clone https://github.com/prax-wallet/web
-cd web
-pnpm i
+git clone https://github.com/prax-wallet/prax
+pnpm install && pnpm dev
 CHROMIUM_PROFILE=chromium-profile pnpm dev
 ```
 
@@ -69,9 +68,13 @@ hosting the injected scripts.
 When testing Prax locally, you may want to depend on as-yet unreleased
 software changes, e.g. in the [web repo]. To do so:
 
-1. In the [web repo], run `pnpm install && pnpm build && pnpm dev:pack`
-2. In the [web repo], run `pnpm dev` (in a separate terminal)
-3. In the [prax repo], run `pnpm -w add:tgz ~/PATH_TO_WEB_REPO/web/packages/*/penumbra-zone-*.tgz && pnpm -w syncpack fix-mismatches && pnpm dev`
+1. In the [web repo], run `pnpm install && pnpm build && pnpm dev:pack`.
+
+2. In a separate terminal, navigate to `apps/minifront` within the [web repo], run `pnpm dev:build && pnpm dev:app`.
+
+3. In a separate terminal, navigate to `apps/veil` within the [web repo], run `pnpm install && pnpm dev`.
+
+4. In the [prax repo], run `pnpm -w add:tgz ~/PATH_TO_WEB_REPO/web/packages/*/penumbra-zone-*.tgz && pnpm -w syncpack fix-mismatches && pnpm dev`.
 
 Provided you configured `CHROMIUM_PROFILE`, you should see a browser launch,
 running the local builds. You must also ensure that the desired feature branches
