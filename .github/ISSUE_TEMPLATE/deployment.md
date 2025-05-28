@@ -21,7 +21,6 @@ Manual testing to confirm extension works with all flows. Can use mainnet rpc or
     - [ ] Account selection arrows
       - [ ] Copy icon works
     - [ ] IBC deposit address generation
-    - [ ] Validate addresses
       - [ ] Invalid address
       - [ ] Owned IBC deposit address
       - [ ] Owned Normal address

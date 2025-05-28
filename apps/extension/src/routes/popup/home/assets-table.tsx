@@ -46,13 +46,39 @@ export const AssetsTable = ({ account }: AssetsTableProps) => {
     staleTime: Infinity,
     queryFn: async () => {
       try {
-        const balances = await Array.fromAsync(viewClient.balances({ accountFilter: { account } }));
-        balances.sort((a, b) => {
+        const allBalances = await Array.fromAsync(
+          viewClient.balances({ accountFilter: { account } }),
+        );
+
+        // Filter out auction, voted, and LP NFT assets by checking for relevant identifiers in the base metadata field.
+        const filteredBalances = allBalances.filter(balance => {
+          const metadata = getMetadataFromBalancesResponse.optional(balance);
+
+          // We probably want to display unknown assets
+          if (!metadata) {
+            return true;
+          }
+
+          if (metadata.base && typeof metadata.base === 'string') {
+            if (
+              metadata.base.includes('auctionnft') ||
+              metadata.base.includes('lpnft') ||
+              metadata.base.includes('voted')
+            ) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+
+        filteredBalances.sort((a, b) => {
           const aScore = getMetadataFromBalancesResponse.optional(a)?.priorityScore ?? 0n;
           const bScore = getMetadataFromBalancesResponse.optional(b)?.priorityScore ?? 0n;
           return Number(bScore - aScore);
         });
-        return balances;
+
+        return filteredBalances;
       } catch (_) {
         return [];
       }
@@ -67,7 +93,7 @@ export const AssetsTable = ({ account }: AssetsTableProps) => {
     <Table>
       <TableHeader className='group'>
         <TableRow>
-          <TableHead>Balance</TableHead>
+          <TableHead>Holdings</TableHead>
           <TableHead>Value</TableHead>
         </TableRow>
       </TableHeader>
