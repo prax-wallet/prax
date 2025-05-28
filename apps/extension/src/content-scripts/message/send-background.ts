@@ -1,4 +1,4 @@
-import { PenumbraRequestFailure } from '@penumbra-zone/client';
+import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 import type { PraxConnection } from './prax-connection';
 
 export const sendBackground = async (
