@@ -8,6 +8,13 @@ import { PopupPath } from '../paths';
 
 export const FrontendLink = () => {
   const frontendUrl = useStore(getDefaultFrontend);
+
+  // Append '/portfolio' path for the default dex frontend; use the base minifront URL for all others.
+  const href =
+    frontendUrl === 'https://dex.penumbra.zone'
+      ? new URL('/portfolio', frontendUrl).toString()
+      : frontendUrl;
+
   const navigate = usePopupNav();
 
   // In case the frontendUrl is not set, prevent the link action, and open the settings page instead
@@ -20,9 +27,9 @@ export const FrontendLink = () => {
   };
 
   return (
-    <a href={frontendUrl} target='_blank' rel='noreferrer'>
+    <a href={href} target='_blank' rel='noreferrer'>
       <Button className='flex w-full items-center gap-2' variant='gradient' onClick={onClick}>
-        Manage portfolio {frontendUrl && <ExternalLink size={16} />}
+        Manage portfolio {href && <ExternalLink size={16} />}
       </Button>
     </a>
   );
