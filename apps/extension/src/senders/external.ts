@@ -13,6 +13,15 @@ export type ValidExternalSender = chrome.runtime.MessageSender & {
   url: string;
 };
 
+export type PrerenderingExternalSender = chrome.runtime.MessageSender & {
+  documentLifecycle: 'prerender';
+  frameId: Exclude<number, 0>;
+  documentId: string;
+  tab: chrome.tabs.Tab & { id: number };
+  origin: string;
+  url: string;
+};
+
 const isHttps = (url: URL): url is URLValidProtocol =>
   typeof url.protocol === 'string' && (validProtocols as string[]).includes(url.protocol);
 
@@ -28,7 +37,23 @@ export const isValidExternalSender = (
   try {
     assertValidExternalSender(sender);
     return true;
-  } catch {
+  } catch (invalid) {
+    console.debug(invalid);
+    return false;
+  }
+};
+
+/**
+ * Checks the sender is a prerendering document that is otherwise valid.
+ */
+export const isPrerenderingExternalSender = (
+  sender?: chrome.runtime.MessageSender,
+): sender is PrerenderingExternalSender => {
+  try {
+    assertPrerenderingSender(sender);
+    return true;
+  } catch (invalid) {
+    console.debug(invalid);
     return false;
   }
 };
@@ -39,6 +64,34 @@ export const isValidExternalSender = (
 export function assertValidExternalSender(
   sender?: chrome.runtime.MessageSender,
 ): asserts sender is ValidExternalSender {
+  assertSenderCommon(sender);
+  if (sender.documentLifecycle !== 'active') {
+    throw new TypeError('Sender is not an active document', { cause: sender });
+  }
+  if (sender.frameId !== 0) {
+    throw new TypeError('Sender is not a top-level frame', { cause: sender });
+  }
+}
+
+/**
+ * Asserts the sender is a prerendering document that is otherwise valid.
+ */
+export function assertPrerenderingSender(
+  sender?: chrome.runtime.MessageSender,
+): asserts sender is PrerenderingExternalSender {
+  assertSenderCommon(sender);
+  if (sender.documentLifecycle !== 'prerender') {
+    throw new TypeError('Sender is not a prerendering document', { cause: sender });
+  }
+  if (!sender.frameId) {
+    throw new TypeError('Sender is not a prerendering frame', { cause: sender });
+  }
+}
+
+function assertSenderCommon(
+  sender?: chrome.runtime.MessageSender,
+): asserts sender is chrome.runtime.MessageSender &
+  Required<Pick<chrome.runtime.MessageSender, 'tab' | 'documentId' | 'origin' | 'url'>> {
   if (sender == null) {
     throw new ReferenceError('Sender undefined', { cause: sender });
   }
@@ -47,12 +100,6 @@ export function assertValidExternalSender(
   }
   if (!sender.documentId) {
     throw new TypeError('Sender is not a document', { cause: sender });
-  }
-  if (sender.documentLifecycle !== 'active') {
-    throw new TypeError('Sender is not active', { cause: sender });
-  }
-  if (sender.frameId !== 0) {
-    throw new TypeError('Sender is not a top-level frame', { cause: sender });
   }
 
   if (!sender.origin) {
