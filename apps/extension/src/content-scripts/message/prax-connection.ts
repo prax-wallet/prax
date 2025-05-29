@@ -5,5 +5,5 @@ export enum PraxConnection {
   End = 'End',
 }
 
-export const isPraxConnectionMessage = (value: unknown): value is PraxConnection =>
+export const isPraxConnection = (value: unknown): value is PraxConnection =>
   typeof value === 'string' && value in PraxConnection;

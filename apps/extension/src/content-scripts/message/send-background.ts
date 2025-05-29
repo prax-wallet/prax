@@ -5,24 +5,15 @@ export const sendBackground = async (
   message: PraxConnection,
 ): Promise<null | PenumbraRequestFailure> => {
   try {
-    const praxResponse: unknown = await chrome.runtime.sendMessage(message);
+    const response: unknown = await chrome.runtime.sendMessage(message);
 
-    if (praxResponse == null) {
-      return null;
-    }
-
-    switch (
-      typeof praxResponse === 'string' &&
-      praxResponse in PenumbraRequestFailure &&
-      (praxResponse as PenumbraRequestFailure)
-    ) {
-      case false:
-        throw new TypeError('Unknown response from Prax', { cause: praxResponse });
+    switch (response) {
+      case null:
       case PenumbraRequestFailure.Denied:
       case PenumbraRequestFailure.NeedsLogin:
-        return praxResponse as PenumbraRequestFailure;
+        return response;
       default:
-        throw new TypeError('Unexpected response from Prax', { cause: praxResponse });
+        throw new TypeError('Unexpected response from Prax', { cause: response });
     }
   } catch (e) {
     const fallback =
