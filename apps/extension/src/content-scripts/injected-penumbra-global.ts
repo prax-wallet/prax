@@ -32,6 +32,12 @@ import { listenWindow, sendWindow } from './message/send-window';
 const isPenumbraRequestFailure = (data: unknown): data is PenumbraRequestFailure =>
   typeof data === 'string' && data in PenumbraRequestFailure;
 
+const prerenderComplete = new Promise<void>(resolve =>
+  document.prerendering
+    ? document.addEventListener('prerenderingchange', () => resolve(), { once: true })
+    : resolve(),
+);
+
 class PraxInjection {
   private static singleton?: PraxInjection = new PraxInjection();
 
@@ -84,7 +90,7 @@ class PraxInjection {
     };
     listenWindow(listenAc.signal, preconnectListener);
 
-    // announce
+    // announce load (does not need to wait for prerendering)
     sendWindow<PraxConnection>(PraxConnection.Load);
   }
 
@@ -100,13 +106,13 @@ class PraxInjection {
       this.setState(PenumbraState.Pending);
     }
     const attempt = this.listenPortMessage();
-    sendWindow<PraxConnection>(PraxConnection.Connect);
+    void prerenderComplete.then(() => sendWindow<PraxConnection>(PraxConnection.Connect));
     return attempt;
   }
 
   private postDisconnectRequest() {
     const attempt = this.listenEndMessage();
-    sendWindow<PraxConnection>(PraxConnection.Disconnect);
+    void prerenderComplete.then(() => sendWindow<PraxConnection>(PraxConnection.Disconnect));
     return attempt;
   }
 
