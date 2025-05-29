@@ -13,11 +13,16 @@ export const contentScriptConnectListener = (
   // responds with null or an enumerated failure
   respond: (r: null | PenumbraRequestFailure) => void,
 ): boolean => {
-  if (req === PraxConnection.Connect && isValidExternalSender(sender)) {
-    void handle(sender).then(respond);
-    return true;
+  if (req !== PraxConnection.Connect) {
+    return false;
   }
-  return false;
+
+  if (!isValidExternalSender(sender)) {
+    return false;
+  }
+
+  void handle(sender).then(respond);
+  return true;
 };
 
 const handle = (sender: ValidExternalSender) =>

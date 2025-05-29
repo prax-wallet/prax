@@ -8,20 +8,22 @@ export const sendBackground = async (
     const response: unknown = await chrome.runtime.sendMessage(message);
 
     switch (response) {
+      case undefined:
+        throw new ReferenceError('No response');
       case null:
       case PenumbraRequestFailure.Denied:
       case PenumbraRequestFailure.NeedsLogin:
         return response;
       default:
-        throw new TypeError('Unexpected response from Prax', { cause: response });
+        throw new TypeError('Unexpected response', { cause: response });
     }
-  } catch (e) {
+  } catch (error) {
     const fallback =
-      e instanceof TypeError
+      error instanceof TypeError
         ? PenumbraRequestFailure.BadResponse
         : PenumbraRequestFailure.NotHandled;
     if (globalThis.__DEV__) {
-      console.error('sendBackground', fallback, e);
+      console.error('sendBackground', { fallback, message, error });
     }
     return fallback;
   }
