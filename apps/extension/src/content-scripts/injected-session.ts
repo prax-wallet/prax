@@ -1,27 +1,26 @@
 import { CRSessionClient } from '@penumbra-zone/transport-chrome/session-client';
 import { isPraxConnection, PraxConnection } from './message/prax-connection';
-import { isPraxMessageEvent, unwrapPraxMessageEvent } from './message/prax-message-event';
+import { unwrapPraxMessageEvent } from './message/prax-message-event';
 import { sendBackground } from './message/send-background';
-import { sendWindow } from './message/send-window';
+import { listenWindow, sendWindow } from './message/send-window';
+import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 
-const praxDocumentListener = (ev: MessageEvent<unknown>) => {
-  if (ev.origin === window.origin && isPraxMessageEvent(ev)) {
-    const request = unwrapPraxMessageEvent(ev);
-    switch (request) {
-      case PraxConnection.Connect:
-      case PraxConnection.Disconnect:
-        ev.stopPropagation();
-        void sendBackground(request).then(response => {
-          if (response != null) {
-            sendWindow(response);
-          }
-        });
-        break;
-      default: // message is not for this handler
-        return;
-    }
+listenWindow(undefined, ev => {
+  const request = unwrapPraxMessageEvent(ev);
+  switch (request) {
+    case PraxConnection.Connect:
+    case PraxConnection.Disconnect:
+      ev.stopImmediatePropagation();
+      void sendBackground(request).then(response => {
+        if (response != null) {
+          sendWindow<PenumbraRequestFailure>(response);
+        }
+      });
+      break;
+    default: // message is not for this handler
+      return;
   }
-};
+});
 
 const praxExtensionListener = (
   message: unknown,
@@ -32,12 +31,12 @@ const praxExtensionListener = (
     switch (message) {
       case PraxConnection.Init: {
         const port = CRSessionClient.init(PRAX);
-        sendWindow(port);
+        sendWindow<MessagePort>(port);
         break;
       }
       case PraxConnection.End: {
         CRSessionClient.end(PRAX);
-        sendWindow(PraxConnection.End);
+        sendWindow<PraxConnection>(PraxConnection.End);
         break;
       }
       default: // message is not for this handler
@@ -53,12 +52,11 @@ const praxExtensionListener = (
 };
 
 // attach
-window.addEventListener('message', praxDocumentListener);
 chrome.runtime.onMessage.addListener(praxExtensionListener);
 
 // announce
 void sendBackground(PraxConnection.Init).then(response => {
   if (response != null) {
-    sendWindow(response);
+    sendWindow<PenumbraRequestFailure>(response);
   }
 });
