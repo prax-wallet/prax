@@ -27,7 +27,6 @@ const hasAltGasFee = (txv?: TransactionView): boolean => {
     feeAssetId = stakingAssetId;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we enforce that it's a defined value.
   return feeAssetId!.equals(stakingAssetId);
 };
 
