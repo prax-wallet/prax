@@ -1,11 +1,11 @@
 import { CRSessionClient } from '@penumbra-zone/transport-chrome/session-client';
-import { isPraxConnection, PraxConnection } from './message/prax-connection';
-import { unwrapPraxMessageEvent } from './message/prax-message-event';
+import { PraxConnection } from './message/prax-connection';
+import { PraxMessageEvent, unwrapPraxMessageEvent } from './message/prax-message-event';
 import { listenBackground, sendBackground } from './message/send-background';
 import { listenWindow, sendWindow } from './message/send-window';
 import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 
-listenWindow(undefined, ev => {
+const praxDocumentListener = (ev: PraxMessageEvent): boolean => {
   const request = unwrapPraxMessageEvent(ev);
   switch (request) {
     case PraxConnection.Connect:
@@ -16,17 +16,13 @@ listenWindow(undefined, ev => {
           sendWindow<PenumbraRequestFailure>(response);
         }
       });
-      break;
+      return true;
     default: // message is not for this handler
-      return;
+      return false;
   }
-});
+};
 
-listenBackground<null>(undefined, (message: unknown) => {
-  if (!isPraxConnection(message)) {
-    return;
-  }
-
+const praxExtensionListener = (message: unknown) => {
   switch (message) {
     case PraxConnection.Init:
       sendWindow<MessagePort>(CRSessionClient.init(PRAX));
@@ -40,7 +36,11 @@ listenBackground<null>(undefined, (message: unknown) => {
   }
 
   return Promise.resolve(null);
-});
+};
+
+// attach
+listenWindow(undefined, praxDocumentListener);
+listenBackground<null>(undefined, praxExtensionListener);
 
 // announce
 void sendBackground(PraxConnection.Init).then(response => {

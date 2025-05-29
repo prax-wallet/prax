@@ -20,7 +20,12 @@ export const contentScriptDisconnectListener = (
     return false;
   }
 
-  void handle(sender).then(respond);
+  void handle(sender).then(res => {
+    if (globalThis.__DEV__) {
+      console.debug('contentScriptDisconnectListener responding', { req, res });
+    }
+    respond(res);
+  });
   return true;
 };
 

@@ -21,7 +21,12 @@ export const contentScriptConnectListener = (
     return false;
   }
 
-  void handle(sender).then(respond);
+  void handle(sender).then(res => {
+    if (globalThis.__DEV__) {
+      console.debug('contentScriptConnectListener responding', { req, res });
+    }
+    respond(res);
+  });
   return true;
 };
 

@@ -25,7 +25,11 @@ import type { PenumbraProvider } from '@penumbra-zone/client/provider';
 import { PenumbraState } from '@penumbra-zone/client/state';
 import { PenumbraSymbol } from '@penumbra-zone/client/symbol';
 import { PraxConnection } from './message/prax-connection';
-import { isPraxMessageEvent, unwrapPraxMessageEvent } from './message/prax-message-event';
+import {
+  isPraxMessageEvent,
+  PraxMessageEvent,
+  unwrapPraxMessageEvent,
+} from './message/prax-message-event';
 import { listenWindow, sendWindow } from './message/send-window';
 
 const isPenumbraRequestFailure = (data: unknown): data is PenumbraRequestFailure =>
@@ -58,12 +62,15 @@ class PraxInjection {
     }
 
     // ambient end listener
-    listenWindow(undefined, ev => {
+    const ambientEndListener = (ev: PraxMessageEvent): boolean => {
       const content = unwrapPraxMessageEvent(ev);
-      if (content === PraxConnection.End) {
-        this.setState(PenumbraState.Disconnected);
+      if (content !== PraxConnection.End) {
+        return false;
       }
-    });
+      this.setState(PenumbraState.Disconnected);
+      return true;
+    };
+    listenWindow(undefined, ambientEndListener);
 
     void this.listenPortMessage();
   }
@@ -94,17 +101,21 @@ class PraxInjection {
     const connection = Promise.withResolvers<MessagePort>();
 
     const listenAc = new AbortController();
-    listenWindow(listenAc.signal, ev => {
+    const portListener = (ev: PraxMessageEvent): boolean => {
       if (isPraxMessageEvent(ev)) {
         const content = unwrapPraxMessageEvent(ev);
         if (content instanceof MessagePort) {
           ev.stopImmediatePropagation();
           connection.resolve(content);
+          return true;
         } else if (isPenumbraRequestFailure(content)) {
           connection.reject(new Error('Connection request failed', { cause: content }));
+          return true;
         }
       }
-    });
+      return false;
+    };
+    listenWindow(listenAc.signal, portListener);
 
     void connection.promise
       .then(() => this.setState(PenumbraState.Connected))
@@ -118,14 +129,18 @@ class PraxInjection {
     const disconnection = Promise.withResolvers<void>();
 
     const listenAc = new AbortController();
-    listenWindow(listenAc.signal, ev => {
+    const endListener = (ev: PraxMessageEvent): boolean => {
       const content = unwrapPraxMessageEvent(ev);
       if (content === PraxConnection.End) {
         disconnection.resolve();
+        return true;
       } else if (isPenumbraRequestFailure(content)) {
         disconnection.reject(new Error('Disconnect request failed', { cause: content }));
+        return true;
       }
-    });
+      return false;
+    };
+    listenWindow(listenAc.signal, endListener);
 
     void disconnection.promise.finally(() => {
       this.setState(PenumbraState.Disconnected);

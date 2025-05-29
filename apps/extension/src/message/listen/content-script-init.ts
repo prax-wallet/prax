@@ -18,7 +18,12 @@ export const contentScriptInitListener = (
     return false;
   }
 
-  void handle(sender).then(respond);
+  void handle(sender).then(res => {
+    if (globalThis.__DEV__) {
+      console.debug('contentScriptInitListener responding', { req, res });
+    }
+    respond(res);
+  });
   return true;
 };
 
