@@ -1,7 +1,7 @@
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
-import { PraxConnection } from '../content-scripts/message/prax-connection';
-import { sendTabs } from '../message/send/tab';
 import { removeOriginRecord } from '@repo/storage-chrome/origin';
+import { PraxControl } from '../content-scripts/message/prax-control';
+import { sendTabs } from '../message/send/tab';
 
 /**
  * Request deletion of the origin's permission record, and ask the session
@@ -22,7 +22,7 @@ export const revokeOrigin = (targetOrigin: string) => {
     //
     // This informs the content scripts they are actually disconnected, so they
     // can clean up.
-    sendTabs(killedSenders, PraxConnection.End),
+    sendTabs(killedSenders, PraxControl.End),
   ).catch(failure => {
     // This should never happen, but if it does, hopefully restarting the
     // extension will stop anything weird happening.

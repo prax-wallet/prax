@@ -1,43 +1,45 @@
+import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 import { CRSessionClient } from '@penumbra-zone/transport-chrome/session-client';
-import { PraxConnection } from './message/prax-connection';
+import { isPraxConnection } from './message/prax-connection';
+import { isPraxControl, PraxControl } from './message/prax-control';
 import { PraxMessageEvent, unwrapPraxMessageEvent } from './message/prax-message-event';
 import { listenBackground, sendBackground } from './message/send-background';
 import { listenWindow, sendWindow } from './message/send-window';
-import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 
 const praxDocumentListener = (ev: PraxMessageEvent): boolean => {
   const request = unwrapPraxMessageEvent(ev);
-  switch (request) {
-    case PraxConnection.Load:
-    case PraxConnection.Connect:
-    case PraxConnection.Disconnect:
-      ev.stopImmediatePropagation();
-      void sendBackground(request).then(response => {
-        if (response != null) {
-          sendWindow<PenumbraRequestFailure>(response);
-        }
-      });
-      return true;
-    default: // message is not for this handler
-      return false;
+  if (!isPraxConnection(request)) {
+    return false;
   }
+
+  ev.stopImmediatePropagation();
+  void sendBackground(request).then(response => {
+    if (response != null) {
+      sendWindow<PenumbraRequestFailure>(response);
+    }
+  });
+  return true;
 };
 
 const praxExtensionListener = (message: unknown): void | Promise<null> => {
-  switch (message) {
-    case PraxConnection.Init:
-      sendWindow<MessagePort>(CRSessionClient.init(PRAX));
-      break;
-    case PraxConnection.End:
-      CRSessionClient.end(PRAX);
-      sendWindow<PraxConnection>(PraxConnection.End);
-      break;
-    case PraxConnection.Preconnect:
-      sendWindow<PraxConnection>(message);
-      break;
-    default: // message is not for this handler
-      return;
+  if (!isPraxControl(message)) {
+    return;
   }
+
+  let forward: PraxControl | MessagePort;
+  switch (message) {
+    case PraxControl.Init:
+      forward = CRSessionClient.init(PRAX);
+      break;
+    case PraxControl.End:
+      CRSessionClient.end(PRAX);
+      forward = PraxControl.End;
+      break;
+    case PraxControl.Preconnect:
+      forward = PraxControl.Preconnect;
+      break;
+  }
+  sendWindow<PraxControl | MessagePort>(forward);
 
   return Promise.resolve(null);
 };

@@ -25,6 +25,7 @@ import type { PenumbraProvider } from '@penumbra-zone/client/provider';
 import { PenumbraState } from '@penumbra-zone/client/state';
 import { PenumbraSymbol } from '@penumbra-zone/client/symbol';
 import { PraxConnection } from './message/prax-connection';
+import { PraxControl } from './message/prax-control';
 import { PraxMessageEvent, unwrapPraxMessageEvent } from './message/prax-message-event';
 import { listenWindow, sendWindow } from './message/send-window';
 
@@ -45,13 +46,7 @@ class PraxInjection {
   private readonly injection: Readonly<PenumbraProvider> = Object.freeze({
     connect: () => this.postConnectRequest(),
     disconnect: () => this.postDisconnectRequest(),
-    isConnected: () => {
-      if (globalThis.__DEV__) {
-        console.trace('PraxInjection isConnected', this.presentState);
-      }
-      return this.presentState === PenumbraState.Connected;
-    },
-
+    isConnected: () => this.presentState === PenumbraState.Connected,
     state: () => this.presentState,
     manifest: String(this.manifestUrl),
     addEventListener: this.stateEvents.addEventListener.bind(this.stateEvents),
@@ -66,7 +61,7 @@ class PraxInjection {
     // ambient end listener
     const ambientEndListener = (ev: PraxMessageEvent): boolean => {
       const content = unwrapPraxMessageEvent(ev);
-      if (content !== PraxConnection.End) {
+      if (content !== PraxControl.End) {
         return false;
       }
       this.setState(PenumbraState.Disconnected);
@@ -83,7 +78,7 @@ class PraxInjection {
       // anything other than our own announcement will remove the listener
       listenAc.abort();
 
-      if (content === PraxConnection.Preconnect) {
+      if (content === PraxControl.Preconnect) {
         ev.stopImmediatePropagation();
         this.setState(PenumbraState.Connected);
       } else if (globalThis.__DEV__) {
@@ -99,7 +94,6 @@ class PraxInjection {
 
   private setState(state: PenumbraState) {
     if (this.presentState !== state) {
-      console.debug('PraxInjection setState', state);
       this.presentState = state;
       this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
     }
@@ -153,7 +147,7 @@ class PraxInjection {
     const listenAc = new AbortController();
     const endListener = (ev: PraxMessageEvent): boolean => {
       const content = unwrapPraxMessageEvent(ev);
-      if (content === PraxConnection.End) {
+      if (content === PraxControl.End) {
         ev.stopImmediatePropagation();
         disconnection.resolve();
         return true;

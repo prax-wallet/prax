@@ -1,6 +1,12 @@
 import { PraxConnection } from '../../content-scripts/message/prax-connection';
+import { PraxControl } from '../../content-scripts/message/prax-control';
 import { alreadyApprovedSender } from '../../senders/approve';
-import { isValidExternalSender, ValidExternalSender } from '../../senders/external';
+import {
+  isPrerenderingExternalSender,
+  isValidExternalSender,
+  PrerenderingExternalSender,
+  ValidExternalSender,
+} from '../../senders/external';
 import { sendTab } from '../send/tab';
 
 // listen for page init
@@ -14,7 +20,7 @@ export const contentScriptLoadListener = (
     return false;
   }
 
-  if (!isValidExternalSender(sender)) {
+  if (!isValidExternalSender(sender) && !isPrerenderingExternalSender(sender)) {
     return false;
   }
 
@@ -27,11 +33,11 @@ export const contentScriptLoadListener = (
   return true;
 };
 
-const handle = (sender: ValidExternalSender) =>
+const handle = (sender: ValidExternalSender | PrerenderingExternalSender) =>
   alreadyApprovedSender(sender).then(hasApproval => {
     if (hasApproval) {
       // preconnect only the specific document
-      void sendTab(sender, PraxConnection.Preconnect);
+      void sendTab(sender, PraxControl.Preconnect);
     }
 
     // handler is done
