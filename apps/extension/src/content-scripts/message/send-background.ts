@@ -32,7 +32,7 @@ export const sendBackground = async (
 
 export function listenBackground<R = never>(
   signal: AbortSignal | undefined,
-  listener: (content: unknown) => void | Promise<NoInfer<R>>,
+  listener: (content: unknown, responder: (response: R) => void) => boolean,
 ) {
   if (globalThis.__DEV__) {
     console.debug('listenBackground attaching', listener.name);
@@ -46,11 +46,7 @@ export function listenBackground<R = never>(
       return false;
     }
 
-    const handling = listener(message)?.then(respond);
-    if (handling && globalThis.__DEV__) {
-      console.debug('listenBackground responding', listener.name, message, handling);
-    }
-    return !!handling;
+    return listener(message, respond);
   };
 
   chrome.runtime.onMessage.addListener(wrappedListener);

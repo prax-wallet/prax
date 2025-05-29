@@ -59,32 +59,28 @@ class PraxInjection {
     }
 
     // ambient end listener
-    const ambientEndListener = (ev: PraxMessageEvent): boolean => {
+    const ambientEndListener = (ev: PraxMessageEvent): void => {
       const content = unwrapPraxMessageEvent(ev);
-      if (content !== PraxControl.End) {
-        return false;
+      if (content === PraxControl.End) {
+        this.setState(PenumbraState.Disconnected);
       }
-      this.setState(PenumbraState.Disconnected);
-      return true;
     };
     listenWindow(undefined, ambientEndListener);
 
     const listenAc = new AbortController();
-    const preconnectListener = (ev: PraxMessageEvent): boolean => {
+    const preconnectListener = (ev: PraxMessageEvent): void => {
       const content = unwrapPraxMessageEvent(ev);
-      if (content === PraxConnection.Load) {
-        return false;
-      }
-      // anything other than our own announcement will remove the listener
-      listenAc.abort();
+      if (content !== PraxConnection.Load) {
+        // anything other than our own announcement will remove the listener
+        listenAc.abort();
 
-      if (content === PraxControl.Preconnect) {
-        ev.stopImmediatePropagation();
-        this.setState(PenumbraState.Connected);
-      } else if (globalThis.__DEV__) {
-        console.debug('Preconnect cancelled', { content, ev });
+        if (content === PraxControl.Preconnect) {
+          ev.stopImmediatePropagation();
+          this.setState(PenumbraState.Connected);
+        } else if (globalThis.__DEV__) {
+          console.debug('Preconnect cancelled', { content, ev });
+        }
       }
-      return true;
     };
     listenWindow(listenAc.signal, preconnectListener);
 
@@ -118,18 +114,15 @@ class PraxInjection {
     const connection = Promise.withResolvers<MessagePort>();
 
     const listenAc = new AbortController();
-    const portListener = (ev: PraxMessageEvent): boolean => {
+    const portListener = (ev: PraxMessageEvent): void => {
       const content = unwrapPraxMessageEvent(ev);
       if (content instanceof MessagePort) {
         ev.stopImmediatePropagation();
         connection.resolve(content);
-        return true;
       } else if (isPenumbraRequestFailure(content)) {
         ev.stopImmediatePropagation();
         connection.reject(new Error('Connection request failed', { cause: content }));
-        return true;
       }
-      return false;
     };
     listenWindow(listenAc.signal, portListener);
 
@@ -145,18 +138,15 @@ class PraxInjection {
     const disconnection = Promise.withResolvers<void>();
 
     const listenAc = new AbortController();
-    const endListener = (ev: PraxMessageEvent): boolean => {
+    const endListener = (ev: PraxMessageEvent): void => {
       const content = unwrapPraxMessageEvent(ev);
       if (content === PraxControl.End) {
         ev.stopImmediatePropagation();
         disconnection.resolve();
-        return true;
       } else if (isPenumbraRequestFailure(content)) {
         ev.stopImmediatePropagation();
         disconnection.reject(new Error('Disconnect request failed', { cause: content }));
-        return true;
       }
-      return false;
     };
     listenWindow(listenAc.signal, endListener);
 

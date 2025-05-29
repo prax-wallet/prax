@@ -6,42 +6,38 @@ import { PraxMessageEvent, unwrapPraxMessageEvent } from './message/prax-message
 import { listenBackground, sendBackground } from './message/send-background';
 import { listenWindow, sendWindow } from './message/send-window';
 
-const praxDocumentListener = (ev: PraxMessageEvent): boolean => {
+const praxDocumentListener = (ev: PraxMessageEvent): void => {
   const request = unwrapPraxMessageEvent(ev);
-  if (!isPraxConnection(request)) {
+  if (isPraxConnection(request)) {
+    ev.stopImmediatePropagation();
+    void sendBackground(request).then(response => {
+      if (response != null) {
+        sendWindow<PenumbraRequestFailure>(response);
+      }
+    });
+  }
+};
+
+const praxExtensionListener = (message: unknown, responder: (response: null) => void): boolean => {
+  if (!isPraxControl(message)) {
     return false;
   }
 
-  ev.stopImmediatePropagation();
-  void sendBackground(request).then(response => {
-    if (response != null) {
-      sendWindow<PenumbraRequestFailure>(response);
-    }
-  });
-  return true;
-};
-
-const praxExtensionListener = (message: unknown): void | Promise<null> => {
-  if (!isPraxControl(message)) {
-    return;
-  }
-
-  let forward: PraxControl | MessagePort;
   switch (message) {
     case PraxControl.Init:
-      forward = CRSessionClient.init(PRAX);
+      sendWindow<MessagePort>(CRSessionClient.init(PRAX));
       break;
     case PraxControl.End:
       CRSessionClient.end(PRAX);
-      forward = PraxControl.End;
+      sendWindow<PraxControl>(PraxControl.End);
       break;
     case PraxControl.Preconnect:
-      forward = PraxControl.Preconnect;
+      sendWindow<PraxControl>(PraxControl.Preconnect);
       break;
   }
-  sendWindow<PraxControl | MessagePort>(forward);
+  responder(null);
 
-  return Promise.resolve(null);
+  return true;
 };
 
 listenWindow(undefined, praxDocumentListener);
