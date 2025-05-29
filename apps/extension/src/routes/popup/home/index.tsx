@@ -50,10 +50,13 @@ export const PopupIndex = () => {
 
   return (
     <>
-      <div className='z-[1] flex flex-col h-full'>
-        <BlockSync />
-        <div className='fixed inset-0 bg-card-radial overflow-y-auto'>
-          <div className='flex h-full grow flex-col items-stretch gap-[15px] px-[15px] pb-[15px]'>
+      <div className='z-[1] flex flex-col min-h-full'>
+        <div className='fixed inset-0 overflow-y-auto bg-card-radial pt-[15px]'>
+          <div className='absolute top-0 left-0 right-0 z-10'>
+            <BlockSync />
+          </div>
+
+          <div className='flex flex-col items-stretch gap-[15px] px-[15px] pb-[15px]'>
             <IndexHeader />
             <div className='flex flex-col gap-4'>
               {activeWallet && (

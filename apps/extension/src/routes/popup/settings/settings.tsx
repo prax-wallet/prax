@@ -1,12 +1,4 @@
-import {
-  BarChartIcon,
-  DashboardIcon,
-  ExitIcon,
-  HomeIcon,
-  Link1Icon,
-  LockClosedIcon,
-  Share1Icon,
-} from '@radix-ui/react-icons';
+import { DashboardIcon, ExitIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { CustomLink } from '../../../shared/components/link';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
@@ -21,26 +13,6 @@ const links = [
     title: 'Security & Privacy',
     icon: <LockClosedIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_SECURITY,
-  },
-  {
-    title: 'RPC',
-    icon: <Share1Icon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_RPC,
-  },
-  {
-    title: 'Default frontend',
-    icon: <HomeIcon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_DEFAULT_FRONTEND,
-  },
-  {
-    title: 'Connected sites',
-    icon: <Link1Icon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_CONNECTED_SITES,
-  },
-  {
-    title: 'Price denomination',
-    icon: <BarChartIcon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_NUMERAIRES,
   },
   {
     title: 'Advanced',

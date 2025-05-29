@@ -48,7 +48,7 @@ export const GrpcEndpointForm = ({
   return (
     <>
       <div className='flex flex-col gap-2'>
-        <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+        <form className='flex flex-col gap-4 mt-[-8px]' onSubmit={handleSubmit}>
           <SelectList>
             {grpcEndpointsQuery.rpcs.map(option => {
               const imageUrl = option.images[0]?.svg ?? option.images[0]?.png;
@@ -98,16 +98,23 @@ export const GrpcEndpointForm = ({
 
           <LoadingList isLoading={grpcEndpointsQuery.isLoading} />
 
-          <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
-            {isValidationLoading ? (
-              <>
-                <Loader2 className='mr-2 size-4 animate-spin' />
-                Validating RPC
-              </>
-            ) : (
-              submitButtonLabel
-            )}
-          </Button>
+          <div className='sticky bottom-0 left-0 right-0 w-full backdrop-blur-md bg-background/70 border-t z-10 mt-4 pb-[10px]'>
+            <Button
+              variant='gradient'
+              type='submit'
+              disabled={!isSubmitButtonEnabled}
+              className='w-full'
+            >
+              {isValidationLoading ? (
+                <>
+                  <Loader2 className='mr-2 size-4 animate-spin' />
+                  Validating RPC
+                </>
+              ) : (
+                submitButtonLabel
+              )}
+            </Button>
+          </div>
         </form>
 
         <ChainIdOrError chainId={chainId} chainIdChanged={chainIdChanged} error={rpcError} />

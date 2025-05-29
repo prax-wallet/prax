@@ -13,6 +13,7 @@ const settingsConnectedSitesSelector = (state: AllSlices) => ({
   filter: state.connectedSites.filter,
   setFilter: state.connectedSites.setFilter,
   knownSites: state.connectedSites.knownSites,
+  discardKnownSite: state.connectedSites.discardKnownSite,
 });
 
 const getGroupedSites = (knownSites: OriginRecord[], filter?: string) => {
@@ -27,9 +28,17 @@ const getGroupedSites = (knownSites: OriginRecord[], filter?: string) => {
 };
 
 export const SettingsConnectedSites = () => {
-  const { filter, setFilter, knownSites } = useStoreShallow(settingsConnectedSitesSelector);
+  const { filter, setFilter, knownSites, discardKnownSite } = useStoreShallow(
+    settingsConnectedSitesSelector,
+  );
   const allSitesFilteredOut = useStore(allSitesFilteredOutSelector);
   const { approvedSites, deniedSites, ignoredSites } = getGroupedSites(knownSites, filter);
+
+  const handleDisconnectAll = () => {
+    approvedSites.forEach(origin => {
+      discardKnownSite(origin);
+    });
+  };
 
   return (
     <SettingsScreen title='Connected sites' IconComponent={LinkGradientIcon}>
@@ -56,6 +65,16 @@ export const SettingsConnectedSites = () => {
           <div className='mt-4 flex flex-col gap-4'>
             {!!approvedSites.length && (
               <KnownSitesGroup label='Approved sites' sites={approvedSites} />
+            )}
+            {approvedSites.length > 0 && (
+              <div className='mt-6 flex justify-center'>
+                <button
+                  onClick={handleDisconnectAll}
+                  className='px-4 py-2 rounded-md text-sm font-medium text-red-400 border border-red-400 hover:bg-red-500/10 transition'
+                >
+                  Disconnect All
+                </button>
+              </div>
             )}
             {!!deniedSites.length && <KnownSitesGroup label='Denied sites' sites={deniedSites} />}
             {!!ignoredSites.length && (

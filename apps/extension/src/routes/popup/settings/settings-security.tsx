@@ -1,3 +1,4 @@
+import { Link1Icon, PersonIcon } from '@radix-ui/react-icons';
 import { EyeGradientIcon } from '../../../icons/eye-gradient';
 import { FileTextIcon } from '../../../icons/file-text';
 import { CustomLink } from '../../../shared/components/link';
@@ -7,21 +8,20 @@ import { SettingsScreen } from './settings-screen';
 
 const links = [
   {
-    title: 'Recovery passphrase',
+    title: 'Recovery Passphrase',
     icon: <FileTextIcon />,
     href: PopupPath.SETTINGS_RECOVERY_PASSPHRASE,
   },
-  //TODO bring it back if we`ll have reason
-  // {
-  //   title: 'Full viewing key',
-  //   icon: <KeyIcon />,
-  //   href: PopupPath.SETTINGS_FULL_VIEWING_KEY,
-  // },
-  // {
-  //   title: 'Spending key',
-  //   icon: <AccountKeyIcon />,
-  //   href: PopupPath.SETTINGS_SPEND_KEY,
-  // },
+  {
+    title: 'Reset Password',
+    icon: <PersonIcon className='size-5 text-muted-foreground' />,
+    href: PopupPath.RESET_PASSWORD,
+  },
+  {
+    title: 'Connected Sites',
+    icon: <Link1Icon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_CONNECTED_SITES,
+  },
 ];
 
 export const SettingsSecurity = () => {
