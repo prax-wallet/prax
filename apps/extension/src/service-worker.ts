@@ -11,7 +11,7 @@
 // listeners
 import { contentScriptConnectListener } from './message/listen/content-script-connect';
 import { contentScriptDisconnectListener } from './message/listen/content-script-disconnect';
-import { contentScriptInitListener } from './message/listen/content-script-init';
+import { contentScriptLoadListener } from './message/listen/content-script-load';
 import { internalRevokeListener } from './message/listen/internal-revoke';
 import { internalServiceListener } from './message/listen/internal-services';
 import { externalEasterEggListener } from './message/listen/external-easteregg';
@@ -109,7 +109,7 @@ CRSessionManager.init(PRAX, handler, validateSessionPort);
 // listen for content script activity
 chrome.runtime.onMessage.addListener(contentScriptConnectListener);
 chrome.runtime.onMessage.addListener(contentScriptDisconnectListener);
-chrome.runtime.onMessage.addListener(contentScriptInitListener);
+chrome.runtime.onMessage.addListener(contentScriptLoadListener);
 
 // listen for internal revoke controls
 chrome.runtime.onMessage.addListener(internalRevokeListener);

@@ -25,11 +25,7 @@ import type { PenumbraProvider } from '@penumbra-zone/client/provider';
 import { PenumbraState } from '@penumbra-zone/client/state';
 import { PenumbraSymbol } from '@penumbra-zone/client/symbol';
 import { PraxConnection } from './message/prax-connection';
-import {
-  isPraxMessageEvent,
-  PraxMessageEvent,
-  unwrapPraxMessageEvent,
-} from './message/prax-message-event';
+import { PraxMessageEvent, unwrapPraxMessageEvent } from './message/prax-message-event';
 import { listenWindow, sendWindow } from './message/send-window';
 
 const isPenumbraRequestFailure = (data: unknown): data is PenumbraRequestFailure =>
@@ -46,10 +42,16 @@ class PraxInjection {
   private manifestUrl = `${PRAX_ORIGIN}/manifest.json`;
   private stateEvents = new EventTarget();
 
-  private injection: Readonly<PenumbraProvider> = Object.freeze({
+  private readonly injection: Readonly<PenumbraProvider> = Object.freeze({
     connect: () => this.postConnectRequest(),
     disconnect: () => this.postDisconnectRequest(),
-    isConnected: () => this.presentState === PenumbraState.Connected,
+    isConnected: () => {
+      if (globalThis.__DEV__) {
+        console.trace('PraxInjection isConnected', this.presentState);
+      }
+      return this.presentState === PenumbraState.Connected;
+    },
+
     state: () => this.presentState,
     manifest: String(this.manifestUrl),
     addEventListener: this.stateEvents.addEventListener.bind(this.stateEvents),
@@ -72,11 +74,32 @@ class PraxInjection {
     };
     listenWindow(undefined, ambientEndListener);
 
-    void this.listenPortMessage();
+    const listenAc = new AbortController();
+    const preconnectListener = (ev: PraxMessageEvent): boolean => {
+      const content = unwrapPraxMessageEvent(ev);
+      if (content === PraxConnection.Load) {
+        return false;
+      }
+      // anything other than our own announcement will remove the listener
+      listenAc.abort();
+
+      if (content === PraxConnection.Preconnect) {
+        ev.stopImmediatePropagation();
+        this.setState(PenumbraState.Connected);
+      } else if (globalThis.__DEV__) {
+        console.debug('Preconnect cancelled', { content, ev });
+      }
+      return true;
+    };
+    listenWindow(listenAc.signal, preconnectListener);
+
+    // announce
+    sendWindow<PraxConnection>(PraxConnection.Load);
   }
 
   private setState(state: PenumbraState) {
     if (this.presentState !== state) {
+      console.debug('PraxInjection setState', state);
       this.presentState = state;
       this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
     }
@@ -102,16 +125,15 @@ class PraxInjection {
 
     const listenAc = new AbortController();
     const portListener = (ev: PraxMessageEvent): boolean => {
-      if (isPraxMessageEvent(ev)) {
-        const content = unwrapPraxMessageEvent(ev);
-        if (content instanceof MessagePort) {
-          ev.stopImmediatePropagation();
-          connection.resolve(content);
-          return true;
-        } else if (isPenumbraRequestFailure(content)) {
-          connection.reject(new Error('Connection request failed', { cause: content }));
-          return true;
-        }
+      const content = unwrapPraxMessageEvent(ev);
+      if (content instanceof MessagePort) {
+        ev.stopImmediatePropagation();
+        connection.resolve(content);
+        return true;
+      } else if (isPenumbraRequestFailure(content)) {
+        ev.stopImmediatePropagation();
+        connection.reject(new Error('Connection request failed', { cause: content }));
+        return true;
       }
       return false;
     };
@@ -132,9 +154,11 @@ class PraxInjection {
     const endListener = (ev: PraxMessageEvent): boolean => {
       const content = unwrapPraxMessageEvent(ev);
       if (content === PraxConnection.End) {
+        ev.stopImmediatePropagation();
         disconnection.resolve();
         return true;
       } else if (isPenumbraRequestFailure(content)) {
+        ev.stopImmediatePropagation();
         disconnection.reject(new Error('Disconnect request failed', { cause: content }));
         return true;
       }

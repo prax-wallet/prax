@@ -4,13 +4,13 @@ import { isValidExternalSender, ValidExternalSender } from '../../senders/extern
 import { sendTab } from '../send/tab';
 
 // listen for page init
-export const contentScriptInitListener = (
+export const contentScriptLoadListener = (
   req: unknown,
   sender: chrome.runtime.MessageSender,
   // responds with null
   respond: (r: null) => void,
 ): boolean => {
-  if (req !== PraxConnection.Init) {
+  if (req !== PraxConnection.Load) {
     return false;
   }
 
@@ -20,7 +20,7 @@ export const contentScriptInitListener = (
 
   void handle(sender).then(res => {
     if (globalThis.__DEV__) {
-      console.debug('contentScriptInitListener responding', { req, res });
+      console.debug('contentScriptLoadListener responding', { req, res });
     }
     respond(res);
   });
@@ -30,8 +30,8 @@ export const contentScriptInitListener = (
 const handle = (sender: ValidExternalSender) =>
   alreadyApprovedSender(sender).then(hasApproval => {
     if (hasApproval) {
-      // init only the specific document
-      void sendTab(sender, PraxConnection.Init);
+      // preconnect only the specific document
+      void sendTab(sender, PraxConnection.Preconnect);
     }
 
     // handler is done

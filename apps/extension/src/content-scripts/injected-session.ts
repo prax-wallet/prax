@@ -8,6 +8,7 @@ import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 const praxDocumentListener = (ev: PraxMessageEvent): boolean => {
   const request = unwrapPraxMessageEvent(ev);
   switch (request) {
+    case PraxConnection.Load:
     case PraxConnection.Connect:
     case PraxConnection.Disconnect:
       ev.stopImmediatePropagation();
@@ -22,7 +23,7 @@ const praxDocumentListener = (ev: PraxMessageEvent): boolean => {
   }
 };
 
-const praxExtensionListener = (message: unknown) => {
+const praxExtensionListener = (message: unknown): void | Promise<null> => {
   switch (message) {
     case PraxConnection.Init:
       sendWindow<MessagePort>(CRSessionClient.init(PRAX));
@@ -31,6 +32,9 @@ const praxExtensionListener = (message: unknown) => {
       CRSessionClient.end(PRAX);
       sendWindow<PraxConnection>(PraxConnection.End);
       break;
+    case PraxConnection.Preconnect:
+      sendWindow<PraxConnection>(message);
+      break;
     default: // message is not for this handler
       return;
   }
@@ -38,13 +42,5 @@ const praxExtensionListener = (message: unknown) => {
   return Promise.resolve(null);
 };
 
-// attach
 listenWindow(undefined, praxDocumentListener);
 listenBackground<null>(undefined, praxExtensionListener);
-
-// announce
-void sendBackground(PraxConnection.Init).then(response => {
-  if (response != null) {
-    sendWindow<PenumbraRequestFailure>(response);
-  }
-});
