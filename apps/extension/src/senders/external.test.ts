@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { assertValidExternalSender } from './external';
 
-describe('assertValidSender', () => {
+describe('assertValidExternalSender', () => {
   const mockValid: chrome.runtime.MessageSender = {
     tab: { id: 1 } as chrome.tabs.Tab,
     frameId: 0,
@@ -58,12 +58,12 @@ describe('assertValidSender', () => {
     expect(() => assertValidExternalSender(notDoc)).toThrow('Sender is not a document');
   });
 
-  it('throws if sender is not active', () => {
+  it('throws if sender is not an active document', () => {
     const inactive: chrome.runtime.MessageSender = {
       ...mockValid,
       documentLifecycle: 'prerender',
     };
-    expect(() => assertValidExternalSender(inactive)).toThrow('Sender is not active');
+    expect(() => assertValidExternalSender(inactive)).toThrow('Sender is not an active document');
   });
 
   it('throws if sender has no origin', () => {
