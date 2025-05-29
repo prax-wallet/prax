@@ -6,19 +6,26 @@ export const sendTab = async (
   target: chrome.runtime.MessageSender,
   message: PraxConnection,
 ): Promise<null> => {
-  const { documentId, frameId, tab } = target;
+  const { documentId, tab } = target;
 
-  const response: unknown = await chrome.tabs
-    .sendMessage(tab!.id!, message, { documentId, frameId })
-    .catch(suppressChromeResponderDroppedError);
-
-  if (response != null) {
-    throw new TypeError('Unexpected response from tab', {
-      cause: { target, message, response },
+  if (tab?.id == null || documentId == null) {
+    throw new TypeError('Nonspecific target missing tab or document id', {
+      cause: { target, message },
     });
   }
 
-  return null;
+  const response = await chrome.tabs
+    .sendMessage<PraxConnection, unknown>(tab.id, message, { documentId })
+    .catch(suppressChromeResponderDroppedError);
+
+  switch (response) {
+    case undefined:
+      throw new ReferenceError('No response from tab', { cause: { target, message } });
+    case null:
+      return response;
+    default:
+      throw new TypeError('Unexpected response from tab', { cause: { target, message, response } });
+  }
 };
 
 export function* sendTabs(

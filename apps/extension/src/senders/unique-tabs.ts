@@ -9,20 +9,16 @@ export function* uniqueTabs<S extends chrome.runtime.MessageSender>(
   for (const [_, senderTabs] of Map.groupBy(targets, s => s.tab?.id)) {
     // scope by document id
     for (const [_, senderDocs] of Map.groupBy(senderTabs, s => s.documentId)) {
-      // scope by frame id
-      for (const [_, senderFrames] of Map.groupBy(senderDocs, s => s.frameId)) {
-        // any given frame's sessions are all controlled by a single content
-        // script, so by now these should all be comparable. assert this and
-        // yield a single target representing this group.
-        yield senderFrames.reduce(reduceSameContentScript);
-      }
+      // any given document's sessions are all controlled by a single content
+      // script, so by now these should all be comparable. assert this and
+      // yield a single target representing this group.
+      yield senderDocs.reduce(reduceSameContentScript);
     }
   }
 }
 
 /**
- * Senders sharing the same content script context should have the same tab id,
- * document id, and frame id.
+ * Senders with same document share the same content script.
  */
 const reduceSameContentScript = <B extends chrome.runtime.MessageSender>(
   targetA: chrome.runtime.MessageSender,
@@ -34,10 +30,6 @@ const reduceSameContentScript = <B extends chrome.runtime.MessageSender>(
 
   if (targetA.documentId !== targetB.documentId) {
     throw new Error('Target document mismatch', { cause: { targetA, targetB } });
-  }
-
-  if (targetA.frameId !== targetB.frameId) {
-    throw new Error('Target frame mismatch', { cause: { targetA, targetB } });
   }
 
   return targetB;
