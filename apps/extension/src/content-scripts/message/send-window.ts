@@ -19,7 +19,7 @@ export const listenWindow = (
   listener: (pev: PraxMessageEvent) => boolean,
 ) => {
   if (globalThis.__DEV__) {
-    console.trace('listenWindow attaching', listener.name);
+    console.debug('listenWindow attaching', listener.name);
   }
 
   window.addEventListener(

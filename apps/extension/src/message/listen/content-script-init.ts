@@ -10,11 +10,11 @@ export const contentScriptInitListener = (
   // responds with null
   respond: (r: null) => void,
 ): boolean => {
-  if (!isValidExternalSender(sender)) {
+  if (req !== PraxConnection.Init) {
     return false;
   }
 
-  if (req !== PraxConnection.Init) {
+  if (!isValidExternalSender(sender)) {
     return false;
   }
 

@@ -38,7 +38,9 @@ export const isValidExternalSender = (
     assertValidExternalSender(sender);
     return true;
   } catch (invalid) {
-    console.debug(invalid);
+    if (globalThis.__DEV__) {
+      console.trace('Invalid external sender', { invalid });
+    }
     return false;
   }
 };
@@ -53,7 +55,9 @@ export const isPrerenderingExternalSender = (
     assertPrerenderingSender(sender);
     return true;
   } catch (invalid) {
-    console.debug(invalid);
+    if (globalThis.__DEV__) {
+      console.trace('Invalid prerendering sender', { invalid });
+    }
     return false;
   }
 };

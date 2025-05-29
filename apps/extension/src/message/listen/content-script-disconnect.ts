@@ -12,11 +12,11 @@ export const contentScriptDisconnectListener = (
   // responds with null or an enumerated failure
   respond: (r: null | PenumbraRequestFailure) => void,
 ): boolean => {
-  if (!isValidExternalSender(sender)) {
+  if (req !== PraxConnection.Disconnect) {
     return false;
   }
 
-  if (req !== PraxConnection.Disconnect) {
+  if (!isValidExternalSender(sender)) {
     return false;
   }
 

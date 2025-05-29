@@ -35,7 +35,7 @@ export function listenBackground<R = never>(
   listener: (content: unknown) => void | Promise<NoInfer<R>>,
 ) {
   if (globalThis.__DEV__) {
-    console.trace('listenBackground attaching', listener.name);
+    console.debug('listenBackground attaching', listener.name);
   }
   const wrappedListener = (
     message: unknown,
@@ -48,7 +48,7 @@ export function listenBackground<R = never>(
 
     const handling = listener(message)?.then(respond);
     if (handling && globalThis.__DEV__) {
-      console.debug('listenBackground responding', listener.name, message);
+      console.debug('listenBackground responding', listener.name, message, handling);
     }
     return !!handling;
   };
