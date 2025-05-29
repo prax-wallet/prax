@@ -13,6 +13,7 @@ import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances
 import { asValueView } from '@penumbra-zone/getters/equivalent-value';
 import { useQuery } from '@tanstack/react-query';
 import { viewClient } from '../../../clients';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 
 const EquivalentValues = ({ valueView }: { valueView?: ValueView }) => {
   const equivalentValuesAsValueViews = (getEquivalentValues.optional(valueView) ?? []).map(
@@ -46,13 +47,40 @@ export const AssetsTable = ({ account }: AssetsTableProps) => {
     staleTime: Infinity,
     queryFn: async () => {
       try {
-        const balances = await Array.fromAsync(viewClient.balances({ accountFilter: { account } }));
-        balances.sort((a, b) => {
+        const allBalances = await Array.fromAsync(
+          viewClient.balances({ accountFilter: { account } }),
+        );
+
+        // Filter out auction, voted, and LP NFT assets by checking for relevant identifiers in the base metadata field.
+        const filteredBalances = allBalances.filter(balance => {
+          const metadata = getMetadataFromBalancesResponse.optional(balance);
+
+          // We probably want to display unknown assets
+          if (!metadata) {
+            return true;
+          }
+
+          if (metadata.base && typeof metadata.base === 'string') {
+            if (
+              assetPatterns.auctionNft.matches(metadata.base) ||
+              assetPatterns.lpNft.matches(metadata.base) ||
+              assetPatterns.proposalNft.matches(metadata.base) ||
+              assetPatterns.votingReceipt.matches(metadata.base)
+            ) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+
+        filteredBalances.sort((a, b) => {
           const aScore = getMetadataFromBalancesResponse.optional(a)?.priorityScore ?? 0n;
           const bScore = getMetadataFromBalancesResponse.optional(b)?.priorityScore ?? 0n;
           return Number(bScore - aScore);
         });
-        return balances;
+
+        return filteredBalances;
       } catch (_) {
         return [];
       }

@@ -22,10 +22,7 @@ const getMetadata: MetadataFetchFn = async ({ assetId }) => {
 
 const hasAltGasFee = (txv?: TransactionView): boolean => {
   const { stakingAssetId } = new ChainRegistryClient().bundled.globals();
-  let feeAssetId = txv?.bodyView?.transactionParameters?.fee?.assetId;
-  if (feeAssetId === undefined) {
-    feeAssetId = stakingAssetId;
-  }
+  const feeAssetId = txv?.bodyView?.transactionParameters?.fee?.assetId ?? stakingAssetId;
 
   return feeAssetId.equals(stakingAssetId);
 };

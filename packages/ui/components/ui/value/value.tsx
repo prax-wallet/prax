@@ -39,7 +39,10 @@ export const ValueComponent = ({
       )}
       {showDenom && (
         <span
-          className='max-w-[80px] truncate font-mono text-xs text-muted-foreground'
+          className={cn(
+            symbol.startsWith('delUM') ? 'max-w-[40px]' : 'max-w-[80px]',
+            'truncate font-mono text-xs text-muted-foreground',
+          )}
           title={symbol}
         >
           {symbol}
