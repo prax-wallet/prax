@@ -5,9 +5,7 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
-
-// Define a canconcial default RPC.
-export const DEFAULT_GRPC = 'https://penumbra-1.radiantcommons.com';
+import { DEFAULT_GRPC } from '../routes/page/onboarding/constants';
 
 // Utility function to fetch the block height by randomly querying one of the RPC endpoints
 // from the chain registry (if default is unavailable), using a recursive callback to try
