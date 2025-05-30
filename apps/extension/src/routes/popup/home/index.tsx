@@ -127,7 +127,7 @@ export const PopupIndex = () => {
                         size='md'
                         className='w-full rounded-md border border-white/10 ring-1 ring-white/10 transition-shadow'
                         onClick={() => {
-                          dismissReminder();
+                          void dismissReminder();
                           navigate(PopupPath.SETTINGS_RECOVERY_PASSPHRASE);
                         }}
                       >
