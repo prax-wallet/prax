@@ -18,7 +18,7 @@ export const OnboardingStart = () => {
       <img src='/prax-white-vertical.svg' alt='prax logo' className='mb-5 w-60 self-center' />
       <Card className='w-[400px] ' gradient>
         <CardHeader className='items-center'>
-          <CardTitle>Explore private trading</CardTitle>
+          <CardTitle>Explore Private Trading</CardTitle>
           <CardDescription className='text-center'>
             Securely transact, stake, swap, or marketmake without broadcasting your personal
             information to the world.
@@ -30,7 +30,7 @@ export const OnboardingStart = () => {
             className='w-full'
             onClick={() => navigate(PagePath.GENERATE_SEED_PHRASE)}
           >
-            Create a new wallet
+            Create new wallet
           </Button>
           <Button
             variant='secondary'

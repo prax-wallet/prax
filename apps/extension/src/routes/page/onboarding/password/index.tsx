@@ -13,6 +13,9 @@ import { LineWave } from 'react-loader-spinner';
 import { usePageNav } from '../../../../utils/navigate';
 import { PasswordInput } from '../../../../shared/components/password-input';
 import { useFinalizeOnboarding } from './hooks';
+import { PagePath } from '../../paths';
+import { useLocation } from 'react-router-dom';
+import { SEED_PHRASE_ORIGIN } from './types';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
@@ -20,15 +23,26 @@ export const SetPassword = () => {
   const [confirmation, setConfirmation] = useState('');
   const { handleSubmit, error, loading } = useFinalizeOnboarding();
 
+  const location = useLocation();
+  const origin = (location.state as { origin?: SEED_PHRASE_ORIGIN })?.origin;
+
   return (
     <FadeTransition>
-      <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
+      <BackIcon
+        className='float-left mb-4'
+        onClick={() => {
+          if (origin === SEED_PHRASE_ORIGIN.NEWLY_GENERATED) {
+            navigate(PagePath.WELCOME);
+          } else {
+            navigate(-1);
+          }
+        }}
+      />
       <Card className='flex w-[400px] flex-col gap-6' gradient>
         <CardHeader className='items-center'>
-          <CardTitle>Create a password</CardTitle>
+          <CardTitle>Create Password</CardTitle>
           <CardDescription className='text-center'>
-            We will use this password to encrypt your data and you&apos;ll need it to unlock your
-            wallet.
+            Your password secures your encrypted data and is needed to unlock your wallet.
           </CardDescription>
         </CardHeader>
         <CardContent>
