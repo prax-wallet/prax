@@ -21,7 +21,6 @@ export const fetchBlockHeightWithFallback = async (
 
   // If default RPC is not found, randomly sample an RPC endpoint from the chain registry.
   const selectedGrpc = endpoints.includes(DEFAULT_GRPC) ? DEFAULT_GRPC : sample(endpoints);
-
   if (!selectedGrpc) {
     throw new Error('No RPC endpoints found.');
   }

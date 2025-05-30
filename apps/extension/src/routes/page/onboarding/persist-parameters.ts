@@ -1,4 +1,4 @@
-import { ChainRegistryClient, EntityMetadata } from '@penumbra-labs/registry';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
 import { createClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
@@ -12,23 +12,17 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   const chainRegistryClient = new ChainRegistryClient();
   const { rpcs, frontends } = await chainRegistryClient.remote.globals();
 
-  let selectedFrontend: EntityMetadata | undefined = frontends.find(
-    frontend => frontend.name === 'Radiant Commons',
-  );
-
-  // If default frontend is not found, randomly sample a frontend.
+  // If default frontend is not found, randomly sample an frontend from the chain registry.
+  const defaultFrontend = frontends.find(frontend => frontend.name === 'Radiant Commons');
+  const selectedFrontend = defaultFrontend ?? sample(frontends);
   if (!selectedFrontend) {
-    selectedFrontend = sample(frontends);
-  }
-
-  if (!selectedFrontend) {
-    throw new Error('Registry missing frontends');
+    throw new Error('Registry missing frontends.');
   }
 
   // Persist the frontend to LS storage.
   await localExtStorage.set('frontendUrl', DEFAULT_FRONTEND);
 
-  // Queries for blockHeight regardless of SEED_PHRASE_ORIGIN as a means of testing endpoint for liveness.
+  // Queries for block height regardless of 'SEED_PHRASE_ORIGIN' as a means of testing endpoint for liveness.
   const { blockHeight, rpc } = await fetchBlockHeightWithFallback(rpcs.map(r => r.url));
 
   // Persist the RPC to LS storage.
@@ -47,7 +41,7 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
       ).sctFrontier({ withProof: false }, DEFAULT_TRANSPORT_OPTS);
       await localExtStorage.set('compactFrontierBlockHeight', Number(compactFrontier.height));
     } catch (error) {
-      // Fallback: use current block height as a reasonable default
+      // Fallback: use current block height ('walletCreationBlockHeight' LS parameter) as a reasonable default.
       await localExtStorage.set('compactFrontierBlockHeight', blockHeight);
     }
   }
