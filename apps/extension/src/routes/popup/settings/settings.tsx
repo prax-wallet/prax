@@ -17,7 +17,7 @@ import { useNumeraires } from '../../../hooks/numeraires-query';
 const links = [
   {
     title: 'Recovery Passphrase',
-    icon: <FileTextIcon />,
+    icon: <FileTextIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_RECOVERY_PASSPHRASE,
   },
   {

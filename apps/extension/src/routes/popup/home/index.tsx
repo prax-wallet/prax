@@ -20,7 +20,7 @@ import {
 } from '@repo/ui/components/ui/dialog';
 import { Button } from '@repo/ui/components/ui/button';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PopupPath } from '../paths';
 
 export interface PopupLoaderData {
@@ -59,6 +59,7 @@ export const PopupIndex = () => {
   const activeWallet = useStore(getActiveWallet);
   const [index, setIndex] = useState<number>(0);
   const [showReminder, setShowReminder] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkReminder = async () => {
@@ -120,15 +121,26 @@ export const PopupIndex = () => {
                         <strong>Recovery passphrase</strong>.
                       </DialogDescription>
                     </div>
-
-                    <DialogFooter>
+                    <DialogFooter className='flex flex-col gap-2'>
                       <Button
-                        onClick={() => void dismissReminder()}
-                        variant='gradient'
-                        size='lg'
-                        className='w-full rounded-lg shadow-md hover:shadow-lg transition-shadow'
+                        variant='ghost'
+                        size='md'
+                        className='w-full rounded-md border border-white/10 ring-1 ring-white/10 transition-shadow'
+                        onClick={() => {
+                          dismissReminder();
+                          navigate(PopupPath.SETTINGS_RECOVERY_PASSPHRASE);
+                        }}
                       >
-                        <Link to={PopupPath.SETTINGS_RECOVERY_PASSPHRASE}>Back up now</Link>
+                        Back up now
+                      </Button>
+
+                      <Button
+                        variant='ghost'
+                        size='md'
+                        className='w-full rounded-md border border-white/10 ring-1 ring-white/10 transition-shadow'
+                        onClick={() => void dismissReminder()}
+                      >
+                        Dismiss
                       </Button>
                     </DialogFooter>
                   </div>
