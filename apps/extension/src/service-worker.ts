@@ -11,7 +11,7 @@
 // listeners
 import { contentScriptConnectListener } from './message/listen/content-script-connect';
 import { contentScriptDisconnectListener } from './message/listen/content-script-disconnect';
-import { contentScriptInitListener } from './message/listen/content-script-init';
+import { contentScriptLoadListener } from './message/listen/content-script-load';
 import { internalRevokeListener } from './message/listen/internal-revoke';
 import { internalServiceListener } from './message/listen/internal-services';
 import { externalEasterEggListener } from './message/listen/external-easteregg';
@@ -24,7 +24,7 @@ import { ConnectRouter, createContextValues, Client } from '@connectrpc/connect'
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
-import { assertValidSessionPort } from './senders/session';
+import { validateSessionPort } from './senders/session';
 
 // context
 import { approverCtx } from '@penumbra-zone/services/ctx/approver';
@@ -104,12 +104,12 @@ const handler = await backOff(() => initHandler(), {
   },
 });
 
-CRSessionManager.init(PRAX, handler, assertValidSessionPort);
+CRSessionManager.init(PRAX, handler, validateSessionPort);
 
 // listen for content script activity
 chrome.runtime.onMessage.addListener(contentScriptConnectListener);
 chrome.runtime.onMessage.addListener(contentScriptDisconnectListener);
-chrome.runtime.onMessage.addListener(contentScriptInitListener);
+chrome.runtime.onMessage.addListener(contentScriptLoadListener);
 
 // listen for internal revoke controls
 chrome.runtime.onMessage.addListener(internalRevokeListener);

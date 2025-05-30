@@ -1,46 +1,23 @@
-import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
-import { PraxConnection } from './prax-connection';
+//  the `data` payload of `PraxMessageEvent<T>` is `{ [PRAX]: T }`
+const isPraxMessageEventData = (
+  data?: unknown,
+): data is Record<typeof PRAX, NonNullable<unknown>> =>
+  data != null &&
+  typeof data === 'object' &&
+  Object.keys(data).every(
+    (key, index, allKeys) => key === PRAX && index === 0 && allKeys.length === 1,
+  ) &&
+  (data as Record<typeof PRAX, unknown>)[PRAX] != null;
 
-// @ts-expect-error - ts can't understand the injected string
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-export type PraxMessage<T = unknown> = { [PRAX]: T };
-export type PraxMessageEvent<T = unknown> = MessageEvent<PraxMessage<T>>;
+export type PraxMessageEvent<T = unknown> = MessageEvent<Record<typeof PRAX, NonNullable<T>>>;
 
-export const unwrapPraxMessageEvent = <T>(ev: PraxMessageEvent<T>): T =>
-  // @ts-expect-error - ts can't understand the injected string
-  ev.data[PRAX] as T;
+export const isPraxMessageEvent = (ev?: unknown): ev is PraxMessageEvent =>
+  ev instanceof MessageEvent && isPraxMessageEventData(ev.data);
 
-export const isPraxMessageEvent = (ev: MessageEvent<unknown>): ev is PraxMessageEvent =>
-  typeof ev.data === 'object' && ev.data !== null && PRAX in ev.data;
-
-export const isPraxPortMessageEvent = (
-  ev: MessageEvent<unknown>,
-): ev is PraxMessageEvent<MessagePort> =>
-  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) instanceof MessagePort;
-
-export const isPraxConnectMessageEvent = (
-  ev: MessageEvent<unknown>,
-): ev is PraxMessageEvent<PraxConnection.Connect> =>
-  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.Connect;
-
-export const isPraxInitMessageEvent = (
-  ev: MessageEvent<unknown>,
-): ev is PraxMessageEvent<PraxConnection.Init> =>
-  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.Init;
-
-export const isPraxEndMessageEvent = (
-  ev: MessageEvent<unknown>,
-): ev is PraxMessageEvent<PraxConnection.End> =>
-  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.End;
-
-export const isPraxDisconnectMessageEvent = (
-  ev: MessageEvent<unknown>,
-): ev is PraxMessageEvent<PraxConnection.Disconnect> =>
-  isPraxMessageEvent(ev) && unwrapPraxMessageEvent(ev) === PraxConnection.Disconnect;
-
-export const isPraxFailureMessageEvent = (
-  ev: MessageEvent<unknown>,
-): ev is PraxMessageEvent<PenumbraRequestFailure> =>
-  isPraxMessageEvent(ev) &&
-  typeof unwrapPraxMessageEvent(ev) === 'string' &&
-  unwrapPraxMessageEvent<string>(ev) in PenumbraRequestFailure;
+export const unwrapPraxMessageEvent = <T>(ev: PraxMessageEvent<T>): T => {
+  if (!isPraxMessageEventData(ev.data)) {
+    throw new TypeError('Not a valid PraxMessageEvent', { cause: ev });
+  }
+  // nullish values excluded by guard
+  return ev.data[PRAX]!;
+};

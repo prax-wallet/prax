@@ -1,61 +1,56 @@
 import { Code, ConnectError } from '@connectrpc/connect';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import {
-  isPraxConnectionMessage,
-  PraxConnection,
-} from '../../content-scripts/message/prax-connection';
-import { sendTab } from '../send/tab';
+import { PraxConnection } from '../../content-scripts/message/prax-connection';
+import { PraxControl } from '../../content-scripts/message/prax-control';
 import { approveSender } from '../../senders/approve';
-import { assertValidSender } from '../../senders/validate';
+import { isValidExternalSender, ValidExternalSender } from '../../senders/external';
+import { sendTab } from '../send/tab';
 
 // listen for page requests for approval
 export const contentScriptConnectListener = (
   req: unknown,
-  unvalidatedSender: chrome.runtime.MessageSender,
-  // this handler responds with nothing, or an enumerated failure reason
+  sender: chrome.runtime.MessageSender,
+  // responds with null or an enumerated failure
   respond: (r: null | PenumbraRequestFailure) => void,
 ): boolean => {
-  if (!isPraxConnectionMessage(req) || req !== PraxConnection.Connect) {
-    // boolean return in handlers signals intent to respond
+  if (req !== PraxConnection.Connect) {
     return false;
   }
 
-  const validSender = assertValidSender(unvalidatedSender);
+  if (!isValidExternalSender(sender)) {
+    return false;
+  }
 
-  void approveSender(validSender).then(
+  void handle(sender).then(respond);
+  return true;
+};
+
+const handle = (sender: ValidExternalSender) =>
+  approveSender(sender).then(
     status => {
       // origin is already known, or popup choice was made
       if (status === UserChoice.Approved) {
         // init only the specific document
-        void sendTab(validSender, PraxConnection.Init);
-        // handler is done
-        respond(null); // no failure
+        void sendTab(sender, PraxControl.Init);
+        return null; // no failure
       } else {
         // any other choice is a denial
-        respond(PenumbraRequestFailure.Denied);
+        return PenumbraRequestFailure.Denied;
       }
     },
-    e => {
-      // something is wrong. user may not have seen a popup
-      if (globalThis.__DEV__) {
-        console.warn('Connection request listener failed:', e);
-      }
-
+    async e => {
       if (e instanceof ConnectError && e.code === Code.Unauthenticated) {
         // user did not see a popup.
         // the website should instruct the user to log in
-        respond(PenumbraRequestFailure.NeedsLogin);
+        return PenumbraRequestFailure.NeedsLogin;
       } else {
-        // user may not have seen a popup.
-        // something strange is happening. either storage is broken, the popup
-        // returned an error, the sender is invalid, or someone's misbehaving.
+        console.warn('Connection request listener failed', e);
+        // user may not have seen a popup, and something strange is happening.
         // obfuscate this rejection with a random delay 2-12 secs
-        setTimeout(() => respond(PenumbraRequestFailure.Denied), 2000 + Math.random() * 10000);
+        const DELAY = 2_000 + Math.random() * 10_000;
+        await new Promise<void>(resolve => setTimeout(() => resolve(), DELAY));
+        return PenumbraRequestFailure.Denied;
       }
     },
   );
-
-  // boolean return in handlers signals intent to respond
-  return true;
-};
