@@ -25,16 +25,14 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
     throw new Error('Registry missing frontends');
   }
 
+  // Persist the frontend to LS storage.
+  await localExtStorage.set('frontendUrl', DEFAULT_FRONTEND);
+
   // Queries for blockHeight regardless of SEED_PHRASE_ORIGIN as a means of testing endpoint for liveness.
   const { blockHeight, rpc } = await fetchBlockHeightWithFallback(rpcs.map(r => r.url));
 
-  const { appParameters } = await createClient(
-    AppService,
-    createGrpcWebTransport({ baseUrl: rpc }),
-  ).appParameters({}, DEFAULT_TRANSPORT_OPTS);
-  if (!appParameters?.chainId) {
-    throw new Error('No chain id');
-  }
+  // Persist the RPC to LS storage.
+  await localExtStorage.set('grpcEndpoint', rpc);
 
   if (seedPhraseOrigin === SEED_PHRASE_ORIGIN.NEWLY_GENERATED) {
     // Block processor identifier for denoting whether the wallet is freshly generated.
@@ -54,13 +52,19 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
     }
   }
 
-  // Safety: set these fields before in case there's an issue fetching the remote registry.
-  await localExtStorage.set('grpcEndpoint', rpc);
-
-  // Override default frontend url with redirection to veil frontend.
-  await localExtStorage.set('frontendUrl', DEFAULT_FRONTEND);
+  // Fetch registry and persist the numeraires to LS storage.
+  const { appParameters } = await createClient(
+    AppService,
+    createGrpcWebTransport({ baseUrl: rpc }),
+  ).appParameters({}, DEFAULT_TRANSPORT_OPTS);
+  if (!appParameters?.chainId) {
+    throw new Error('No chain id');
+  }
 
   const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
+  if (!numeraires.length) {
+    throw new Error('Empty numeraires list from registry');
+  }
 
   await localExtStorage.set(
     'numeraires',
