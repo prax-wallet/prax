@@ -10,7 +10,16 @@ import { getActiveWallet } from '../../../state/wallets';
 import { needsLogin, needsOnboard } from '../popup-needs';
 import { FrontendLink } from './frontend-link';
 import { AssetsTable } from './assets-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from '@repo/ui/components/ui/dialog';
+import { Button } from '@repo/ui/components/ui/button';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -47,6 +56,22 @@ const getAddrByIndex =
 export const PopupIndex = () => {
   const activeWallet = useStore(getActiveWallet);
   const [index, setIndex] = useState<number>(0);
+  const [showReminder, setShowReminder] = useState(false);
+
+  useEffect(() => {
+    const checkReminder = async () => {
+      if ((await localExtStorage.get('backupReminderSeen')) === false) {
+        setShowReminder(true);
+      }
+    };
+
+    void checkReminder();
+  }, []);
+
+  const dismissReminder = async () => {
+    await localExtStorage.set('backupReminderSeen', true);
+    setShowReminder(false);
+  };
 
   return (
     <>
@@ -55,7 +80,6 @@ export const PopupIndex = () => {
           <div className='absolute top-0 left-0 right-0 z-10'>
             <BlockSync />
           </div>
-
           <div className='flex flex-col items-stretch gap-[15px] px-[15px] pb-[15px]'>
             <IndexHeader />
             <div className='flex flex-col gap-4'>
@@ -69,6 +93,46 @@ export const PopupIndex = () => {
             </div>
             <FrontendLink />
             <AssetsTable account={index} />
+
+            {showReminder && (
+              <Dialog open={showReminder} onOpenChange={setShowReminder}>
+                <DialogContent>
+                  <div
+                    className='mx-auto w-[320px] rounded-2xl bg-background/90 backdrop-blur
+                                    shadow-2xl ring-1 ring-white/10 p-7 space-y-6 text-center'
+                  >
+                    <div className='space-y-3'>
+                      <div className='flex items-center justify-center gap-2'>
+                        <InfoCircledIcon className='size-5 text-muted-foreground translate-y-[-2px]' />
+                        <DialogTitle className='text-xl font-extrabold leading-none'>
+                          Reminder
+                        </DialogTitle>
+                      </div>
+
+                      <DialogDescription className='text-sm leading-relaxed text-muted-foreground'>
+                        Back up your seed&nbsp;phrase now&mdash;it’s the only way to recover your
+                        wallet.
+                        <br></br>
+                        <br></br>
+                        You can find it anytime in <strong>Security & Privacy</strong>, then{' '}
+                        <strong>Recovery passphrase</strong>.
+                      </DialogDescription>
+                    </div>
+
+                    <DialogFooter>
+                      <Button
+                        onClick={dismissReminder}
+                        variant='gradient'
+                        size='lg'
+                        className='w-full rounded-lg shadow-md hover:shadow-lg transition-shadow'
+                      >
+                        Got it
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </div>
       </div>

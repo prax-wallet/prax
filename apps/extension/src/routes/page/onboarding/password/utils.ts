@@ -64,6 +64,9 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   }
 
   if (seedPhraseOrigin === SEED_PHRASE_ORIGIN.NEWLY_GENERATED) {
+    // Flag associated with a dismissible popup that reminds the user to save their seed phrase.
+    await localExtStorage.set('backupReminderSeen', false);
+
     // Block processor identifier for denoting whether the wallet is freshly generated.
     await localExtStorage.set('walletCreationBlockHeight', blockHeight);
 

@@ -15,4 +15,5 @@ export const localTestDefaults: LocalStorageState = {
   numeraires: [],
   walletCreationBlockHeight: 0,
   compactFrontierBlockHeight: 0,
+  backupReminderSeen: undefined,
 };

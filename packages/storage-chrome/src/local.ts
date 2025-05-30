@@ -13,6 +13,7 @@ export const localDefaults: ExtensionStorageDefaults<LocalStorageState> = {
   numeraires: [],
   walletCreationBlockHeight: undefined,
   compactFrontierBlockHeight: undefined,
+  backupReminderSeen: undefined,
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

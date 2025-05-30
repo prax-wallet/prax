@@ -50,6 +50,7 @@ export const localV0Migration: MigrationFn<V0LocalStorageState, LocalStorageStat
     numeraires: v0.numeraires?.value ?? [],
     walletCreationBlockHeight: undefined,
     compactFrontierBlockHeight: undefined,
+    backupReminderSeen: undefined,
   };
 };
 
