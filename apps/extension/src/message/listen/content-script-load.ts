@@ -24,12 +24,7 @@ export const contentScriptLoadListener = (
     return false;
   }
 
-  void handle(sender).then(res => {
-    if (globalThis.__DEV__) {
-      console.debug('contentScriptLoadListener responding', { req, res });
-    }
-    respond(res);
-  });
+  void handle(sender).then(respond);
   return true;
 };
 

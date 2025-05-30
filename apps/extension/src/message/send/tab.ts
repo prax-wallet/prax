@@ -14,10 +14,6 @@ export const sendTab = async (
     });
   }
 
-  if (globalThis.__DEV__) {
-    console.debug('sendTab', message, target.origin, { target, message });
-  }
-
   const response = await chrome.tabs
     .sendMessage<PraxControl, unknown>(tab.id, message, { documentId })
     .catch(suppressChromeResponderDroppedError);
