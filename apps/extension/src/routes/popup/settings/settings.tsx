@@ -1,4 +1,10 @@
-import { DashboardIcon, ExitIcon, LockClosedIcon } from '@radix-ui/react-icons';
+import {
+  DashboardIcon,
+  ExitIcon,
+  FileTextIcon,
+  Link1Icon,
+  LockClosedIcon,
+} from '@radix-ui/react-icons';
 import { CustomLink } from '../../../shared/components/link';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
@@ -10,9 +16,19 @@ import { useNumeraires } from '../../../hooks/numeraires-query';
 
 const links = [
   {
-    title: 'Security & Privacy',
+    title: 'Recovery Passphrase',
+    icon: <FileTextIcon />,
+    href: PopupPath.SETTINGS_RECOVERY_PASSPHRASE,
+  },
+  {
+    title: 'Reset Password',
     icon: <LockClosedIcon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_SECURITY,
+    href: PopupPath.RESET_PASSWORD,
+  },
+  {
+    title: 'Connected Sites',
+    icon: <Link1Icon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_CONNECTED_SITES,
   },
   {
     title: 'Advanced',
@@ -29,7 +45,7 @@ export const Settings = () => {
   const { numeraires } = useNumeraires(chainId);
 
   return (
-    <SettingsScreen title='Settings'>
+    <SettingsScreen title='Settings and Security'>
       <div className='flex grow flex-col justify-between'>
         <div className='flex flex-1 flex-col items-start gap-5'>
           {links.map(i => (

@@ -5,7 +5,6 @@ export enum PopupPath {
   ORIGIN_APPROVAL = '/approval/origin',
   SETTINGS = '/settings',
   SETTINGS_ADVANCED = '/settings/advanced',
-  SETTINGS_SECURITY = '/settings/security',
   SETTINGS_RPC = '/settings/rpc',
   SETTINGS_DEFAULT_FRONTEND = '/settings/default-frontend',
   SETTINGS_CONNECTED_SITES = '/settings/connected-sites',

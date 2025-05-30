@@ -5,7 +5,6 @@ import { SettingsClearCache } from './settings-clear-cache';
 import { SettingsConnectedSites } from './settings-connected-sites';
 import { SettingsPassphrase } from './settings-passphrase';
 import { SettingsRPC } from './settings-rpc';
-import { SettingsSecurity } from './settings-security';
 import { SettingsDefaultFrontend } from './settings-default-frontend';
 import { SettingsNumeraires } from './settings-numeraires';
 import { SettingsResetPassword } from './settings-reset-password';
@@ -18,10 +17,6 @@ export const settingsRoutes = [
   {
     path: PopupPath.SETTINGS_ADVANCED,
     element: <SettingsAdvanced />,
-  },
-  {
-    path: PopupPath.SETTINGS_SECURITY,
-    element: <SettingsSecurity />,
   },
   {
     path: PopupPath.SETTINGS_RPC,
