@@ -39,7 +39,7 @@ export const SettingsConnectedSites = () => {
   };
 
   return (
-    <SettingsScreen title='Connected sites' IconComponent={LinkGradientIcon}>
+    <SettingsScreen title='Connected Sites' IconComponent={LinkGradientIcon}>
       <div className='relative mt-5 flex w-full items-center justify-center'>
         <div className='absolute inset-y-0 left-3 flex items-center'>
           <MagnifyingGlassIcon className='size-5 text-muted-foreground' />
@@ -54,7 +54,7 @@ export const SettingsConnectedSites = () => {
       </div>
       <div className='text-muted-foreground'>
         {!knownSites.length ? (
-          <div className='py-[2em] text-center text-lg font-bold'>no known sites</div>
+          <div className='py-[2em] text-center text-lg font-bold'>Not connected to any sites.</div>
         ) : allSitesFilteredOut ? (
           <div className='py-[2em] text-center text-lg font-bold text-yellow-500'>
             all known sites filtered

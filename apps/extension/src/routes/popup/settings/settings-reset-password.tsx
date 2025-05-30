@@ -38,7 +38,7 @@ export const SettingsResetPassword = () => {
   };
 
   return (
-    <SettingsScreen title='Change Password' IconComponent={KeyGradientIcon}>
+    <SettingsScreen title='Reset Password' IconComponent={KeyGradientIcon}>
       <form className='flex flex-1 flex-col justify-between gap-6' onSubmit={submit}>
         <div className='flex flex-col gap-3 w-full'>
           <PasswordInput

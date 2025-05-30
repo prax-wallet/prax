@@ -13,7 +13,7 @@ export const SettingsNumeraires = () => {
     navigate(PopupPath.INDEX);
   };
   return (
-    <SettingsScreen title='Price denominations' IconComponent={NumerairesGradientIcon}>
+    <SettingsScreen title='Price Denomination' IconComponent={NumerairesGradientIcon}>
       <NumeraireForm onSuccess={onSuccess} chainId={chainId} />
     </SettingsScreen>
   );

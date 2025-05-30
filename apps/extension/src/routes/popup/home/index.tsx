@@ -118,7 +118,7 @@ export const PopupIndex = () => {
                         <br></br>
                         <br></br>
                         You can find it anytime in <strong>Security & Privacy</strong>, then{' '}
-                        <strong>Recovery passphrase</strong>.
+                        <strong>Recovery Passphrase</strong>.
                       </DialogDescription>
                     </div>
                     <DialogFooter className='flex flex-col gap-2'>
