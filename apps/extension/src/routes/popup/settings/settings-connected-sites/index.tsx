@@ -35,9 +35,7 @@ export const SettingsConnectedSites = () => {
   const { approvedSites, deniedSites, ignoredSites } = getGroupedSites(knownSites, filter);
 
   const handleDisconnectAll = () => {
-    approvedSites.forEach(async origin => {
-      await discardKnownSite(origin);
-    });
+    void Promise.all(approvedSites.map(origin => discardKnownSite(origin)));
   };
 
   return (

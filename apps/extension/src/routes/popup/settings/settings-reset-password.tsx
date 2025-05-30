@@ -64,13 +64,6 @@ export const SettingsResetPassword = () => {
               <p className='font-headline font-semibold text-muted-foreground'>New password</p>
             }
             onChange={e => setNewPassword(e.target.value)}
-            validations={[
-              {
-                type: 'error',
-                issue: 'must be at least 8 characters',
-                checkFn: txt => txt.length > 0 && txt.length < 8,
-              },
-            ]}
           />
           <PasswordInput
             passwordValue={confirmPassword}
@@ -83,8 +76,8 @@ export const SettingsResetPassword = () => {
             validations={[
               {
                 type: 'error',
-                issue: 'passwords do not match',
-                checkFn: txt => txt !== newPassword,
+                issue: 'passwords must match',
+                checkFn: txt => !!txt && !!newPassword && txt !== newPassword,
               },
             ]}
           />
