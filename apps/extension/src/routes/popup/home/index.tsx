@@ -20,6 +20,8 @@ import {
 } from '@repo/ui/components/ui/dialog';
 import { Button } from '@repo/ui/components/ui/button';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { Link } from 'react-router-dom';
+import { PopupPath } from '../paths';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -126,7 +128,7 @@ export const PopupIndex = () => {
                         size='lg'
                         className='w-full rounded-lg shadow-md hover:shadow-lg transition-shadow'
                       >
-                        Got it
+                        <Link to={PopupPath.SETTINGS_RECOVERY_PASSPHRASE}>Back up now</Link>
                       </Button>
                     </DialogFooter>
                   </div>
