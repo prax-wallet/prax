@@ -1,12 +1,41 @@
-import type { PenumbraRequestFailure } from '@penumbra-zone/client/error';
-import type { PraxMessage } from './prax-message-event';
-import type { PraxConnection } from './prax-connection';
+import { isPraxMessageEvent, type PraxMessageEvent } from './prax-message-event';
 
-export const sendWindow = <P extends PraxConnection | PenumbraRequestFailure | MessagePort>(
-  message: P,
-) =>
+/** @note not private. could be observed by anything in this window. */
+export const sendWindow = <P = never>(contents: NoInfer<P>) => {
+  if (globalThis.__DEV__) {
+    console.trace('sendWindow', contents);
+  }
+
   window.postMessage(
-    { [PRAX]: message } satisfies PraxMessage<P>,
-    '/', // restrict target origin to the same window
-    message instanceof MessagePort ? [message] : [],
+    { [PRAX]: contents } satisfies Record<typeof PRAX, P>,
+    '/', // restrict to the same origin
+    contents instanceof MessagePort ? [contents] : [],
   );
+};
+
+/** @note not private. could be activated by anything in this window. */
+export const listenWindow = (
+  signal: AbortSignal | undefined,
+  listener: (pev: PraxMessageEvent) => boolean,
+) => {
+  if (globalThis.__DEV__) {
+    console.debug('listenWindow attaching', listener.name);
+  }
+
+  window.addEventListener(
+    'message',
+    ev => {
+      if (
+        isPraxMessageEvent(ev) && // only handle prax messages
+        ev.origin === window.origin && // from this origin
+        ev.source === window // from this window
+      ) {
+        const handled = listener(ev);
+        if (handled && globalThis.__DEV__) {
+          console.debug('listenWindow', listener.name, ev.data[PRAX]);
+        }
+      }
+    },
+    { signal },
+  );
+};

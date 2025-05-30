@@ -1,33 +1,39 @@
-import {
-  isPraxConnectionMessage,
-  PraxConnection,
-} from '../../content-scripts/message/prax-connection';
-import { sendTab } from '../send/tab';
+import { PraxConnection } from '../../content-scripts/message/prax-connection';
 import { alreadyApprovedSender } from '../../senders/approve';
-import { assertValidSender } from '../../senders/validate';
+import { isValidExternalSender, ValidExternalSender } from '../../senders/external';
+import { sendTab } from '../send/tab';
 
 // listen for page init
 export const contentScriptInitListener = (
   req: unknown,
-  unvalidatedSender: chrome.runtime.MessageSender,
-  // this handler will only ever send a null response
+  sender: chrome.runtime.MessageSender,
+  // responds with null
   respond: (r: null) => void,
 ): boolean => {
-  if (!isPraxConnectionMessage(req) && req !== PraxConnection.Init) {
+  if (req !== PraxConnection.Init) {
     return false;
   }
 
-  const validSender = assertValidSender(unvalidatedSender);
-  void alreadyApprovedSender(validSender).then(hasApproval => {
+  if (!isValidExternalSender(sender)) {
+    return false;
+  }
+
+  void handle(sender).then(res => {
+    if (globalThis.__DEV__) {
+      console.debug('contentScriptInitListener responding', { req, res });
+    }
+    respond(res);
+  });
+  return true;
+};
+
+const handle = (sender: ValidExternalSender) =>
+  alreadyApprovedSender(sender).then(hasApproval => {
     if (hasApproval) {
       // init only the specific document
-      void sendTab(validSender, PraxConnection.Init);
+      void sendTab(sender, PraxConnection.Init);
     }
 
     // handler is done
-    respond(null);
+    return null;
   });
-
-  // boolean return in handlers signals intent to respond
-  return true;
-};

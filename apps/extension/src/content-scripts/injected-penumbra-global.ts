@@ -19,19 +19,21 @@
 
 import '@penumbra-zone/client/global';
 
+import { PenumbraRequestFailure } from '@penumbra-zone/client/error';
 import { createPenumbraStateEvent } from '@penumbra-zone/client/event';
 import type { PenumbraProvider } from '@penumbra-zone/client/provider';
 import { PenumbraState } from '@penumbra-zone/client/state';
 import { PenumbraSymbol } from '@penumbra-zone/client/symbol';
-
+import { PraxConnection } from './message/prax-connection';
 import {
-  isPraxEndMessageEvent,
-  isPraxFailureMessageEvent,
-  isPraxPortMessageEvent,
+  isPraxMessageEvent,
+  PraxMessageEvent,
   unwrapPraxMessageEvent,
 } from './message/prax-message-event';
-import { PraxConnection } from './message/prax-connection';
-import { sendWindow } from './message/send-window';
+import { listenWindow, sendWindow } from './message/send-window';
+
+const isPenumbraRequestFailure = (data: unknown): data is PenumbraRequestFailure =>
+  typeof data === 'string' && data in PenumbraRequestFailure;
 
 class PraxInjection {
   private static singleton?: PraxInjection = new PraxInjection();
@@ -59,101 +61,94 @@ class PraxInjection {
       return PraxInjection.singleton;
     }
 
+    // ambient end listener
+    const ambientEndListener = (ev: PraxMessageEvent): boolean => {
+      const content = unwrapPraxMessageEvent(ev);
+      if (content !== PraxConnection.End) {
+        return false;
+      }
+      this.setState(PenumbraState.Disconnected);
+      return true;
+    };
+    listenWindow(undefined, ambientEndListener);
+
     void this.listenPortMessage();
-    sendWindow(PraxConnection.Init);
   }
 
-  private setConnected() {
-    window.addEventListener('message', this.ambientEndListener);
-    this.presentState = PenumbraState.Connected;
-    this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
-  }
-
-  private setDisconnected() {
-    window.removeEventListener('message', this.ambientEndListener);
-    this.presentState = PenumbraState.Disconnected;
-    this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
-  }
-
-  private setPending() {
-    this.presentState = PenumbraState.Pending;
-    this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
+  private setState(state: PenumbraState) {
+    if (this.presentState !== state) {
+      this.presentState = state;
+      this.stateEvents.dispatchEvent(createPenumbraStateEvent(PRAX_ORIGIN, this.presentState));
+    }
   }
 
   private postConnectRequest() {
+    if (this.presentState !== PenumbraState.Connected) {
+      this.setState(PenumbraState.Pending);
+    }
     const attempt = this.listenPortMessage();
-    sendWindow(PraxConnection.Connect);
+    sendWindow<PraxConnection>(PraxConnection.Connect);
     return attempt;
   }
 
   private postDisconnectRequest() {
     const attempt = this.listenEndMessage();
-    sendWindow(PraxConnection.Disconnect);
+    sendWindow<PraxConnection>(PraxConnection.Disconnect);
     return attempt;
   }
 
   private listenPortMessage() {
-    if (this.presentState !== PenumbraState.Connected) {
-      this.setPending();
-    }
-
     const connection = Promise.withResolvers<MessagePort>();
 
-    const listener = (msg: MessageEvent<unknown>) => {
-      if (msg.origin === window.origin) {
-        if (isPraxPortMessageEvent(msg)) {
-          connection.resolve(unwrapPraxMessageEvent(msg));
-        } else if (isPraxFailureMessageEvent(msg)) {
-          connection.reject(
-            new Error('Connection request failed', { cause: unwrapPraxMessageEvent(msg) }),
-          );
+    const listenAc = new AbortController();
+    const portListener = (ev: PraxMessageEvent): boolean => {
+      if (isPraxMessageEvent(ev)) {
+        const content = unwrapPraxMessageEvent(ev);
+        if (content instanceof MessagePort) {
+          ev.stopImmediatePropagation();
+          connection.resolve(content);
+          return true;
+        } else if (isPenumbraRequestFailure(content)) {
+          connection.reject(new Error('Connection request failed', { cause: content }));
+          return true;
         }
       }
+      return false;
     };
-
-    window.addEventListener('message', listener);
+    listenWindow(listenAc.signal, portListener);
 
     void connection.promise
-      .then(() => this.setConnected())
-      .catch(() => this.setDisconnected())
-      .finally(() => window.removeEventListener('message', listener));
+      .then(() => this.setState(PenumbraState.Connected))
+      .catch(() => this.setState(PenumbraState.Disconnected))
+      .finally(() => listenAc.abort());
 
     return connection.promise;
   }
 
   private listenEndMessage() {
-    window.removeEventListener('message', this.ambientEndListener);
-
-    this.setDisconnected();
-
     const disconnection = Promise.withResolvers<void>();
 
-    const listener = (msg: MessageEvent<unknown>) => {
-      if (msg.origin === window.origin) {
-        if (isPraxEndMessageEvent(msg)) {
-          disconnection.resolve();
-        } else if (isPraxFailureMessageEvent(msg)) {
-          disconnection.reject(
-            new Error('Disconnect request failed', { cause: unwrapPraxMessageEvent(msg) }),
-          );
-        }
+    const listenAc = new AbortController();
+    const endListener = (ev: PraxMessageEvent): boolean => {
+      const content = unwrapPraxMessageEvent(ev);
+      if (content === PraxConnection.End) {
+        disconnection.resolve();
+        return true;
+      } else if (isPenumbraRequestFailure(content)) {
+        disconnection.reject(new Error('Disconnect request failed', { cause: content }));
+        return true;
       }
+      return false;
     };
+    listenWindow(listenAc.signal, endListener);
 
-    window.addEventListener('message', listener);
-
-    void disconnection.promise.finally(() => window.removeEventListener('message', listener));
+    void disconnection.promise.finally(() => {
+      this.setState(PenumbraState.Disconnected);
+      listenAc.abort();
+    });
 
     return disconnection.promise;
   }
-
-  private ambientEndListener = (msg: MessageEvent<unknown>) => {
-    if (msg.origin === window.origin) {
-      if (isPraxEndMessageEvent(msg)) {
-        this.setDisconnected();
-      }
-    }
-  };
 }
 
 // inject prax

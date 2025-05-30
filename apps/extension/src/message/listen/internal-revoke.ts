@@ -1,5 +1,5 @@
 import { isPraxRevokeMessage } from '../revoke';
-import { isInternalSender } from '../../senders/internal';
+import { isValidInternalSender } from '../../senders/internal';
 import { revokeOrigin } from '../../senders/revoke';
 
 export const internalRevokeListener = (
@@ -7,7 +7,7 @@ export const internalRevokeListener = (
   sender: chrome.runtime.MessageSender,
   respond: (n: null) => void,
 ): boolean => {
-  if (!isInternalSender(sender) || !isPraxRevokeMessage(req)) {
+  if (!isValidInternalSender(sender) || !isPraxRevokeMessage(req)) {
     return false;
   }
   revokeOrigin(req.revoke);
