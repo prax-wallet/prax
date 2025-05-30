@@ -121,7 +121,7 @@ export const PopupIndex = () => {
 
                     <DialogFooter>
                       <Button
-                        onClick={dismissReminder}
+                        onClick={void dismissReminder}
                         variant='gradient'
                         size='lg'
                         className='w-full rounded-lg shadow-md hover:shadow-lg transition-shadow'

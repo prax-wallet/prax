@@ -35,8 +35,8 @@ export const SettingsConnectedSites = () => {
   const { approvedSites, deniedSites, ignoredSites } = getGroupedSites(knownSites, filter);
 
   const handleDisconnectAll = () => {
-    approvedSites.forEach(origin => {
-      discardKnownSite(origin);
+    approvedSites.forEach(async origin => {
+      await discardKnownSite(origin);
     });
   };
 
@@ -70,7 +70,7 @@ export const SettingsConnectedSites = () => {
               <div className='mt-6 flex justify-center'>
                 <button
                   onClick={handleDisconnectAll}
-                  className='px-4 py-2 rounded-md text-sm font-medium text-red-400 border border-red-400 hover:bg-red-500/10 transition'
+                  className='inline-flex items-center justify-center rounded-full border border-destructive px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10'
                 >
                   Disconnect All
                 </button>

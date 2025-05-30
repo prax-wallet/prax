@@ -3,7 +3,7 @@ import { GrpcEndpointForm } from '../../../shared/components/grpc-endpoint-form'
 import { SettingsScreen } from './settings-screen';
 
 export const SettingsRPC = () => {
-  const onSuccess = async () => {
+  const onSuccess = () => {
     // Reload the extension to ensure all scopes holding the old config are killed.
     chrome.runtime.reload();
   };
