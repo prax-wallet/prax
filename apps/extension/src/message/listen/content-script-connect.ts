@@ -2,6 +2,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { PraxConnection } from '../../content-scripts/message/prax-connection';
+import { PraxControl } from '../../content-scripts/message/prax-control';
 import { approveSender } from '../../senders/approve';
 import { isValidExternalSender, ValidExternalSender } from '../../senders/external';
 import { sendTab } from '../send/tab';
@@ -21,12 +22,7 @@ export const contentScriptConnectListener = (
     return false;
   }
 
-  void handle(sender).then(res => {
-    if (globalThis.__DEV__) {
-      console.debug('contentScriptConnectListener responding', { req, res });
-    }
-    respond(res);
-  });
+  void handle(sender).then(respond);
   return true;
 };
 
@@ -36,7 +32,7 @@ const handle = (sender: ValidExternalSender) =>
       // origin is already known, or popup choice was made
       if (status === UserChoice.Approved) {
         // init only the specific document
-        void sendTab(sender, PraxConnection.Init);
+        void sendTab(sender, PraxControl.Init);
         return null; // no failure
       } else {
         // any other choice is a denial

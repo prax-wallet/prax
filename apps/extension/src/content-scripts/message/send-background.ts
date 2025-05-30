@@ -4,9 +4,6 @@ import type { PraxConnection } from './prax-connection';
 export const sendBackground = async (
   request: PraxConnection,
 ): Promise<null | PenumbraRequestFailure> => {
-  if (globalThis.__DEV__) {
-    console.trace('sendBackground', request);
-  }
   try {
     const response = await chrome.runtime.sendMessage<PraxConnection, unknown>(request);
 
@@ -32,11 +29,8 @@ export const sendBackground = async (
 
 export function listenBackground<R = never>(
   signal: AbortSignal | undefined,
-  listener: (content: unknown) => void | Promise<NoInfer<R>>,
+  listener: (content: unknown, responder: (response: R) => void) => boolean,
 ) {
-  if (globalThis.__DEV__) {
-    console.debug('listenBackground attaching', listener.name);
-  }
   const wrappedListener = (
     message: unknown,
     sender: chrome.runtime.MessageSender,
@@ -46,11 +40,7 @@ export function listenBackground<R = never>(
       return false;
     }
 
-    const handling = listener(message)?.then(respond);
-    if (handling && globalThis.__DEV__) {
-      console.debug('listenBackground responding', listener.name, message, handling);
-    }
-    return !!handling;
+    return listener(message, respond);
   };
 
   chrome.runtime.onMessage.addListener(wrappedListener);

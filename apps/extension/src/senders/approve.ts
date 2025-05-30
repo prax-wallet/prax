@@ -1,8 +1,8 @@
 import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { getOriginRecord, upsertOriginRecord } from '@repo/storage-chrome/origin';
 import { PopupType } from '../message/popup';
 import { popup } from '../popup';
-import { getOriginRecord, upsertOriginRecord } from '@repo/storage-chrome/origin';
-import { ValidExternalSender } from './external';
+import { PrerenderingExternalSender, ValidExternalSender } from './external';
 
 /**
  * Obtain approval status from storage, as boolean.
@@ -10,7 +10,9 @@ import { ValidExternalSender } from './external';
  * @param validSender A sender that has already been validated
  * @returns true if an existing record indicates this sender is approved
  */
-export const alreadyApprovedSender = async (validSender: ValidExternalSender): Promise<boolean> =>
+export const alreadyApprovedSender = async (
+  validSender: ValidExternalSender | PrerenderingExternalSender,
+): Promise<boolean> =>
   getOriginRecord(validSender.origin).then(r => r?.choice === UserChoice.Approved);
 
 /**

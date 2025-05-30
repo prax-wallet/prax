@@ -1,8 +1,7 @@
 export enum PraxConnection {
-  Init = 'Init',
   Connect = 'Connect',
   Disconnect = 'Disconnect',
-  End = 'End',
+  Load = 'Load',
 }
 
 export const isPraxConnection = (value: unknown): value is PraxConnection =>

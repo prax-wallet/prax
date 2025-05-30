@@ -1,10 +1,10 @@
-import { PraxConnection } from '../../content-scripts/message/prax-connection';
-import { suppressChromeResponderDroppedError } from '../../utils/chrome-errors';
+import { PraxControl } from '../../content-scripts/message/prax-control';
 import { uniqueTabs } from '../../senders/unique-tabs';
+import { suppressChromeResponderDroppedError } from '../../utils/chrome-errors';
 
 export const sendTab = async (
   target: chrome.runtime.MessageSender,
-  message: PraxConnection,
+  message: PraxControl,
 ): Promise<null> => {
   const { documentId, tab } = target;
 
@@ -14,12 +14,8 @@ export const sendTab = async (
     });
   }
 
-  if (globalThis.__DEV__) {
-    console.debug('sendTab', message, target.origin, { target, message });
-  }
-
   const response = await chrome.tabs
-    .sendMessage<PraxConnection, unknown>(tab.id, message, { documentId })
+    .sendMessage<PraxControl, unknown>(tab.id, message, { documentId })
     .catch(suppressChromeResponderDroppedError);
 
   switch (response) {
@@ -32,10 +28,7 @@ export const sendTab = async (
   }
 };
 
-export function* sendTabs(
-  targets: Iterable<chrome.runtime.MessageSender>,
-  message: PraxConnection,
-) {
+export function* sendTabs(targets: Iterable<chrome.runtime.MessageSender>, message: PraxControl) {
   for (const target of uniqueTabs(targets)) {
     yield sendTab(target, message);
   }
