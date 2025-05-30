@@ -2,9 +2,10 @@ import { useAddWallet } from '../../../../hooks/onboarding';
 import { usePageNav } from '../../../../utils/navigate';
 import { FormEvent, useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getSeedPhraseOrigin, setOnboardingValuesInStorage } from './utils';
+import { getSeedPhraseOrigin } from './utils';
 import { PagePath } from '../../paths';
 import { localExtStorage } from '@repo/storage-chrome/local';
+import { setOnboardingValuesInStorage } from '../persist-parameters';
 
 export const useFinalizeOnboarding = () => {
   const addWallet = useAddWallet();
