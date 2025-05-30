@@ -24,7 +24,7 @@ export const SetPassword = () => {
   const { handleSubmit, error, loading } = useFinalizeOnboarding();
 
   const location = useLocation();
-  const origin = (location.state as { origin?: SEED_PHRASE_ORIGIN })?.origin;
+  const origin = (location.state as { origin?: SEED_PHRASE_ORIGIN }).origin;
 
   return (
     <FadeTransition>
