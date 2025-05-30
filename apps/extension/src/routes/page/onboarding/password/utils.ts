@@ -10,6 +10,9 @@ import { localExtStorage } from '@repo/storage-chrome/local';
 import { AppService, SctService } from '@penumbra-zone/protobuf';
 import { fetchBlockHeightWithFallback } from '../../../../hooks/latest-block-height';
 
+// Define a canconcial default frontend.
+export const DEFAULT_FRONTEND = 'https://dex.penumbra.zone';
+
 export const getSeedPhraseOrigin = (location: Location): SEED_PHRASE_ORIGIN => {
   const state = location.state as Partial<LocationState> | undefined;
   if (
@@ -35,15 +38,11 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   const chainRegistryClient = new ChainRegistryClient();
   const { rpcs, frontends } = await chainRegistryClient.remote.globals();
 
-  // Define a canconcial default frontend
-  const defaultFrontend = 'Radiant Commons';
-  const defaultDex = 'https://dex.penumbra.zone';
-
   let selectedFrontend: EntityMetadata | undefined = frontends.find(
-    frontend => frontend.name === defaultFrontend,
+    frontend => frontend.name === 'Radiant Commons',
   );
 
-  // If default frontend is not found, randomly select a frontend
+  // If default frontend is not found, randomly sample a frontend.
   if (!selectedFrontend) {
     selectedFrontend = sample(frontends);
   }
@@ -52,7 +51,7 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
     throw new Error('Registry missing frontends');
   }
 
-  // Queries for blockHeight regardless of SEED_PHRASE_ORIGIN as a means of testing endpoint for liveness
+  // Queries for blockHeight regardless of SEED_PHRASE_ORIGIN as a means of testing endpoint for liveness.
   const { blockHeight, rpc } = await fetchBlockHeightWithFallback(rpcs.map(r => r.url));
 
   const { appParameters } = await createClient(
@@ -83,8 +82,9 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
 
   // Safety: set these fields before in case there's an issue fetching the remote registry.
   await localExtStorage.set('grpcEndpoint', rpc);
-  // override default frontend url with redirection to veil
-  await localExtStorage.set('frontendUrl', defaultDex);
+
+  // override default frontend url with redirection to veil frontend.
+  await localExtStorage.set('frontendUrl', DEFAULT_FRONTEND);
 
   const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
 
