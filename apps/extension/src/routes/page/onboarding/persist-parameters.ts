@@ -12,7 +12,7 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
   const chainRegistryClient = new ChainRegistryClient();
   const { rpcs, frontends } = await chainRegistryClient.remote.globals();
 
-  // If default frontend is not found, randomly sample an frontend from the chain registry.
+  // If the default frontend is not present, randomly sample a frontend from the chain registry.
   const defaultFrontend = frontends.find(frontend => frontend.name === 'Radiant Commons');
   const selectedFrontend = defaultFrontend ?? sample(frontends);
   if (!selectedFrontend) {
@@ -46,22 +46,26 @@ export const setOnboardingValuesInStorage = async (seedPhraseOrigin: SEED_PHRASE
     }
   }
 
-  // Fetch registry and persist the numeraires to LS storage.
-  const { appParameters } = await createClient(
-    AppService,
-    createGrpcWebTransport({ baseUrl: rpc }),
-  ).appParameters({}, DEFAULT_TRANSPORT_OPTS);
-  if (!appParameters?.chainId) {
-    throw new Error('No chain id');
-  }
+  try {
+    // Fetch registry and persist the numeraires to LS storage.
+    const { appParameters } = await createClient(
+      AppService,
+      createGrpcWebTransport({ baseUrl: rpc }),
+    ).appParameters({}, DEFAULT_TRANSPORT_OPTS);
+    if (!appParameters?.chainId) {
+      throw new Error('No chain id');
+    }
 
-  const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
-  if (!numeraires.length) {
-    throw new Error('Empty numeraires list from registry');
-  }
+    const { numeraires } = await chainRegistryClient.remote.get(appParameters.chainId);
+    if (!numeraires.length) {
+      throw new Error('Empty numeraires list from registry');
+    }
 
-  await localExtStorage.set(
-    'numeraires',
-    numeraires.map(n => n.toJsonString()),
-  );
+    await localExtStorage.set(
+      'numeraires',
+      numeraires.map(n => n.toJsonString()),
+    );
+  } catch {
+    console.warn('Failed to fetch or store numeraires; continuing onboarding anyway.');
+  }
 };
