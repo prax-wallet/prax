@@ -1,11 +1,9 @@
 import {
-  BarChartIcon,
   DashboardIcon,
   ExitIcon,
-  HomeIcon,
+  FileTextIcon,
   Link1Icon,
   LockClosedIcon,
-  Share1Icon,
 } from '@radix-ui/react-icons';
 import { CustomLink } from '../../../shared/components/link';
 import { useStore } from '../../../state';
@@ -18,29 +16,19 @@ import { useNumeraires } from '../../../hooks/numeraires-query';
 
 const links = [
   {
-    title: 'Security & Privacy',
+    title: 'Recovery Passphrase',
+    icon: <FileTextIcon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_RECOVERY_PASSPHRASE,
+  },
+  {
+    title: 'Reset Password',
     icon: <LockClosedIcon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_SECURITY,
+    href: PopupPath.RESET_PASSWORD,
   },
   {
-    title: 'RPC',
-    icon: <Share1Icon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_RPC,
-  },
-  {
-    title: 'Default frontend',
-    icon: <HomeIcon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_DEFAULT_FRONTEND,
-  },
-  {
-    title: 'Connected sites',
+    title: 'Connected Sites',
     icon: <Link1Icon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_CONNECTED_SITES,
-  },
-  {
-    title: 'Price denomination',
-    icon: <BarChartIcon className='size-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_NUMERAIRES,
   },
   {
     title: 'Advanced',
@@ -57,7 +45,7 @@ export const Settings = () => {
   const { numeraires } = useNumeraires(chainId);
 
   return (
-    <SettingsScreen title='Settings'>
+    <SettingsScreen title='Settings and Security'>
       <div className='flex grow flex-col justify-between'>
         <div className='flex flex-1 flex-col items-start gap-5'>
           {links.map(i => (

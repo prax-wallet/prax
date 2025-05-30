@@ -1,4 +1,4 @@
-import { TrashIcon } from '@radix-ui/react-icons';
+import { BarChartIcon, HomeIcon, Share1Icon, TrashIcon } from '@radix-ui/react-icons';
 import { CustomLink } from '../../../shared/components/link';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
@@ -6,14 +6,23 @@ import { DashboardGradientIcon } from '../../../icons/dashboard-gradient';
 import { SettingsScreen } from './settings-screen';
 
 const links = [
-  // TODO: Enable when ready
-  // {
-  //   title: 'Auto-lock timer',
-  //   icon: <TimerIcon className='h-5 w-5 text-muted-foreground' />,
-  //   href: PopupPath.SETTINGS_AUTO_LOCK,
-  // },
   {
-    title: 'Clear cache',
+    title: 'Network Provider',
+    icon: <Share1Icon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_RPC,
+  },
+  {
+    title: 'Default Frontend',
+    icon: <HomeIcon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_DEFAULT_FRONTEND,
+  },
+  {
+    title: 'Price Denomination',
+    icon: <BarChartIcon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_NUMERAIRES,
+  },
+  {
+    title: 'Clear Cache',
     icon: <TrashIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_CLEAR_CACHE,
   },

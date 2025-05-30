@@ -1,11 +1,10 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { EntityMetadata } from '@penumbra-labs/registry';
 import { SelectList } from '@repo/ui/components/ui/select';
 import { Button } from '@repo/ui/components/ui/button';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { NewFrontendInput } from './new-frontend-input';
-import { useIsFocus } from './use-is-focus';
 import { LoadingList } from '../loading-list';
 import { useRegistry } from '../registry';
 
@@ -52,9 +51,14 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
     () => getIsCustomFrontendSelected(frontends, selectedFrontend),
     [frontends, selectedFrontend],
   );
+  const [label, setLabel] = useState('Save');
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const isFocused = useIsFocus(inputRef);
+
+  const handleClick = () => {
+    setLabel('Saved!');
+    setTimeout(() => setLabel('Save'), 3000);
+  };
 
   return (
     <SelectList>
@@ -91,16 +95,18 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
 
       <LoadingList isLoading={isLoading} />
 
-      {(isOnboarding ?? isFocused) && (
+      <div className='sticky bottom-0 left-0 right-0 w-full backdrop-blur-md bg-background/70 border-t z-10 mt-4 pb-[15px]'>
         <Button
           key='save-button'
           variant='gradient'
-          disabled={isOnboarding && !selectedFrontend}
+          disabled={!selectedFrontend}
           type={isOnboarding ? 'submit' : 'button'}
+          className='w-full'
+          onClick={handleClick}
         >
-          {isOnboarding ? 'Next' : 'Save'}
+          {isOnboarding ? 'Next' : label}
         </Button>
-      )}
+      </div>
       <div className='text-red-400'>{error ? String(error) : null}</div>
     </SelectList>
   );

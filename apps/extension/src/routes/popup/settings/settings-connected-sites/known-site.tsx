@@ -14,12 +14,7 @@ export const KnownSite = ({
   return (
     <div key={site.origin} role='listitem' className='flex items-center justify-between'>
       {site.choice === UserChoice.Approved && (
-        <a
-          href={site.origin}
-          target='_blank'
-          rel='noreferrer'
-          className='truncate decoration-green hover:underline'
-        >
+        <a href={site.origin} target='_blank' rel='noreferrer' className='truncate'>
           <DisplayOriginURL url={new URL(site.origin)} />
         </a>
       )}

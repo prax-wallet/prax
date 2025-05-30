@@ -13,6 +13,7 @@ const settingsConnectedSitesSelector = (state: AllSlices) => ({
   filter: state.connectedSites.filter,
   setFilter: state.connectedSites.setFilter,
   knownSites: state.connectedSites.knownSites,
+  discardKnownSite: state.connectedSites.discardKnownSite,
 });
 
 const getGroupedSites = (knownSites: OriginRecord[], filter?: string) => {
@@ -27,12 +28,18 @@ const getGroupedSites = (knownSites: OriginRecord[], filter?: string) => {
 };
 
 export const SettingsConnectedSites = () => {
-  const { filter, setFilter, knownSites } = useStoreShallow(settingsConnectedSitesSelector);
+  const { filter, setFilter, knownSites, discardKnownSite } = useStoreShallow(
+    settingsConnectedSitesSelector,
+  );
   const allSitesFilteredOut = useStore(allSitesFilteredOutSelector);
   const { approvedSites, deniedSites, ignoredSites } = getGroupedSites(knownSites, filter);
 
+  const handleDisconnectAll = () => {
+    void Promise.all(approvedSites.map(origin => discardKnownSite(origin)));
+  };
+
   return (
-    <SettingsScreen title='Connected sites' IconComponent={LinkGradientIcon}>
+    <SettingsScreen title='Connected Sites' IconComponent={LinkGradientIcon}>
       <div className='relative mt-5 flex w-full items-center justify-center'>
         <div className='absolute inset-y-0 left-3 flex items-center'>
           <MagnifyingGlassIcon className='size-5 text-muted-foreground' />
@@ -47,7 +54,7 @@ export const SettingsConnectedSites = () => {
       </div>
       <div className='text-muted-foreground'>
         {!knownSites.length ? (
-          <div className='py-[2em] text-center text-lg font-bold'>no known sites</div>
+          <div className='py-[2em] text-center text-lg font-bold'>Not connected to any sites.</div>
         ) : allSitesFilteredOut ? (
           <div className='py-[2em] text-center text-lg font-bold text-yellow-500'>
             all known sites filtered
@@ -56,6 +63,16 @@ export const SettingsConnectedSites = () => {
           <div className='mt-4 flex flex-col gap-4'>
             {!!approvedSites.length && (
               <KnownSitesGroup label='Approved sites' sites={approvedSites} />
+            )}
+            {approvedSites.length > 0 && (
+              <div className='mt-6 flex justify-center'>
+                <button
+                  onClick={handleDisconnectAll}
+                  className='inline-flex items-center justify-center rounded-full border border-destructive px-4 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10'
+                >
+                  Disconnect All
+                </button>
+              </div>
             )}
             {!!deniedSites.length && <KnownSitesGroup label='Denied sites' sites={deniedSites} />}
             {!!ignoredSites.length && (

@@ -31,7 +31,7 @@ export const SettingsClearCache = () => {
   const { handleCacheClear, loading } = useCacheClear();
 
   return (
-    <SettingsScreen title='Clear cache' IconComponent={TrashGradientIcon}>
+    <SettingsScreen title='Clear Cache' IconComponent={TrashGradientIcon}>
       <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-5'>
         <div className='flex flex-col items-center gap-2'>
           <p className='font-headline text-base font-semibold'>Are you sure?</p>
