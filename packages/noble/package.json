@@ -23,6 +23,6 @@
   },
   "peerDependencies": {
     "@penumbra-zone/getters": "27.0.1",
-    "@penumbra-zone/types": "34.2.1"
+    "@penumbra-zone/types": "34.2.0"
   }
 }

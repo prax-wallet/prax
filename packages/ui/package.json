@@ -34,7 +34,7 @@
     "@penumbra-zone/getters": "27.0.1",
     "@penumbra-zone/perspective": "60.0.1",
     "@penumbra-zone/protobuf": "10.1.1",
-    "@penumbra-zone/types": "34.2.1",
+    "@penumbra-zone/types": "34.2.0",
     "@penumbra-zone/wasm": "51.0.1",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.1.3",

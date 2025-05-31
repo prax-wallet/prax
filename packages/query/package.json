@@ -30,7 +30,7 @@
     "@penumbra-zone/crypto-web": "46.0.1",
     "@penumbra-zone/getters": "27.0.1",
     "@penumbra-zone/protobuf": "10.1.1",
-    "@penumbra-zone/types": "34.2.1",
+    "@penumbra-zone/types": "34.2.0",
     "@penumbra-zone/wasm": "51.0.1",
     "exponential-backoff": "^3.1.1"
   },
