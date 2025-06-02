@@ -5,15 +5,17 @@ import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { SettingsScreen } from './settings-screen';
 import { KeyGradientIcon } from '../../../icons/key-gradient';
+import { walletsSelector } from '../../../state/wallets';
 
 export const SettingsResetPassword = () => {
-  const { isPassword, setPassword: saveNewPassword } = useStore(passwordSelector);
-
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
   const [saved, setSaved] = useState(false);
+  const { isPassword, setPassword } = useStore(passwordSelector);
+  const { reencryptSeedPhrase } = useStore(walletsSelector);
+  const { getSeedPhrase } = useStore(walletsSelector);
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,11 +27,14 @@ export const SettingsResetPassword = () => {
         return;
       }
 
-      if (newPassword !== confirmPassword || newPassword.length < 8) {
+      if (newPassword !== confirmPassword) {
         return;
       }
 
-      await saveNewPassword(newPassword);
+      const seedPhrase = await getSeedPhrase();
+      await setPassword(newPassword);
+      await reencryptSeedPhrase(seedPhrase);
+
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');

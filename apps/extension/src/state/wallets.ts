@@ -9,6 +9,7 @@ export interface WalletsSlice {
   all: Wallet[];
   addWallet: (toAdd: WalletCreate) => Promise<Wallet>;
   getSeedPhrase: () => Promise<string[]>;
+  reencryptSeedPhrase: (seedPhrase: string[]) => Promise<void>;
 }
 
 export const createWalletsSlice =
@@ -62,6 +63,35 @@ export const createWalletsSlice =
         }
 
         return decryptedSeedPhrase.split(' ');
+      },
+      reencryptSeedPhrase: async (seedPhrase: string[]) => {
+        const seedPhraseStr = seedPhrase.join(' ');
+
+        const passwordKey = get().password.key;
+        if (passwordKey === undefined) {
+          throw new Error('Password Key not in storage');
+        }
+
+        const key = await Key.fromJson(passwordKey);
+        const encryptedSeedPhrase = await key.seal(seedPhraseStr);
+
+        // Update in-memory store
+        set(state => {
+          const wallet = state.wallets.all[0];
+          if (!wallet) {
+            throw new Error('No wallet found in state');
+          }
+          wallet.custody.encryptedSeedPhrase = encryptedSeedPhrase;
+        });
+
+        // Update local storage
+        const wallets = await local.get('wallets');
+        if (!wallets.length || !wallets[0]) {
+          throw new Error('No wallets in local storage');
+        }
+
+        wallets[0].custody.encryptedSeedPhrase = encryptedSeedPhrase.toJson();
+        await local.set('wallets', wallets);
       },
     };
   };
