@@ -12,16 +12,16 @@ export const GenerateSeedPhrase = () => {
 
   // On render, asynchronously generate a new seed phrase
   useEffect(() => {
-    const run = () => {
-      if (!phrase.length) {
-        generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-      }
+    if (!phrase.length) {
+      generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
+    }
+  }, [generateRandomSeedPhrase, phrase.length]);
 
+  useEffect(() => {
+    if (phrase.length === Number(SeedPhraseLength.TWELVE_WORDS)) {
       navigateToPasswordPage(navigate, SEED_PHRASE_ORIGIN.NEWLY_GENERATED);
-    };
-
-    run();
-  }, [generateRandomSeedPhrase, phrase.length, navigate]);
+    }
+  }, [phrase.length, navigate]);
 
   return null;
 };

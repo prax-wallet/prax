@@ -31,7 +31,7 @@ export const SettingsPassphrase = () => {
   };
 
   return (
-    <SettingsScreen title='Recovery passphrase' IconComponent={FileTextGradientIcon}>
+    <SettingsScreen title='Recovery Passphrase' IconComponent={FileTextGradientIcon}>
       <form className='flex flex-1 flex-col items-start justify-between' onSubmit={submit}>
         <div className='flex flex-col gap-3'>
           <p className='text-muted-foreground'>
@@ -59,11 +59,11 @@ export const SettingsPassphrase = () => {
             />
           ) : (
             <div className='flex flex-col gap-2'>
-              <p className='font-headline text-base font-semibold'>Recovery secret phrase</p>
+              <p className='font-headline text-base font-semibold'>Recovery Secret Phrase</p>
               <div className='mb-[6px] grid grid-cols-3 gap-4 rounded-lg border bg-background p-5'>
                 {phrase.map((word, i) => (
                   <div className='flex' key={i}>
-                    <p className='w-5 text-left text-muted-foreground'>{i + 1}.</p>
+                    <p className='w-8 text-left text-muted-foreground'>{i + 1}.</p>
                     <p className='text-muted-foreground'>{word}</p>
                   </div>
                 ))}
