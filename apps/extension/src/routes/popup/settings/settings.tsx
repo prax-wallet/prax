@@ -3,7 +3,6 @@ import {
   ExitIcon,
   FileTextIcon,
   Link1Icon,
-  LockClosedIcon,
 } from '@radix-ui/react-icons';
 import { CustomLink } from '../../../shared/components/link';
 import { useStore } from '../../../state';
@@ -20,11 +19,11 @@ const links = [
     icon: <FileTextIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_RECOVERY_PASSPHRASE,
   },
-  {
-    title: 'Reset Password',
-    icon: <LockClosedIcon className='size-5 text-muted-foreground' />,
-    href: PopupPath.RESET_PASSWORD,
-  },
+  // {
+  //   title: 'Reset Password',
+  //   icon: <LockClosedIcon className='size-5 text-muted-foreground' />,
+  //   href: PopupPath.RESET_PASSWORD,
+  // },
   {
     title: 'Connected Sites',
     icon: <Link1Icon className='size-5 text-muted-foreground' />,
