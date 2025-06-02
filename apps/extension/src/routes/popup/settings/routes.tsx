@@ -7,7 +7,6 @@ import { SettingsPassphrase } from './settings-passphrase';
 import { SettingsRPC } from './settings-rpc';
 import { SettingsDefaultFrontend } from './settings-default-frontend';
 import { SettingsNumeraires } from './settings-numeraires';
-import { SettingsResetPassword } from './settings-reset-password';
 
 export const settingsRoutes = [
   {
@@ -42,8 +41,8 @@ export const settingsRoutes = [
     path: PopupPath.SETTINGS_NUMERAIRES,
     element: <SettingsNumeraires />,
   },
-  {
-    path: PopupPath.RESET_PASSWORD,
-    element: <SettingsResetPassword />,
-  },
+  // {
+  //   path: PopupPath.RESET_PASSWORD,
+  //   element: <SettingsResetPassword />,
+  // },
 ];

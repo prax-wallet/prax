@@ -12,5 +12,5 @@ export enum PopupPath {
   SETTINGS_CLEAR_CACHE = '/settings/clear-cache',
   SETTINGS_RECOVERY_PASSPHRASE = '/settings/recovery-passphrase',
   SETTINGS_NUMERAIRES = '/settings/numeraires',
-  RESET_PASSWORD = '/settings/reset-password',
+  // RESET_PASSWORD = '/settings/reset-password',
 }
