@@ -31,9 +31,9 @@ export const SettingsResetPassword = () => {
         return;
       }
 
-      const seedPhrase = await getSeedPhrase();
-      await setPassword(newPassword);
-      await reencryptSeedPhrase(seedPhrase);
+      const seed = await getSeedPhrase(); // 1. Decrypt with current key
+      await setPassword(newPassword); // 2. Overwrite key (now live in state + session/local)
+      await reencryptSeedPhrase(seed); // 3. Re-encrypt with new key
 
       setCurrentPassword('');
       setNewPassword('');
