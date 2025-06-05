@@ -1,0 +1,18 @@
+{
+  "name": "@repo/custody-chrome",
+  "version": "0.0.1",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./ctx": "./src/ctx.ts"
+  },
+  "devDependencies": {
+    "@connectrpc/connect": "^1.6.1",
+    "@penumbra-zone/protobuf": "10.1.1"
+  }
+}

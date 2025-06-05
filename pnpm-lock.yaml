@@ -140,6 +140,9 @@ importers:
       '@repo/context':
         specifier: workspace:*
         version: link:../../packages/context
+      '@repo/custody-chrome':
+        specifier: workspace:*
+        version: link:../../packages/custody-chrome
       '@repo/storage-chrome':
         specifier: workspace:*
         version: link:../../packages/storage-chrome
@@ -306,6 +309,15 @@ importers:
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
+
+  packages/custody-chrome:
+    devDependencies:
+      '@connectrpc/connect':
+        specifier: ^1.6.1
+        version: 1.6.1(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/protobuf':
+        specifier: 10.1.1
+        version: 10.1.1(@bufbuild/protobuf@1.10.0)
 
   packages/mock-chrome:
     devDependencies:
