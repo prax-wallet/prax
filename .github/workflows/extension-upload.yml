@@ -15,12 +15,11 @@ on:
 
 env:
   DO_NOT_TRACK: 1
-  NODE_ENV: production
 
 jobs:
   publish:
     environment: ext-publish
-    name: Upload extension dist
+    name: Release Prax wallet
     runs-on: buildjet-16vcpu-ubuntu-2204
 
     steps:
@@ -36,14 +35,47 @@ jobs:
         with:
           node-version: '22'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile --prod false # will install devDeps as well
-      - run: pnpm turbo build --cache-dir=.turbo
+      - run: pnpm install --frozen-lockfile
 
-      # Outputs beta.zip and prod.zip
-      - name: Zip extension versions
-        run: pnpm zip
+      - name: Bundle Prax wallet BETA with development mode
+        env:
+          NODE_ENV: development
+        run: |
+          pnpm -C apps/extension bundle:beta
+          (cd apps/extension/beta-dist && zip -r $GITHUB_WORKSPACE/beta.zip .)
 
-      - name: Upload beta version
+      - name: Bundle Prax wallet with production mode
+        env:
+          NODE_ENV: production
+        run: |
+          pnpm -C apps/extension bundle:prod
+          (cd apps/extension/dist && zip -r $GITHUB_WORKSPACE/prod.zip .)
+
+      - name: Draft Prax wallet BETA GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Prax wallet BETA
+          draft: true
+          prerelease: true
+          body: |
+            Prax wallet BETA ${{ github.ref_name }} as uploaded to the Chrome Web Store.
+          files: |
+            beta.zip:Prax.wallet.BETA.${{ github.ref_name }}.crx
+
+      - name: Draft Prax wallet GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Prax wallet
+          draft: true
+          prerelease: false
+          body: |
+            Prax wallet ${{ github.ref_name }} as uploaded to the Chrome Web Store.
+          files: |
+            prod.zip:Prax.wallet.${{ github.ref_name }}.crx
+
+      - name: Upload Prax wallet BETA to Chrome Web Store
         uses: penumbra-zone/chrome-extension-upload@v1
         with:
           file-path: beta.zip
@@ -53,7 +85,7 @@ jobs:
           refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           publish: false
 
-      - name: Upload prod version
+      - name: Upload Prax wallet to Chrome Web Store
         uses: penumbra-zone/chrome-extension-upload@v1
         with:
           file-path: prod.zip

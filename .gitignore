@@ -16,6 +16,8 @@ dist
 beta-dist
 dist-ssr
 *.local
+prod.zip
+beta.zip
 
 # local env files
 .env
