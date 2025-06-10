@@ -196,7 +196,7 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
       const { dbVersion } = await this.storage.get('dbVersion'); // default to zero
       let storedVersion = typeof dbVersion === 'number' ? dbVersion : 0;
       // If stored version is not the same, keep migrating versions until current
-      while (storedVersion !== this.version.current) {
+      while (storedVersion < this.version.current) {
         storedVersion = await this.migrateAllFields(storedVersion);
       }
     } catch (e) {
