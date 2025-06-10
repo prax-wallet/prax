@@ -70,33 +70,30 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
     this.version = version;
   }
 
+  private async assertCurrentVersion(): Promise<void> {
+    const storedVersion = await this.storage.get('dbVersion').then(({ dbVersion }) => dbVersion);
+    if (typeof storedVersion !== 'number') {
+      throw new TypeError(
+        `Storage version ${String(storedVersion)} is ${typeof storedVersion} not number`,
+        { cause: storedVersion },
+      );
+    }
+    if (storedVersion !== this.version.current) {
+      throw new RangeError(
+        `Storage version ${String(storedVersion)} is not current ${this.version.current}`,
+      );
+    }
+  }
+
   /**
    * Retrieves a value by key (waits on ongoing migration)
    */
   async get<K extends string & keyof T>(key: K): Promise<T[K]> {
     return this.withDbLock(async () => {
-      await this._assertVersion();
+      await this.assertCurrentVersion();
       const result = (await this.storage.get(key)) as Record<K, T[K]>;
       return result[key];
     });
-  }
-
-  /**
-   * Retrieving from chrome storage will return an object with the key and value:
-   *  { fullSyncHeight: 923582341 }
-   * This function will return its value. If there isn't a value in the db for this key,
-   * chrome storage will return an empty object. For this case, we'll return undefined.
-   */
-  private async _get<K extends keyof T>(key: K): Promise<T[K] | undefined> {
-    const result = (await this.storage.get(String(key))) as Record<K, T[K]> | EmptyObject;
-    return isEmptyObj(result) ? undefined : result[key];
-  }
-
-  private async _assertVersion(): Promise<void> {
-    const result = (await this.storage.get('dbVersion')) as { dbVersion?: number };
-    if (result.dbVersion !== this.version.current) {
-      throw new Error(`Database version mismatch: ${result.dbVersion} !== ${this.version.current}`);
-    }
   }
 
   /**
@@ -105,7 +102,7 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    */
   async set<K extends Exclude<string & keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
     await this.withDbLock(async () => {
-      await this._assertVersion();
+      await this.assertCurrentVersion();
       await this.storage.set({ [key]: value } as Record<K, T[K]>);
     });
   }
@@ -147,60 +144,84 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * A migration happens for the entire storage object. Process:
    * During runtime:
    * - get, set, or remove is called
-   * - methods internally calls withDbLock, checking if the lock is already acquired
-   * - if the lock is not acquired (ie. undefined), acquire the lock by assigning dbLock to the promise returned by migrateOrInitializeIfNeeded
-   * - wait for the lock to resolve, ensuring initialization or migration is complete
+   * - acquire the lock
+   * - wait for initialization or migration to complete
    * - execute the storage get, set, or remove operation
-   * - finally, release the lock.
    */
   private async withDbLock<R>(fn: () => Promise<R>): Promise<R> {
     return navigator.locks.request('dbLock', { mode: 'exclusive' }, async () => {
-      await this.migrateOrInitializeIfNeeded();
+      await this.maybeInit();
+      await this.maybeMigrate();
       return fn();
     }) as Promise<R>;
   }
 
-  /**
-   * Migrates all fields from a given version to the next.
-   */
-  private async migrateAllFields(storedVersion: number): Promise<number> {
-    const migrationFn = this.version.migrations[storedVersion];
-
-    if (!migrationFn) {
-      throw new Error(`No migration function provided for version: ${storedVersion}`);
+  private async maybeInit(): Promise<void> {
+    if ((await this.storage.getBytesInUse()) === 0) {
+      const allDefaults = { ...this.defaults, dbVersion: this.version.current };
+      await this.storage.set(allDefaults);
     }
-
-    const currentDbState = await this.storage.get();
-    // Migrations save the database intermediate states hard to type
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- EXISTING USE
-    const nextState = await migrationFn(currentDbState);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- EXISTING USE
-    await this.storage.set(nextState);
-
-    return storedVersion + 1;
   }
 
-  /**
-   * Initializes the database with defaults or performs migrations (multiple possible if a sequence is needed).
-   */
-  private async migrateOrInitializeIfNeeded(): Promise<void> {
+  private async maybeMigrate(): Promise<void> {
+    let storedVersion: unknown;
     try {
-      // If db is empty, initialize it with defaults.
-      const bytesInUse = await this.storage.getBytesInUse();
-      if (bytesInUse === 0) {
-        const allDefaults = { ...this.defaults, dbVersion: this.version.current };
-        await this.storage.set(allDefaults);
-        return;
+      storedVersion = await this.storage.get('dbVersion').then(({ dbVersion }) => dbVersion);
+
+      if (storedVersion == null) {
+        console.warn('Migrating from legacy storage!');
+        storedVersion = 0;
       }
 
-      const { dbVersion } = await this.storage.get('dbVersion'); // default to zero
-      let storedVersion = typeof dbVersion === 'number' ? dbVersion : 0;
-      // If stored version is not the same, keep migrating versions until current
-      while (storedVersion < this.version.current) {
-        storedVersion = await this.migrateAllFields(storedVersion);
+      if (typeof storedVersion !== 'number') {
+        throw new TypeError(`Storage version type ${typeof storedVersion} is not number`, {
+          cause: storedVersion,
+        });
       }
-    } catch (e) {
-      throw new Error(`There was an error with migrating the database: ${String(e)}`);
+
+      if (storedVersion > this.version.current) {
+        throw new RangeError(`Storage version ${storedVersion} is from the future`, {
+          cause: storedVersion,
+        });
+      }
+
+      let migrationIndex = storedVersion;
+      while (migrationIndex < this.version.current) {
+        const migrationFn = this.version.migrations[migrationIndex];
+
+        const currentDbState = await this.storage.get();
+        const nextState: unknown = await migrationFn?.(currentDbState as unknown);
+        if (nextState == null || typeof nextState !== 'object') {
+          throw new TypeError(
+            `Migration ${migrationIndex} produced invalid ${typeof nextState} state`,
+            { cause: nextState },
+          );
+        }
+        await this.storage.set(nextState as Record<string, unknown>);
+        migrationIndex++;
+      }
+
+      if (migrationIndex !== this.version.current) {
+        throw new RangeError(`Migration stopped at ${migrationIndex}`, {
+          cause: this.version.migrations,
+        });
+      }
+    } catch (cause) {
+      throw new MigrationError(
+        `Failed to migrate version ${String(storedVersion)} to ${this.version.current}`,
+        { cause },
+      );
     }
+  }
+}
+
+class MigrationError extends Error {
+  constructor(migrationMessage: string, options?: ErrorOptions) {
+    const { message, cause } =
+      options?.cause instanceof Error
+        ? options.cause
+        : { message: String(options?.cause), cause: options?.cause };
+    super(`${migrationMessage}: ${message}`, { ...options, cause });
+    this.name = 'MigrationError';
   }
 }
