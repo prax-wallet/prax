@@ -15,37 +15,41 @@ interface MockState {
 describe('Base storage default instantiation', () => {
   let extStorage: ExtensionStorage<MockState>;
 
+  const mockDefaults = {
+    network: 'defaultNetwork',
+    seedPhrase: undefined,
+    accounts: [],
+    fullSyncHeight: 0,
+  };
+
+  let storageArea: MockStorageArea;
+
   beforeEach(() => {
-    const storageArea = new MockStorageArea();
+    storageArea = new MockStorageArea();
     extStorage = new ExtensionStorage<MockState>({
       storage: storageArea,
-      defaults: {
-        network: '',
-        seedPhrase: undefined,
-        accounts: [],
-        fullSyncHeight: 0,
-      },
+      defaults: mockDefaults,
       version: { current: 1, migrations: { 0: (state: MockState) => state } },
     });
   });
 
-  test('first get made initializes defaults', async () => {
+  test('get returns defaults', async () => {
     const networkDefault = await extStorage.get('network');
-    expect(networkDefault).toBe('');
+    expect(networkDefault).toBe(mockDefaults.network);
 
     const seedPhraseDefault = await extStorage.get('seedPhrase');
-    expect(seedPhraseDefault).toBe(undefined);
+    expect(seedPhraseDefault).toBe(mockDefaults.seedPhrase);
 
     const accountsDefault = await extStorage.get('accounts');
-    expect(accountsDefault).toStrictEqual([]);
+    expect(accountsDefault).toStrictEqual(mockDefaults.accounts);
 
     const syncHeightDefault = await extStorage.get('fullSyncHeight');
-    expect(syncHeightDefault).toBe(0);
+    expect(syncHeightDefault).toBe(mockDefaults.fullSyncHeight);
   });
 
   test('first get made initializes version', async () => {
-    const version = await extStorage.get('dbVersion');
-    expect(version).toBe(1);
+    await extStorage.get('network');
+    expect(storageArea.mockStore.get('dbVersion')).toBe(1);
   });
 
   test('should handle concurrent initializations w/ locks', async () => {

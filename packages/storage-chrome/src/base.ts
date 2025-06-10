@@ -58,9 +58,6 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
   }
 
   private assertAllowedKey(key: unknown): asserts key is Exclude<string, 'dbVersion'> {
-    if (typeof key !== 'string') {
-      throw new TypeError(`Key ${String(key)} is not a string`, { cause: key });
-    }
     if (key === 'dbVersion') {
       throw new RangeError('Forbidden to modify dbVersion');
     }
@@ -69,7 +66,7 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
   /**
    * Retrieves a value by key (waits on ongoing migration)
    */
-  async get<K extends keyof T>(key: K): Promise<T[K]> {
+  async get<K extends string & keyof T>(key: K): Promise<T[K]> {
     this.assertAllowedKey(key);
     return this.withDbLock(() => {
       const defaultValue = (this.defaults as Partial<T>)[key];
@@ -84,7 +81,7 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * Sets value for key (waits on ongoing migration).
    * Not allowed to manually update dbversion.
    */
-  async set<K extends Exclude<keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
+  async set<K extends string & keyof T>(key: K, value: T[K]): Promise<void> {
     this.assertAllowedKey(key);
     await this.withDbLock(() => this.storage.set({ [key]: value }));
   }
@@ -92,7 +89,7 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
   /**
    * Removes key/value from db (waits on ongoing migration). If there is a default, sets that.
    */
-  async remove(key: Exclude<keyof T, 'dbVersion'>): Promise<void> {
+  async remove(key: string & keyof T): Promise<void> {
     this.assertAllowedKey(key);
     await this.withDbLock(async () => this.storage.remove(key));
   }
@@ -124,9 +121,10 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
       `${chrome.runtime.id}.storage`,
       { mode: 'exclusive' },
       async () => {
-        if ((await this.storage.getBytesInUse()) !== 0) {
-          await ensureMigration(this.storage, this.version);
+        if ((await this.storage.getBytesInUse()) === 0) {
+          await this.storage.set({ dbVersion: this.version.current });
         }
+        await ensureMigration(this.storage, this.version);
         return fn();
       },
     ) as Promise<R>;

@@ -3,15 +3,14 @@ import { Version } from './base';
 export const ensureMigration = async (
   storage: chrome.storage.StorageArea,
   version: Version,
-): Promise<void> => {
-  let storedVersion: unknown;
+): Promise<typeof version.current> => {
+  let storedVersion = await storage.get('dbVersion').then(({ dbVersion }) => dbVersion as unknown);
+
+  if (storedVersion === version.current) {
+    return version.current;
+  }
+
   try {
-    storedVersion = await storage.get('dbVersion').then(({ dbVersion }) => dbVersion as unknown);
-
-    if (storedVersion === version.current) {
-      return;
-    }
-
     if (storedVersion == null) {
       console.warn('Migrating from legacy storage!');
       storedVersion = 0;
@@ -33,8 +32,12 @@ export const ensureMigration = async (
     while (migrationIndex < version.current) {
       const migrationFn = version.migrations[migrationIndex];
 
+      if (!migrationFn) {
+        break;
+      }
+
       const currentDbState = await storage.get();
-      const nextState: unknown = await migrationFn?.(currentDbState as unknown);
+      const nextState: unknown = await migrationFn(currentDbState as unknown);
       if (nextState == null || typeof nextState !== 'object') {
         throw new TypeError(
           `Migration ${migrationIndex} produced invalid ${typeof nextState} state`,
@@ -50,7 +53,10 @@ export const ensureMigration = async (
         cause: version.migrations,
       });
     }
+
+    return migrationIndex;
   } catch (cause) {
+    console.error('Failed to migrate', cause);
     throw new MigrationError(
       `Failed to migrate version ${String(storedVersion)} to ${version.current}`,
       { cause },
