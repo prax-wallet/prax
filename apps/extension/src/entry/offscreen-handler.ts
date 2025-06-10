@@ -43,9 +43,13 @@ chrome.runtime.onMessage.addListener((req, _sender, respond) => {
 });
 
 const spawnActionBuildWorker = (req: ActionBuildRequest) => {
+  console.log("entered spawnActionBuildWorker!")
+  
   const { promise, resolve, reject } = Promise.withResolvers<ActionBuildResponse>();
 
-  const worker = new Worker(new URL('../wasm-build-action.ts', import.meta.url));
+  // Temporarily hardcode to delegated prover workflow for testing purposes.
+  // const worker = new Worker(new URL('../wasm-build-action.ts', import.meta.url));
+  const worker = new Worker(new URL('../wasm-build-delegated.ts', import.meta.url));
   void promise.finally(() => worker.terminate());
 
   const onWorkerMessage = (e: MessageEvent) => resolve(e.data as ActionBuildResponse);
