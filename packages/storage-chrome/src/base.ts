@@ -74,7 +74,8 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * Retrieves a value by key (waits on ongoing migration)
    */
   async get<K extends keyof T>(key: K): Promise<T[K]> {
-    return this.withDbLock(() => {
+    return this.withDbLock(async () => {
+      await this._assertVersion();
       return this._get(key) as Promise<T[K]>;
     });
   }
@@ -90,12 +91,20 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
     return isEmptyObj(result) ? undefined : result[key];
   }
 
+  private async _assertVersion(): Promise<void> {
+    const result = (await this.storage.get('dbVersion')) as { dbVersion?: number };
+    if (result.dbVersion !== this.version.current) {
+      throw new Error(`Database version mismatch: ${result.dbVersion} !== ${this.version.current}`);
+    }
+  }
+
   /**
    * Sets value for key (waits on ongoing migration).
    * Not allowed to manually update dbversion.
    */
   async set<K extends Exclude<keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
     await this.withDbLock(async () => {
+      await this._assertVersion();
       await this._set({ [key]: value } as Record<K, T[K]>);
     });
   }
