@@ -77,7 +77,9 @@ describe('Base storage default instantiation', () => {
   });
 
   test('remove throws error when attempting to remove dbVersion', async () => {
-    await expect(extStorage.remove('dbVersion')).rejects.toThrow('Cannot remove dbVersion');
+    await expect(extStorage.remove('dbVersion' as never)).rejects.toThrow(
+      'Forbidden to modify dbVersion',
+    );
   });
 
   test('remove maintains concurrency and locks', async () => {
