@@ -1,16 +1,16 @@
 import { produce } from 'immer';
-import { localExtStorage } from './local';
-import { OriginRecord } from './types';
+import { localExtStorage } from './defaults';
+import { OriginRecord } from './versions/v1';
 
-export const getOriginRecord = async (getOrigin?: string) => {
-  if (!getOrigin) {
+export const getOriginRecord = async (senderOrigin?: string) => {
+  if (!senderOrigin) {
     return undefined;
   }
   const knownSites = await localExtStorage.get('knownSites');
 
-  const matchRecords = knownSites.filter(r => r.origin === getOrigin);
+  const matchRecords = knownSites.filter(r => r.origin === senderOrigin);
   if (matchRecords.length > 1) {
-    throw new Error(`There are multiple records for origin: ${getOrigin}`);
+    throw new Error(`There are multiple records for origin: ${senderOrigin}`);
   }
 
   return matchRecords[0];

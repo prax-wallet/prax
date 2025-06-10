@@ -390,6 +390,9 @@ importers:
       '@penumbra-zone/types':
         specifier: 34.2.0
         version: 34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/wasm':
+        specifier: 51.0.1
+        version: 51.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))
       '@types/chrome':
         specifier: 0.0.270
         version: 0.0.270

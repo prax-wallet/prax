@@ -18,4 +18,14 @@ export default [
       '@typescript-eslint/no-deprecated': 'off',
     },
   },
+
+  {
+    name: 'forbid-imports',
+    files: ['src/versions/v*.ts'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [{ group: ['*'], allowImportNames: [''] }] }],
+      '@typescript-eslint/consistent-indexed-object-style': ['error', 'index-signature'],
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+    },
+  },
 ];

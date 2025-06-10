@@ -1,7 +1,8 @@
-import { Listener } from './base';
-import { localExtStorage } from './local';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { WalletJson } from '@penumbra-zone/types/wallet';
-import { LocalStorageState } from './types';
+import { Listener } from './util/migrated-storage-area';
+import { localExtStorage } from './defaults';
+import { LocalStorageState } from './versions/v1';
 
 /**
  * When a user first onboards with the extension, they won't have chosen a gRPC
@@ -45,4 +46,52 @@ export const onboardWallet = async (): Promise<WalletJson> => {
     };
     localExtStorage.addListener(storageListener);
   });
+};
+
+export const isOnboarded = (): Promise<boolean> =>
+  Promise.all([
+    localExtStorage.get('wallets'),
+    localExtStorage.get('grpcEndpoint'),
+    localExtStorage.get('frontendUrl'),
+  ]).then(
+    ([wallets, grpcEndpoint, frontendUrl]) =>
+      !!wallets.length && grpcEndpoint != null && frontendUrl != null,
+  );
+
+export const setOnboard = async ({
+  numeraires,
+  walletCreationBlockHeight,
+  backupReminderSeen,
+  compactFrontierBlockHeight,
+  rpc,
+  frontend,
+}: {
+  numeraires: AssetId[];
+  walletCreationBlockHeight?: number;
+  compactFrontierBlockHeight?: number;
+  backupReminderSeen?: boolean;
+  rpc: string;
+  frontend: string;
+}) => {
+  await localExtStorage.set('frontendUrl', frontend);
+
+  await localExtStorage.set('grpcEndpoint', rpc);
+
+  // Flag associated with a dismissible popup that reminds the user to save their seed phrase
+  await localExtStorage.set('backupReminderSeen', backupReminderSeen ?? true);
+
+  // Block processor identifier for denoting whether the wallet is freshly generated.
+  await localExtStorage.set('walletCreationBlockHeight', walletCreationBlockHeight);
+
+  // Wallet services identifier for denoting whether the wallet is freshly generated
+  // and should fetch the frontier snapshot.
+  await localExtStorage.set(
+    'compactFrontierBlockHeight',
+    compactFrontierBlockHeight ?? walletCreationBlockHeight,
+  );
+
+  await localExtStorage.set(
+    'numeraires',
+    numeraires.map(n => n.toJsonString()),
+  );
 };
