@@ -64,11 +64,6 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
   private readonly defaults: ExtensionStorageDefaults<T>;
   private readonly version: Version;
 
-  /**
-   * Locks are important on get/set/removes as migrations need to complete before those actions take place
-   */
-  private dbLock: Promise<void> | undefined = undefined;
-
   constructor({ storage, defaults, version }: ExtensionStorageProps<T>) {
     this.storage = storage;
     this.defaults = defaults;
@@ -156,17 +151,10 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * - finally, release the lock.
    */
   private async withDbLock<R>(fn: () => Promise<R>): Promise<R> {
-    if (this.dbLock) {
-      await this.dbLock;
-    }
-
-    try {
-      this.dbLock = this.migrateOrInitializeIfNeeded();
-      await this.dbLock;
-      return await fn();
-    } finally {
-      this.dbLock = undefined;
-    }
+    return navigator.locks.request('dbLock', { mode: 'exclusive' }, async () => {
+      await this.migrateOrInitializeIfNeeded();
+      return fn();
+    }) as Promise<R>;
   }
 
   /**
