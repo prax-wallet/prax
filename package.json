@@ -44,6 +44,7 @@
     "@types/node": "^22.10.2",
     "@vitest/browser": "1.x",
     "jsdom": "^25.0.1",
+    "navigator.locks": "^0.8.6",
     "playwright": "^1.49.1",
     "prettier": "^3.4.2",
     "syncpack": "^13.0.0",
