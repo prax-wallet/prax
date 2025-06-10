@@ -73,10 +73,11 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
   /**
    * Retrieves a value by key (waits on ongoing migration)
    */
-  async get<K extends keyof T>(key: K): Promise<T[K]> {
+  async get<K extends string & keyof T>(key: K): Promise<T[K]> {
     return this.withDbLock(async () => {
       await this._assertVersion();
-      return this._get(key) as Promise<T[K]>;
+      const result = (await this.storage.get(key)) as Record<K, T[K]>;
+      return result[key];
     });
   }
 
@@ -102,18 +103,11 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * Sets value for key (waits on ongoing migration).
    * Not allowed to manually update dbversion.
    */
-  async set<K extends Exclude<keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
+  async set<K extends Exclude<string & keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
     await this.withDbLock(async () => {
       await this._assertVersion();
-      await this._set({ [key]: value } as Record<K, T[K]>);
+      await this.storage.set({ [key]: value } as Record<K, T[K]>);
     });
-  }
-
-  /**
-   * Private set method that circumvents need to wait on migration lock (use normal set() for that)
-   */
-  private async _set<K extends keyof T>(keys: Record<K, T[K]>): Promise<void> {
-    await this.storage.set(keys);
   }
 
   /**
@@ -128,7 +122,7 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
 
       const defaultValue = this.defaults[key];
       if (defaultValue !== undefined) {
-        await this._set({ [key]: defaultValue } as Record<typeof key, T[typeof key]>);
+        await this.storage.set({ [key]: defaultValue } as Record<typeof key, T[typeof key]>);
       } else {
         await this.storage.remove(String(key));
       }
@@ -181,7 +175,7 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- EXISTING USE
     const nextState = await migrationFn(currentDbState);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- EXISTING USE
-    await this._set(nextState);
+    await this.storage.set(nextState);
 
     return storedVersion + 1;
   }
@@ -195,12 +189,12 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
       const bytesInUse = await this.storage.getBytesInUse();
       if (bytesInUse === 0) {
         const allDefaults = { ...this.defaults, dbVersion: this.version.current };
-        // @ts-expect-error Typescript does not know how to combine the above types
-        await this._set(allDefaults);
+        await this.storage.set(allDefaults);
         return;
       }
 
-      let storedVersion = (await this._get('dbVersion')) ?? 0; // default to zero
+      const { dbVersion } = await this.storage.get('dbVersion'); // default to zero
+      let storedVersion = typeof dbVersion === 'number' ? dbVersion : 0;
       // If stored version is not the same, keep migrating versions until current
       while (storedVersion !== this.version.current) {
         storedVersion = await this.migrateAllFields(storedVersion);
