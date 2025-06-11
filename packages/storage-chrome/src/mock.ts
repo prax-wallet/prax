@@ -39,6 +39,8 @@ export class MockStorageArea implements chrome.storage.StorageArea {
       const value = this.store.get(key);
       if (value !== undefined) {
         result[key] = value;
+      } else if (keys && typeof keys === 'object' && !Array.isArray(keys)) {
+        result[key] = keys[key];
       }
     });
 
