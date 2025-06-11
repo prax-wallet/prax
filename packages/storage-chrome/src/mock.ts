@@ -9,34 +9,41 @@ import type { LocalStorageState } from './types';
 export class MockStorageArea implements chrome.storage.StorageArea {
   private store = new Map<string, unknown>();
 
-  get = ((
-    keys?: string | string[] | Record<string, unknown> | null,
-  ): Promise<Record<string, unknown>> => {
-    return new Promise(resolve => {
-      const result: Record<string, unknown> = {};
+  get(callback: (items: Record<string, unknown>) => void): void;
+  get(keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>>;
+  get(
+    keys?:
+      | ((items: Record<string, unknown>) => void)
+      | string
+      | string[]
+      | Record<string, unknown>
+      | null,
+  ) {
+    const result: Record<string, unknown> = {};
 
-      const toCheck: string[] = [];
-      if (typeof keys === 'string') {
-        toCheck.push(keys);
-      } else if (Array.isArray(keys)) {
-        toCheck.push(...keys);
-      } else if (keys && typeof keys === 'object' && !Array.isArray(keys)) {
-        toCheck.push(...Object.keys(keys));
-      } else if (!keys) {
-        // If no keys provided, get all keys from the store
-        toCheck.push(...this.store.keys());
+    const toCheck: string[] = [];
+    if (typeof keys === 'function') {
+      return void Promise.resolve(Object.fromEntries(this.store.entries())).then(keys);
+    } else if (typeof keys === 'string') {
+      toCheck.push(keys);
+    } else if (Array.isArray(keys)) {
+      toCheck.push(...keys);
+    } else if (keys && typeof keys === 'object' && !Array.isArray(keys)) {
+      toCheck.push(...Object.keys(keys));
+    } else if (!keys) {
+      // If no keys provided, get all keys from the store
+      toCheck.push(...this.store.keys());
+    }
+
+    toCheck.forEach(key => {
+      const value = this.store.get(key);
+      if (value !== undefined) {
+        result[key] = value;
       }
-
-      toCheck.forEach(key => {
-        const value = this.store.get(key);
-        if (value !== undefined) {
-          result[key] = value;
-        }
-      });
-
-      resolve(result);
     });
-  }) as chrome.storage.StorageArea['get'];
+
+    return Promise.resolve(result);
+  }
 
   async getBytesInUse(): Promise<number> {
     return new Promise(resolve => {
