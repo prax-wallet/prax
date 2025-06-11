@@ -53,11 +53,10 @@ export class MockStorageArea implements chrome.storage.StorageArea {
   async set(items: Record<string, unknown>): Promise<void> {
     return new Promise(resolve => {
       for (const key in items) {
-        // In chrome storage, setting undefined values removes them from the store
-        if (items[key] === undefined) {
-          this.store.delete(key);
+        // In chrome storage, setting undefined values is a no-op
+        if (items[key] !== undefined) {
+          this.store.set(key, items[key]);
         }
-        this.store.set(key, items[key]);
       }
       resolve();
     });
