@@ -1,4 +1,4 @@
-import { ExtensionStorage, IStorage } from './base';
+import { ExtensionStorage } from './base';
 import { localDefaults } from './local';
 import { localV0Migration } from './migrations/local-v1-migration';
 import { sessionV0Migration } from './migrations/session-v1-migration';
@@ -6,36 +6,45 @@ import { sessionDefaults, SessionStorageState } from './session';
 import type { LocalStorageState } from './types';
 
 // Helpful for testing interactions with session & local storage
-export class MockStorageArea implements IStorage {
+export class MockStorageArea implements chrome.storage.StorageArea {
   private store = new Map<string, unknown>();
 
-  async get(
-    keys?: string | string[] | Record<string, unknown> | null,
-  ): Promise<Record<string, unknown>> {
-    return new Promise(resolve => {
-      const result: Record<string, unknown> = {};
+  get(callback: (items: Record<string, unknown>) => void): void;
+  get(keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>>;
+  get(
+    keys?:
+      | ((items: Record<string, unknown>) => void)
+      | string
+      | string[]
+      | Record<string, unknown>
+      | null,
+  ) {
+    const result: Record<string, unknown> = {};
 
-      const toCheck: string[] = [];
-      if (typeof keys === 'string') {
-        toCheck.push(keys);
-      } else if (Array.isArray(keys)) {
-        toCheck.push(...keys);
+    const toCheck: string[] = [];
+    if (typeof keys === 'function') {
+      return void Promise.resolve(Object.fromEntries(this.store.entries())).then(keys);
+    } else if (typeof keys === 'string') {
+      toCheck.push(keys);
+    } else if (Array.isArray(keys)) {
+      toCheck.push(...keys);
+    } else if (keys && typeof keys === 'object' && !Array.isArray(keys)) {
+      toCheck.push(...Object.keys(keys));
+    } else if (!keys) {
+      // If no keys provided, get all keys from the store
+      toCheck.push(...this.store.keys());
+    }
+
+    toCheck.forEach(key => {
+      const value = this.store.get(key);
+      if (value !== undefined) {
+        result[key] = value;
       } else if (keys && typeof keys === 'object' && !Array.isArray(keys)) {
-        toCheck.push(...Object.keys(keys));
-      } else if (!keys) {
-        // If no keys provided, get all keys from the store
-        toCheck.push(...this.store.keys());
+        result[key] = keys[key];
       }
-
-      toCheck.forEach(key => {
-        const value = this.store.get(key);
-        if (value !== undefined) {
-          result[key] = value;
-        }
-      });
-
-      resolve(result);
     });
+
+    return Promise.resolve(result);
   }
 
   async getBytesInUse(): Promise<number> {
@@ -54,24 +63,27 @@ export class MockStorageArea implements IStorage {
   async set(items: Record<string, unknown>): Promise<void> {
     return new Promise(resolve => {
       for (const key in items) {
-        // In chrome storage, setting undefined values removes them from the store
-        if (items[key] === undefined) {
-          this.store.delete(key);
+        // In chrome storage, setting undefined values is a no-op
+        if (items[key] !== undefined) {
+          this.store.set(key, items[key]);
         }
-        this.store.set(key, items[key]);
       }
       resolve();
     });
   }
 
-  onChanged = {
-    addListener() {
-      // no-op
-    },
-    removeListener() {
-      // no-op
-    },
-  };
+  get onChanged(): chrome.storage.StorageArea['onChanged'] {
+    throw new Error('Not implemented');
+  }
+
+  async clear(): Promise<void> {
+    this.store.clear();
+    return Promise.resolve();
+  }
+
+  async setAccessLevel(): Promise<void> {
+    return Promise.reject(new Error('Not implemented'));
+  }
 }
 
 export const mockSessionExtStorage = () =>

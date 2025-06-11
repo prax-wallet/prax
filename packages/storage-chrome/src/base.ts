@@ -1,19 +1,6 @@
 import { EmptyObject, isEmptyObj } from '@penumbra-zone/types/utility';
 
-export type Listener = (
-  changes: Record<string, { oldValue?: unknown; newValue?: unknown }>,
-) => void;
-
-export interface IStorage {
-  get(keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>>;
-  getBytesInUse(keys?: string | string[] | null): Promise<number>;
-  set(items: Record<string, unknown>): Promise<void>;
-  remove(key: string): Promise<void>;
-  onChanged: {
-    addListener(listener: Listener): void;
-    removeListener(listener: Listener): void;
-  };
-}
+export type Listener = Parameters<chrome.storage.StorageArea['onChanged']['addListener']>[0];
 
 /**
  * To be imported in order to define a migration from the previous schema to the new one
@@ -54,13 +41,13 @@ export interface Version {
 }
 
 export interface ExtensionStorageProps<T extends { dbVersion: number }> {
-  storage: IStorage;
+  storage: chrome.storage.StorageArea;
   defaults: ExtensionStorageDefaults<T>;
   version: Version;
 }
 
 export class ExtensionStorage<T extends { dbVersion: number }> {
-  private readonly storage: IStorage;
+  private readonly storage: chrome.storage.StorageArea;
   private readonly defaults: ExtensionStorageDefaults<T>;
   private readonly version: Version;
 
@@ -183,6 +170,7 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
     // Migrations save the database intermediate states hard to type
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- EXISTING USE
     const nextState = await migrationFn(currentDbState);
+    await this.storage.clear();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- EXISTING USE
     await this._set(nextState);
 
