@@ -105,7 +105,7 @@ export const TransactionApproval = () => {
       </div>
 
       <div className='border-t border-gray-700 p-0'>
-        <ApproveDeny approve={approve} deny={deny} wait={3} />
+        <ApproveDeny approve={approve} deny={deny} />
       </div>
     </div>
   );

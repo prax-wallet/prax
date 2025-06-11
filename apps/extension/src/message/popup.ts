@@ -7,6 +7,7 @@ import { JsonValue } from '@bufbuild/protobuf';
 export enum PopupType {
   TxApproval = 'TxApproval',
   OriginApproval = 'OriginApproval',
+  LoginPrompt = 'LoginPrompt',
 }
 
 export type PopupError = Record<'error', JsonValue>;
@@ -52,6 +53,7 @@ export const typeOfPopupRequest = <M extends PopupType>(req: PopupRequest<M>): M
 };
 
 interface PopupRequestMap {
+  LoginPrompt: { sender: chrome.runtime.MessageSender; next: PopupType };
   TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
   OriginApproval: {
     origin: string;
@@ -62,6 +64,7 @@ interface PopupRequestMap {
 }
 
 interface PopupResponseMap {
+  LoginPrompt: { sender: chrome.runtime.MessageSender; next: PopupType };
   TxApproval: {
     authorizeRequest: Jsonified<AuthorizeRequest>;
     choice: UserChoice;

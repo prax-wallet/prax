@@ -1,40 +1,45 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
-import { InputProps } from '@repo/ui/components/ui/input';
 import { PasswordInput } from '../../shared/components/password-input';
 import { usePopupNav } from '../../utils/navigate';
 import { useStore } from '../../state';
 import { passwordSelector } from '../../state/password';
-import { FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { PopupPath } from './paths';
 import { needsOnboard } from './popup-needs';
+import { useAntiClickjackDelay } from '../../shared/utils/anti-clickjack';
 
 export const popupLoginLoader = () => needsOnboard();
 
-export const Login = () => {
+export const Login = ({
+  onSuccess = nav => nav(PopupPath.INDEX),
+  antiClickjack,
+}: {
+  onSuccess?: (nav: ReturnType<typeof usePopupNav>) => void;
+  antiClickjack?: number;
+}) => {
   const navigate = usePopupNav();
+  const delay = useAntiClickjackDelay(antiClickjack);
 
   const { isPassword, setSessionPassword } = useStore(passwordSelector);
   const [input, setInputValue] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
 
-  const handleUnlock = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleUnlock = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    void (async function () {
-      if (await isPassword(input)) {
-        await setSessionPassword(input); // saves to session state
-        navigate(PopupPath.INDEX);
-      } else {
-        setEnteredIncorrect(true);
-      }
-    })();
-  };
-
-  const handleChangePassword: InputProps['onChange'] = e => {
-    setInputValue(e.target.value);
-    setEnteredIncorrect(false);
-  };
+      void isPassword(input).then(async correct => {
+        setEnteredIncorrect(!correct);
+        if (correct) {
+          // saves to session state
+          await setSessionPassword(input);
+          onSuccess(navigate);
+        }
+      });
+    },
+    [onSuccess, navigate, isPassword, setSessionPassword, input, setEnteredIncorrect],
+  );
 
   return (
     <FadeTransition className='flex flex-col items-stretch justify-start'>
@@ -50,7 +55,10 @@ export const Login = () => {
                 Enter password
               </p>
             }
-            onChange={handleChangePassword}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setInputValue(e.target.value);
+              setEnteredIncorrect(false);
+            }}
             validations={[
               {
                 type: 'error',
@@ -59,8 +67,8 @@ export const Login = () => {
               },
             ]}
           />
-          <Button size='lg' variant='gradient' disabled={enteredIncorrect} type='submit'>
-            Unlock
+          <Button size='lg' variant='gradient' disabled={delay > 0} type='submit'>
+            Unlock {delay > 0 && `(${delay})`}
           </Button>
         </form>
         <div className='flex flex-col gap-2'>
