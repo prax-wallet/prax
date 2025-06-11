@@ -1,4 +1,4 @@
-import { ExtensionStorage, IStorage } from './base';
+import { ExtensionStorage } from './base';
 import { localDefaults } from './local';
 import { localV0Migration } from './migrations/local-v1-migration';
 import { sessionV0Migration } from './migrations/session-v1-migration';
@@ -6,12 +6,12 @@ import { sessionDefaults, SessionStorageState } from './session';
 import type { LocalStorageState } from './types';
 
 // Helpful for testing interactions with session & local storage
-export class MockStorageArea implements IStorage {
+export class MockStorageArea implements chrome.storage.StorageArea {
   private store = new Map<string, unknown>();
 
-  async get(
+  get = ((
     keys?: string | string[] | Record<string, unknown> | null,
-  ): Promise<Record<string, unknown>> {
+  ): Promise<Record<string, unknown>> => {
     return new Promise(resolve => {
       const result: Record<string, unknown> = {};
 
@@ -36,7 +36,7 @@ export class MockStorageArea implements IStorage {
 
       resolve(result);
     });
-  }
+  }) as chrome.storage.StorageArea['get'];
 
   async getBytesInUse(): Promise<number> {
     return new Promise(resolve => {
@@ -63,14 +63,18 @@ export class MockStorageArea implements IStorage {
     });
   }
 
-  onChanged = {
-    addListener() {
-      // no-op
-    },
-    removeListener() {
-      // no-op
-    },
-  };
+  get onChanged(): chrome.storage.StorageArea['onChanged'] {
+    throw new Error('Not implemented');
+  }
+
+  async clear(): Promise<void> {
+    this.store.clear();
+    return Promise.resolve();
+  }
+
+  async setAccessLevel(): Promise<void> {
+    return Promise.reject(new Error('Not implemented'));
+  }
 }
 
 export const mockSessionExtStorage = () =>
