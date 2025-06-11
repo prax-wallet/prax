@@ -3,6 +3,7 @@ import { approveSender } from './approve';
 import { OriginRecord, UserChoice } from '@repo/storage-chrome/records';
 import { PopupType } from '../message/popup';
 import { localExtStorage } from '@repo/storage-chrome/local';
+import { ValidExternalSender } from './external';
 
 const mockPopup = vi.hoisted(() => vi.fn());
 vi.mock('../popup', () => ({
@@ -24,7 +25,10 @@ describe('origin approvals', () => {
 
   describe('approveSender', () => {
     it('prompts and stores choice for a new origin', async () => {
-      const messageSender = { origin: 'mock://unknown.example.com', tab: mockTab };
+      const messageSender = {
+        origin: 'mock://unknown.example.com',
+        tab: mockTab,
+      } as ValidExternalSender;
 
       const newOriginRecord: OriginRecord = {
         choice: UserChoice.Approved,
@@ -44,7 +48,10 @@ describe('origin approvals', () => {
       await localExtStorage.set('knownSites', [
         { origin: 'mock://ignored.example.com', choice: UserChoice.Ignored, date: 123 },
       ]);
-      const messageSender = { origin: 'mock://ignored.example.com', tab: mockTab };
+      const messageSender = {
+        origin: 'mock://ignored.example.com',
+        tab: mockTab,
+      } as ValidExternalSender;
 
       const choice = await approveSender(messageSender);
       expect(choice).toBe(UserChoice.Ignored);
@@ -56,7 +63,10 @@ describe('origin approvals', () => {
         { origin: 'mock://duplicate.example.com', choice: UserChoice.Denied, date: 123 },
       ]);
 
-      const messageSender = { origin: 'mock://duplicate.example.com', tab: mockTab };
+      const messageSender = {
+        origin: 'mock://duplicate.example.com',
+        tab: mockTab,
+      } as ValidExternalSender;
       await expect(approveSender(messageSender)).rejects.toThrow(
         'There are multiple records for origin',
       );
@@ -64,7 +74,10 @@ describe('origin approvals', () => {
 
     it('returns denied choice if the popup is closed without a choice', async () => {
       await localExtStorage.set('knownSites', []);
-      const messageSender = { origin: 'mock://unknown.example.com', tab: mockTab };
+      const messageSender = {
+        origin: 'mock://unknown.example.com',
+        tab: mockTab,
+      } as ValidExternalSender;
       mockPopup.mockResolvedValue(undefined);
 
       const choice = await approveSender(messageSender);
@@ -73,7 +86,10 @@ describe('origin approvals', () => {
 
     it('returns denied choice if the popup is denied', async () => {
       await localExtStorage.set('knownSites', []);
-      const messageSender = { origin: 'mock://unknown.example.com', tab: mockTab };
+      const messageSender = {
+        origin: 'mock://unknown.example.com',
+        tab: mockTab,
+      } as ValidExternalSender;
       mockPopup.mockResolvedValue({
         choice: UserChoice.Denied,
         date: 123,
@@ -88,7 +104,10 @@ describe('origin approvals', () => {
       await localExtStorage.set('knownSites', [
         { origin: 'mock://upsertable.example.com', choice: UserChoice.Denied, date: 123 },
       ]);
-      const messageSender = { origin: 'mock://upsertable.example.com', tab: mockTab };
+      const messageSender = {
+        origin: 'mock://upsertable.example.com',
+        tab: mockTab,
+      } as ValidExternalSender;
 
       const newOriginRecord = {
         choice: UserChoice.Approved,
@@ -105,7 +124,10 @@ describe('origin approvals', () => {
 
     it('calls popup with the correct parameters', async () => {
       await localExtStorage.set('knownSites', []);
-      const messageSender = { origin: 'mock://popuptest.example.com', tab: mockTab };
+      const messageSender = {
+        origin: 'mock://popuptest.example.com',
+        tab: mockTab,
+      } as ValidExternalSender;
       mockPopup.mockResolvedValue({
         choice: UserChoice.Approved,
         date: 123,
@@ -114,12 +136,11 @@ describe('origin approvals', () => {
 
       await approveSender(messageSender);
 
-      expect(mockPopup).toHaveBeenCalledWith(PopupType.OriginApproval, {
-        origin: 'mock://popuptest.example.com',
-        favIconUrl: mockTab.favIconUrl,
-        title: mockTab.title,
-        lastRequest: undefined,
-      });
+      expect(mockPopup).toHaveBeenCalledWith(
+        PopupType.OriginApproval,
+        { lastRequest: undefined },
+        messageSender,
+      );
     });
 
     it('persists known sites when a new site is added', async () => {
@@ -130,7 +151,10 @@ describe('origin approvals', () => {
       } satisfies OriginRecord;
       await localExtStorage.set('knownSites', [existingOriginRecord]);
 
-      const messageSender = { origin: 'mock://unknown.example.com', tab: mockTab };
+      const messageSender = {
+        origin: 'mock://unknown.example.com',
+        tab: mockTab,
+      } as ValidExternalSender;
       const newOriginRecord = {
         choice: UserChoice.Approved,
         date: 123,

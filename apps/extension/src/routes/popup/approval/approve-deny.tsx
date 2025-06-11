@@ -1,17 +1,18 @@
 import { Button } from '@repo/ui/components/ui/button';
-import { useWindowCountdown } from './use-window-countdown';
+import { useWindowCountdown } from '../../../hooks/use-window-countdown';
 
 export const ApproveDeny = ({
   approve,
   deny,
   ignore,
+  wait,
 }: {
   approve?: () => void;
   deny: () => void;
   ignore?: () => void;
-  wait?: number;
+  wait: number;
 }) => {
-  const count = useWindowCountdown();
+  const count = useWindowCountdown(wait);
 
   return (
     <div
@@ -29,7 +30,7 @@ export const ApproveDeny = ({
         onClick={approve}
         disabled={!approve || count > 0}
       >
-        Approve
+        Approve {count > 0 && `(${count})`}
       </Button>
       <Button
         className='w-1/2 py-3.5 text-base hover:bg-destructive/90'

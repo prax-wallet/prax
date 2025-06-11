@@ -9,8 +9,7 @@ import { UserChoice } from '@repo/storage-chrome/records';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 export const OriginApproval = () => {
-  const { requestOrigin, favIconUrl, title, lastRequest, setChoice, sendResponse } =
-    useStore(originApprovalSelector);
+  const { sender, lastRequest, setChoice, sendResponse } = useStore(originApprovalSelector);
 
   const approve = () => {
     setChoice(UserChoice.Approved);
@@ -30,7 +29,7 @@ export const OriginApproval = () => {
     window.close();
   };
 
-  if (!requestOrigin) {
+  if (!sender?.origin) {
     return null;
   }
 
@@ -56,7 +55,7 @@ export const OriginApproval = () => {
             >
               <div className='flex flex-col items-center gap-2'>
                 <div className='flex h-11 max-w-full items-center rounded-lg bg-black p-2 text-muted-foreground [z-index:30]'>
-                  {!!favIconUrl && (
+                  {!!sender.tab?.favIconUrl && (
                     <div
                       className={cn(
                         '-ml-3',
@@ -68,15 +67,15 @@ export const OriginApproval = () => {
                       )}
                     >
                       <img
-                        src={favIconUrl}
+                        src={sender.tab.favIconUrl}
                         alt='requesting website icon'
                         className='size-20 min-w-20 rounded-full'
                       />
                     </div>
                   )}
                   <div className='-ml-3 w-full truncate p-2 pl-6 font-headline text-lg'>
-                    {title ? (
-                      <span className='text-primary-foreground'>{title}</span>
+                    {sender.tab?.title?.startsWith(sender.origin) ? (
+                      <span className='text-primary-foreground'>{sender.tab.title}</span>
                     ) : (
                       <span className='text-muted-foreground underline decoration-dotted decoration-2 underline-offset-4'>
                         no title
@@ -86,7 +85,7 @@ export const OriginApproval = () => {
                 </div>
                 <div className='z-30 flex min-h-11 w-full items-center overflow-x-auto rounded-lg bg-background p-2 text-muted-foreground'>
                   <div className='mx-auto items-center p-2 text-center leading-[0.8em]'>
-                    <DisplayOriginURL url={new URL(requestOrigin)} />
+                    <DisplayOriginURL url={new URL(sender.origin)} />
                   </div>
                 </div>
               </div>
@@ -101,7 +100,7 @@ export const OriginApproval = () => {
           </div>
         </div>
         <div className='flex grow flex-col justify-end'>
-          <ApproveDeny approve={approve} deny={deny} ignore={lastRequest && ignore} />
+          <ApproveDeny approve={approve} deny={deny} ignore={lastRequest && ignore} wait={3} />
         </div>
       </div>
     </FadeTransition>

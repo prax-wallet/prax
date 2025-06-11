@@ -6,14 +6,13 @@ export interface OriginApprovalSlice {
   responder?: PromiseWithResolvers<
     PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]
   >;
-  favIconUrl?: string;
-  title?: string;
-  requestOrigin?: string;
+  sender?: chrome.runtime.MessageSender;
   choice?: UserChoice;
   lastRequest?: Date;
 
   acceptRequest: (
     req: PopupRequest<PopupType.OriginApproval>[PopupType.OriginApproval],
+    sender?: chrome.runtime.MessageSender,
   ) => Promise<PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]>;
 
   setChoice: (attitute: UserChoice) => void;
@@ -28,25 +27,21 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
     });
   },
 
-  acceptRequest: req => {
-    const { origin: requestOrigin, favIconUrl, title, lastRequest } = req;
-
+  acceptRequest: ({ lastRequest }, sender) => {
     const existing = get().originApproval;
     if (existing.responder) {
       throw new Error('Another request is still pending');
     }
+    if (!sender) {
+      throw new ReferenceError('No sender');
+    }
 
-    // set responder synchronously
     const responder =
       Promise.withResolvers<PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]>();
-    set(state => {
-      state.originApproval.responder = responder;
-    });
 
     set(state => {
-      state.originApproval.favIconUrl = favIconUrl;
-      state.originApproval.title = title && !title.startsWith(requestOrigin) ? title : undefined;
-      state.originApproval.requestOrigin = requestOrigin;
+      state.originApproval.responder = responder;
+      state.originApproval.sender = sender;
       state.originApproval.lastRequest = lastRequest ? new Date(lastRequest) : undefined;
     });
 
@@ -54,20 +49,21 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
   },
 
   sendResponse: () => {
-    const { responder, choice, requestOrigin } = get().originApproval;
+    const { responder, choice, sender } = get().originApproval;
 
     try {
       if (!responder) {
         throw new Error('No responder');
       }
+
       try {
-        if (choice === undefined || !requestOrigin) {
+        if (choice === undefined || !sender?.origin) {
           throw new ReferenceError('Missing response data');
         }
 
         responder.resolve({
           choice,
-          origin: requestOrigin,
+          origin: sender.origin,
           date: Date.now(),
         });
       } catch (e) {
@@ -76,10 +72,8 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
     } finally {
       set(state => {
         state.originApproval.responder = undefined;
+        state.originApproval.sender = undefined;
         state.originApproval.choice = undefined;
-        state.originApproval.requestOrigin = undefined;
-        state.originApproval.favIconUrl = undefined;
-        state.originApproval.title = undefined;
       });
     }
   },
