@@ -7,6 +7,22 @@ import { UserChoice } from '@penumbra-zone/types/user-choice';
 describe('Origin Approval Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
+  const mockTabInit: Omit<chrome.tabs.Tab, 'favIconUrl' | 'title'> = {
+    index: 0,
+    pinned: false,
+    windowId: 0,
+    incognito: false,
+    selected: true,
+    discarded: false,
+    groupId: 0,
+    active: true,
+    audible: false,
+    autoDiscardable: false,
+    height: 0,
+    highlighted: false,
+    id: 0,
+  };
+
   beforeEach(() => {
     useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), mockLocalExtStorage()));
   });
@@ -14,60 +30,45 @@ describe('Origin Approval Slice', () => {
   test('initial state is empty', () => {
     const state = useStore.getState().originApproval;
     expect(state.responder).toBeUndefined();
-    expect(state.favIconUrl).toBeUndefined();
-    expect(state.title).toBeUndefined();
-    expect(state.requestOrigin).toBeUndefined();
+    expect(state.sender).toBeUndefined();
     expect(state.choice).toBeUndefined();
     expect(state.lastRequest).toBeUndefined();
   });
 
   describe('acceptRequest()', () => {
     test('accepts a request and sets state correctly', () => {
-      const origin = 'https://example.com';
-      const favIconUrl = 'https://example.com/favicon.ico';
-      const title = 'Example Site';
+      const mockSender = {
+        origin: 'https://example.com',
+        tab: {
+          ...mockTabInit,
+          favIconUrl: 'https://example.com/favicon.ico',
+          title: 'Example Site',
+        },
+      };
       const lastRequest = Date.now();
 
-      void useStore.getState().originApproval.acceptRequest({
-        origin,
-        favIconUrl,
-        title,
-        lastRequest,
-      });
+      void useStore.getState().originApproval.acceptRequest({ lastRequest }, mockSender);
 
       // Check state was updated
       const state = useStore.getState().originApproval;
       expect(state.responder).not.toBeUndefined();
-      expect(state.favIconUrl).toBe(favIconUrl);
-      expect(state.title).toBe(title);
-      expect(state.requestOrigin).toBe(origin);
+      expect(state.sender).toBe(mockSender);
       expect(state.lastRequest?.getTime()).toBe(lastRequest);
     });
 
-    test('does not set title if it is just a URL under origin', () => {
-      const origin = 'https://example.com';
-
-      void useStore.getState().originApproval.acceptRequest({
-        origin,
-        title: new URL('/some/path.html', origin).href,
-      });
-
-      // Title should be undefined since it starts with the origin
-      expect(useStore.getState().originApproval.title).toBeUndefined();
-    });
-
     test('throws if another request is pending', () => {
-      // First request
-      void useStore.getState().originApproval.acceptRequest({
+      const mockSender = {
         origin: 'https://example.com',
-      });
+        tab: { ...mockTabInit, title: 'Example Site' },
+      };
+
+      // First request
+      void useStore.getState().originApproval.acceptRequest({}, mockSender);
 
       // Second request should throw
-      expect(() =>
-        useStore.getState().originApproval.acceptRequest({
-          origin: 'https://another.com',
-        }),
-      ).toThrow('Another request is still pending');
+      expect(() => useStore.getState().originApproval.acceptRequest({}, mockSender)).toThrow(
+        'Another request is still pending',
+      );
     });
   });
 
@@ -87,14 +88,15 @@ describe('Origin Approval Slice', () => {
     });
 
     test('sends response and resets state', async () => {
-      const origin = 'https://example.com';
+      const mockSender = {
+        origin: 'https://example.com',
+        tab: { ...mockTabInit, title: 'Example Site' },
+      };
       const date = 1234;
       vi.setSystemTime(date);
 
       // Setup - accept a request
-      const response = useStore.getState().originApproval.acceptRequest({
-        origin,
-      });
+      const response = useStore.getState().originApproval.acceptRequest({}, mockSender);
 
       // Set the choice
       useStore.getState().originApproval.setChoice(UserChoice.Approved);
@@ -111,17 +113,17 @@ describe('Origin Approval Slice', () => {
       // State should be reset
       const state = useStore.getState().originApproval;
       expect(state.responder).toBeUndefined();
-      expect(state.favIconUrl).toBeUndefined();
-      expect(state.title).toBeUndefined();
-      expect(state.requestOrigin).toBeUndefined();
+      expect(state.sender).toBeUndefined();
       expect(state.choice).toBeUndefined();
     });
 
     test('rejects if missing response data', async () => {
-      // Setup - accept a request but don't set choice
-      const response = useStore.getState().originApproval.acceptRequest({
+      const mockSender = {
         origin: 'https://example.com',
-      });
+        tab: { ...mockTabInit, title: 'Example Site' },
+      };
+      // Setup - accept a request but don't set choice
+      const response = useStore.getState().originApproval.acceptRequest({}, mockSender);
 
       // Should reject when sending response without setting choice
       useStore.getState().originApproval.sendResponse();

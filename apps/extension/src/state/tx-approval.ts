@@ -30,6 +30,7 @@ export interface TxApprovalSlice {
    * representations of them instead.
    */
   responder?: PromiseWithResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
+  sender?: chrome.runtime.MessageSender;
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionView?: Stringified<TransactionView>;
   choice?: UserChoice;
@@ -41,6 +42,7 @@ export interface TxApprovalSlice {
 
   acceptRequest: (
     req: PopupRequest<PopupType.TxApproval>[PopupType.TxApproval],
+    sender?: chrome.runtime.MessageSender,
   ) => Promise<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
 
   setChoice: (choice: UserChoice) => void;
@@ -50,82 +52,103 @@ export interface TxApprovalSlice {
 
 export const createTxApprovalSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<TxApprovalSlice> =>
-  (set, get) => ({
-    acceptRequest: async ({ authorizeRequest: authReqJson }) => {
-      const existing = get().txApproval;
-      if (existing.responder) {
-        throw new Error('Another request is still pending');
-      }
-      const responder =
-        Promise.withResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>();
+  (set, get) => {
+    const cleanup = () => {
       set(state => {
-        state.txApproval.responder = responder;
-      });
-
-      const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
-
-      const getMetadata = async (assetId: AssetId) => {
-        try {
-          const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
-          return denomMetadata ?? new Metadata({ penumbraAssetId: assetId });
-        } catch {
-          return new Metadata({ penumbraAssetId: assetId });
-        }
-      };
-
-      const wallets = await local.get('wallets');
-      if (!wallets[0]) {
-        throw new Error('No found wallet');
-      }
-
-      const transactionView = await viewTransactionPlan(
-        authorizeRequest.plan ?? new TransactionPlan(),
-        getMetadata,
-        FullViewingKey.fromJsonString(wallets[0].fullViewingKey),
-      );
-
-      // pregenerate views from various perspectives.
-      // TODO: should this be done in the component?
-      const asSender = transactionView;
-      const asPublic = asPublicTransactionView(transactionView);
-      const asReceiver = await asReceiverTransactionView(transactionView, {
-        // asRecieverTransactionView will need to ask viewClient about address provenace
-        isControlledAddress: address =>
-          viewClient.indexByAddress({ address }).then(({ addressIndex }) => Boolean(addressIndex)),
-      });
-      const transactionClassification = classifyTransaction(transactionView);
-
-      set(state => {
-        state.txApproval.authorizeRequest = authorizeRequest.toJsonString();
-        state.txApproval.transactionView = transactionView.toJsonString();
-
-        state.txApproval.asSender = asSender.toJsonString();
-        state.txApproval.asPublic = asPublic.toJsonString();
-        state.txApproval.asReceiver = asReceiver.toJsonString();
-        state.txApproval.transactionClassification = transactionClassification.type;
-
+        state.txApproval.responder = undefined;
+        state.txApproval.sender = undefined;
+        state.txApproval.authorizeRequest = undefined;
+        state.txApproval.transactionView = undefined;
         state.txApproval.choice = undefined;
+
+        state.txApproval.asSender = undefined;
+        state.txApproval.asReceiver = undefined;
+        state.txApproval.asPublic = undefined;
+        state.txApproval.transactionClassification = undefined;
       });
+    };
 
-      return responder.promise;
-    },
+    return {
+      acceptRequest: async ({ authorizeRequest: authReqJson }, sender) => {
+        const existing = get().txApproval;
+        if (existing.responder) {
+          throw new Error('Another request is still pending');
+        }
 
-    setChoice: choice => {
-      set(state => {
-        state.txApproval.choice = choice;
-      });
-    },
+        if (sender) {
+          throw new Error('TxApproval should not have a sender until service context is updated');
+        }
 
-    sendResponse: () => {
-      const {
-        responder,
-        choice,
-        transactionView: transactionViewString,
-        authorizeRequest: authorizeRequestString,
-      } = get().txApproval;
+        const responder =
+          Promise.withResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>();
 
-      try {
+        const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
+
+        const getMetadata = async (assetId: AssetId) => {
+          try {
+            const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
+            return denomMetadata ?? new Metadata({ penumbraAssetId: assetId });
+          } catch {
+            return new Metadata({ penumbraAssetId: assetId });
+          }
+        };
+
+        const wallets = await local.get('wallets');
+        if (!wallets[0]) {
+          throw new Error('No found wallet');
+        }
+
+        const transactionView = await viewTransactionPlan(
+          authorizeRequest.plan ?? new TransactionPlan(),
+          getMetadata,
+          FullViewingKey.fromJsonString(wallets[0].fullViewingKey),
+        );
+
+        // pregenerate views from various perspectives.
+        // TODO: should this be done in the component?
+        const asSender = transactionView;
+        const asPublic = asPublicTransactionView(transactionView);
+        const asReceiver = await asReceiverTransactionView(transactionView, {
+          // asRecieverTransactionView will need to ask viewClient about address provenace
+          isControlledAddress: address =>
+            viewClient
+              .indexByAddress({ address })
+              .then(({ addressIndex }) => Boolean(addressIndex)),
+        });
+        const transactionClassification = classifyTransaction(transactionView);
+
+        set(state => {
+          state.txApproval.responder = responder;
+          state.txApproval.sender = sender;
+
+          state.txApproval.authorizeRequest = authorizeRequest.toJsonString();
+          state.txApproval.transactionView = transactionView.toJsonString();
+
+          state.txApproval.asSender = asSender.toJsonString();
+          state.txApproval.asPublic = asPublic.toJsonString();
+          state.txApproval.asReceiver = asReceiver.toJsonString();
+          state.txApproval.transactionClassification = transactionClassification.type;
+        });
+
+        return responder.promise.finally(cleanup);
+      },
+
+      setChoice: choice => {
+        set(state => {
+          state.txApproval.choice = choice;
+        });
+      },
+
+      sendResponse: () => {
+        const {
+          responder,
+          choice,
+          transactionView: transactionViewString,
+          authorizeRequest: authorizeRequestString,
+        } = get().txApproval;
+
         if (!responder) {
+          cleanup();
           throw new Error('No responder');
         }
 
@@ -146,20 +169,8 @@ export const createTxApprovalSlice =
         } catch (e) {
           responder.reject(e);
         }
-      } finally {
-        set(state => {
-          state.txApproval.responder = undefined;
-          state.txApproval.authorizeRequest = undefined;
-          state.txApproval.transactionView = undefined;
-          state.txApproval.choice = undefined;
-
-          state.txApproval.asSender = undefined;
-          state.txApproval.asReceiver = undefined;
-          state.txApproval.asPublic = undefined;
-          state.txApproval.transactionClassification = undefined;
-        });
-      }
-    },
-  });
+      },
+    };
+  };
 
 export const txApprovalSelector = (state: AllSlices) => state.txApproval;

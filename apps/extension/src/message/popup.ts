@@ -1,8 +1,7 @@
 import type { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import type { UserChoice } from '@penumbra-zone/types/user-choice';
-import { OriginRecord } from '@repo/storage-chrome/types';
-import { JsonValue } from '@bufbuild/protobuf';
+import type { JsonValue } from '@bufbuild/protobuf';
 
 export enum PopupType {
   TxApproval = 'TxApproval',
@@ -12,7 +11,10 @@ export enum PopupType {
 
 export type PopupError = Record<'error', JsonValue>;
 
-export type PopupRequest<M extends PopupType> = { id: string } & Record<M, PopupRequestMap[M]>;
+export type PopupRequest<M extends PopupType> = {
+  id: string;
+  sender?: chrome.runtime.MessageSender;
+} & Record<M, PopupRequestMap[M]>;
 
 export type PopupResponse<M extends PopupType> = Record<M, PopupResponseMap[M]>;
 
@@ -53,21 +55,20 @@ export const typeOfPopupRequest = <M extends PopupType>(req: PopupRequest<M>): M
 };
 
 interface PopupRequestMap {
-  LoginPrompt: { sender: chrome.runtime.MessageSender; next: PopupType };
+  LoginPrompt: { next: Exclude<PopupType, PopupType.LoginPrompt> };
   TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
-  OriginApproval: {
-    origin: string;
-    favIconUrl?: string;
-    title?: string;
-    lastRequest?: number;
-  };
+  OriginApproval: { lastRequest?: number };
 }
 
 interface PopupResponseMap {
-  LoginPrompt: { sender: chrome.runtime.MessageSender; next: PopupType };
+  LoginPrompt: { didLogin: boolean };
   TxApproval: {
     authorizeRequest: Jsonified<AuthorizeRequest>;
     choice: UserChoice;
   };
-  OriginApproval: OriginRecord;
+  OriginApproval: {
+    origin: string;
+    choice: UserChoice;
+    date: number;
+  };
 }

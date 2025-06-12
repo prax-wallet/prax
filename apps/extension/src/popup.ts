@@ -5,8 +5,6 @@ import { PopupRequest, PopupResponse, PopupType } from './message/popup';
 import { sendPopup } from './message/send-popup';
 import { listenReady } from './message/listen-ready';
 
-const NEEDS_LOGIN = new ConnectError('User must login to extension', Code.Unauthenticated);
-
 const POPUP_BASE = chrome.runtime.getURL('/popup.html');
 const POPUP_PATHS = {
   [PopupType.TxApproval]: PopupPath.TRANSACTION_APPROVAL,
@@ -16,14 +14,27 @@ const POPUP_PATHS = {
 const POPUP_READY_TIMEOUT = 60_000;
 const POPUP_SIZE_DETACHED = { width: 400, height: 628 };
 
-const promptIfNeedsLogin = async (sender: chrome.runtime.MessageSender, next: PopupType) => {
-  const loggedIn = await sessionExtStorage.get('passwordKey');
-  if (!loggedIn) {
-    const done = await popup(PopupType.LoginPrompt, { next }, sender);
-    if (done?.sender.documentId !== sender.documentId || done?.next !== next) {
-      throw NEEDS_LOGIN;
+const promptIfNeedsLogin = async (
+  next: Exclude<PopupType, PopupType.LoginPrompt>,
+  sender?: chrome.runtime.MessageSender,
+) => {
+  try {
+    const alreadyLoggedIn = (await sessionExtStorage.get('passwordKey')) != null;
+    if (alreadyLoggedIn) {
+      return;
     }
+
+    if (sender) {
+      const attemptLogin = await popup(PopupType.LoginPrompt, { next }, sender);
+      if (attemptLogin?.didLogin) {
+        return;
+      }
+    }
+  } catch (failure) {
+    console.error('Failed to log in', failure);
   }
+
+  throw new ConnectError('User must login to extension', Code.Unauthenticated);
 };
 
 /**
@@ -35,40 +46,42 @@ export const popup = async <M extends PopupType>(
   request: Omit<PopupRequest<M>[M], 'sender'>,
   sender?: chrome.runtime.MessageSender,
 ): Promise<PopupResponse<M>[M] | null> => {
-  if (popupType !== PopupType.LoginPrompt) {
-    if (sender) {
-      await promptIfNeedsLogin(sender, popupType);
+  try {
+    if (popupType !== PopupType.LoginPrompt) {
+      await promptIfNeedsLogin(popupType, sender);
     }
 
-    await throwIfNeedsLogin();
-  }
+    const popupResponse = await navigator.locks.request(
+      `${chrome.runtime.id}-popup-${popupType}`,
+      { ifAvailable: true, mode: 'exclusive' },
+      async lock => {
+        if (!lock) {
+          throw new Error(`Popup ${popupType} already open`);
+        }
 
-  const popupResponse = await navigator.locks.request(
-    `${chrome.runtime.id}-popup-${popupType}`,
-    { ifAvailable: true, mode: 'exclusive' },
-    async lock => {
-      if (!lock) {
-        throw new Error(`Popup ${popupType} already open`);
-      }
+        const popupId = await spawnPopup(popupType, sender).catch(cause =>
+          Promise.reject(new Error(`Popup ${popupType} failed to open`, { cause })),
+        );
 
-      const popupId = await spawnPopup(popupType, sender).catch(cause =>
-        Promise.reject(new Error(`Popup ${popupType} failed to open`, { cause })),
-      );
+        const popupRequest = {
+          [popupType]: request,
+          id: popupId,
+          sender,
+        } as PopupRequest<M>;
 
-      const popupRequest = {
-        [popupType]: { ...request, sender },
-        id: popupId,
-      } as PopupRequest<M>;
+        return sendPopup(popupRequest);
+      },
+    );
 
-      return sendPopup(popupRequest);
-    },
-  );
-
-  if (popupResponse == null) {
-    return null;
-  } else {
-    const { [popupType]: response } = popupResponse;
-    return response;
+    if (popupResponse == null) {
+      return null;
+    } else {
+      const { [popupType]: response } = popupResponse;
+      return response;
+    }
+  } catch (failure) {
+    console.error(failure);
+    throw failure;
   }
 };
 
@@ -90,19 +103,14 @@ const popupUrl = (popupType?: PopupType, id?: string): URL => {
   return pop;
 };
 
-/** Throws if the user is not logged in. */
-const throwIfNeedsLogin = async () => {
-  const loggedIn = await sessionExtStorage.get('passwordKey');
-  if (!loggedIn) {
-    throw NEEDS_LOGIN;
-  }
-};
-
 /**
  * Spawns a popup with a unique id, and resolves the ID when the popup is ready.
  *
- * If a relevant sender is provided, the popup is an attached action popup.
- * Otherwise, a detached popup appears near the last focused window.
+ * If a relevant sender with a tab id is provided, the popup is an attached
+ * action popup. Otherwise, a detached popup appears near the last focused
+ * window.
+ *
+ * @todo when sender is available in service context, rm detached popups
  *
  * Ready promise times out after {@link POPUP_READY_TIMEOUT} milliseconds.
  */
@@ -113,11 +121,11 @@ const spawnPopup = async (
   const popupId = crypto.randomUUID();
   const ready = listenReady(popupId, AbortSignal.timeout(POPUP_READY_TIMEOUT));
 
-  if (sender) {
-    /** Spawns an attached popup on the relevant window. */
+  if (sender?.tab) {
+    // Spawn an attached popup on the relevant tab.
     void chrome.action
       .setPopup({
-        tabId: sender.tab!.id,
+        tabId: sender.tab.id,
         popup: popupUrl(popupType, popupId).href,
       })
       .then(() =>
@@ -126,7 +134,7 @@ const spawnPopup = async (
         }),
       );
   } else {
-    /** Spawns a detached popup near the last focused window, which is hopefully relevant. */
+    // Spawn a detached popup near the last focused window, which is hopefully relevant.
     const geometry = await chrome.windows
       .getLastFocused()
       .then(({ top = 0, left = 0, width = 0 }) => ({

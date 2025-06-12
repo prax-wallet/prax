@@ -36,12 +36,7 @@ export const approveSender = async (
     case undefined: {
       const popupResponse = await popup(
         PopupType.OriginApproval,
-        {
-          origin: validSender.origin,
-          favIconUrl: validSender.tab.favIconUrl,
-          title: validSender.tab.title,
-          lastRequest: existingRecord?.date,
-        },
+        { lastRequest: existingRecord?.date },
         validSender,
       );
 

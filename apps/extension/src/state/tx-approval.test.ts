@@ -67,6 +67,8 @@ describe('Transaction Approval Slice', () => {
   const sessionExtStorage = mockSessionExtStorage();
   const localExtStorage = mockLocalExtStorage();
 
+  const mockSender = undefined;
+
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   let authorizeRequest: AuthorizeRequest;
@@ -100,18 +102,24 @@ describe('Transaction Approval Slice', () => {
       await localExtStorage.set('wallets', []);
 
       await expect(() =>
-        useStore.getState().txApproval.acceptRequest({
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        }),
+        useStore
+          .getState()
+          .txApproval.acceptRequest(
+            { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+            mockSender,
+          ),
       ).rejects.toThrowError('No found wallet');
 
       expect(useStore.getState().txApproval.authorizeRequest).toBeUndefined();
     });
 
     test('accepts a request and sets state correctly', async () => {
-      void useStore.getState().txApproval.acceptRequest({
-        authorizeRequest: authorizeRequest.toJson() as JsonObject,
-      });
+      void useStore
+        .getState()
+        .txApproval.acceptRequest(
+          { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+          mockSender,
+        );
 
       await waitForAuthorizeRequestSet();
 
@@ -122,24 +130,33 @@ describe('Transaction Approval Slice', () => {
 
     test('throws if another request is pending', async () => {
       // First request
-      void useStore.getState().txApproval.acceptRequest({
-        authorizeRequest: authorizeRequest.toJson() as JsonObject,
-      });
+      void useStore
+        .getState()
+        .txApproval.acceptRequest(
+          { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+          mockSender,
+        );
 
       // Second request should throw
       await expect(
-        useStore.getState().txApproval.acceptRequest({
-          authorizeRequest: authorizeRequest.toJson() as JsonObject,
-        }),
+        useStore
+          .getState()
+          .txApproval.acceptRequest(
+            { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+            mockSender,
+          ),
       ).rejects.toThrow('Another request is still pending');
     });
   });
 
   describe('setChoice()', () => {
     test('sets choice correctly', () => {
-      void useStore.getState().txApproval.acceptRequest({
-        authorizeRequest: authorizeRequest.toJson() as JsonObject,
-      });
+      void useStore
+        .getState()
+        .txApproval.acceptRequest(
+          { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+          mockSender,
+        );
 
       useStore.getState().txApproval.setChoice(UserChoice.Approved);
       expect(useStore.getState().txApproval.choice).toBe(UserChoice.Approved);
@@ -156,9 +173,12 @@ describe('Transaction Approval Slice', () => {
 
     test('sends response and resets state', async () => {
       // Setup - accept a request
-      const sliceResponse = useStore.getState().txApproval.acceptRequest({
-        authorizeRequest: authorizeRequest.toJson() as JsonObject,
-      });
+      const sliceResponse = useStore
+        .getState()
+        .txApproval.acceptRequest(
+          { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+          mockSender,
+        );
 
       await waitForAuthorizeRequestSet();
 
@@ -182,9 +202,12 @@ describe('Transaction Approval Slice', () => {
 
     test('rejects if missing response data', async () => {
       // Setup - accept a request but don't set choice
-      const request = useStore.getState().txApproval.acceptRequest({
-        authorizeRequest: authorizeRequest.toJson() as JsonObject,
-      });
+      const request = useStore
+        .getState()
+        .txApproval.acceptRequest(
+          { authorizeRequest: authorizeRequest.toJson() as JsonObject },
+          mockSender,
+        );
 
       await waitForAuthorizeRequestSet();
 

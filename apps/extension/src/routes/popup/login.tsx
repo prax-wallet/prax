@@ -12,9 +12,11 @@ import { useAntiClickjackDelay } from '../../shared/utils/anti-clickjack';
 export const popupLoginLoader = () => needsOnboard();
 
 export const Login = ({
+  detail,
   onSuccess = nav => nav(PopupPath.INDEX),
   antiClickjack,
 }: {
+  detail?: React.ReactNode;
   onSuccess?: (nav: ReturnType<typeof usePopupNav>) => void;
   antiClickjack?: number;
 }) => {
@@ -51,9 +53,12 @@ export const Login = ({
           <PasswordInput
             passwordValue={input}
             label={
-              <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold text-transparent'>
-                Enter password
-              </p>
+              <>
+                <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold text-transparent'>
+                  Enter password
+                </p>
+                {detail}
+              </>
             }
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setInputValue(e.target.value);
