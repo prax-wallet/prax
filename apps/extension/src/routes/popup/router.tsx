@@ -7,6 +7,7 @@ import { Settings } from './settings';
 import { settingsRoutes } from './settings/routes';
 import { TransactionApproval } from './approval/transaction';
 import { OriginApproval } from './approval/origin';
+import { LoginPrompt } from './approval/login-prompt';
 
 export const popupRoutes: RouteObject[] = [
   {
@@ -18,8 +19,9 @@ export const popupRoutes: RouteObject[] = [
         loader: popupIndexLoader,
       },
       {
+        // the user clicked the action button
         path: PopupPath.LOGIN,
-        element: <Login />,
+        element: <Login antiClickjack={0} />,
         loader: popupLoginLoader,
       },
       {
@@ -34,6 +36,10 @@ export const popupRoutes: RouteObject[] = [
       {
         path: PopupPath.ORIGIN_APPROVAL,
         element: <OriginApproval />,
+      },
+      {
+        path: PopupPath.LOGIN_PROMPT,
+        element: <LoginPrompt />,
       },
     ],
   },
