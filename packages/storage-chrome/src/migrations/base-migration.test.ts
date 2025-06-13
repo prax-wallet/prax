@@ -287,7 +287,7 @@ describe('Storage migrations', () => {
     test('migrating to older step (local dev possibly)', async () => {
       await v2ExtStorage.set('fullSyncHeight', 123n);
       await expect(v1ExtStorage.get('fullSyncHeight')).rejects.toThrow(
-        'No migration function provided for version: 2',
+        'Failed to migrate version 2 to 1: Storage version 2 is from the future',
       );
     });
 
@@ -298,6 +298,7 @@ describe('Storage migrations', () => {
     });
 
     test('error during migration from v0 to v1', async () => {
+      const errorMessage = 'unique error message';
       const faultyMigration = new ExtensionStorage<MockV1State>({
         storage: rawStorage,
         defaults: {
@@ -312,7 +313,7 @@ describe('Storage migrations', () => {
           current: 1,
           migrations: {
             0: () => {
-              throw new Error('network request error 404');
+              throw new Error(errorMessage);
             },
           },
         },
@@ -329,11 +330,13 @@ describe('Storage migrations', () => {
       await rawStorage.set(mock0StorageState);
 
       await expect(faultyMigration.get('network')).rejects.toThrow(
-        'There was an error with migrating the database: Error: network request error 404',
+        `Failed to migrate version 0 to 1: ${errorMessage}`,
       );
     });
 
     test('error during migration from v1 to v2', async () => {
+      const errorMessage = 'unique error message';
+
       const mock1Storage = new ExtensionStorage<MockV1State>({
         storage: rawStorage,
         defaults: {
@@ -371,18 +374,20 @@ describe('Storage migrations', () => {
           migrations: {
             0: localV0Migration,
             1: () => {
-              throw new Error('network request error 502');
+              throw new Error(errorMessage);
             },
           },
         },
       });
 
       await expect(faultyMigration.get('network')).rejects.toThrow(
-        'There was an error with migrating the database: Error: network request error 502',
+        `Failed to migrate version 1 to 2: ${errorMessage}`,
       );
     });
 
     test('error during migration propagates to multiple callers', async () => {
+      const errorMessage = 'unique error message';
+
       const originalNetworkVal = 'original.void.zone';
       const mock1Storage = new ExtensionStorage<MockV1State>({
         storage: rawStorage,
@@ -421,14 +426,13 @@ describe('Storage migrations', () => {
           migrations: {
             0: localV0Migration,
             1: () => {
-              throw new Error('network request error 502');
+              throw new Error(errorMessage);
             },
           },
         },
       });
 
-      const expectedError =
-        'There was an error with migrating the database: Error: network request error 502';
+      const expectedError = `Failed to migrate version 1 to 2: ${errorMessage}`;
 
       const callA = faultyMigration.get('network');
       await expect(callA).rejects.toThrow(expectedError);
