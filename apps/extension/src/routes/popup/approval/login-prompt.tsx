@@ -4,11 +4,6 @@ import { loginPromptSelector } from '../../../state/login-prompt';
 import { Login } from '../login';
 import { PopupType } from '../../../message/popup';
 
-const reasons = {
-  [PopupType.TxApproval]: 'Unlock to approve a transaction',
-  [PopupType.OriginApproval]: 'Unlock to authorize a dapp',
-} as const;
-
 export const LoginPrompt = () => {
   const { sender, next, sendResponse } = useStore(loginPromptSelector);
 
@@ -17,14 +12,22 @@ export const LoginPrompt = () => {
     window.close();
   }, [sendResponse]);
 
-  const reason = useMemo(() => {
+  const { reason, detail } = useMemo(() => {
     switch (next) {
       case PopupType.TxApproval:
-        return 'Unlock to approve a transaction';
+        return { reason: 'Review transaction request' };
       case PopupType.OriginApproval:
-        return 'Unlock to authorize a dapp';
+        return {
+          reason: 'Review connection request',
+          detail: (
+            <>
+              from{' '}
+              <span className='font-mono'>{sender?.origin && new URL(sender.origin).hostname}</span>
+            </>
+          ),
+        };
       default:
-        return null;
+        return {};
     }
   }, [next]);
 
@@ -32,11 +35,5 @@ export const LoginPrompt = () => {
     return null;
   }
 
-  return (
-    <>
-      <p>{next && reasons[next]}</p>
-      <p className='text-technical'>{sender?.origin}</p>
-      <Login onSuccess={onSuccess} detail={reason} />
-    </>
-  );
+  return <Login onSuccess={onSuccess} message={reason} detail={detail} />;
 };

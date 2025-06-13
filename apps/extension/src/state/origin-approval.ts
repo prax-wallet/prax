@@ -41,14 +41,13 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
       if (existing.responder) {
         throw new Error('Another request is still pending');
       }
-
       if (!sender) {
         throw new ReferenceError('No sender');
       }
 
-      // set responder synchronously
       const responder =
         Promise.withResolvers<PopupResponse<PopupType.OriginApproval>[PopupType.OriginApproval]>();
+
       set(state => {
         state.originApproval.responder = responder;
         state.originApproval.sender = sender;

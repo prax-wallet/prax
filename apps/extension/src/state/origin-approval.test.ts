@@ -7,7 +7,15 @@ import { UserChoice } from '@penumbra-zone/types/user-choice';
 describe('Origin Approval Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
-  const mockTabInit: Omit<chrome.tabs.Tab, 'favIconUrl' | 'title'> = {
+  const mockTab = ({
+    title,
+    favIconUrl,
+  }: {
+    title?: string;
+    favIconUrl?: string;
+  }): chrome.tabs.Tab => ({
+    title,
+    favIconUrl,
     index: 0,
     pinned: false,
     windowId: 0,
@@ -21,7 +29,7 @@ describe('Origin Approval Slice', () => {
     height: 0,
     highlighted: false,
     id: 0,
-  };
+  });
 
   beforeEach(() => {
     useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), mockLocalExtStorage()));
@@ -39,11 +47,10 @@ describe('Origin Approval Slice', () => {
     test('accepts a request and sets state correctly', () => {
       const mockSender = {
         origin: 'https://example.com',
-        tab: {
-          ...mockTabInit,
+        tab: mockTab({
           favIconUrl: 'https://example.com/favicon.ico',
           title: 'Example Site',
-        },
+        }),
       };
       const lastRequest = Date.now();
 
@@ -59,7 +66,7 @@ describe('Origin Approval Slice', () => {
     test('throws if another request is pending', () => {
       const mockSender = {
         origin: 'https://example.com',
-        tab: { ...mockTabInit, title: 'Example Site' },
+        tab: mockTab({ title: 'Example Site' }),
       };
 
       // First request
@@ -90,7 +97,7 @@ describe('Origin Approval Slice', () => {
     test('sends response and resets state', async () => {
       const mockSender = {
         origin: 'https://example.com',
-        tab: { ...mockTabInit, title: 'Example Site' },
+        tab: mockTab({ title: 'Example Site' }),
       };
       const date = 1234;
       vi.setSystemTime(date);
@@ -105,7 +112,7 @@ describe('Origin Approval Slice', () => {
       useStore.getState().originApproval.sendResponse();
 
       await expect(response).resolves.toMatchObject({
-        origin,
+        origin: mockSender.origin,
         choice: UserChoice.Approved,
         date,
       });
@@ -120,7 +127,7 @@ describe('Origin Approval Slice', () => {
     test('rejects if missing response data', async () => {
       const mockSender = {
         origin: 'https://example.com',
-        tab: { ...mockTabInit, title: 'Example Site' },
+        tab: mockTab({ title: 'Example Site' }),
       };
       // Setup - accept a request but don't set choice
       const response = useStore.getState().originApproval.acceptRequest({}, mockSender);

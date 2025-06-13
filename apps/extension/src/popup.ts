@@ -59,9 +59,7 @@ export const popup = async <M extends PopupType>(
           throw new Error(`Popup ${popupType} already open`);
         }
 
-        const popupId = await spawnPopup(popupType, sender).catch(cause =>
-          Promise.reject(new Error(`Popup ${popupType} failed to open`, { cause })),
-        );
+        const popupId = await spawnPopup(popupType, sender);
 
         const popupRequest = {
           [popupType]: request,
@@ -123,16 +121,13 @@ const spawnPopup = async (
 
   if (sender?.tab) {
     // Spawn an attached popup on the relevant tab.
-    void chrome.action
-      .setPopup({
-        tabId: sender.tab.id,
-        popup: popupUrl(popupType, popupId).href,
-      })
-      .then(() =>
-        chrome.action.openPopup({
-          windowId: sender.tab!.windowId,
-        }),
-      );
+    await chrome.action.setPopup({
+      tabId: sender.tab.id,
+      popup: popupUrl(popupType, popupId).href,
+    });
+    await chrome.action.openPopup({
+      windowId: sender.tab.windowId,
+    });
   } else {
     // Spawn a detached popup near the last focused window, which is hopefully relevant.
     const geometry = await chrome.windows

@@ -3,6 +3,8 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import type { UserChoice } from '@penumbra-zone/types/user-choice';
 import type { JsonValue } from '@bufbuild/protobuf';
 
+const REQUEST_KEYS = ['id', 'sender'];
+
 export enum PopupType {
   TxApproval = 'TxApproval',
   OriginApproval = 'OriginApproval',
@@ -22,7 +24,6 @@ export type PopupResponse<M extends PopupType> = Record<M, PopupResponseMap[M]>;
 export const isPopupRequest = (id: string, req: unknown): req is PopupRequest<any> =>
   typeof req === 'object' &&
   req !== null &&
-  Object.keys(req).length === 2 &&
   'id' in req &&
   req.id === id &&
   Object.keys(req).some(k => k in PopupType);
@@ -33,9 +34,7 @@ export const isPopupRequestType = <M extends PopupType>(
 ): req is PopupRequest<M> =>
   typeof req === 'object' &&
   req !== null &&
-  Object.keys(req).length === 2 &&
-  'id' in req &&
-  Object.keys(req).some(k => pt === k);
+  Object.keys(req).every(k => REQUEST_KEYS.includes(k) || k === pt);
 
 export const isPopupResponseType = <M extends PopupType>(
   pt: M,
@@ -43,11 +42,10 @@ export const isPopupResponseType = <M extends PopupType>(
 ): res is PopupResponse<M> =>
   typeof res === 'object' &&
   res !== null &&
-  Object.keys(res).length === 1 &&
-  pt === Object.keys(res)[0];
+  Object.keys(res).every(k => !REQUEST_KEYS.includes(k) && k === pt);
 
 export const typeOfPopupRequest = <M extends PopupType>(req: PopupRequest<M>): M => {
-  const [key, ...extra] = Object.keys(req).filter(k => k !== 'id');
+  const [key, ...extra] = Object.keys(req).filter(k => !['id', 'sender'].includes(k));
   if (!extra.length && key && key in PopupType) {
     return key as M;
   }

@@ -25,17 +25,14 @@ export const createLoginPromptSlice = (): SliceCreator<LoginPromptSlice> => (set
 
   return {
     acceptRequest: ({ next }, sender) => {
-      console.log('login prompt acceptRequest', next, sender);
       const existing = get().loginPrompt;
       if (existing.responder) {
         throw new Error('Another request is still pending');
       }
-
       if (!sender) {
         throw new ReferenceError('No sender');
       }
 
-      // set responder synchronously
       const responder =
         Promise.withResolvers<PopupResponse<PopupType.LoginPrompt>[PopupType.LoginPrompt]>();
 

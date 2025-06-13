@@ -98,21 +98,6 @@ describe('Transaction Approval Slice', () => {
   });
 
   describe('acceptRequest()', () => {
-    test('throws if no wallet', async () => {
-      await localExtStorage.set('wallets', []);
-
-      await expect(() =>
-        useStore
-          .getState()
-          .txApproval.acceptRequest(
-            { authorizeRequest: authorizeRequest.toJson() as JsonObject },
-            mockSender,
-          ),
-      ).rejects.toThrowError('No found wallet');
-
-      expect(useStore.getState().txApproval.authorizeRequest).toBeUndefined();
-    });
-
     test('accepts a request and sets state correctly', async () => {
       void useStore
         .getState()
@@ -120,8 +105,6 @@ describe('Transaction Approval Slice', () => {
           { authorizeRequest: authorizeRequest.toJson() as JsonObject },
           mockSender,
         );
-
-      await waitForAuthorizeRequestSet();
 
       expect(useStore.getState().txApproval.authorizeRequest).toEqual(
         authorizeRequest.toJsonString(),
@@ -137,15 +120,15 @@ describe('Transaction Approval Slice', () => {
           mockSender,
         );
 
-      // Second request should throw
-      await expect(
+      // Second request should throw synchronously
+      expect(() =>
         useStore
           .getState()
           .txApproval.acceptRequest(
             { authorizeRequest: authorizeRequest.toJson() as JsonObject },
             mockSender,
           ),
-      ).rejects.toThrow('Another request is still pending');
+      ).toThrow('Another request is still pending');
     });
   });
 

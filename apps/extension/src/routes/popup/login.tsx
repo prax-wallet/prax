@@ -12,10 +12,12 @@ import { useAntiClickjackDelay } from '../../shared/utils/anti-clickjack';
 export const popupLoginLoader = () => needsOnboard();
 
 export const Login = ({
+  message = 'Enter password',
   detail,
   onSuccess = nav => nav(PopupPath.INDEX),
   antiClickjack,
 }: {
+  message?: React.ReactNode;
   detail?: React.ReactNode;
   onSuccess?: (nav: ReturnType<typeof usePopupNav>) => void;
   antiClickjack?: number;
@@ -34,7 +36,7 @@ export const Login = ({
       void isPassword(input).then(async correct => {
         setEnteredIncorrect(!correct);
         if (correct) {
-          // saves to session state
+          // save to session state
           await setSessionPassword(input);
           onSuccess(navigate);
         }
@@ -55,7 +57,7 @@ export const Login = ({
             label={
               <>
                 <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold text-transparent'>
-                  Enter password
+                  {message}
                 </p>
                 {detail}
               </>

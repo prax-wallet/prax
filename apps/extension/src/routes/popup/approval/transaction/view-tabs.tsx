@@ -1,18 +1,22 @@
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/ui/tabs';
 import { cn } from '@repo/ui/lib/utils';
 import { TransactionViewTab } from './types';
-import { useStore } from '../../../../state';
-import { txApprovalSelector } from '../../../../state/tx-approval';
+import { ClassificationReturn } from '@penumbra-zone/perspective/transaction/classify';
+import { useMemo } from 'react';
 
 export const ViewTabs = ({
   defaultValue,
   onValueChange,
+  transactionClassificaton,
 }: {
   defaultValue: TransactionViewTab;
   onValueChange: (value: TransactionViewTab) => void;
+  transactionClassificaton?: ClassificationReturn;
 }) => {
-  const { transactionClassification } = useStore(txApprovalSelector);
-  const showReceiverTransactionView = transactionClassification === 'send';
+  const showReceiverTransactionView = useMemo(
+    () => transactionClassificaton?.type === 'send',
+    [transactionClassificaton?.type],
+  );
 
   return (
     <Tabs

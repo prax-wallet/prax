@@ -11,7 +11,12 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { TransactionViewTab } from './types';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { viewClient } from '../../../../clients';
-import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  TransactionPlan,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { getActiveWallet } from '../../../../state/wallets';
+import { useMemo } from 'react';
 
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
@@ -39,15 +44,23 @@ const hasTransparentAddress = (txv?: TransactionView): boolean => {
 
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
+  const wallet = useStore(getActiveWallet);
 
-  const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
-    useTransactionViewSwitcher();
+  const plan = useMemo(() => {
+    const authorizeRequest = authReqString
+      ? AuthorizeRequest.fromJsonString(authReqString)
+      : undefined;
+    return authorizeRequest?.plan ?? new TransactionPlan();
+  }, [authReqString]);
 
-  if (!authReqString) {
-    return null;
-  }
-  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
-  if (!authorizeRequest.plan || !selectedTransactionView) {
+  const {
+    selectedTransactionView,
+    selectedTransactionViewName,
+    transactionClassification,
+    setSelectedTransactionViewName,
+  } = useTransactionViewSwitcher({ plan, wallet });
+
+  if (!selectedTransactionView) {
     return null;
   }
 
@@ -93,13 +106,14 @@ export const TransactionApproval = () => {
         <ViewTabs
           defaultValue={selectedTransactionViewName}
           onValueChange={setSelectedTransactionViewName}
+          transactionClassificaton={transactionClassification}
         />
 
         <TransactionViewComponent txv={selectedTransactionView} metadataFetcher={getMetadata} />
 
         {selectedTransactionViewName === TransactionViewTab.SENDER && (
           <div className='mt-2'>
-            <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
+            <JsonViewer jsonObj={plan.toJson() as Jsonified<TransactionPlan>} />
           </div>
         )}
       </div>
