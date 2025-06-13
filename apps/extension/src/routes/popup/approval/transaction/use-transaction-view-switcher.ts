@@ -49,18 +49,21 @@ export const useTransactionViewSwitcher = ({
 
   useEffect(() => {
     if (plan && wallet) {
-      void viewTransactionPlan(
-        plan,
-        getMetadata,
-        FullViewingKey.fromJsonString(wallet.fullViewingKey),
-      ).then(async txv => {
-        setAsSender(txv);
-        setAsPublic(asPublicTransactionView(txv));
-        setTransactionClassification(classifyTransaction(txv));
-        setAsReceiver(await asReceiverTransactionView(txv, { isControlledAddress }));
-      });
+      if (!asSender) {
+        void viewTransactionPlan(
+          plan,
+          getMetadata,
+          FullViewingKey.fromJsonString(wallet.fullViewingKey),
+        ).then(txv => {
+          setAsSender(txv);
+          setAsPublic(asPublicTransactionView(txv));
+          setTransactionClassification(classifyTransaction(txv));
+        });
+      } else if (!asReceiver) {
+        void asReceiverTransactionView(asSender, { isControlledAddress }).then(setAsReceiver);
+      }
     }
-  }, [plan, wallet]);
+  }, [plan, wallet, asSender, asReceiver]);
 
   const [selectedTransactionViewName, setSelectedTransactionViewName] =
     useState<TransactionViewTab>(TransactionViewTab.SENDER);
