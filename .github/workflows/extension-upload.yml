@@ -53,7 +53,7 @@ jobs:
           body: |
             Unsigned build of Prax wallet BETA ${{ github.ref_name }} as
             uploaded to the Chrome Web Store.
-            
+
             This build is intended for developers and is not suitable for use
             outside of a testnet environment.
           files: |
