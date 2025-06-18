@@ -51,7 +51,11 @@ jobs:
           draft: true
           prerelease: true
           body: |
-            Unsigned zip of Prax wallet BETA ${{ github.ref_name }} as uploaded to the Chrome Web Store.
+            Unsigned build of Prax wallet BETA ${{ github.ref_name }} as
+            uploaded to the Chrome Web Store.
+            
+            This build is intended for developers and is not suitable for use
+            outside of a testnet environment.
           files: |
             beta.zip:Prax.wallet.BETA.Developer.Preview.${{ github.ref_name }}.zip
 
