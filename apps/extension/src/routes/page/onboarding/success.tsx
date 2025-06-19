@@ -1,16 +1,18 @@
 import { useEffect, useRef } from 'react';
-import { DEFAULT_LANDING_PAGE } from './constants';
+import { useStore } from '../../../state';
+import { getDefaultFrontend } from '../../../state/default-frontend';
 
 export const OnboardingSuccess = () => {
+  const defaultFrontendUrl = useStore(getDefaultFrontend);
   const hasOpened = useRef(false);
 
   useEffect(() => {
-    if (!hasOpened.current) {
+    if (!hasOpened.current && defaultFrontendUrl) {
       hasOpened.current = true;
-      window.open(DEFAULT_LANDING_PAGE, '_blank');
+      window.open(defaultFrontendUrl, '_blank');
       window.close();
     }
-  }, [DEFAULT_LANDING_PAGE]);
+  }, [defaultFrontendUrl]);
 
   return null;
 };
