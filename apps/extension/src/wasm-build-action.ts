@@ -35,6 +35,7 @@ const workerListener = ({ data }: { data: ActionBuildRequest }) => {
     witness: witnessJson,
     fullViewingKey: fullViewingKeyJson,
     actionPlanIndex,
+    workload,
   } = data;
 
   // Deserialize payload
@@ -42,7 +43,7 @@ const workerListener = ({ data }: { data: ActionBuildRequest }) => {
   const witness = WitnessData.fromJson(witnessJson);
   const fullViewingKey = FullViewingKey.fromJson(fullViewingKeyJson);
 
-  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(
+  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex, workload).then(
     self.postMessage,
   );
 };
@@ -54,20 +55,40 @@ async function executeWorker(
   witness: WitnessData,
   fullViewingKey: FullViewingKey,
   actionPlanIndex: number,
+  workload: string,
 ): Promise<JsonValue> {
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm/build');
 
-  const actionType = transactionPlan.actions[actionPlanIndex]!.action.case!;
+  switch (workload) {
+    case 'witness': {
+      const result = await penumbraWasmModule.buildWitnessParallel(
+        transactionPlan,
+        witness,
+        fullViewingKey,
+        actionPlanIndex,
+      );
+      return {
+        witness: Array.from(result.witness),
+        public_inputs: result.public_inputs,
+      };
+    }
 
-  // Build action according to specification in `TransactionPlan`
-  const action = await penumbraWasmModule.buildActionParallel(
-    transactionPlan,
-    witness,
-    fullViewingKey,
-    actionPlanIndex,
-    keyFileNames[actionType]?.href,
-  );
+    case 'action': {
+      const actionType = transactionPlan.actions[actionPlanIndex]!.action.case!;
+      const keyUrl = keyFileNames[actionType]?.href;
 
-  return action.toJson();
+      const action = await penumbraWasmModule.buildActionParallel(
+        transactionPlan,
+        witness,
+        fullViewingKey,
+        actionPlanIndex,
+        keyUrl,
+      );
+      return action.toJson();
+    }
+
+    default:
+      throw new Error(`Unknown workload: ${workload}`);
+  }
 }
