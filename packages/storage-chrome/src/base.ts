@@ -65,11 +65,6 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
   private readonly defaults: ExtensionStorageDefaults<T>;
   private readonly version: Version;
 
-  /**
-   * Locks are important on get/set/removes as migrations need to complete before those actions take place
-   */
-  private dbLock: Promise<void> | undefined = undefined;
-
   constructor({ storage, defaults, version }: ExtensionStorageProps<T>) {
     this.storage = storage;
     this.defaults = defaults;
@@ -150,24 +145,14 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * A migration happens for the entire storage object. Process:
    * During runtime:
    * - get, set, or remove is called
-   * - methods internally calls withDbLock, checking if the lock is already acquired
-   * - if the lock is not acquired (ie. undefined), acquire the lock by assigning dbLock to the promise returned by migrateOrInitializeIfNeeded
-   * - wait for the lock to resolve, ensuring initialization or migration is complete
+   * - acquire the lock
+   * - wait for initialization or migration to complete
    * - execute the storage get, set, or remove operation
-   * - finally, release the lock.
    */
   private async withDbLock<R>(fn: () => Promise<R>): Promise<R> {
-    if (this.dbLock) {
-      await this.dbLock;
-    }
-
-    try {
-      this.dbLock = this.migrateOrInitializeIfNeeded();
-      await this.dbLock;
-      return await fn();
-    } finally {
-      this.dbLock = undefined;
-    }
+    return navigator.locks.request(`${chrome.runtime.id}.storage`, { mode: 'exclusive' }, () =>
+      this.migrateOrInitializeIfNeeded().then(fn),
+    ) as Promise<R>;
   }
 
   /**
