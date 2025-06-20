@@ -63,6 +63,13 @@ export class MockStorageArea implements IStorage {
     });
   }
 
+  async clear(): Promise<void> {
+    return new Promise(resolve => {
+      this.store.clear();
+      resolve();
+    });
+  }
+
   onChanged = {
     addListener() {
       // no-op
