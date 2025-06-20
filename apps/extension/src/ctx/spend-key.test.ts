@@ -70,7 +70,7 @@ describe('Authorize request handler', () => {
   });
 
   test('should fail if user is not logged in extension', async () => {
-    await sessionExtStorage.set('passwordKey', undefined);
+    await sessionExtStorage.remove('passwordKey');
     await expect(getSpendKey()).rejects.toThrow('User must login');
   });
 

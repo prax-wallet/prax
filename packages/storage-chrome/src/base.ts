@@ -9,6 +9,7 @@ export interface IStorage {
   getBytesInUse(keys?: string | string[] | null): Promise<number>;
   set(items: Record<string, unknown>): Promise<void>;
   remove(key: string): Promise<void>;
+  clear(): Promise<void>;
   onChanged: {
     addListener(listener: Listener): void;
     removeListener(listener: Listener): void;
@@ -183,6 +184,10 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
     // Migrations save the database intermediate states hard to type
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- EXISTING USE
     const nextState = await migrationFn(currentDbState);
+
+    // Clean old data
+    await this.storage.clear();
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- EXISTING USE
     await this._set(nextState);
 
