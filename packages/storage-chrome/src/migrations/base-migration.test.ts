@@ -1,22 +1,22 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { ExtensionStorage, MigrationFn } from '../base';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
-import { ExtensionStorage, RequiredMigrations } from '../base';
-import { localV0Migration } from './local-v1-migration';
 
-interface MockV0State {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type MockV0State = {
   network: string;
   seedPhrase: string;
   accounts: {
     label: string;
     encryptedSeedPhrase: string;
   }[];
-  frontend: string | undefined;
-  grpcUrl: string | undefined;
+  frontend?: string;
+  grpcUrl?: string;
   fullSyncHeight: number;
-}
+};
 
-interface MockV1State {
-  dbVersion: 1;
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type MockV1State = {
   network: string; // stayed the same
   seedPhrase: string[]; // Changed data structure
   accounts: {
@@ -27,10 +27,10 @@ interface MockV1State {
   frontend: string; // async set value
   grpcUrl: { url: string }; // changes data structure
   fullSyncHeight: number; // Stays the same
-}
+};
 
-interface MockV2State {
-  dbVersion: 2;
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type MockV2State = {
   network: string; // stayed the same
   seedPhrase: string[]; // stayed the same
   accounts: {
@@ -40,61 +40,62 @@ interface MockV2State {
   }[];
   frontend: string; // stayed the same
   grpcUrl: { url: string; image: string }; // adds new field within data structure
-  fullSyncHeight: bigint; // only in v3 does it change type
-}
+  fullSyncHeight: string; // only in v3 does it change type
+};
 
-const mockV0toV1Migration = async (prev: MockV0State): Promise<MockV1State> => {
-  await new Promise(resolve => void setTimeout(resolve, 0));
-
-  return {
-    dbVersion: 1,
-    network: prev.network,
-    seedPhrase: prev.seedPhrase.split(' '),
-    accounts: prev.accounts.map(({ encryptedSeedPhrase }) => {
-      return {
+const mockV0toV1Migration: MigrationFn<MockV0State, MockV1State> = prev =>
+  Promise.resolve([
+    1,
+    {
+      network: prev.network ?? '',
+      seedPhrase: prev.seedPhrase?.split(' ') ?? [],
+      accounts: (prev.accounts ?? []).map(({ encryptedSeedPhrase }) => ({
         encryptedSeedPhrase,
         viewKey: 'v3-view-key-abc',
         spendKey: 'v3-view-key-xyz',
-      };
-    }),
-    frontend: !prev.frontend ? 'https://pfrontend.void' : prev.frontend,
-    grpcUrl: { url: prev.grpcUrl ?? '' },
-    fullSyncHeight: prev.fullSyncHeight,
-  };
-};
+      })),
+      frontend: !prev.frontend ? 'https://pfrontend.void' : prev.frontend,
+      grpcUrl: { url: prev.grpcUrl ?? '' },
+      fullSyncHeight: prev.fullSyncHeight ?? 0,
+    },
+  ]);
 
-const mockV1toV2Migration = (prev: MockV1State): MockV2State => {
-  return {
-    dbVersion: 2,
-    network: prev.network,
-    seedPhrase: prev.seedPhrase,
-    accounts: prev.accounts.map(({ encryptedSeedPhrase, viewKey }) => {
-      return {
-        encryptedSeedPhrase,
-        viewKey,
-        spendKey: 'v3-spend-key-xyz',
-      };
-    }),
-    frontend: prev.frontend,
-    grpcUrl: { url: prev.grpcUrl.url, image: `${prev.grpcUrl.url}/image` },
-    fullSyncHeight: BigInt(prev.fullSyncHeight),
-  };
-};
+const mockV1toV2Migration: MigrationFn<MockV1State, MockV2State> = prev =>
+  Promise.resolve([
+    2,
+    {
+      network: prev.network ?? '',
+      seedPhrase: prev.seedPhrase ?? [],
+      accounts:
+        prev.accounts?.map(({ encryptedSeedPhrase, viewKey }) => ({
+          encryptedSeedPhrase,
+          viewKey,
+          spendKey: 'v3-spend-key-xyz',
+        })) ?? [],
+      frontend: prev.frontend ?? 'http://default.com',
+      grpcUrl: prev.grpcUrl
+        ? { url: prev.grpcUrl.url, image: `${prev.grpcUrl.url}/image` }
+        : { url: '', image: '' },
+      fullSyncHeight: String(prev.fullSyncHeight ?? 0),
+    },
+  ]);
+
+const rawStorage = new MockStorageArea();
 
 describe('Storage migrations', () => {
-  let rawStorage: MockStorageArea;
   let v1ExtStorage: ExtensionStorage<MockV1State>;
   let v2ExtStorage: ExtensionStorage<MockV2State>;
-  const v2Migrations: RequiredMigrations = {
+  const v2Migrations = {
     0: mockV0toV1Migration,
     1: mockV1toV2Migration,
   };
 
   beforeEach(() => {
-    rawStorage = new MockStorageArea();
-    v1ExtStorage = new ExtensionStorage<MockV1State>({
-      storage: rawStorage,
-      defaults: {
+    rawStorage.mock.clear();
+
+    v1ExtStorage = new ExtensionStorage<MockV1State>(
+      rawStorage,
+      {
         network: '',
         accounts: [],
         seedPhrase: [],
@@ -102,29 +103,21 @@ describe('Storage migrations', () => {
         grpcUrl: { url: '' },
         fullSyncHeight: 0,
       },
-      version: {
-        current: 1,
-        migrations: {
-          0: mockV0toV1Migration,
-        },
-      },
-    });
+      { current: 1, migrations: { 0: mockV0toV1Migration } },
+    );
 
-    v2ExtStorage = new ExtensionStorage<MockV2State>({
-      storage: rawStorage,
-      defaults: {
+    v2ExtStorage = new ExtensionStorage<MockV2State>(
+      rawStorage,
+      {
         network: '',
         accounts: [],
         seedPhrase: [],
         frontend: 'http://default.com',
         grpcUrl: { url: '', image: '' },
-        fullSyncHeight: 0n,
+        fullSyncHeight: '0',
       },
-      version: {
-        current: 2,
-        migrations: v2Migrations,
-      },
-    });
+      { current: 2, migrations: v2Migrations },
+    );
   });
 
   describe('no migrations available', () => {
@@ -132,8 +125,7 @@ describe('Storage migrations', () => {
       const result = await v2ExtStorage.get('frontend');
       expect(result).toBe('http://default.com');
 
-      const version = await v2ExtStorage.get('dbVersion');
-      expect(version).toBe(2);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
     });
 
     test('gets work fine', async () => {
@@ -146,12 +138,10 @@ describe('Storage migrations', () => {
   describe('migrations available', () => {
     test('defaults work fine', async () => {
       await v1ExtStorage.get('seedPhrase');
-      const versionA = await v1ExtStorage.get('dbVersion');
-      expect(versionA).toBe(1);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 1 });
 
       const result = await v2ExtStorage.get('seedPhrase');
-      const versionB = await v2ExtStorage.get('dbVersion');
-      expect(versionB).toBe(2);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
       expect(result).toStrictEqual([]);
     });
 
@@ -166,13 +156,11 @@ describe('Storage migrations', () => {
       } satisfies MockV0State;
 
       await rawStorage.set(mock0StorageState);
-      const versionA = await rawStorage.get('dbVersion');
-      expect(versionA).toStrictEqual({});
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({});
 
       const result = await v2ExtStorage.get('seedPhrase');
       expect(result).toEqual(['cat', 'dog', 'mouse', 'horse']);
-      const versionB = await v2ExtStorage.get('dbVersion');
-      expect(versionB).toBe(2);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
     });
 
     test('get works on a changed data structure (two migration steps over two versions)', async () => {
@@ -186,24 +174,20 @@ describe('Storage migrations', () => {
       } satisfies MockV0State;
 
       await rawStorage.set(mock0StorageState);
-      const versionA = await rawStorage.get('dbVersion');
-      expect(versionA).toStrictEqual({});
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({});
 
       const result = await v2ExtStorage.get('grpcUrl');
       expect(result).toEqual({ url: 'grpc.void.test', image: 'grpc.void.test/image' });
-      const versionB = await v2ExtStorage.get('dbVersion');
-      expect(versionB).toBe(2);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
     });
 
     test('get works when there is a migration only at the last step', async () => {
       await v1ExtStorage.set('fullSyncHeight', 123);
-      const versionA = await v1ExtStorage.get('dbVersion');
-      expect(versionA).toBe(1);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 1 });
 
       const result = await v2ExtStorage.get('fullSyncHeight');
-      expect(typeof result).toEqual('bigint');
-      const versionB = await v2ExtStorage.get('dbVersion');
-      expect(versionB).toBe(2);
+      expect(typeof result).toEqual('string');
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
     });
 
     test('get works with removed/added fields', async () => {
@@ -216,8 +200,7 @@ describe('Storage migrations', () => {
         fullSyncHeight: 0,
       } satisfies MockV0State;
       await rawStorage.set(mock0StorageState);
-      const versionA = await rawStorage.get('dbVersion');
-      expect(versionA).toStrictEqual({});
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({});
 
       const result0To2 = await v2ExtStorage.get('accounts');
       expect(result0To2).toEqual([
@@ -227,8 +210,7 @@ describe('Storage migrations', () => {
           spendKey: 'v3-spend-key-xyz',
         },
       ]);
-      const versionB = await v2ExtStorage.get('dbVersion');
-      expect(versionB).toBe(2);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
     });
 
     test('from a different version, the migration is different', async () => {
@@ -236,8 +218,7 @@ describe('Storage migrations', () => {
       await v1ExtStorage.set('accounts', [
         { viewKey: 'v2-view-key-efg', encryptedSeedPhrase: '12345' },
       ]);
-      const versionA = await v1ExtStorage.get('dbVersion');
-      expect(versionA).toBe(1);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 1 });
 
       const result1To2 = await v2ExtStorage.get('accounts');
       expect(result1To2).toEqual([
@@ -247,8 +228,7 @@ describe('Storage migrations', () => {
           spendKey: 'v3-spend-key-xyz',
         },
       ]);
-      const versionB = await v2ExtStorage.get('dbVersion');
-      expect(versionB).toBe(2);
+      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
     });
 
     test('multiple get (that may migrate) have no side effects', async () => {
@@ -276,16 +256,16 @@ describe('Storage migrations', () => {
       const result2 = await promise2;
       const result3 = await promise3;
 
-      expect(result1).toBe(123n);
-      expect(result2).toBe(123n);
-      expect(result3).toBe(123n);
+      expect(result1).toBe('123');
+      expect(result2).toBe('123');
+      expect(result3).toBe('123');
 
       // Ensure the migration function is called only once (properly uses locks)
       expect(migrationSpy).toHaveBeenCalledOnce();
     });
 
     test('migrating to older step (local dev possibly)', async () => {
-      await v2ExtStorage.set('fullSyncHeight', 123n);
+      await v2ExtStorage.set('fullSyncHeight', '123');
       await expect(v1ExtStorage.get('fullSyncHeight')).rejects.toThrow(
         'No migration function provided for version: 2',
       );
@@ -298,9 +278,10 @@ describe('Storage migrations', () => {
     });
 
     test('error during migration from v0 to v1', async () => {
-      const faultyMigration = new ExtensionStorage<MockV1State>({
-        storage: rawStorage,
-        defaults: {
+      const migrationFailure = new Error('bad thing happen');
+      const faultyMigration = new ExtensionStorage<MockV1State>(
+        rawStorage,
+        {
           network: '',
           accounts: [],
           seedPhrase: [],
@@ -308,15 +289,8 @@ describe('Storage migrations', () => {
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
         },
-        version: {
-          current: 1,
-          migrations: {
-            0: () => {
-              throw new Error('network request error 404');
-            },
-          },
-        },
-      });
+        { current: 1, migrations: { 0: () => Promise.reject(migrationFailure) } },
+      );
 
       const mock0StorageState: Record<string, unknown> = {
         network: '',
@@ -329,14 +303,15 @@ describe('Storage migrations', () => {
       await rawStorage.set(mock0StorageState);
 
       await expect(faultyMigration.get('network')).rejects.toThrow(
-        'There was an error with migrating the database: Error: network request error 404',
+        `There was an error with migrating the database: ${String(migrationFailure)}`,
       );
     });
 
     test('error during migration from v1 to v2', async () => {
-      const mock1Storage = new ExtensionStorage<MockV1State>({
-        storage: rawStorage,
-        defaults: {
+      const migrationFailure = new Error('good thing happen');
+      const mock1Storage = new ExtensionStorage<MockV1State>(
+        rawStorage,
+        {
           network: '',
           accounts: [],
           seedPhrase: [],
@@ -344,91 +319,72 @@ describe('Storage migrations', () => {
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
         },
-        version: {
-          current: 1,
-          migrations: {
-            0: localV0Migration,
-          },
-        },
-      });
+        { current: 1, migrations: { 0: mockV0toV1Migration } },
+      );
 
       await mock1Storage.set('fullSyncHeight', 123);
       const height = await mock1Storage.get('fullSyncHeight');
       expect(height).toEqual(123);
 
-      const faultyMigration = new ExtensionStorage<MockV2State>({
-        storage: rawStorage,
-        defaults: {
+      const faultyMigration = new ExtensionStorage<MockV2State>(
+        rawStorage,
+        {
           network: '',
           accounts: [],
           seedPhrase: [],
           frontend: 'http://default.com',
           grpcUrl: { url: '', image: '' },
-          fullSyncHeight: 0n,
+          fullSyncHeight: '0',
         },
-        version: {
+        {
           current: 2,
-          migrations: {
-            0: localV0Migration,
-            1: () => {
-              throw new Error('network request error 502');
-            },
-          },
+          migrations: { 0: mockV0toV1Migration, 1: () => Promise.reject(migrationFailure) },
         },
-      });
+      );
 
       await expect(faultyMigration.get('network')).rejects.toThrow(
-        'There was an error with migrating the database: Error: network request error 502',
+        `There was an error with migrating the database: ${String(migrationFailure)}`,
       );
     });
 
     test('error during migration propagates to multiple callers', async () => {
+      const migrationFailure = new Error('fhqwhgads');
       const originalNetworkVal = 'original.void.zone';
-      const mock1Storage = new ExtensionStorage<MockV1State>({
-        storage: rawStorage,
-        defaults: {
-          network: originalNetworkVal,
+      await rawStorage.set({ network: originalNetworkVal });
+      const mock1Storage = new ExtensionStorage<MockV1State>(
+        rawStorage,
+        {
+          network: '',
           accounts: [],
           seedPhrase: [],
           frontend: 'http://default.com',
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
         },
-        version: {
-          current: 1,
-          migrations: {
-            0: localV0Migration,
-          },
-        },
-      });
+        { current: 1, migrations: { 0: mockV0toV1Migration } },
+      );
 
       await mock1Storage.set('fullSyncHeight', 123);
       const height = await mock1Storage.get('fullSyncHeight');
       expect(height).toEqual(123);
 
-      const faultyMigration = new ExtensionStorage<MockV2State>({
-        storage: rawStorage,
-        defaults: {
+      const faultyMigration = new ExtensionStorage<MockV2State>(
+        rawStorage,
+        {
           network: '',
           accounts: [],
           seedPhrase: [],
           frontend: 'http://default.com',
           grpcUrl: { url: '', image: '' },
-          fullSyncHeight: 0n,
+          fullSyncHeight: '0',
         },
-        version: {
+        {
           current: 2,
-          migrations: {
-            0: localV0Migration,
-            1: () => {
-              throw new Error('network request error 502');
-            },
-          },
+          migrations: { 0: mockV0toV1Migration, 1: () => Promise.reject(migrationFailure) },
         },
-      });
+      );
 
-      const expectedError =
-        'There was an error with migrating the database: Error: network request error 502';
+      const expectedError = `There was an error with migrating the database: ${String(migrationFailure)}`;
 
       const callA = faultyMigration.get('network');
       await expect(callA).rejects.toThrow(expectedError);

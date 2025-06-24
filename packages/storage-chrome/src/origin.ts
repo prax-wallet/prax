@@ -1,4 +1,3 @@
-import { produce } from 'immer';
 import { localExtStorage } from './local';
 import { OriginRecord } from './types';
 
@@ -8,28 +7,18 @@ export const getOriginRecord = async (getOrigin?: string) => {
   }
   const knownSites = await localExtStorage.get('knownSites');
 
-  const matchRecords = knownSites.filter(r => r.origin === getOrigin);
-  if (matchRecords.length > 1) {
+  const [match, ...extra] = knownSites.filter(r => r.origin === getOrigin);
+  if (extra.length !== 0) {
     throw new Error(`There are multiple records for origin: ${getOrigin}`);
   }
 
-  return matchRecords[0];
+  return match;
 };
 
 export const upsertOriginRecord = async (proposal: OriginRecord) => {
   const knownSites = await localExtStorage.get('knownSites');
 
-  const newKnownSites = produce(knownSites, allRecords => {
-    const match = allRecords.find(r => r.origin === proposal.origin);
-    if (!match) {
-      allRecords.push(proposal);
-    } else {
-      // already matched
-      // match.origin = proposal.origin;
-      match.choice = proposal.choice;
-      match.date = proposal.date;
-    }
-  });
+  const newKnownSites = [...knownSites.filter(r => r.origin !== proposal.origin), proposal];
 
   await localExtStorage.set('knownSites', newKnownSites);
 };
@@ -37,12 +26,7 @@ export const upsertOriginRecord = async (proposal: OriginRecord) => {
 export const removeOriginRecord = async (removeOrigin: string): Promise<void> => {
   const knownSites = await localExtStorage.get('knownSites');
 
-  const newKnownSites = produce(knownSites, allRecords => {
-    const matchIndex = allRecords.findIndex(r => r.origin === removeOrigin);
-    if (matchIndex !== -1) {
-      allRecords.splice(matchIndex, 1);
-    }
-  });
+  const newKnownSites = knownSites.filter(r => r.origin !== removeOrigin);
 
   await localExtStorage.set('knownSites', newKnownSites);
 };

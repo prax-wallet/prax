@@ -9,7 +9,13 @@
     "test": "vitest run"
   },
   "exports": {
-    "./*": "./src/*.ts"
+    "./types": "./src/types.ts",
+    "./local": "./src/local.ts",
+    "./session": "./src/session.ts",
+    "./onboard": "./src/onboard.ts",
+    "./origin": "./src/origin.ts",
+    "./mock": "./src/mock.ts",
+    "./base": "./src/base.ts"
   },
   "devDependencies": {
     "@penumbra-labs/registry": "^12.7.2",

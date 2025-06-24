@@ -6,10 +6,15 @@ import { localExtStorage } from '@repo/storage-chrome/local';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { allSitesFilteredOutSelector } from './connected-sites';
-import { localTestDefaults } from '../utils/test-constants';
 
 const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
 const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
+
+const exampleKnownSite = {
+  origin: 'https://app.example.com',
+  choice: 'Approved',
+  date: Date.now(),
+} as const;
 
 describe('Connected Sites Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -31,7 +36,7 @@ describe('Connected Sites Slice', () => {
         ...state,
         connectedSites: {
           ...state.connectedSites,
-          knownSites: localTestDefaults.knownSites,
+          knownSites: [exampleKnownSite],
         },
       }));
     });
@@ -44,7 +49,7 @@ describe('Connected Sites Slice', () => {
       });
 
       test('setting filter matches properly', () => {
-        const testUrl = localTestDefaults.knownSites[0]!.origin;
+        const testUrl = exampleKnownSite.origin;
         useStore.getState().connectedSites.setFilter(testUrl);
         expect(useStore.getState().connectedSites.filter).toBe(testUrl);
         expect(allSitesFilteredOutSelector(useStore.getState())).toBe(false);
@@ -60,7 +65,7 @@ describe('Connected Sites Slice', () => {
 
     describe('discardKnownSite', () => {
       test('discarding known site removes it from storage', async () => {
-        const deletant = localTestDefaults.knownSites[0]!;
+        const deletant = exampleKnownSite;
         await expect(
           useStore.getState().connectedSites.discardKnownSite(deletant),
         ).resolves.not.toThrow();
@@ -79,9 +84,7 @@ describe('Connected Sites Slice', () => {
           useStore.getState().connectedSites.discardKnownSite(deletant),
         ).resolves.not.toThrow();
 
-        expect(useStore.getState().connectedSites.knownSites).toMatchObject(
-          localTestDefaults.knownSites,
-        );
+        expect(useStore.getState().connectedSites.knownSites).toMatchObject([exampleKnownSite]);
       });
     });
   });
