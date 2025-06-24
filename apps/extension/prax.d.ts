@@ -1,4 +1,4 @@
-// these are defined at build time by webpack, using values in .env
+// these are defined at build time
 
 declare const PRAX: string;
 declare const PRAX_ORIGIN: string;

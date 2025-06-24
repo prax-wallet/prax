@@ -126,6 +126,9 @@ export class ExtensionStorage<T extends Record<string, unknown>> {
 
         // if storage is old, migrate to current version
         if (storedVersion !== this.version.current) {
+          if (!('serviceWorker' in globalThis)) {
+            throw new Error('Migration by document disallowed');
+          }
           const backupState = await this.storage.get();
           const [migratedVersion, migratedState] = await migrate(
             this.version.migrations,
