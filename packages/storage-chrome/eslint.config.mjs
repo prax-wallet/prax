@@ -18,4 +18,13 @@ export default [
       '@typescript-eslint/no-deprecated': 'off',
     },
   },
+
+  {
+    name: 'bad-type-rules',
+    files: ['src/versions/*.ts'],
+    rules: {
+      // storage schema should be `type` and not `interface`
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+    },
+  },
 ];
