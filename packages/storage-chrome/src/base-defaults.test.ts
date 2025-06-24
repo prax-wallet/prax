@@ -1,32 +1,34 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { ExtensionStorage } from './base';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
+import { VERSION_FIELD } from './version-field';
 
-interface MockState {
-  dbVersion: number;
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type MockState = {
   network: string;
-  seedPhrase: string | undefined;
+  seedPhrase?: string;
   accounts: {
     label: string;
   }[];
   fullSyncHeight?: number;
-}
+};
 
 describe('Base storage default instantiation', () => {
   let extStorage: ExtensionStorage<MockState>;
+  let storageArea: MockStorageArea;
 
   beforeEach(() => {
-    const storageArea = new MockStorageArea();
-    extStorage = new ExtensionStorage<MockState>({
-      storage: storageArea,
-      defaults: {
+    storageArea = new MockStorageArea();
+    extStorage = new ExtensionStorage(
+      storageArea,
+      {
         network: '',
-        seedPhrase: undefined,
         accounts: [],
         fullSyncHeight: 0,
       },
-      version: { current: 1, migrations: { 0: (state: MockState) => state } },
-    });
+      1,
+      { 0: { version: () => 1, transform: state => state } },
+    );
   });
 
   test('first get made initializes defaults', async () => {
@@ -44,8 +46,8 @@ describe('Base storage default instantiation', () => {
   });
 
   test('first get made initializes version', async () => {
-    const version = await extStorage.get('dbVersion');
-    expect(version).toBe(1);
+    await expect(extStorage.get('network')).resolves.toBe('');
+    await expect(storageArea.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
   });
 
   test('should handle concurrent initializations w/ locks', async () => {
@@ -62,11 +64,11 @@ describe('Base storage default instantiation', () => {
     expect(result3).toBe(123);
   });
 
-  test('remove sets value to default when default exists', async () => {
+  test('remove removes key when default exists, and get returns the default', async () => {
     await extStorage.set('accounts', [{ label: 'Account 1' }]);
     await extStorage.remove('accounts');
-    const networkValue = await extStorage.get('accounts');
-    expect(networkValue).toStrictEqual([]);
+    const accountsValue = await extStorage.get('accounts');
+    expect(accountsValue).toStrictEqual([]);
   });
 
   test('remove removes key when no default exists', async () => {
@@ -76,9 +78,21 @@ describe('Base storage default instantiation', () => {
     expect(seedPhraseValue).toBe(undefined);
   });
 
-  test('remove throws error when attempting to remove dbVersion', async () => {
-    await expect(extStorage.remove('dbVersion' as never)).rejects.toThrow(
-      'Cannot remove dbVersion',
+  test('get throws error when attempting to get version field', async () => {
+    await expect(extStorage.get(VERSION_FIELD as never)).rejects.toThrow(
+      `Storage key ${VERSION_FIELD} is reserved`,
+    );
+  });
+
+  test('set throws error when attempting to set version field', async () => {
+    await expect(extStorage.set(VERSION_FIELD as never, 69 as never)).rejects.toThrow(
+      `Storage key ${VERSION_FIELD} is reserved`,
+    );
+  });
+
+  test('remove throws error when attempting to remove version field', async () => {
+    await expect(extStorage.remove(VERSION_FIELD as never)).rejects.toThrow(
+      `Storage key ${VERSION_FIELD} is reserved`,
     );
   });
 

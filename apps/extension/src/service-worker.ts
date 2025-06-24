@@ -50,6 +50,11 @@ import { startWalletServices } from './wallet-services';
 
 import { backOff } from 'exponential-backoff';
 
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { localMigrations } from '@repo/storage-chrome/migrations';
+
+localExtStorage.enableMigration(localMigrations);
+
 let walletServices: Promise<Services>;
 
 const initHandler = async () => {
