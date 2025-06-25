@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { MockStorageArea } from '../mock';
+import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { ExtensionStorage, RequiredMigrations } from '../base';
 import { localV0Migration } from './local-v1-migration';
 

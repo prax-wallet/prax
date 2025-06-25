@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { ExtensionStorage } from './base';
-import { MockStorageArea } from './mock';
+import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 
 interface MockState {
   dbVersion: number;

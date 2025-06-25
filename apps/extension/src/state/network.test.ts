@@ -1,17 +1,19 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { LocalStorageState } from '@repo/storage-chrome/types';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
+
+const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
+const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
 
 describe('Network Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
-  let localStorage: ExtensionStorage<LocalStorageState>;
 
   beforeEach(() => {
-    localStorage = mockLocalExtStorage();
-    useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), localStorage));
+    localMock.clear();
+    sessionMock.clear();
+    useStore = create<AllSlices>()(initializeStore(sessionExtStorage, localExtStorage));
   });
 
   test('the default is empty, false or undefined', () => {
@@ -25,7 +27,7 @@ describe('Network Slice', () => {
       await useStore.getState().network.setGRPCEndpoint(testUrl);
 
       expect(useStore.getState().network.grpcEndpoint).toBe(testUrl);
-      const urlFromChromeStorage = await localStorage.get('grpcEndpoint');
+      const urlFromChromeStorage = await localExtStorage.get('grpcEndpoint');
       expect(urlFromChromeStorage).toBe(testUrl);
     });
   });

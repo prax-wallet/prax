@@ -1,17 +1,19 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { LocalStorageState } from '@repo/storage-chrome/types';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
+
+const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
+const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
 
 describe('Default Frontend Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
-  let localStorage: ExtensionStorage<LocalStorageState>;
 
   beforeEach(() => {
-    localStorage = mockLocalExtStorage();
-    useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), localStorage));
+    localMock.clear();
+    sessionMock.clear();
+    useStore = create<AllSlices>()(initializeStore(sessionExtStorage, localExtStorage));
   });
 
   it('populates the local storage correctly', () => {
@@ -23,7 +25,7 @@ describe('Default Frontend Slice', () => {
     useStore.getState().defaultFrontend.setUrl(testUrl);
     expect(useStore.getState().defaultFrontend.url).toBe(testUrl);
 
-    const urlFromChromeStorage = await localStorage.get('frontendUrl');
+    const urlFromChromeStorage = await localExtStorage.get('frontendUrl');
     expect(urlFromChromeStorage).toBe(testUrl);
   });
 });

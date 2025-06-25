@@ -3,12 +3,13 @@ import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Key, KeyPrint } from '@penumbra-zone/crypto-web/encryption';
 import { webcrypto } from 'crypto';
-import { LocalStorageState } from '@repo/storage-chrome/types';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
-import { SessionStorageState } from '@repo/storage-chrome/session';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
+import { localExtStorage } from '@repo/storage-chrome/local';
 
 vi.stubGlobal('crypto', webcrypto);
+
+const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
+const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
 
 describe('Password Slice', () => {
   const password = 's0meUs3rP@ssword';
@@ -17,13 +18,11 @@ describe('Password Slice', () => {
   ];
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
-  let sessionStorage: ExtensionStorage<SessionStorageState>;
-  let localStorage: ExtensionStorage<LocalStorageState>;
 
   beforeEach(() => {
-    sessionStorage = mockSessionExtStorage();
-    localStorage = mockLocalExtStorage();
-    useStore = create<AllSlices>()(initializeStore(sessionStorage, localStorage));
+    localMock.clear();
+    sessionMock.clear();
+    useStore = create<AllSlices>()(initializeStore(sessionExtStorage, localExtStorage));
   });
 
   test('password cannot be verified without a KeyPrint', async () => {
@@ -38,12 +37,12 @@ describe('Password Slice', () => {
     });
 
     // Saves to session storage
-    const sessionKey = await sessionStorage.get('passwordKey');
+    const sessionKey = await sessionExtStorage.get('passwordKey');
     expect(sessionKey).toBeTruthy();
     await expect(Key.fromJson(sessionKey!)).resolves.not.toThrow();
 
     // Saves to local storage
-    const localPrint = await localStorage.get('passwordKeyPrint');
+    const localPrint = await localExtStorage.get('passwordKeyPrint');
     expect(localPrint).toBeTruthy();
     expect(() => KeyPrint.fromJson(localPrint!)).not.toThrow();
 
@@ -64,12 +63,12 @@ describe('Password Slice', () => {
     });
 
     useStore.getState().password.clearSessionPassword();
-    const sessionKeyAfterLogout = await sessionStorage.get('passwordKey');
+    const sessionKeyAfterLogout = await sessionExtStorage.get('passwordKey');
     expect(sessionKeyAfterLogout).toBeFalsy();
 
     await useStore.getState().password.setSessionPassword(password);
 
-    const sessionKeyAfterLogin = await sessionStorage.get('passwordKey');
+    const sessionKeyAfterLogin = await sessionExtStorage.get('passwordKey');
     expect(sessionKeyAfterLogin).toBeTruthy();
     await expect(Key.fromJson(sessionKeyAfterLogin!)).resolves.not.toThrow();
   });

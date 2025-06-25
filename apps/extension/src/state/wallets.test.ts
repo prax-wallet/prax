@@ -2,10 +2,9 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { webcrypto } from 'crypto';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
-import { LocalStorageState } from '@repo/storage-chrome/types';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
 import type { WalletCreate } from '@penumbra-zone/types/wallet';
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
 
 vi.stubGlobal('crypto', webcrypto);
 
@@ -39,13 +38,16 @@ const seedPhrase2 = [
   'similar',
 ];
 
+const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
+const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
+
 describe('Accounts Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
-  let localStorage: ExtensionStorage<LocalStorageState>;
 
   beforeEach(() => {
-    localStorage = mockLocalExtStorage();
-    useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), localStorage));
+    localMock.clear();
+    sessionMock.clear();
+    useStore = create<AllSlices>()(initializeStore(sessionExtStorage, localExtStorage));
   });
 
   test('accounts start off empty', () => {
@@ -72,7 +74,7 @@ describe('Accounts Slice', () => {
       expect(useStore.getState().wallets.all.at(0)!.label).toBe(accountA.label);
 
       // Test in long term storage
-      const accountsPt1 = await localStorage.get('wallets');
+      const accountsPt1 = await localExtStorage.get('wallets');
       expect(accountsPt1.length).toBe(1);
       expect(accountsPt1.at(0)!.label).toBe(accountA.label);
 
@@ -86,7 +88,7 @@ describe('Accounts Slice', () => {
       expect(useStore.getState().wallets.all.at(1)!.label).toBe(accountA.label);
 
       // Test in long term storage
-      const accountsPt2 = await localStorage.get('wallets');
+      const accountsPt2 = await localExtStorage.get('wallets');
       expect(accountsPt2.length).toBe(2);
       expect(accountsPt2.at(0)!.label).toBe(accountB.label);
       expect(accountsPt2.at(1)!.label).toBe(accountA.label);
