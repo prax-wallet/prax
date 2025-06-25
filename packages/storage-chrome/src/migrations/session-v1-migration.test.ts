@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { MockStorageArea } from '../mock';
+import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { ExtensionStorage } from '../base';
 import { sessionDefaults, SessionStorageState } from '../session';
 import {
