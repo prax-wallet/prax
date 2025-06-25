@@ -43,22 +43,6 @@ jobs:
       - name: Zip extension versions
         run: pnpm zip
 
-      - name: Draft preview release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Prax wallet BETA Developer Preview
-          draft: true
-          prerelease: true
-          body: |
-            Unsigned build of Prax wallet BETA ${{ github.ref_name }} as
-            uploaded to the Chrome Web Store.
-
-            This build is intended for developers and is not suitable for use
-            outside of a testnet environment.
-          files: |
-            beta.zip:Prax.wallet.BETA.Developer.Preview.${{ github.ref_name }}.zip
-
       - name: Upload beta version
         uses: prax-wallet/chrome-extension-upload@v1
         with:
