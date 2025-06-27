@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { ExtensionStorage, MigrationFn } from '../base';
+import { ExtensionStorage } from '../base';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
+import { expectVersion } from '../migrations/util';
+import type { Migration, Migrations } from '../migrations/types';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type MockV0State = {
@@ -43,52 +45,51 @@ type MockV2State = {
   fullSyncHeight: string; // only in v3 does it change type
 };
 
-const mockV0toV1Migration: MigrationFn<MockV0State, MockV1State> = prev =>
-  Promise.resolve([
-    1,
-    {
-      network: prev.network ?? '',
-      seedPhrase: prev.seedPhrase?.split(' ') ?? [],
-      accounts: (prev.accounts ?? []).map(({ encryptedSeedPhrase }) => ({
-        encryptedSeedPhrase,
-        viewKey: 'v3-view-key-abc',
-        spendKey: 'v3-view-key-xyz',
-      })),
-      frontend: !prev.frontend ? 'https://pfrontend.void' : prev.frontend,
-      grpcUrl: { url: prev.grpcUrl ?? '' },
-      fullSyncHeight: prev.fullSyncHeight ?? 0,
-    },
-  ]);
+const mockV0toV1Migration: Migration<0, MockV0State, 1, MockV1State> = {
+  version: v => expectVersion(v, 0, 1),
+  transform: prev => ({
+    network: prev.network ?? '',
+    seedPhrase: prev.seedPhrase?.split(' ') ?? [],
+    accounts: (prev.accounts ?? []).map(({ encryptedSeedPhrase }) => ({
+      encryptedSeedPhrase,
+      viewKey: 'v3-view-key-abc',
+      spendKey: 'v3-view-key-xyz',
+    })),
+    frontend: !prev.frontend ? 'https://pfrontend.void' : prev.frontend,
+    grpcUrl: { url: prev.grpcUrl ?? '' },
+    fullSyncHeight: prev.fullSyncHeight ?? 0,
+  }),
+};
 
-const mockV1toV2Migration: MigrationFn<MockV1State, MockV2State> = prev =>
-  Promise.resolve([
-    2,
-    {
-      network: prev.network ?? '',
-      seedPhrase: prev.seedPhrase ?? [],
-      accounts:
-        prev.accounts?.map(({ encryptedSeedPhrase, viewKey }) => ({
-          encryptedSeedPhrase,
-          viewKey,
-          spendKey: 'v3-spend-key-xyz',
-        })) ?? [],
-      frontend: prev.frontend ?? 'http://default.com',
-      grpcUrl: prev.grpcUrl
-        ? { url: prev.grpcUrl.url, image: `${prev.grpcUrl.url}/image` }
-        : { url: '', image: '' },
-      fullSyncHeight: String(prev.fullSyncHeight ?? 0),
-    },
-  ]);
+const mockV1toV2Migration: Migration<1, MockV1State, 2, MockV2State> = {
+  version: v => expectVersion(v, 1, 2),
+  transform: prev => ({
+    network: prev.network ?? '',
+    seedPhrase: prev.seedPhrase ?? [],
+    accounts:
+      prev.accounts?.map(({ encryptedSeedPhrase, viewKey }) => ({
+        encryptedSeedPhrase,
+        viewKey,
+        spendKey: 'v3-spend-key-xyz',
+      })) ?? [],
+    frontend: prev.frontend ?? 'http://default.com',
+    grpcUrl: prev.grpcUrl
+      ? { url: prev.grpcUrl.url, image: `${prev.grpcUrl.url}/image` }
+      : { url: '', image: '' },
+    fullSyncHeight: String(prev.fullSyncHeight ?? 0),
+  }),
+};
+
+const v2Migrations: Migrations<0 | 1> = {
+  0: mockV0toV1Migration,
+  1: mockV1toV2Migration,
+};
 
 const rawStorage = new MockStorageArea();
 
 describe('Storage migrations', () => {
   let v1ExtStorage: ExtensionStorage<MockV1State>;
   let v2ExtStorage: ExtensionStorage<MockV2State>;
-  const v2Migrations = {
-    0: mockV0toV1Migration,
-    1: mockV1toV2Migration,
-  };
 
   beforeEach(() => {
     rawStorage.mock.clear();
@@ -244,7 +245,7 @@ describe('Storage migrations', () => {
     test('should handle concurrent migration accesses correctly', async () => {
       await v1ExtStorage.set('fullSyncHeight', 123);
 
-      const migrationSpy = vi.spyOn(v2Migrations, 1);
+      const migrationSpy = vi.spyOn(v2Migrations[1], 'transform');
 
       // Trigger two concurrent accesses
       const promise1 = v2ExtStorage.get('fullSyncHeight');
@@ -289,7 +290,12 @@ describe('Storage migrations', () => {
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
         },
-        { current: 1, migrations: { 0: () => Promise.reject(migrationFailure) } },
+        {
+          current: 1,
+          migrations: {
+            0: { version: () => 1, transform: () => Promise.reject(migrationFailure) },
+          },
+        },
       );
 
       const mock0StorageState: Record<string, unknown> = {
@@ -326,6 +332,11 @@ describe('Storage migrations', () => {
       const height = await mock1Storage.get('fullSyncHeight');
       expect(height).toEqual(123);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- allow
+      const willFail: Migration<1, any, 2, any> = {
+        version: () => 2,
+        transform: () => Promise.reject(migrationFailure),
+      } as const;
       const faultyMigration = new ExtensionStorage<MockV2State>(
         rawStorage,
         {
@@ -338,7 +349,10 @@ describe('Storage migrations', () => {
         },
         {
           current: 2,
-          migrations: { 0: mockV0toV1Migration, 1: () => Promise.reject(migrationFailure) },
+          migrations: {
+            0: mockV0toV1Migration,
+            1: willFail,
+          },
         },
       );
 
@@ -380,7 +394,13 @@ describe('Storage migrations', () => {
         },
         {
           current: 2,
-          migrations: { 0: mockV0toV1Migration, 1: () => Promise.reject(migrationFailure) },
+          migrations: {
+            0: mockV0toV1Migration,
+            1: {
+              version: () => 2,
+              transform: () => Promise.reject(migrationFailure),
+            },
+          },
         },
       );
 

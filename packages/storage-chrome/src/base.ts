@@ -1,34 +1,24 @@
+import type { Migrations } from './migrations/types';
 import { VERSION_FIELD } from './version-field';
 
 export type ChromeStorageListener<S = never> = (changes: {
   [k in keyof S]?: { newValue?: S[k]; oldValue?: S[k] };
 }) => void;
 
-export type ExtensionStorageDefaults<T extends Record<string, unknown>> = {
-  [K in keyof T]: undefined extends T[K] ? never : T[K];
+export type ExtensionStorageDefaults<T> = {
+  [K in keyof T]: undefined extends T[K] ? never : Required<T>[K] extends T[K] ? T[K] : never;
 };
 
-export type MigrationFn<OldState = Record<string, unknown>, NewState = Record<string, unknown>> = (
-  prev: Readonly<Partial<OldState>>,
-) => Promise<[version: number, state: NewState]>;
-
-async function migrate(
-  migrations: Record<number, MigrationFn>,
-  ...begin: [version: number, state: Record<string, unknown>]
-): Promise<[version: number, state: Record<string, unknown>]> {
-  let [version, state] = begin;
-  let migration: MigrationFn | undefined;
-  while ((migration = migrations[version])) {
-    [version, state] = await migration(state);
-  }
-  return [version, state];
+interface ExtensionStorageVersion<MV extends number extends infer V ? V : never = number> {
+  current: number;
+  migrations: Migrations<MV>;
 }
 
 export class ExtensionStorage<T extends Record<string, unknown>> {
   constructor(
     private readonly storage: chrome.storage.StorageArea,
     private readonly defaults: ExtensionStorageDefaults<T>,
-    private readonly version?: { current: number; migrations: Record<number, MigrationFn> },
+    private readonly version?: ExtensionStorageVersion,
   ) {}
 
   /**
@@ -130,11 +120,14 @@ export class ExtensionStorage<T extends Record<string, unknown>> {
             throw new Error('Migration by document disallowed');
           }
           const backupState = await this.storage.get();
-          const [migratedVersion, migratedState] = await migrate(
-            this.version.migrations,
-            storedVersion,
-            backupState,
-          );
+
+          let [migratedVersion, migratedState] = [storedVersion, backupState];
+          let migration = undefined;
+          while ((migration = this.version.migrations[migratedVersion])) {
+            migratedVersion = migration.version(migratedVersion);
+            migratedState = await migration.transform(migratedState);
+          }
+
           if (migratedVersion !== this.version.current) {
             throw new RangeError(`No migration function provided for version: ${migratedVersion}`, {
               cause: { storedVersion, migrations: this.version.migrations },

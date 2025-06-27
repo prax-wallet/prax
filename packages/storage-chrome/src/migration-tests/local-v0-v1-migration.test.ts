@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { ExtensionStorage } from '../base';
 import LocalStorage_V0 from '../versions/local-v0';
 import LocalStorage_V1 from '../versions/local-v1';
-import localV0Migration from './local-v0-v1-migration';
+import localV0Migration from '../migrations/local-v0-v1-migration';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 
 const bech32Fvk =

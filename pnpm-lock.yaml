@@ -374,22 +374,26 @@ importers:
         version: 3.1.1
 
   packages/storage-chrome:
+    dependencies:
+      '@penumbra-zone/bech32m':
+        specifier: 17.0.1
+        version: 17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf':
+        specifier: 10.1.1
+        version: 10.1.1(@bufbuild/protobuf@1.10.0)
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
     devDependencies:
       '@penumbra-labs/registry':
         specifier: ^12.7.2
         version: 12.7.2
-      '@penumbra-zone/bech32m':
-        specifier: 17.0.1
-        version: 17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/crypto-web':
         specifier: 46.0.1
         version: 46.0.1(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 27.0.1
         version: 27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf':
-        specifier: 10.1.1
-        version: 10.1.1(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/types':
         specifier: 34.2.0
         version: 34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
@@ -399,12 +403,6 @@ importers:
       '@types/lodash':
         specifier: ^4.17.13
         version: 4.17.13
-      immer:
-        specifier: ^10.1.1
-        version: 10.1.1
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
 
   packages/tailwind-config:
     dependencies:
