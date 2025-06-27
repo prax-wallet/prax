@@ -45,8 +45,14 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
     );
 
     // Part 2: when chrome.storage changes sync select fields to store
-    chrome.storage.local.onChanged.addListener(changes => syncLocal(changes, set));
-    chrome.storage.session.onChanged.addListener(changes => syncSession(changes, set));
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local') {
+        syncLocal(changes, set);
+      }
+      if (area === 'session') {
+        syncSession(changes, set);
+      }
+    });
   })();
 
   return f(set, get, store);

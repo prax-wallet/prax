@@ -10,7 +10,7 @@ import { allSitesFilteredOutSelector } from './connected-sites';
 const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
 const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
 
-const exampleKnownSite = {
+const mockSite = {
   origin: 'https://app.example.com',
   choice: 'Approved',
   date: Date.now(),
@@ -36,7 +36,7 @@ describe('Connected Sites Slice', () => {
         ...state,
         connectedSites: {
           ...state.connectedSites,
-          knownSites: [exampleKnownSite],
+          knownSites: [mockSite],
         },
       }));
     });
@@ -49,7 +49,7 @@ describe('Connected Sites Slice', () => {
       });
 
       test('setting filter matches properly', () => {
-        const testUrl = exampleKnownSite.origin;
+        const testUrl = mockSite.origin;
         useStore.getState().connectedSites.setFilter(testUrl);
         expect(useStore.getState().connectedSites.filter).toBe(testUrl);
         expect(allSitesFilteredOutSelector(useStore.getState())).toBe(false);
@@ -65,7 +65,7 @@ describe('Connected Sites Slice', () => {
 
     describe('discardKnownSite', () => {
       test('discarding known site removes it from storage', async () => {
-        const deletant = exampleKnownSite;
+        const deletant = mockSite;
         await expect(
           useStore.getState().connectedSites.discardKnownSite(deletant),
         ).resolves.not.toThrow();
@@ -84,7 +84,7 @@ describe('Connected Sites Slice', () => {
           useStore.getState().connectedSites.discardKnownSite(deletant),
         ).resolves.not.toThrow();
 
-        expect(useStore.getState().connectedSites.knownSites).toMatchObject([exampleKnownSite]);
+        expect(useStore.getState().connectedSites.knownSites).toMatchObject([mockSite]);
       });
     });
   });
