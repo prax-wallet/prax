@@ -33,8 +33,33 @@ export default [
        * restriction `Record<string, unknown>`.
        */
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+      '@typescript-eslint/consistent-type-exports': ['error'],
 
-      'import/no-named-export': 'error',
+      'no-restricted-exports': [
+        'error',
+        {
+          restrictedNamedExportsPattern: '^(?!VERSION$|SYNC$|LOCAL$).*$',
+          restrictDefaultExports: {
+            direct: true,
+            named: true,
+            defaultFrom: true,
+            namedFrom: true,
+            namespaceFrom: true,
+          },
+        },
+      ],
+
+      /**
+       * The above rule doesn't handle `export type` syntax, so forbid that to
+       * enforce compliance.
+       */
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ExportNamedDeclaration[exportKind="type"]',
+          message: 'Do not export individual named types. Use a group export instead.',
+        },
+      ],
 
       '@typescript-eslint/no-restricted-imports': [
         'error',
@@ -50,7 +75,12 @@ export default [
      */
     name: 'migrations-rules',
     files: ['src/migrations/*.ts'],
-    ignores: ['src/migrations/util.ts', 'src/migrations/types.ts'],
+    ignores: [
+      'src/migrations/util.ts',
+      'src/migrations/type.ts',
+      'src/migrations/index.ts',
+      'src/migrations/*.test.ts',
+    ],
     rules: {
       'import/no-named-export': 'error',
 
@@ -71,7 +101,9 @@ export default [
        * Migrations should avoid imports, but some imports are necessary for
        * things like message parsing, and should be mostly safe.
        *
-       * Items in package.json `dependencies` are allowed.
+       * Items in package.json `dependencies` are allowed. When you add deps to
+       * this package, you should prefer to add them to `devDependencies` or
+       * other non-production dependencies.
        */
       'import/no-extraneous-dependencies': [
         'error',
