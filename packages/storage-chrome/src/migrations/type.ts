@@ -5,9 +5,5 @@ export interface Migration<
   ToState extends Record<string, unknown> = Record<string, unknown>,
 > {
   version(iv: FromV): ToV;
-  transform: (fs: Partial<FromState>) => ToState | Promise<ToState>;
+  transform(fs: Partial<FromState>): ToState | Promise<ToState>;
 }
-
-export type Migrations<M extends number> = {
-  [MK in M]: Migration<MK>;
-};

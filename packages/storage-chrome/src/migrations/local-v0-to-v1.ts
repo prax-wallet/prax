@@ -1,22 +1,17 @@
-import type FROM from '../versions/local-v0';
-import type TO from '../versions/local-v1';
+import type * as FROM from '../versions/v0';
+import type * as TO from '../versions/v1';
 import { MAINNET, REGISTRY, expectVersion, type Migration } from './util';
 
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { walletIdFromBech32m } from '@penumbra-zone/bech32m/penumbrawalletid';
-
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-
 import sample from 'lodash/sample';
 
-const FROM_VERSION = 0;
-const TO_VERSION = 1;
-
-type MIGRATION = Migration<typeof FROM_VERSION, FROM, typeof TO_VERSION, TO>;
+type MIGRATION = Migration<FROM.VERSION, FROM.LOCAL, TO.VERSION, TO.LOCAL>;
 
 export default {
-  version: v => expectVersion(v, FROM_VERSION, TO_VERSION),
+  version: v => expectVersion(v, 0, 1),
   transform: old => ({
     wallets: migrateWallets(old.wallets) ?? [],
     grpcEndpoint: isMainnet(old.params)
@@ -31,10 +26,10 @@ export default {
   }),
 } satisfies MIGRATION;
 
-const isMainnet = (oldParams: FROM['params']) =>
+const isMainnet = (oldParams: FROM.LOCAL['params']) =>
   MAINNET === (oldParams?.value && AppParameters.fromJsonString(oldParams.value).chainId);
 
-const migrateWallets = (wallets?: FROM['wallets']) => {
+const migrateWallets = (wallets?: FROM.LOCAL['wallets']) => {
   if (!wallets || !Array.isArray(wallets.value) || !wallets.value.length) {
     return;
   }
@@ -65,7 +60,7 @@ const migrateWallets = (wallets?: FROM['wallets']) => {
 
 // A one-time migration to suggested grpcUrls
 // Context: https://github.com/prax-wallet/web/issues/166
-const validateOrReplaceEndpoint = (oldEndpoint: FROM['grpcEndpoint']) => {
+const validateOrReplaceEndpoint = (oldEndpoint: FROM.LOCAL['grpcEndpoint']) => {
   // If they don't have one set, it's likely they didn't go through onboarding
   if (!oldEndpoint?.value) {
     return;
@@ -82,7 +77,7 @@ const validateOrReplaceEndpoint = (oldEndpoint: FROM['grpcEndpoint']) => {
 
 // A one-time migration to suggested frontends
 // Context: https://github.com/prax-wallet/web/issues/166
-const validateOrReplaceFrontend = (frontendUrl: FROM['frontendUrl']) => {
+const validateOrReplaceFrontend = (frontendUrl: FROM.LOCAL['frontendUrl']) => {
   // If they don't have one set, it's likely they didn't go through onboarding
   if (!frontendUrl?.value) {
     return;

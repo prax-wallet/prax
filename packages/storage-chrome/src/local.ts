@@ -1,12 +1,17 @@
-import { ExtensionStorage } from './base';
-import LocalStorage_V1 from './versions/local-v1';
-import localV0Migration from './migrations/local-v0-v1-migration';
+import { ExtensionStorage, ExtensionStorageDefaults } from './base';
+import { VERSION as LocalStorageVersion, LOCAL as LocalStorageState } from './versions/v1';
 
-export type LocalStorageState = LocalStorage_V1;
+const localDefaults: ExtensionStorageDefaults<LocalStorageState> = {
+  wallets: [],
+  knownSites: [],
+  numeraires: [],
+};
 
-// Meant to be used for long-term persisted data. It is cleared when the extension is removed.
-export const localExtStorage = new ExtensionStorage<LocalStorageState>(
+export const localExtStorage = new ExtensionStorage<LocalStorageState, LocalStorageVersion>(
   chrome.storage.local,
-  { wallets: [], knownSites: [], numeraires: [] },
-  { current: 1, migrations: { 0: localV0Migration } },
+  localDefaults,
+  1,
 );
+
+export type { LocalStorageState, LocalStorageVersion };
+export type LocalStorage = ExtensionStorage<LocalStorageState, LocalStorageVersion>;

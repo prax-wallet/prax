@@ -1,5 +1,10 @@
 import { localExtStorage } from './local';
-import { OriginRecord } from './types';
+
+export interface OriginRecord {
+  origin: string;
+  choice: 'Approved' | 'Denied' | 'Ignored';
+  date: number;
+}
 
 export const getOriginRecord = async (getOrigin?: string) => {
   if (!getOrigin) {

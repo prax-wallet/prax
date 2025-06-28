@@ -1,6 +1,10 @@
-export default LocalStorage_V0;
+export { type LOCAL, type SYNC, type VERSION };
 
-type LocalStorage_V0 = {
+type VERSION = 0;
+
+type SYNC = void;
+
+type LOCAL = {
   /** Legacy `WalletJson` with bech32m fields or `WalletJson` with stringified message fields */ wallets:
     | VersionedItem<
         {

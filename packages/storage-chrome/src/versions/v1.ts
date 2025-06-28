@@ -1,6 +1,10 @@
-export default LocalStorage_V1;
+export { type LOCAL, type SYNC, type VERSION };
 
-type LocalStorage_V1 = {
+type VERSION = 1;
+
+type SYNC = void;
+
+type LOCAL = {
   // required values
   knownSites: { choice: 'Approved' | 'Denied' | 'Ignored'; date: number; origin: string }[];
   /** Stringified AssetId */
