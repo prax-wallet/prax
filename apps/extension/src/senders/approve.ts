@@ -28,12 +28,10 @@ export const approveSender = async (approve: {
 }): Promise<UserChoice> => {
   const existingRecord = await getOriginRecord(approve.origin);
 
-  const existingChoice = existingRecord?.choice && UserChoice[existingRecord.choice];
-
-  switch (existingChoice) {
+  switch (existingRecord?.choice) {
     case UserChoice.Approved:
     case UserChoice.Ignored:
-      return existingChoice;
+      return existingRecord.choice;
 
     case UserChoice.Denied:
     case undefined: {
@@ -49,7 +47,8 @@ export const approveSender = async (approve: {
         await upsertOriginRecord(popupResponse);
       }
 
-      return UserChoice[popupResponse?.choice ?? 'Denied'];
+      // return choice, or default denial
+      return popupResponse?.choice ?? UserChoice.Denied;
     }
   }
 };

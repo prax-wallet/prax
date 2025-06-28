@@ -1,12 +1,13 @@
 import { localExtStorage } from './local';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export interface OriginRecord {
   origin: string;
-  choice: 'Approved' | 'Denied' | 'Ignored';
+  choice: UserChoice;
   date: number;
 }
 
-export const getOriginRecord = async (getOrigin?: string) => {
+export const getOriginRecord = async (getOrigin?: string): Promise<OriginRecord | undefined> => {
   if (!getOrigin) {
     return undefined;
   }
@@ -17,10 +18,10 @@ export const getOriginRecord = async (getOrigin?: string) => {
     throw new Error(`There are multiple records for origin: ${getOrigin}`);
   }
 
-  return match;
+  return match as OriginRecord;
 };
 
-export const upsertOriginRecord = async (proposal: OriginRecord) => {
+export const upsertOriginRecord = async (proposal: OriginRecord): Promise<void> => {
   const knownSites = await localExtStorage.get('knownSites');
 
   const newKnownSites = [...knownSites.filter(r => r.origin !== proposal.origin), proposal];

@@ -10,11 +10,11 @@ import { allSitesFilteredOutSelector } from './connected-sites';
 const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
 const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
 
-const mockSite = {
+const mockSite: OriginRecord = {
   origin: 'https://app.example.com',
-  choice: 'Approved',
+  choice: UserChoice.Approved,
   date: Date.now(),
-} as const;
+};
 
 describe('Connected Sites Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
