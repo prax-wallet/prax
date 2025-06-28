@@ -128,7 +128,8 @@ describe('Storage migrations', () => {
       const result = await v2ExtStorage.get('frontend');
       expect(result).toBe('http://default.com');
 
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
+      const version = rawStorage.mock.get(VERSION_FIELD);
+      expect(version).toBe(2);
     });
 
     test('gets work fine', async () => {
@@ -141,10 +142,12 @@ describe('Storage migrations', () => {
   describe('migrations available', () => {
     test('defaults work fine', async () => {
       await v1ExtStorage.get('seedPhrase');
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
+      const versionA = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionA).toBe(1);
 
       const result = await v2ExtStorage.get('seedPhrase');
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
+      const versionB = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionB).toBe(2);
       expect(result).toStrictEqual([]);
     });
 
@@ -159,11 +162,13 @@ describe('Storage migrations', () => {
       } satisfies MockV0State;
 
       await rawStorage.set(mock0StorageState);
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({});
+      const versionA = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionA).toStrictEqual({});
 
       const result = await v2ExtStorage.get('seedPhrase');
       expect(result).toEqual(['cat', 'dog', 'mouse', 'horse']);
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
+      const versionB = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionB).toBe(2);
     });
 
     test('get works on a changed data structure (two migration steps over two versions)', async () => {
@@ -177,20 +182,24 @@ describe('Storage migrations', () => {
       } satisfies MockV0State;
 
       await rawStorage.set(mock0StorageState);
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({});
+      const versionA = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionA).toStrictEqual({});
 
       const result = await v2ExtStorage.get('grpcUrl');
       expect(result).toEqual({ url: 'grpc.void.test', image: 'grpc.void.test/image' });
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
+      const versionB = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionB).toBe(2);
     });
 
     test('get works when there is a migration only at the last step', async () => {
       await v1ExtStorage.set('fullSyncHeight', 123);
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
+      const versionA = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionA).toBe(1);
 
       const result = await v2ExtStorage.get('fullSyncHeight');
-      expect(typeof result).toEqual('string');
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
+      expect(typeof result).toEqual('bigint');
+      const versionB = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionB).toBe(2);
     });
 
     test('get works with removed/added fields', async () => {
@@ -203,7 +212,8 @@ describe('Storage migrations', () => {
         fullSyncHeight: 0,
       } satisfies MockV0State;
       await rawStorage.set(mock0StorageState);
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({});
+      const versionA = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionA).toStrictEqual({});
 
       const result0To2 = await v2ExtStorage.get('accounts');
       expect(result0To2).toEqual([
@@ -213,7 +223,8 @@ describe('Storage migrations', () => {
           spendKey: 'v3-spend-key-xyz',
         },
       ]);
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
+      const versionB = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionB).toBe(2);
     });
 
     test('from a different version, the migration is different', async () => {
@@ -221,7 +232,8 @@ describe('Storage migrations', () => {
       await v1ExtStorage.set('accounts', [
         { viewKey: 'v2-view-key-efg', encryptedSeedPhrase: '12345' },
       ]);
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
+      const versionA = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionA).toBe(1);
 
       const result1To2 = await v2ExtStorage.get('accounts');
       expect(result1To2).toEqual([
@@ -231,7 +243,8 @@ describe('Storage migrations', () => {
           spendKey: 'v3-spend-key-xyz',
         },
       ]);
-      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
+      const versionB = rawStorage.mock.get(VERSION_FIELD);
+      expect(versionB).toBe(2);
     });
 
     test('multiple get (that may migrate) have no side effects', async () => {
