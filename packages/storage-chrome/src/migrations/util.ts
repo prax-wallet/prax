@@ -3,34 +3,36 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 export const MAINNET = 'penumbra-1';
 export const REGISTRY = new ChainRegistryClient().bundled.globals();
 
-export function assertVersion<E extends number>(from: unknown, expect?: E): asserts from is E {
+export function assertVersion<E extends number>(test: unknown, expect: E): asserts test is E {
   if (typeof expect !== 'number') {
-    throw new TypeError(`Expected version ${expect} is not a number`, { cause: expect });
+    throw new TypeError(`Expected version ${String(expect as unknown)} is not a number`, {
+      cause: expect,
+    });
   }
-  if (typeof from !== 'number') {
-    throw new TypeError(`Input version ${String(from)} is not a number`, { cause: from });
+  if (typeof test !== 'number') {
+    throw new TypeError(`Input version ${String(test)} is not a number`, { cause: test });
   }
-  if (from !== expect) {
-    throw new RangeError(`Expected version ${expect} but received ${from} input`, { cause: from });
+  if (test !== expect) {
+    throw new RangeError(`Expected version ${expect} but received ${test} input`, { cause: test });
   }
 }
 
-export function isVersion<E extends number>(from: unknown, expect: E): from is E {
+export function isVersion<E extends number>(test: unknown, expect: E): test is E {
   try {
-    assertVersion(from, expect);
+    assertVersion(test, expect);
     return true;
   } catch {
     return false;
   }
 }
 
-export function expectVersion<E extends number, F extends number, T extends number>(
-  from: F,
+export function expectVersion<X, E extends number, O extends number>(
+  test: X,
   expect: E,
-  to: T,
-): F extends E ? T : never {
-  assertVersion(from, expect);
-  return to as F extends E ? T : never;
+  out: O,
+): X extends E ? O : never {
+  assertVersion(test, expect);
+  return out as X extends E ? O : never;
 }
 
-export type { Migration } from './types';
+export type { Migration } from './type';

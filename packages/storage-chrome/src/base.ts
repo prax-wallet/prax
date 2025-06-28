@@ -1,46 +1,72 @@
-import type { Migrations } from './migrations/types';
+import { ChromeStorageListener } from './listener';
+import { Migration } from './migrations/type';
 import { VERSION_FIELD } from './version-field';
-
-export type ChromeStorageListener<S = never> = (changes: {
-  [k in keyof S]?: { newValue?: S[k]; oldValue?: S[k] };
-}) => void;
 
 export type ExtensionStorageDefaults<T> = {
   [K in keyof T]: undefined extends T[K] ? never : Required<T>[K] extends T[K] ? T[K] : never;
 };
 
-interface ExtensionStorageVersion<MV extends number extends infer V ? V : never = number> {
-  current: number;
-  migrations: Migrations<MV>;
+export type ExtensionStorageMigrations<CV, MV extends number = number> = CV extends number
+  ? { [MK in MV]: MK extends CV ? undefined : Migration<MK> }
+  : Partial<Record<number, Migration<number>>>;
+
+function assertValidKey<T>(
+  key: T,
+): asserts key is Exclude<string extends T ? T : never, typeof VERSION_FIELD> {
+  if (typeof key !== 'string') {
+    throw new TypeError(`Storage key ${String(key)} is not a string`, { cause: key });
+  }
+  if (key === VERSION_FIELD) {
+    throw new RangeError(`Storage key ${VERSION_FIELD} is reserved`, { cause: key });
+  }
 }
 
-export class ExtensionStorage<T extends Record<string, unknown>> {
+type ExtensionStorageSchema<T = Record<string, unknown>> = Omit<
+  T,
+  number | symbol | typeof VERSION_FIELD
+>;
+
+export class ExtensionStorage<
+  T extends ExtensionStorageSchema<T>,
+  V extends number | undefined = number | undefined,
+> {
+  private migrations?: ExtensionStorageMigrations<V>;
+
   constructor(
     private readonly storage: chrome.storage.StorageArea,
     private readonly defaults: ExtensionStorageDefaults<T>,
-    private readonly version?: ExtensionStorageVersion,
-  ) {}
+    private readonly version: V,
+    migrations?: ExtensionStorageMigrations<V>,
+  ) {
+    for (const key of Object.keys(defaults)) {
+      assertValidKey(key);
+    }
+
+    if (migrations) {
+      this.provideMigrations(migrations);
+    }
+  }
 
   /**
    * Retrieves a value by key (waits for lock).
    *
    * May return a default value.
    */
-  async get<K extends Exclude<keyof T, typeof VERSION_FIELD>>(key: K): Promise<T[K]> {
-    if (key === VERSION_FIELD) {
-      throw new TypeError(`Cannot get ${VERSION_FIELD}`);
-    }
+  async get<K extends keyof T>(key: K): Promise<T[K]> {
+    assertValidKey(key);
     return this.withLock(async () => {
-      let query: [K] | Pick<T, K>;
-      // query with or without default value
+      let result: Pick<T, K>;
+
       if (key in this.defaults && this.defaults[key] !== undefined) {
         const defaultValue = this.defaults[key];
         // requires obvious cast for some reason
-        query = { [key satisfies K]: defaultValue satisfies T[K] } as Pick<T, K>;
+        const queryWithDefault = { [key satisfies K]: defaultValue satisfies T[K] } as Pick<T, K>;
+        result = (await this.storage.get(queryWithDefault)) as Pick<T, K>;
       } else {
-        query = [key];
+        const queryKey = [key];
+        result = (await this.storage.get(queryKey)) as Pick<T, K>;
       }
-      const result = (await this.storage.get(query)) as Pick<T, K>;
+
       return result[key];
     });
   }
@@ -48,21 +74,16 @@ export class ExtensionStorage<T extends Record<string, unknown>> {
   /**
    * Sets value for key (waits for lock).
    */
-  async set<K extends Exclude<keyof T, typeof VERSION_FIELD>>(key: K, value: T[K]): Promise<void> {
-    if (key === VERSION_FIELD) {
-      throw new TypeError(`Cannot set ${VERSION_FIELD}`);
-    }
+  async set<K extends keyof T>(key: K, value: T[K]): Promise<void> {
+    assertValidKey(key);
     await this.withLock(async () => this.storage.set({ [key]: value }));
   }
 
   /**
    * Removes key/value from db (waits for lock).
    */
-  async remove(key: Exclude<keyof T, typeof VERSION_FIELD>): Promise<void> {
-    // Prevent removing dbVersion
-    if (key === VERSION_FIELD) {
-      throw new TypeError(`Cannot remove ${VERSION_FIELD}`);
-    }
+  async remove(key: keyof T): Promise<void> {
+    assertValidKey(key);
     await this.withLock(async () => this.storage.remove(String(key)));
   }
 
@@ -98,55 +119,148 @@ export class ExtensionStorage<T extends Record<string, unknown>> {
     ) as Promise<R>;
   }
 
-  private async migrateOrInitializeIfNeeded(): Promise<void> {
-    if (this.version) {
+  private async getStoredVersion(): Promise<number | undefined> {
+    const { [VERSION_FIELD]: version } = await this.storage.get(VERSION_FIELD);
+
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- default case
+    switch (typeof version) {
+      case 'undefined':
+      case 'number':
+        return version;
+      default:
+        throw new TypeError(`Stored version ${String(version as unknown)} is not a number`, {
+          cause: version,
+        });
+    }
+  }
+
+  public provideMigrations(migrations: ExtensionStorageMigrations<V>) {
+    if (!this.version) {
+      throw new RangeError('Unversioned storage will never use migrations');
+    }
+
+    const zeroToNow = Array.from(new Array(this.version).keys());
+    if (!zeroToNow.every(v => v in migrations)) {
+      throw new RangeError('Migration versions missing or out of range');
+    }
+
+    this.migrations = migrations;
+  }
+
+  private async migrateAllFields(initialVersion: number, initialState: Record<string, unknown>) {
+    let [mVersion, mState] = [initialVersion, initialState];
+
+    let migrate = undefined;
+    while ((migrate = this.migrations?.[mVersion])) {
+      [mVersion, mState] = [migrate.version(mVersion), await migrate.transform(mState)];
+    }
+
+    // confirm resulting version
+    if (mVersion !== this.version) {
+      throw new RangeError(`No migration function provided for version: ${mVersion}`, {
+        cause: { initialVersion, migrations: this.migrations },
+      });
+    }
+
+    await this.commitMigration({ ...mState, [VERSION_FIELD]: mVersion }, initialState);
+  }
+
+  private async commitMigration(commit: Record<string, unknown>, backup: Record<string, unknown>) {
+    /**
+     * storage fields may migrate to an undefined value, or may be absent from
+     * the migrated format. since setting an undefined value is a no-op, any
+     * defined pre-migration value could persist in storage, causing problems.
+     * additionally, clearing storage cannot be atomic with writing to storage,
+     * but writing to storage may fail.
+     *
+     * so to avoid data loss if the storage is successfully cleared but then
+     * fails to write, old keys are only removed after a successful write.
+     *
+     * must clean up fields:
+     * - present in old state but absent from new state (undefined)
+     * - present in old state but no value in new state (undefined)
+     *
+     * ideally a rollback would perform the inverse, but instead we prefer to
+     * avoid continued mainpulation of failing storage.
+     */
+    const cleanup = Object.keys(backup).filter(k => commit[k] === undefined);
+
+    const failures = [];
+    const messages = [];
+
+    try {
+      // ATTEMPT COMMIT
+      await this.storage.set(commit);
+
       try {
-        const bytesInUse = await this.storage.getBytesInUse();
+        // ATTEMPT CLEANUP
+        await this.storage.remove(cleanup);
 
-        // if storage is empty, initialize with current version
-        if (bytesInUse === 0) {
-          await this.storage.set({ [VERSION_FIELD]: this.version.current });
-          return;
-        }
+        // SUCCESS
+        return;
 
-        const { [VERSION_FIELD]: storedVersion = 0 } = await this.storage.get(VERSION_FIELD);
-        if (typeof storedVersion !== 'number') {
-          throw new TypeError(`Invalid stored version: ${storedVersion}`);
-        }
-
-        // if storage is old, migrate to current version
-        if (storedVersion !== this.version.current) {
-          if (!('serviceWorker' in globalThis)) {
-            throw new Error('Migration by document disallowed');
-          }
-          const backupState = await this.storage.get();
-
-          let [migratedVersion, migratedState] = [storedVersion, backupState];
-          let migration = undefined;
-          while ((migration = this.version.migrations[migratedVersion])) {
-            migratedVersion = migration.version(migratedVersion);
-            migratedState = await migration.transform(migratedState);
-          }
-
-          if (migratedVersion !== this.version.current) {
-            throw new RangeError(`No migration function provided for version: ${migratedVersion}`, {
-              cause: { storedVersion, migrations: this.version.migrations },
-            });
-          }
-          try {
-            await this.storage.clear();
-            await this.storage.set({ ...migratedState, [VERSION_FIELD]: migratedVersion });
-            return;
-          } catch (cause) {
-            console.error(cause);
-            await this.storage.set(backupState);
-            throw cause;
-          }
-        }
-      } catch (e) {
-        console.error(e);
-        throw new Error(`There was an error with migrating the database: ${String(e)}`);
+        /*
+    ------ FAILURE STATES ------
+        */
+      } catch (cleanupFailure) {
+        // this failure is quite unlikely, but possible due to quota. in this
+        // case, new state was written, but some partial old state may still be
+        // present. attempting a rollback is probably more dangerous than
+        // giving up.
+        messages.push('Cleanup failed.');
+        failures.push(cleanupFailure);
       }
+    } catch (commitFailure) {
+      messages.push('Commit failed.');
+      failures.push(commitFailure);
+
+      // ATTEMPT ROLLBACK
+      try {
+        await this.storage.set(backup);
+        messages.push('Rollback successful.');
+      } catch (rollbackFailure) {
+        failures.push(rollbackFailure);
+        messages.push('Rollback failed.');
+      }
+    }
+
+    throw new AggregateError(failures, messages.join(' '), {
+      cause: { backup, commit },
+    });
+  }
+
+  private async migrateOrInitializeIfNeeded(): Promise<void> {
+    if (!this.version) {
+      return;
+    }
+
+    try {
+      const storedVersion = await this.getStoredVersion();
+
+      // if storage is empty, initialize with current version
+      if (storedVersion === undefined && !(await this.storage.getBytesInUse())) {
+        await this.storage.set({ [VERSION_FIELD]: this.version });
+        return;
+      }
+
+      // storage is current, no migration needed
+      if (storedVersion === this.version) {
+        return;
+      }
+
+      // no migrations available
+      if (!this.migrations) {
+        throw new ReferenceError('No migrations available');
+      }
+
+      // perform migration
+      await this.migrateAllFields(storedVersion ?? 0, await this.storage.get());
+
+      // migration complete
+      return;
+    } catch (e) {
+      console.error(e);
+      throw new Error(`There was an error with migrating the database: ${String(e)}`);
     }
   }
 }

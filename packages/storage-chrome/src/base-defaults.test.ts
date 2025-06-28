@@ -1,18 +1,22 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { ExtensionStorage } from './base';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
+import { VERSION_FIELD } from './version-field';
 
 const rawStorage = new MockStorageArea();
 
 describe('Base storage default instantiation', () => {
-  let extStorage: ExtensionStorage<{
-    network: string;
-    seedPhrase?: string;
-    accounts: {
-      label: string;
-    }[];
-    fullSyncHeight: number;
-  }>;
+  let extStorage: ExtensionStorage<
+    {
+      network: string;
+      seedPhrase?: string;
+      accounts: {
+        label: string;
+      }[];
+      fullSyncHeight: number;
+    },
+    1
+  >;
 
   beforeEach(() => {
     rawStorage.mock.clear();
@@ -23,7 +27,9 @@ describe('Base storage default instantiation', () => {
         accounts: [],
         fullSyncHeight: 0,
       },
-      { current: 1, migrations: { 0: state => Promise.resolve([1, state]) } },
+
+      1,
+      { 0: { version: () => 1, transform: state => Promise.resolve(state) } },
     );
   });
 
@@ -44,7 +50,7 @@ describe('Base storage default instantiation', () => {
   test('first get made initializes version', async () => {
     expect(rawStorage.mock.size).toBe(0);
     await expect(extStorage.get('network')).resolves.toBe('');
-    await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 1 });
+    await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
   });
 
   test('should handle concurrent initializations w/ locks', async () => {
@@ -75,19 +81,21 @@ describe('Base storage default instantiation', () => {
     expect(seedPhraseValue).toBe(undefined);
   });
 
-  test('get throws error when attempting to get dbVersion', async () => {
-    await expect(extStorage.get('dbVersion' as never)).rejects.toThrow('Cannot get dbVersion');
-  });
-
-  test('set throws error when attempting to set dbVersion', async () => {
-    await expect(extStorage.set('dbVersion' as never, 69 as never)).rejects.toThrow(
-      'Cannot set dbVersion',
+  test('get throws error when attempting to get version field', async () => {
+    await expect(extStorage.get(VERSION_FIELD as never)).rejects.toThrow(
+      `Storage key ${VERSION_FIELD} is reserved`,
     );
   });
 
-  test('remove throws error when attempting to remove dbVersion', async () => {
-    await expect(extStorage.remove('dbVersion' as never)).rejects.toThrow(
-      'Cannot remove dbVersion',
+  test('set throws error when attempting to set version field', async () => {
+    await expect(extStorage.set(VERSION_FIELD as never, 69 as never)).rejects.toThrow(
+      `Storage key ${VERSION_FIELD} is reserved`,
+    );
+  });
+
+  test('remove throws error when attempting to remove version field', async () => {
+    await expect(extStorage.remove(VERSION_FIELD as never)).rejects.toThrow(
+      `Storage key ${VERSION_FIELD} is reserved`,
     );
   });
 

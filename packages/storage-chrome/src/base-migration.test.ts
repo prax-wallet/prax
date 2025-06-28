@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { ExtensionStorage } from '../base';
+import { ExtensionStorage, ExtensionStorageMigrations } from './base';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
-import { expectVersion } from '../migrations/util';
-import type { Migration, Migrations } from '../migrations/types';
+import { expectVersion, Migration } from './migrations/util';
+import { VERSION_FIELD } from './version-field';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type MockV0State = {
@@ -80,7 +80,7 @@ const mockV1toV2Migration: Migration<1, MockV1State, 2, MockV2State> = {
   }),
 };
 
-const v2Migrations: Migrations<0 | 1> = {
+const v2Migrations: ExtensionStorageMigrations<0 | 1> = {
   0: mockV0toV1Migration,
   1: mockV1toV2Migration,
 };
@@ -88,13 +88,13 @@ const v2Migrations: Migrations<0 | 1> = {
 const rawStorage = new MockStorageArea();
 
 describe('Storage migrations', () => {
-  let v1ExtStorage: ExtensionStorage<MockV1State>;
-  let v2ExtStorage: ExtensionStorage<MockV2State>;
+  let v1ExtStorage: ExtensionStorage<MockV1State, 1>;
+  let v2ExtStorage: ExtensionStorage<MockV2State, 2>;
 
   beforeEach(() => {
     rawStorage.mock.clear();
 
-    v1ExtStorage = new ExtensionStorage<MockV1State>(
+    v1ExtStorage = new ExtensionStorage<MockV1State, 1>(
       rawStorage,
       {
         network: '',
@@ -104,10 +104,11 @@ describe('Storage migrations', () => {
         grpcUrl: { url: '' },
         fullSyncHeight: 0,
       },
-      { current: 1, migrations: { 0: mockV0toV1Migration } },
+      1,
+      { 0: mockV0toV1Migration },
     );
 
-    v2ExtStorage = new ExtensionStorage<MockV2State>(
+    v2ExtStorage = new ExtensionStorage<MockV2State, 2>(
       rawStorage,
       {
         network: '',
@@ -117,7 +118,8 @@ describe('Storage migrations', () => {
         grpcUrl: { url: '', image: '' },
         fullSyncHeight: '0',
       },
-      { current: 2, migrations: v2Migrations },
+      2,
+      v2Migrations,
     );
   });
 
@@ -126,7 +128,7 @@ describe('Storage migrations', () => {
       const result = await v2ExtStorage.get('frontend');
       expect(result).toBe('http://default.com');
 
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
     });
 
     test('gets work fine', async () => {
@@ -139,10 +141,10 @@ describe('Storage migrations', () => {
   describe('migrations available', () => {
     test('defaults work fine', async () => {
       await v1ExtStorage.get('seedPhrase');
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 1 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
 
       const result = await v2ExtStorage.get('seedPhrase');
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
       expect(result).toStrictEqual([]);
     });
 
@@ -157,11 +159,11 @@ describe('Storage migrations', () => {
       } satisfies MockV0State;
 
       await rawStorage.set(mock0StorageState);
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({});
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({});
 
       const result = await v2ExtStorage.get('seedPhrase');
       expect(result).toEqual(['cat', 'dog', 'mouse', 'horse']);
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
     });
 
     test('get works on a changed data structure (two migration steps over two versions)', async () => {
@@ -175,20 +177,20 @@ describe('Storage migrations', () => {
       } satisfies MockV0State;
 
       await rawStorage.set(mock0StorageState);
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({});
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({});
 
       const result = await v2ExtStorage.get('grpcUrl');
       expect(result).toEqual({ url: 'grpc.void.test', image: 'grpc.void.test/image' });
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
     });
 
     test('get works when there is a migration only at the last step', async () => {
       await v1ExtStorage.set('fullSyncHeight', 123);
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 1 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
 
       const result = await v2ExtStorage.get('fullSyncHeight');
       expect(typeof result).toEqual('string');
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
     });
 
     test('get works with removed/added fields', async () => {
@@ -201,7 +203,7 @@ describe('Storage migrations', () => {
         fullSyncHeight: 0,
       } satisfies MockV0State;
       await rawStorage.set(mock0StorageState);
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({});
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({});
 
       const result0To2 = await v2ExtStorage.get('accounts');
       expect(result0To2).toEqual([
@@ -211,7 +213,7 @@ describe('Storage migrations', () => {
           spendKey: 'v3-spend-key-xyz',
         },
       ]);
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
     });
 
     test('from a different version, the migration is different', async () => {
@@ -219,7 +221,7 @@ describe('Storage migrations', () => {
       await v1ExtStorage.set('accounts', [
         { viewKey: 'v2-view-key-efg', encryptedSeedPhrase: '12345' },
       ]);
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 1 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
 
       const result1To2 = await v2ExtStorage.get('accounts');
       expect(result1To2).toEqual([
@@ -229,7 +231,7 @@ describe('Storage migrations', () => {
           spendKey: 'v3-spend-key-xyz',
         },
       ]);
-      await expect(rawStorage.get('dbVersion')).resolves.toStrictEqual({ dbVersion: 2 });
+      await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 2 });
     });
 
     test('multiple get (that may migrate) have no side effects', async () => {
@@ -245,7 +247,7 @@ describe('Storage migrations', () => {
     test('should handle concurrent migration accesses correctly', async () => {
       await v1ExtStorage.set('fullSyncHeight', 123);
 
-      const migrationSpy = vi.spyOn(v2Migrations[1], 'transform');
+      const migrationSpy = vi.spyOn(mockV1toV2Migration, 'transform');
 
       // Trigger two concurrent accesses
       const promise1 = v2ExtStorage.get('fullSyncHeight');
@@ -280,7 +282,7 @@ describe('Storage migrations', () => {
 
     test('error during migration from v0 to v1', async () => {
       const migrationFailure = new Error('bad thing happen');
-      const faultyMigration = new ExtensionStorage<MockV1State>(
+      const faultyMigration = new ExtensionStorage<MockV1State, 1>(
         rawStorage,
         {
           network: '',
@@ -290,11 +292,9 @@ describe('Storage migrations', () => {
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
         },
+        1,
         {
-          current: 1,
-          migrations: {
-            0: { version: () => 1, transform: () => Promise.reject(migrationFailure) },
-          },
+          0: { version: () => 1, transform: () => Promise.reject(migrationFailure) },
         },
       );
 
@@ -315,7 +315,7 @@ describe('Storage migrations', () => {
 
     test('error during migration from v1 to v2', async () => {
       const migrationFailure = new Error('good thing happen');
-      const mock1Storage = new ExtensionStorage<MockV1State>(
+      const mock1Storage = new ExtensionStorage<MockV1State, 1>(
         rawStorage,
         {
           network: '',
@@ -325,7 +325,8 @@ describe('Storage migrations', () => {
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
         },
-        { current: 1, migrations: { 0: mockV0toV1Migration } },
+        1,
+        { 0: mockV0toV1Migration },
       );
 
       await mock1Storage.set('fullSyncHeight', 123);
@@ -337,7 +338,7 @@ describe('Storage migrations', () => {
         version: () => 2,
         transform: () => Promise.reject(migrationFailure),
       } as const;
-      const faultyMigration = new ExtensionStorage<MockV2State>(
+      const faultyMigration = new ExtensionStorage<MockV2State, 2>(
         rawStorage,
         {
           network: '',
@@ -347,12 +348,10 @@ describe('Storage migrations', () => {
           grpcUrl: { url: '', image: '' },
           fullSyncHeight: '0',
         },
+        2,
         {
-          current: 2,
-          migrations: {
-            0: mockV0toV1Migration,
-            1: willFail,
-          },
+          0: mockV0toV1Migration,
+          1: willFail,
         },
       );
 
@@ -365,7 +364,7 @@ describe('Storage migrations', () => {
       const migrationFailure = new Error('fhqwhgads');
       const originalNetworkVal = 'original.void.zone';
       await rawStorage.set({ network: originalNetworkVal });
-      const mock1Storage = new ExtensionStorage<MockV1State>(
+      const mock1Storage = new ExtensionStorage<MockV1State, 1>(
         rawStorage,
         {
           network: '',
@@ -375,14 +374,15 @@ describe('Storage migrations', () => {
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
         },
-        { current: 1, migrations: { 0: mockV0toV1Migration } },
+        1,
+        { 0: mockV0toV1Migration },
       );
 
       await mock1Storage.set('fullSyncHeight', 123);
       const height = await mock1Storage.get('fullSyncHeight');
       expect(height).toEqual(123);
 
-      const faultyMigration = new ExtensionStorage<MockV2State>(
+      const faultyMigration = new ExtensionStorage<MockV2State, 2>(
         rawStorage,
         {
           network: '',
@@ -392,14 +392,13 @@ describe('Storage migrations', () => {
           grpcUrl: { url: '', image: '' },
           fullSyncHeight: '0',
         },
+
+        2,
         {
-          current: 2,
-          migrations: {
-            0: mockV0toV1Migration,
-            1: {
-              version: () => 2,
-              transform: () => Promise.reject(migrationFailure),
-            },
+          0: mockV0toV1Migration,
+          1: {
+            version: () => 2,
+            transform: () => Promise.reject(migrationFailure),
           },
         },
       );

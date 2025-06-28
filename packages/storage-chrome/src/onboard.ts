@@ -1,6 +1,17 @@
-import type { ChromeStorageListener } from './base';
+import type { ChromeStorageListener } from './listener';
 import { localExtStorage, type LocalStorageState } from './local';
-import type { WalletRecord } from './types';
+
+export interface WalletRecord {
+  id: string;
+  label: string;
+  fullViewingKey: string;
+  custody: {
+    encryptedSeedPhrase: {
+      cipherText: string;
+      nonce: string;
+    };
+  };
+}
 
 /**
  * When a user first onboards with the extension, they won't have chosen a gRPC

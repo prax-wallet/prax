@@ -5,6 +5,10 @@ import { KeyJson } from '@penumbra-zone/crypto-web/encryption';
 export type SessionStorageState = { passwordKey?: KeyJson };
 
 // Meant to be used for short-term persisted data. Holds data in memory for the duration of a browser session.
-export const sessionExtStorage = new ExtensionStorage<SessionStorageState>(chrome.storage.session, {
-  /* no defaults */
-});
+export const sessionExtStorage = new ExtensionStorage<SessionStorageState, undefined>(
+  chrome.storage.session,
+  {}, // no defaults
+  undefined,
+);
+
+export type SessionStorage = ExtensionStorage<SessionStorageState, undefined>;

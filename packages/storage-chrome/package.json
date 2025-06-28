@@ -9,12 +9,13 @@
     "test": "vitest run"
   },
   "exports": {
+    ".": "./src/index.ts",
     "./base": "./src/base.ts",
     "./local": "./src/local.ts",
-    "./mock": "./src/mock.ts",
     "./onboard": "./src/onboard.ts",
     "./origin": "./src/origin.ts",
     "./session": "./src/session.ts",
+    "./migrations": "./src/migrations/index.ts",
     "./types": "./src/types.ts"
   },
   "dependencies": {

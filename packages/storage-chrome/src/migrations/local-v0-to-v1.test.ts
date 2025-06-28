@@ -6,10 +6,11 @@ import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/
 import sample from 'lodash/sample';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { ExtensionStorage } from '../base';
-import LocalStorage_V0 from '../versions/local-v0';
-import LocalStorage_V1 from '../versions/local-v1';
-import localV0Migration from '../migrations/local-v0-v1-migration';
+import * as Storage_V0 from '../versions/v0';
+import * as Storage_V1 from '../versions/v1';
+import localV0Migration from './local-v0-to-v1';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
+import { VERSION_FIELD } from '../version-field';
 
 const bech32Fvk =
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- const is meaningful
@@ -20,15 +21,20 @@ const bech32WalletId =
 
 const storageArea = new MockStorageArea();
 
+const registryGlobals = new ChainRegistryClient().bundled.globals();
+const rpcs = registryGlobals.rpcs.map(({ url }) => url);
+const frontends = registryGlobals.frontends.map(({ url }) => url);
+
 describe('v1 old local schema migrations', () => {
-  let v1ExtStorage: ExtensionStorage<LocalStorage_V1>;
+  let v1ExtStorage: ExtensionStorage<Storage_V1.LOCAL, Storage_V1.VERSION>;
 
   beforeEach(() => {
     storageArea.mock.clear();
-    v1ExtStorage = new ExtensionStorage<LocalStorage_V1>(
+    v1ExtStorage = new ExtensionStorage<Storage_V1.LOCAL, Storage_V1.VERSION>(
       storageArea,
       { wallets: [], knownSites: [], numeraires: [] },
-      { current: 1, migrations: { 0: localV0Migration } },
+      1,
+      { 0: localV0Migration },
     );
   });
 
@@ -39,7 +45,7 @@ describe('v1 old local schema migrations', () => {
     const fullSyncHeightVal = 13524524;
     const paramsVal = new AppParameters({ chainId: 'penumbra-1' }).toJsonString();
 
-    const mock0StorageState: Partial<LocalStorage_V0> = {
+    const mock0StorageState: Partial<Storage_V0.LOCAL> = {
       wallets: {
         version: 'V1',
         value: [
@@ -95,19 +101,20 @@ describe('v1 old local schema migrations', () => {
 });
 
 describe('v1 old schema: migrate walletId and fullViewingKey', () => {
-  let v1ExtStorage: ExtensionStorage<LocalStorage_V1>;
+  let v1ExtStorage: ExtensionStorage<Storage_V1.LOCAL, Storage_V1.VERSION>;
 
   beforeEach(() => {
     storageArea.mock.clear();
-    v1ExtStorage = new ExtensionStorage<LocalStorage_V1>(
+    v1ExtStorage = new ExtensionStorage<Storage_V1.LOCAL, Storage_V1.VERSION>(
       storageArea,
       { wallets: [], knownSites: [], numeraires: [] },
-      { current: 1, migrations: { 0: localV0Migration } },
+      1,
+      { 0: localV0Migration },
     );
   });
 
-  test('should successfully migrate from V1 (old data structure) to dbVersion 1 (new data structure)', async () => {
-    const mock0StorageState: Partial<LocalStorage_V0> = {
+  test('should successfully migrate from versioned items to versioned area', async () => {
+    const mock0StorageState: Partial<Storage_V0.LOCAL> = {
       wallets: {
         version: 'V1',
         value: [
@@ -122,7 +129,7 @@ describe('v1 old schema: migrate walletId and fullViewingKey', () => {
     };
     await storageArea.set(mock0StorageState);
 
-    const versionA = await storageArea.get('dbVersion');
+    const versionA = await storageArea.get(VERSION_FIELD);
     expect(versionA).toStrictEqual({});
 
     const v0Wallets = (await storageArea.get('wallets')) as Record<
@@ -143,9 +150,9 @@ describe('v1 old schema: migrate walletId and fullViewingKey', () => {
   });
 
   test('work if no v0 wallets', async () => {
-    const mock0StorageState: Record<string, unknown> = {
+    const mock0StorageState: Partial<Storage_V0.LOCAL> = {
       knownSites: { version: 'V1', value: [] },
-    } satisfies Partial<LocalStorage_V0>;
+    };
     await storageArea.set(mock0StorageState);
 
     const v1Wallets = await v1ExtStorage.get('wallets');
@@ -173,24 +180,25 @@ describe('v1 old schema: migrate walletId and fullViewingKey', () => {
 });
 
 describe('v2 old schema: validate grpc & frontendUrl', () => {
-  let v1ExtStorage: ExtensionStorage<LocalStorage_V1>;
+  let v1ExtStorage: ExtensionStorage<Storage_V1.LOCAL, Storage_V1.VERSION>;
 
   beforeEach(() => {
     storageArea.mock.clear();
-    v1ExtStorage = new ExtensionStorage<LocalStorage_V1>(
+    v1ExtStorage = new ExtensionStorage<Storage_V1.LOCAL, Storage_V1.VERSION>(
       storageArea,
       { wallets: [], knownSites: [], numeraires: [] },
-      { current: 1, migrations: { 0: localV0Migration } },
+      1,
+      { 0: localV0Migration },
     );
   });
 
   test('non-affected fields stay the same', async () => {
-    const mock0StorageState: Record<string, unknown> = {
+    const mock0StorageState: Partial<Storage_V0.LOCAL> = {
       fullSyncHeight: { version: 'V2', value: 9483729 },
-    } satisfies Partial<LocalStorage_V0>;
+    };
     await storageArea.set(mock0StorageState);
 
-    const versionA = await storageArea.get('dbVersion');
+    const versionA = await storageArea.get(VERSION_FIELD);
     expect(versionA).toStrictEqual({});
 
     const syncHeight = await v1ExtStorage.get('fullSyncHeight');
@@ -199,9 +207,9 @@ describe('v2 old schema: validate grpc & frontendUrl', () => {
 
   describe('frontends', () => {
     test('not set frontend gets ignored', async () => {
-      const mock0StorageState: Record<string, unknown> = {
+      const mock0StorageState: Partial<Storage_V0.LOCAL> = {
         frontendUrl: { version: 'V2', value: '' },
-      } satisfies Partial<LocalStorage_V0>;
+      };
       await storageArea.set(mock0StorageState);
 
       const url = await v1ExtStorage.get('frontendUrl');
@@ -209,12 +217,10 @@ describe('v2 old schema: validate grpc & frontendUrl', () => {
     });
 
     test('have no change if user already selected frontend in registry', async () => {
-      const registryClient = new ChainRegistryClient();
-      const { frontends } = registryClient.bundled.globals();
-      const suggestedFrontend = sample(frontends.map(f => f.url));
-      const mock0StorageState: Record<string, unknown> = {
+      const suggestedFrontend = sample(frontends);
+      const mock0StorageState: Partial<Storage_V0.LOCAL> = {
         frontendUrl: { version: 'V2', value: suggestedFrontend },
-      } satisfies Partial<LocalStorage_V0>;
+      };
       await storageArea.set(mock0StorageState);
 
       const url = await v1ExtStorage.get('frontendUrl');
@@ -222,24 +228,23 @@ describe('v2 old schema: validate grpc & frontendUrl', () => {
     });
 
     test('user gets migrated to suggested frontend', async () => {
-      const registryClient = new ChainRegistryClient();
-      const { frontends } = registryClient.bundled.globals();
-      const mock0StorageState: Record<string, unknown> = {
+      const mock0StorageState: Partial<Storage_V0.LOCAL> = {
         frontendUrl: { version: 'V2', value: 'http://badfrontend.void' },
-      } satisfies Partial<LocalStorage_V0>;
+      };
       await storageArea.set(mock0StorageState);
 
       const url = await v1ExtStorage.get('frontendUrl');
+      expect(url).toBeDefined();
       expect(url).not.toEqual('http://badfrontend.void');
-      expect(frontends.map(f => f.url).includes(url!)).toBeTruthy();
+      expect(frontends).toContain(url);
     });
   });
 
   describe('grpcEndpoint', () => {
     test('not set gets ignored', async () => {
-      const mock0StorageState: Record<string, unknown> = {
+      const mock0StorageState: Partial<Storage_V0.LOCAL> = {
         grpcEndpoint: { version: 'V2', value: undefined },
-      } satisfies Partial<LocalStorage_V0>;
+      };
       await storageArea.set(mock0StorageState);
 
       const url = await v1ExtStorage.get('grpcEndpoint');
@@ -248,10 +253,10 @@ describe('v2 old schema: validate grpc & frontendUrl', () => {
 
     test('not connected to mainnet gets ignored', async () => {
       const appParams = new AppParameters({ chainId: 'testnet-deimos-42' });
-      const mock0StorageState: Record<string, unknown> = {
+      const mock0StorageState: Partial<Storage_V0.LOCAL> = {
         params: { version: 'V2', value: appParams.toJsonString() },
         grpcEndpoint: { version: 'V2', value: 'grpc.testnet.void' },
-      } satisfies Partial<LocalStorage_V0>;
+      };
       await storageArea.set(mock0StorageState);
 
       const endpoint = await v1ExtStorage.get('grpcEndpoint');
@@ -260,13 +265,11 @@ describe('v2 old schema: validate grpc & frontendUrl', () => {
 
     test('user selected suggested endpoint', async () => {
       const appParams = new AppParameters({ chainId: 'penumbra-1' });
-      const registryClient = new ChainRegistryClient();
-      const { rpcs } = registryClient.bundled.globals();
-      const suggestedRpc = sample(rpcs.map(f => f.url));
-      const mock0StorageState: Record<string, unknown> = {
+      const suggestedRpc = sample(rpcs);
+      const mock0StorageState: Partial<Storage_V0.LOCAL> = {
         params: { version: 'V2', value: appParams.toJsonString() },
         grpcEndpoint: { version: 'V2', value: suggestedRpc },
-      } satisfies Partial<LocalStorage_V0>;
+      };
       await storageArea.set(mock0StorageState);
 
       const endpoint = await v1ExtStorage.get('grpcEndpoint');
@@ -275,34 +278,31 @@ describe('v2 old schema: validate grpc & frontendUrl', () => {
 
     test('user gets migrated to suggested endpoint', async () => {
       const appParams = new AppParameters({ chainId: 'penumbra-1' });
-      const mock0StorageState: Record<string, unknown> = {
+      const mock0StorageState: Partial<Storage_V0.LOCAL> = {
         params: { version: 'V2', value: appParams.toJsonString() },
         grpcEndpoint: { version: 'V2', value: 'http://badfrontend.void' },
-      } satisfies Partial<LocalStorage_V0>;
+      };
       await storageArea.set(mock0StorageState);
 
       const endpoint = await v1ExtStorage.get('grpcEndpoint');
+      expect(endpoint).toBeDefined();
       expect(endpoint).not.toEqual('http://badfrontend.void');
 
-      const registryClient = new ChainRegistryClient();
-      const { rpcs } = registryClient.bundled.globals();
-      expect(rpcs.map(r => r.url).includes(endpoint!)).toBeTruthy();
+      expect(rpcs).toContain(endpoint);
     });
 
     test('works from V1 storage as well', async () => {
       const appParams = new AppParameters({ chainId: 'penumbra-1' });
-      const mock0StorageState: Record<string, unknown> = {
+      const mock0StorageState: Partial<Storage_V0.LOCAL> = {
         params: { version: 'V1', value: appParams.toJsonString() },
         grpcEndpoint: { version: 'V1', value: 'http://badfrontend.void' },
-      } satisfies Partial<LocalStorage_V0>;
+      };
       await storageArea.set(mock0StorageState);
 
       const endpoint = await v1ExtStorage.get('grpcEndpoint');
       expect(endpoint).not.toEqual('http://badfrontend.void');
 
-      const registryClient = new ChainRegistryClient();
-      const { rpcs } = registryClient.bundled.globals();
-      expect(rpcs.map(r => r.url).includes(endpoint!)).toBeTruthy();
+      expect(rpcs).toContain(endpoint);
     });
   });
 });
