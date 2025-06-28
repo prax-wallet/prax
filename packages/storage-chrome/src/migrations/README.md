@@ -2,7 +2,8 @@ This directory contains migration functions that transform historic versions of
 Prax local extension storage to an intermediate version, or the current version.
 
 Files in this directory have restricted imports. Only specific modules are
-allowed, to prevent migration behavior from changing unexpectedly.
+allowed, to prevent migration behavior from changing unexpectedly. Production
+dependencies from `package.json` are allowed import.
 
 Each migration file should contain a single default export, containing functions
 named `version` and `transform` to perform the migration.
@@ -21,11 +22,5 @@ And export something like:
 type MIGRATION = Migration<FROM.VERSION, FROM.LOCAL, TO.VERSION, TO.LOCAL>;
 export default { version, transform } satisfies MIGRATION;
 ```
-
-Further allowed imports include:
-
-- `@penumbra-zone/protobuf` for protobuf message types, which should not have breaking changes
-- `@penumbra-zone/bech32m` for bech32m encode/decode utilities based on message types
-- `lodash` for utility functions
 
 These rules are enforced with eslint configuration.

@@ -3,33 +3,31 @@ import { ExtensionStorage } from './base';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { VERSION_FIELD } from './version-field';
 
-const rawStorage = new MockStorageArea();
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type MockState = {
+  network: string;
+  seedPhrase?: string;
+  accounts: {
+    label: string;
+  }[];
+  fullSyncHeight: number;
+};
 
 describe('Base storage default instantiation', () => {
-  let extStorage: ExtensionStorage<
-    {
-      network: string;
-      seedPhrase?: string;
-      accounts: {
-        label: string;
-      }[];
-      fullSyncHeight: number;
-    },
-    1
-  >;
+  let extStorage: ExtensionStorage<MockState>;
+  let storageArea: MockStorageArea;
 
   beforeEach(() => {
-    rawStorage.mock.clear();
+    storageArea = new MockStorageArea();
     extStorage = new ExtensionStorage(
-      rawStorage,
+      storageArea,
       {
         network: '',
         accounts: [],
         fullSyncHeight: 0,
       },
-
       1,
-      { 0: { version: () => 1, transform: state => Promise.resolve(state) } },
+      { 0: { version: () => 1, transform: state => state } },
     );
   });
 
@@ -48,9 +46,8 @@ describe('Base storage default instantiation', () => {
   });
 
   test('first get made initializes version', async () => {
-    expect(rawStorage.mock.size).toBe(0);
     await expect(extStorage.get('network')).resolves.toBe('');
-    await expect(rawStorage.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
+    await expect(storageArea.get(VERSION_FIELD)).resolves.toStrictEqual({ [VERSION_FIELD]: 1 });
   });
 
   test('should handle concurrent initializations w/ locks', async () => {
