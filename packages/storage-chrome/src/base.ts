@@ -21,13 +21,8 @@ function assertValidKey<T>(
   }
 }
 
-type ExtensionStorageSchema<T = Record<string, unknown>> = Omit<
-  T,
-  number | symbol | typeof VERSION_FIELD
->;
-
 export class ExtensionStorage<
-  T extends ExtensionStorageSchema<T>,
+  T extends Record<string, unknown>,
   V extends number | undefined = number | undefined,
 > {
   private migrations?: ExtensionStorageMigrations<V>;
@@ -91,18 +86,14 @@ export class ExtensionStorage<
    * Adds a listener to detect changes in the storage.
    */
   addListener(listener: ChromeStorageListener<T>) {
-    this.storage.onChanged.addListener(
-      listener as (changes: Record<string, chrome.storage.StorageChange>) => void,
-    );
+    this.storage.onChanged.addListener(listener as ChromeStorageListener);
   }
 
   /**
    * Removes a listener from the storage change listeners.
    */
   removeListener(listener: ChromeStorageListener<T>) {
-    this.storage.onChanged.removeListener(
-      listener as (changes: Record<string, chrome.storage.StorageChange>) => void,
-    );
+    this.storage.onChanged.removeListener(listener as ChromeStorageListener);
   }
 
   /**
@@ -117,34 +108,6 @@ export class ExtensionStorage<
     return navigator.locks.request(`${chrome.runtime.id}.storage`, { mode: 'exclusive' }, () =>
       this.migrateOrInitializeIfNeeded().then(fn),
     ) as Promise<R>;
-  }
-
-  private async getStoredVersion(): Promise<number | undefined> {
-    const { [VERSION_FIELD]: version } = await this.storage.get(VERSION_FIELD);
-
-    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- default case
-    switch (typeof version) {
-      case 'undefined':
-      case 'number':
-        return version;
-      default:
-        throw new TypeError(`Stored version ${String(version as unknown)} is not a number`, {
-          cause: version,
-        });
-    }
-  }
-
-  public provideMigrations(migrations: ExtensionStorageMigrations<V>) {
-    if (!this.version) {
-      throw new RangeError('Unversioned storage will never use migrations');
-    }
-
-    const zeroToNow = Array.from(new Array(this.version).keys());
-    if (!zeroToNow.every(v => v in migrations)) {
-      throw new RangeError('Migration versions missing or out of range');
-    }
-
-    this.migrations = migrations;
   }
 
   private async migrateAllFields(initialVersion: number, initialState: Record<string, unknown>) {
@@ -162,7 +125,9 @@ export class ExtensionStorage<
       });
     }
 
-    await this.commitMigration({ ...mState, [VERSION_FIELD]: mVersion }, initialState);
+    const result = { ...mState, [VERSION_FIELD]: mVersion };
+
+    await this.commitMigration(result, initialState);
   }
 
   private async commitMigration(commit: Record<string, unknown>, backup: Record<string, unknown>) {
@@ -262,5 +227,33 @@ export class ExtensionStorage<
       console.error(e);
       throw new Error(`There was an error with migrating the database: ${String(e)}`);
     }
+  }
+
+  private async getStoredVersion(): Promise<number | undefined> {
+    const { [VERSION_FIELD]: version } = await this.storage.get(VERSION_FIELD);
+
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- default case
+    switch (typeof version) {
+      case 'undefined':
+      case 'number':
+        return version;
+      default:
+        throw new TypeError(`Stored version ${String(version as unknown)} is not a number`, {
+          cause: version,
+        });
+    }
+  }
+
+  public provideMigrations(migrations: ExtensionStorageMigrations<V>) {
+    if (!this.version) {
+      throw new RangeError('Unversioned storage will never use migrations');
+    }
+
+    const zeroToNow = Array.from(new Array(this.version).keys());
+    if (!zeroToNow.every(v => v in migrations)) {
+      throw new RangeError('Migration versions missing or out of range');
+    }
+
+    this.migrations = migrations;
   }
 }

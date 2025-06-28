@@ -1,3 +1,3 @@
-export type ChromeStorageListener<S = never> = (changes: {
-  [k in keyof S]?: { newValue?: S[k]; oldValue?: S[k] };
+export type ChromeStorageListener<S = Record<string, unknown>> = (changes: {
+  [K in keyof S]?: { newValue?: S[K]; oldValue?: S[K] };
 }) => void;
