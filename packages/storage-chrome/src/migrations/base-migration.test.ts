@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { ExtensionStorage, ExtensionStorageMigrations } from './base';
+import { ExtensionStorage, ExtensionStorageMigrations } from '../base';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
-import { expectVersion, Migration } from './migrations/util';
-import { VERSION_FIELD } from './version-field';
+import { expectVersion, Migration } from './util';
+import { VERSION_FIELD } from '../version-field';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type MockV0State = {
