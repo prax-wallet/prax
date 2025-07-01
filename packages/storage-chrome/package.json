@@ -13,11 +13,13 @@
     ".": "./src/index.ts",
     "./base": "./src/base.ts",
     "./local": "./src/local.ts",
+    "./migrations": "./src/migrations/index.ts",
     "./onboard": "./src/onboard.ts",
     "./origin": "./src/origin.ts",
     "./session": "./src/session.ts",
-    "./migrations": "./src/migrations/index.ts",
-    "./types": "./src/types.ts"
+    "./records": "./src/records/index.ts",
+    "./encryption": "./src/encryption/index.ts",
+    "./wallet": "./src/records/wallet.ts"
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "18.0.0",
@@ -26,10 +28,7 @@
   },
   "devDependencies": {
     "@penumbra-labs/registry": "^12.7.2",
-    "@penumbra-zone/bech32m": "18.0.0",
-    "@penumbra-zone/crypto-web": "47.0.0",
     "@penumbra-zone/getters": "28.0.0",
-    "@penumbra-zone/protobuf": "11.0.0",
     "@penumbra-zone/types": "36.0.0",
     "@penumbra-zone/wasm": "53.0.0",
     "@types/chrome": "0.0.270",

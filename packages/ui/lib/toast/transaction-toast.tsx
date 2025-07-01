@@ -9,7 +9,7 @@ import { Progress } from '../../components/ui/progress';
 import { ReactNode } from 'react';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import { TRANSACTION_LABEL_BY_CLASSIFICATION } from '@penumbra-zone/perspective/transaction/classify';
-import { shorten } from '@penumbra-zone/types/string';
+import { shorten } from '../utils';
 
 type BroadcastStatus = BroadcastTransactionResponse['status'];
 type BuildStatus = (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'];

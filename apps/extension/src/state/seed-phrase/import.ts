@@ -1,10 +1,6 @@
 import { AllSlices, SliceCreator } from '..';
 import { SeedPhraseSlice } from '.';
-import {
-  isInWordList,
-  SeedPhraseLength,
-  validateSeedPhrase,
-} from '@penumbra-zone/crypto-web/mnemonic';
+import { isInWordList, SeedPhraseLength, validateSeedPhrase } from './mnemonic';
 
 export interface ImportFields {
   phrase: string[];

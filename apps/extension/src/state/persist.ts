@@ -3,8 +3,8 @@ import { AllSlices } from '.';
 import { produce } from 'immer';
 
 import { localExtStorage } from '@repo/storage-chrome/local';
-import { OriginRecord } from '@repo/storage-chrome/origin';
-import { walletsFromJson } from '@penumbra-zone/types/wallet';
+import { OriginRecord } from '@repo/storage-chrome/records';
+import { walletsFromJson } from '@repo/storage-chrome/wallet';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 
 export type Middleware = <

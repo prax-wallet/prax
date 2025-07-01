@@ -1,6 +1,5 @@
 import { ViewBox } from '../viewbox';
 import { ActionDetails } from './action-details';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import {
   PositionOpen,
   PositionState_PositionStateEnum,
@@ -9,6 +8,7 @@ import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../tooltip';
 import { InfoIcon } from 'lucide-react';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 
 export const PositionOpenComponent = ({ value }: { value: PositionOpen }) => {
   return (

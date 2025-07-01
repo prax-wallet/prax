@@ -1,5 +1,5 @@
 import { ExtensionStorage } from './base';
-import { KeyJson } from '@penumbra-zone/crypto-web/encryption';
+import { KeyJson } from './encryption/key';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- storage schema should be `type` and not `interface`
 export type SessionStorageState = { passwordKey?: KeyJson };

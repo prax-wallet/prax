@@ -3,7 +3,7 @@ import { AllSlices, initializeStore } from '.';
 import { vi, beforeEach, describe, expect, test } from 'vitest';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { UserChoice } from '@repo/storage-chrome/records';
 
 const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
 const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;

@@ -6,7 +6,7 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { viewClient } from '../clients';
 import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { UserChoice } from '@repo/storage-chrome/records';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 
@@ -18,7 +18,7 @@ import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v
 import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
-import type { LocalStorageState } from '@repo/storage-chrome/types';
+import type { LocalStorageState } from '@repo/storage-chrome/local';
 import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
 
 export interface TxApprovalSlice {

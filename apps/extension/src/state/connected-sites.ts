@@ -1,5 +1,6 @@
 import { ExtensionStorage } from '@repo/storage-chrome/base';
-import { LocalStorageState, OriginRecord } from '@repo/storage-chrome/types';
+import { LocalStorageState } from '@repo/storage-chrome/local';
+import { OriginRecord } from '@repo/storage-chrome/records';
 import { AllSlices, SliceCreator } from '.';
 
 export interface ConnectedSitesSlice {

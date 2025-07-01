@@ -1,6 +1,6 @@
-import { LocalStorageState } from '@repo/storage-chrome/types';
+import type { LocalStorageState } from '@repo/storage-chrome/local';
+import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import { AllSlices, SliceCreator } from '.';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
 import { Stringified } from '@penumbra-zone/types/jsonified';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
