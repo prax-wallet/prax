@@ -1,4 +1,4 @@
-import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { UserChoice } from '@repo/storage-chrome/records';
 import { AllSlices, SliceCreator } from '.';
 import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
 

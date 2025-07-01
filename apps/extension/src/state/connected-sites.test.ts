@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { OriginRecord } from '@repo/storage-chrome/types';
+import { OriginRecord } from '@repo/storage-chrome/records';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { UserChoice } from '@repo/storage-chrome/records';
 import { allSitesFilteredOutSelector } from './connected-sites';
 
 const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;

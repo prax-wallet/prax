@@ -1,12 +1,8 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { webcrypto } from 'crypto';
-import type { WalletCreate } from '@penumbra-zone/types/wallet';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
-
-vi.stubGlobal('crypto', webcrypto);
 
 const seedPhrase1 = [
   'road',
@@ -56,7 +52,7 @@ describe('Accounts Slice', () => {
 
   describe('addWallet()', () => {
     test('throws if no password in storage', async () => {
-      const accountA: WalletCreate = {
+      const accountA = {
         label: 'Account #1',
         seedPhrase: seedPhrase1,
       };
@@ -65,7 +61,7 @@ describe('Accounts Slice', () => {
 
     test('accounts can be added', async () => {
       await useStore.getState().password.setPassword('user_password_123');
-      const accountA: WalletCreate = {
+      const accountA = {
         label: 'Account #1',
         seedPhrase: seedPhrase1,
       };
@@ -78,7 +74,7 @@ describe('Accounts Slice', () => {
       expect(accountsPt1.length).toBe(1);
       expect(accountsPt1.at(0)!.label).toBe(accountA.label);
 
-      const accountB: WalletCreate = {
+      const accountB = {
         label: 'Account #2',
         seedPhrase: seedPhrase2,
       };
@@ -99,7 +95,7 @@ describe('Accounts Slice', () => {
     test('seed phrase can be return', async () => {
       await useStore.getState().password.setPassword('user_password_123');
       const initialSeedPhrase = seedPhrase1;
-      const accountA: WalletCreate = {
+      const accountA = {
         label: 'Account #1',
         seedPhrase: initialSeedPhrase,
       };
@@ -115,7 +111,7 @@ describe('Accounts Slice', () => {
       const password = 'user_password_123';
       await useStore.getState().password.setPassword(password);
       const initialSeedPhrase = seedPhrase1;
-      const accountA: WalletCreate = {
+      const accountA = {
         label: 'Account #1',
         seedPhrase: initialSeedPhrase,
       };

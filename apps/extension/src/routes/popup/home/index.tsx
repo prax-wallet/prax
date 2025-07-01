@@ -1,7 +1,7 @@
 import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { SelectAccount } from '@repo/ui/components/ui/select';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
-import { Wallet } from '@penumbra-zone/types/wallet';
+import { Wallet } from '@repo/storage-chrome/wallet';
 import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
