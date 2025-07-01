@@ -1,13 +1,13 @@
-import { Key } from '@penumbra-zone/crypto-web/encryption';
-import { Wallet, WalletCreate } from '@penumbra-zone/types/wallet';
+import { Key } from '@repo/storage-chrome/encryption';
+import { Wallet } from '@repo/storage-chrome/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
-import { LocalStorageState } from '@repo/storage-chrome/types';
+import type { ExtensionStorage } from '@repo/storage-chrome/base';
+import type { LocalStorageState } from '@repo/storage-chrome/local';
 import { AllSlices, SliceCreator } from '.';
 
 export interface WalletsSlice {
   all: Wallet[];
-  addWallet: (toAdd: WalletCreate) => Promise<Wallet>;
+  addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<Wallet>;
   getSeedPhrase: () => Promise<string[]>;
 }
 

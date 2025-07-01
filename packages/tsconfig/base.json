@@ -23,7 +23,8 @@
     "noUnusedParameters": true,
     "resolveJsonModule": true,
     "target": "ESNext",
-    "module": "preserve"
+    "module": "esnext",
+    "moduleResolution": "bundler"
   },
   "exclude": ["node_modules"]
 }
