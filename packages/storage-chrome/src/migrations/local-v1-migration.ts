@@ -1,134 +1,91 @@
-import { LocalStorageState, OriginRecord } from '../types';
-import { MigrationFn } from '../base';
-import { WalletJson } from '@penumbra-zone/types/wallet';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
-import { KeyPrintJson } from '@penumbra-zone/crypto-web/encryption';
-import { Stringified } from '@penumbra-zone/types/jsonified';
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import type * as FROM from '../versions/v0';
+import type * as TO from '../versions/v1';
+import { MAINNET, REGISTRY, expectVersion, type Migration } from './util';
+
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { walletIdFromBech32m } from '@penumbra-zone/bech32m/penumbrawalletid';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { sample } from 'lodash';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import sample from 'lodash/sample';
 
-export enum V0LocalStorageVersion {
-  V1 = 'V1',
-  V2 = 'V2',
-}
+type MIGRATION = Migration<FROM.VERSION, FROM.LOCAL, TO.VERSION, TO.LOCAL>;
 
-interface StorageItem<T> {
-  version: V0LocalStorageVersion;
-  value: T;
-}
+export default {
+  version: v => expectVersion(v, 0, 1),
+  transform: old => ({
+    wallets: migrateWallets(old.wallets) ?? [],
+    grpcEndpoint: isMainnet(old.params)
+      ? validateOrReplaceEndpoint(old.grpcEndpoint)
+      : old.grpcEndpoint?.value,
+    frontendUrl: validateOrReplaceFrontend(old.frontendUrl),
+    passwordKeyPrint: old.passwordKeyPrint?.value,
+    fullSyncHeight: old.fullSyncHeight?.value,
+    knownSites: old.knownSites?.value ?? [],
+    params: old.params?.value,
+    numeraires: old.numeraires?.value ?? [],
+  }),
+} satisfies MIGRATION;
 
-// Note: previous local storage used to key a version on each individual field
-export interface V0LocalStorageState {
-  wallets?: StorageItem<WalletJson[]>;
-  grpcEndpoint?: StorageItem<string | undefined>;
-  frontendUrl?: StorageItem<string | undefined>;
-  passwordKeyPrint?: StorageItem<KeyPrintJson | undefined>;
-  fullSyncHeight?: StorageItem<number | undefined>;
-  knownSites?: StorageItem<OriginRecord[]>;
-  params?: StorageItem<Stringified<AppParameters> | undefined>;
-  numeraires?: StorageItem<Stringified<AssetId>[]>;
-}
+const isMainnet = (oldParams: FROM.LOCAL['params']) =>
+  MAINNET === (oldParams?.value && AppParameters.fromJsonString(oldParams.value).chainId);
 
-// Update LocalStorageState to V1LocalStorageState if there is a version bump
-export const localV0Migration: MigrationFn<V0LocalStorageState, LocalStorageState> = v0 => {
-  return {
-    dbVersion: 1,
-    wallets:
-      v0.wallets?.version === V0LocalStorageVersion.V1
-        ? migrateFvkType(v0.wallets)
-        : (v0.wallets?.value ?? []),
-    grpcEndpoint: validateOrReplaceEndpoint(v0.grpcEndpoint?.value, v0.params?.value),
-    frontendUrl: validateOrReplaceFrontend(v0.frontendUrl?.value),
-    passwordKeyPrint: v0.passwordKeyPrint?.value,
-    fullSyncHeight: v0.fullSyncHeight?.value,
-    knownSites: v0.knownSites?.value ?? [],
-    params: v0.params?.value,
-    numeraires: v0.numeraires?.value ?? [],
-    walletCreationBlockHeight: undefined,
-    compactFrontierBlockHeight: undefined,
-    backupReminderSeen: undefined,
-  };
-};
-
-const migrateFvkType = (wallets: V0LocalStorageState['wallets']): WalletJson[] => {
-  if (!wallets) {
-    return [];
+const migrateWallets = (wallets?: FROM.LOCAL['wallets']) => {
+  if (!wallets || !Array.isArray(wallets.value) || !wallets.value.length) {
+    return;
   }
 
-  return wallets.value.map(({ fullViewingKey, id, label, custody }) => {
-    const fvk = new FullViewingKey(fullViewingKeyFromBech32m(fullViewingKey));
-    const walletId = new WalletId(walletIdFromBech32m(id));
-    return {
-      fullViewingKey: fvk.toJsonString(),
-      id: walletId.toJsonString(),
-      label,
-      custody,
-    };
-  });
+  switch (wallets.version) {
+    case 'V1':
+      return wallets.value.map(({ fullViewingKey, id, label, custody }) => {
+        const fvk = fullViewingKeyFromBech32m(fullViewingKey);
+        const walletId = walletIdFromBech32m(id);
+        return {
+          fullViewingKey: new FullViewingKey(fvk).toJsonString(),
+          id: new WalletId(walletId).toJsonString(),
+          label,
+          custody,
+        };
+      });
+    case 'V2':
+      return wallets.value;
+    default: {
+      wallets satisfies never;
+      throw new TypeError(
+        `Unknown legacy wallet version: ${String((wallets as { version?: unknown }).version)}`,
+        { cause: wallets },
+      );
+    }
+  }
 };
 
 // A one-time migration to suggested grpcUrls
 // Context: https://github.com/prax-wallet/web/issues/166
-const validateOrReplaceEndpoint = (
-  oldEndpoint: string | undefined,
-  jsonStrParams: Stringified<AppParameters> | undefined,
-): string | undefined => {
+const validateOrReplaceEndpoint = (oldEndpoint: FROM.LOCAL['grpcEndpoint']) => {
   // If they don't have one set, it's likely they didn't go through onboarding
-  if (!oldEndpoint) {
-    return oldEndpoint;
+  if (!oldEndpoint?.value) {
+    return;
   }
 
-  // Ensure they are connected to mainnet
-  const chainId = jsonStrParams ? AppParameters.fromJsonString(jsonStrParams).chainId : undefined;
+  const suggestedEndpoints = REGISTRY.rpcs.map(({ url }) => url);
 
-  if (chainId !== 'penumbra-1') {
-    return oldEndpoint;
-  }
-
-  const registryClient = new ChainRegistryClient();
-  const { rpcs } = registryClient.bundled.globals();
-
-  const suggestedEndpoints = rpcs.map(i => i.url);
-  // They are already using a suggested endpoint
-  if (suggestedEndpoints.includes(oldEndpoint)) {
-    return oldEndpoint;
-  }
-
-  // Else give them one at random
-  const randomSuggestedEndpoint = sample(suggestedEndpoints);
-  if (!randomSuggestedEndpoint) {
-    return oldEndpoint;
-  }
-
-  return randomSuggestedEndpoint;
+  return (
+    (suggestedEndpoints.includes(oldEndpoint.value)
+      ? oldEndpoint.value
+      : sample(suggestedEndpoints)) ?? oldEndpoint.value
+  );
 };
 
 // A one-time migration to suggested frontends
 // Context: https://github.com/prax-wallet/web/issues/166
-const validateOrReplaceFrontend = (frontendUrl?: string): string | undefined => {
+const validateOrReplaceFrontend = (frontendUrl: FROM.LOCAL['frontendUrl']) => {
   // If they don't have one set, it's likely they didn't go through onboarding
-  if (!frontendUrl) {
-    return frontendUrl;
+  if (!frontendUrl?.value) {
+    return;
   }
 
-  const registryClient = new ChainRegistryClient();
-  const { frontends } = registryClient.bundled.globals();
+  const suggestedFrontends = REGISTRY.frontends.map(({ url }) => url);
 
-  const suggestedFrontends = frontends.map(i => i.url);
-  // They are already using a suggested frontend
-  if (suggestedFrontends.includes(frontendUrl)) {
-    return frontendUrl;
-  }
-
-  // Else give them one at random
-  const randomSuggestedFrontend = sample(suggestedFrontends);
-  if (!randomSuggestedFrontend) {
-    return frontendUrl;
-  }
-
-  return randomSuggestedFrontend;
+  return suggestedFrontends.includes(frontendUrl.value)
+    ? frontendUrl.value
+    : (sample(suggestedFrontends) ?? frontendUrl.value);
 };
