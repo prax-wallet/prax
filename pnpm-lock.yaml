@@ -101,9 +101,6 @@ importers:
       '@penumbra-zone/client':
         specifier: 28.1.1
         version: 28.1.1(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.6.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.2)
-      '@penumbra-zone/crypto-web':
-        specifier: 46.0.1
-        version: 46.0.1(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 27.0.1
         version: 27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
@@ -207,6 +204,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
+      bip39:
+        specifier: ^3.1.0
+        version: 3.1.0
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -270,9 +270,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: 17.0.1
         version: 17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/crypto-web':
-        specifier: 46.0.1
-        version: 46.0.1(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 27.0.1
         version: 27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
@@ -354,9 +351,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: 17.0.1
         version: 17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/crypto-web':
-        specifier: 46.0.1
-        version: 46.0.1(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 27.0.1
         version: 27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
@@ -388,15 +382,15 @@ importers:
       '@penumbra-labs/registry':
         specifier: ^12.7.2
         version: 12.7.2
-      '@penumbra-zone/crypto-web':
-        specifier: 46.0.1
-        version: 46.0.1(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 27.0.1
         version: 27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/types':
         specifier: 34.2.0
         version: 34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/wasm':
+        specifier: 51.0.1
+        version: 51.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@34.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@27.0.1(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@17.0.1(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@10.1.1(@bufbuild/protobuf@1.10.0)))
       '@types/chrome':
         specifier: 0.0.270
         version: 0.0.270

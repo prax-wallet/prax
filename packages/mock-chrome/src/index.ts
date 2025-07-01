@@ -1,2 +1,2 @@
-export * as storage from './storage.js';
-export * as runtime from './runtime.js';
+export * as storage from './storage';
+export * as runtime from './runtime';
