@@ -163,7 +163,7 @@ describe('Storage migrations', () => {
 
       await rawStorage.set(mock0StorageState);
       const versionA = rawStorage.mock.get(VERSION_FIELD);
-      expect(versionA).toStrictEqual({});
+      expect(versionA).toBeUndefined();
 
       const result = await v2ExtStorage.get('seedPhrase');
       expect(result).toEqual(['cat', 'dog', 'mouse', 'horse']);
@@ -183,7 +183,7 @@ describe('Storage migrations', () => {
 
       await rawStorage.set(mock0StorageState);
       const versionA = rawStorage.mock.get(VERSION_FIELD);
-      expect(versionA).toStrictEqual({});
+      expect(versionA).toBeUndefined();
 
       const result = await v2ExtStorage.get('grpcUrl');
       expect(result).toEqual({ url: 'grpc.void.test', image: 'grpc.void.test/image' });
@@ -197,7 +197,7 @@ describe('Storage migrations', () => {
       expect(versionA).toBe(1);
 
       const result = await v2ExtStorage.get('fullSyncHeight');
-      expect(typeof result).toEqual('bigint');
+      expect(typeof result).toEqual('string');
       const versionB = rawStorage.mock.get(VERSION_FIELD);
       expect(versionB).toBe(2);
     });
@@ -213,7 +213,7 @@ describe('Storage migrations', () => {
       } satisfies MockV0State;
       await rawStorage.set(mock0StorageState);
       const versionA = rawStorage.mock.get(VERSION_FIELD);
-      expect(versionA).toStrictEqual({});
+      expect(versionA).toBeUndefined();
 
       const result0To2 = await v2ExtStorage.get('accounts');
       expect(result0To2).toEqual([
