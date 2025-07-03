@@ -1,20 +1,23 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { LocalStorageState, OriginRecord } from '@repo/storage-chrome/types';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
+import { OriginRecord } from '@repo/storage-chrome/types';
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { allSitesFilteredOutSelector } from './connected-sites';
 import { localTestDefaults } from '../utils/test-constants';
 
+const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
+const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
+
 describe('Connected Sites Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
-  let localStorage: ExtensionStorage<LocalStorageState>;
 
   beforeEach(() => {
-    localStorage = mockLocalExtStorage();
-    useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), localStorage));
+    localMock.clear();
+    sessionMock.clear();
+    useStore = create<AllSlices>()(initializeStore(sessionExtStorage, localExtStorage));
   });
 
   test('the default is populated from local storage', () => {
@@ -62,7 +65,7 @@ describe('Connected Sites Slice', () => {
           useStore.getState().connectedSites.discardKnownSite(deletant),
         ).resolves.not.toThrow();
 
-        await expect(localStorage.get('knownSites')).resolves.toEqual([]);
+        await expect(localExtStorage.get('knownSites')).resolves.toEqual([]);
       });
 
       test('discarding unknown site has no effect on storage', async () => {

@@ -8,7 +8,8 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./mocks/storage-area": "./src/mocks/storage-area.ts"
   },
   "devDependencies": {
     "@types/chrome": "0.0.270",
