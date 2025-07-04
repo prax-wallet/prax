@@ -30,6 +30,7 @@ const CASE_TO_LABEL: Record<Case, string> = {
   ics20Withdrawal: 'ICS20 Withdrawal',
   positionClose: 'Position Close',
   positionOpen: 'Position Open',
+  positionOpenView: 'Position Open View',
   positionRewardClaim: 'Position Reward Claim',
   positionWithdraw: 'Position Withdraw',
   proposalDepositClaim: 'Proposal Deposit Claim',
@@ -127,6 +128,9 @@ export const ActionViewComponent = ({
 
     case 'positionOpen':
       return <PositionOpenComponent value={actionView.value} />;
+
+    case 'positionOpenView':
+      return <UnimplementedView label='Position Open View' />;
 
     case 'positionClose':
       return <PositionCloseComponent value={actionView.value} />;

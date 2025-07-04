@@ -142,6 +142,7 @@ export class Services implements ServicesInterface {
       numeraires,
       walletCreationBlockHeight,
       compactFrontierBlockHeight,
+      fullViewingKey,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };
