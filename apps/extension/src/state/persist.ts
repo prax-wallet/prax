@@ -3,9 +3,8 @@ import { AllSlices } from '.';
 import { produce } from 'immer';
 
 import { localExtStorage, LocalStorageState } from '@repo/storage-chrome/local';
-import { OriginRecord } from '@repo/storage-chrome/records';
+import { OriginRecord, Wallet } from '@repo/storage-chrome/records';
 import { sessionExtStorage, SessionStorageState } from '@repo/storage-chrome/session';
-import { walletsFromJson } from '@repo/storage-chrome/wallet';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 
 export type Middleware = <
@@ -36,7 +35,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
     set(
       produce((state: AllSlices) => {
         state.password.key = passwordKey;
-        state.wallets.all = walletsFromJson(wallets);
+        state.wallets.all = wallets.map(wallet => Wallet.fromJson(wallet));
         state.network.grpcEndpoint = grpcEndpoint;
         state.connectedSites.knownSites = knownSites;
         state.defaultFrontend.url = frontendUrl;
@@ -63,7 +62,7 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
     const wallets = changes['wallets'].newValue as LocalStorageState['wallets'] | undefined;
     set(
       produce((state: AllSlices) => {
-        state.wallets.all = wallets ? walletsFromJson(wallets) : [];
+        state.wallets.all = (wallets ?? []).map(wallet => Wallet.fromJson(wallet));
       }),
     );
   }

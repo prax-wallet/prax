@@ -1,6 +1,17 @@
 import type { ChromeStorageListener } from './listener';
 import { localExtStorage, type LocalStorageState } from './local';
-import { WalletJson } from './records/wallet';
+
+export interface WalletRecord {
+  id: string;
+  label: string;
+  fullViewingKey: string;
+  custody: {
+    encryptedSeedPhrase: {
+      cipherText: string;
+      nonce: string;
+    };
+  };
+}
 
 /**
  * When a user first onboards with the extension, they won't have chosen a gRPC
@@ -25,7 +36,7 @@ export const onboardGrpcEndpoint = async (): Promise<string> => {
   });
 };
 
-export const onboardWallet = async (): Promise<WalletJson> => {
+export const onboardWallet = async (): Promise<WalletRecord> => {
   const wallets = await localExtStorage.get('wallets');
   if (wallets[0]) {
     return wallets[0];
