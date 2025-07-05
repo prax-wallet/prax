@@ -49,7 +49,7 @@ const getAddrByIndex =
       throw new Error('No active wallet');
     }
 
-    const fullViewingKey = FullViewingKey.fromJsonString(wallet.fullViewingKey);
+    const fullViewingKey = new FullViewingKey(wallet.fullViewingKey);
     return ephemeral
       ? getEphemeralByIndex(fullViewingKey, index)
       : getAddressByIndex(fullViewingKey, index);

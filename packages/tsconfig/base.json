@@ -25,6 +25,5 @@
     "target": "ESNext",
     "module": "esnext",
     "moduleResolution": "bundler"
-  },
-  "exclude": ["node_modules"]
+  }
 }

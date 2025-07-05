@@ -2,6 +2,7 @@
   "extends": "@repo/tsconfig/base.json",
   "include": ["src", "vitest.config.ts", "tests-setup.ts"],
   "compilerOptions": {
-    "lib": ["WebWorker", "DOM", "ESNext"]
+    "lib": ["WebWorker", "DOM", "ESNext"],
+    "types": ["chrome"]
   }
 }

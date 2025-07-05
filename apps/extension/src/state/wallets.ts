@@ -9,7 +9,6 @@ import { AllSlices, SliceCreator } from '.';
 export interface WalletsSlice {
   all: Wallet[];
   addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<Wallet>;
-  getSeedPhrase: () => Promise<string[]>;
 }
 
 export const createWalletsSlice =
@@ -33,12 +32,7 @@ export const createWalletsSlice =
         const key = await Key.fromJson(passwordKey);
         const encryptedSeedPhrase = await key.seal(seedPhraseStr);
         const walletId = getWalletId(fullViewingKey);
-        const newWallet = new Wallet(
-          label,
-          walletId.toJsonString(),
-          fullViewingKey.toJsonString(),
-          { encryptedSeedPhrase },
-        );
+        const newWallet = new Wallet(label, walletId, fullViewingKey, { encryptedSeedPhrase });
 
         set(state => {
           state.wallets.all.unshift(newWallet);
