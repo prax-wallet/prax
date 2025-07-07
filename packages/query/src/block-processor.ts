@@ -914,13 +914,20 @@ export class BlockProcessor implements BlockProcessorInterface {
       );
     }
     if (action.case === 'positionClose' && action.value.positionId) {
+      // Request position metadata and slot it in when closing the position.
+      const position = await this.indexedDb.getPositionMetadataById(action.value.positionId);
+
       await this.indexedDb.updatePosition(
         action.value.positionId,
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
         subaccount,
+        position?.positionMetadata,
       );
     }
     if (action.case === 'positionWithdraw' && action.value.positionId) {
+      // Request position metadata and slot it in when withdrawing the position.
+      const position = await this.indexedDb.getPositionMetadataById(action.value.positionId);
+
       // Record the LPNFT for the current sequence number.
       const positionState = new PositionState({
         state: PositionState_PositionStateEnum.WITHDRAWN,
@@ -933,7 +940,12 @@ export class BlockProcessor implements BlockProcessorInterface {
         penumbraAssetId: getAssetId(metadata),
       });
 
-      await this.indexedDb.updatePosition(action.value.positionId, positionState, subaccount);
+      await this.indexedDb.updatePosition(
+        action.value.positionId,
+        positionState,
+        subaccount,
+        position?.positionMetadata,
+      );
     }
   }
 
