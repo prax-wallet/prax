@@ -891,9 +891,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         });
       }
 
-      // Optionally decrypt position metadata by calling TS wrapper that invokes wasm decryption method.
+      // Optionally, decrypt position metadata by calling TS wrapper that invokes wasm decryption method.
       let decryptedPositionMetadata: PositionMetadata | undefined;
-      if (action.value.encryptedMetadata) {
+      if (action.value.encryptedMetadata.length !== 0) {
         try {
           decryptedPositionMetadata = decryptPositionMetadata(
             this.fullViewingKey,
