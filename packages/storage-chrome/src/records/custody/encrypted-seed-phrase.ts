@@ -27,7 +27,7 @@ class CustodyEncryptedSeedPhrase implements CustodyEncryptedSeedPhraseInstance {
   private async getSpendKey() {
     const passKeyJson = await sessionExtStorage.get('passwordKey');
     if (!passKeyJson) {
-      throw new ReferenceError('No session key');
+      throw new ReferenceError('No session password');
     }
     const passKey = await Key.fromJson(passKeyJson);
 
