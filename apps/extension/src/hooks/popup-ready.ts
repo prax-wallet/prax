@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PopupRequest, PopupResponse, PopupType, typeOfPopupRequest } from '../message/popup';
 import { useStore } from '../state';
 import { listenPopup } from '../message/listen-popup';
@@ -11,18 +11,26 @@ const handlePopup = async <T extends PopupType>(
   // get popup slice acceptRequest method
   const state = useStore.getState();
   const acceptRequest: {
-    [k in PopupType]: (request: PopupRequest<k>[k]) => Promise<PopupResponse<k>[k]>;
+    [k in PopupType]: (
+      request: PopupRequest<k>[k],
+      sender?: chrome.runtime.MessageSender,
+    ) => Promise<PopupResponse<k>[k]>;
   } = {
     [PopupType.TxApproval]: state.txApproval.acceptRequest,
     [PopupType.OriginApproval]: state.originApproval.acceptRequest,
+    [PopupType.LoginPrompt]: state.loginPrompt.acceptRequest,
   };
 
-  // handle via slice
-  const popupResponse = {
-    [popupType]: await acceptRequest[popupType](popupRequest[popupType]),
-  } as PopupResponse<T>;
-
-  return popupResponse;
+  try {
+    // handle via slice
+    const popupResponse = {
+      [popupType]: await acceptRequest[popupType](popupRequest[popupType], popupRequest.sender),
+    } as PopupResponse<T>;
+    return popupResponse;
+  } catch (e) {
+    console.error('PopupReady', e);
+    throw e;
+  }
 };
 
 /**
@@ -33,19 +41,36 @@ const handlePopup = async <T extends PopupType>(
  * and eventually used by components to respond with the dialog result.
  */
 export const usePopupReady = () => {
-  const sentReady = useRef(new Set());
-  const attachedListeners = useRef(new Set());
+  const io = useRef<{
+    listen?: ReturnType<typeof listenPopup>;
+    send?: Promise<unknown>;
+  }>({ listen: undefined, send: undefined });
+
+  const [popupId, setPopupId] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+
+  const getReady = useCallback((id: string) => {
+    if (!io.current.listen) {
+      io.current.listen = listenPopup(id, handlePopup);
+    }
+
+    if (!chrome.runtime.onMessage.hasListener(io.current.listen)) {
+      chrome.runtime.onMessage.addListener(io.current.listen);
+    }
+
+    if (!io.current.send) {
+      io.current.send = chrome.runtime.sendMessage(id);
+      return true;
+    }
+
+    throw new Error('Unreachable');
+  }, []);
 
   useEffect(() => {
-    if (!sentReady.current.size && !attachedListeners.current.size) {
-      const popupId = new URLSearchParams(window.location.search).get('id');
-      if (popupId) {
-        const listener = listenPopup(popupId, handlePopup);
-        chrome.runtime.onMessage.addListener(listener);
-        attachedListeners.current.add(listener);
-        void chrome.runtime.sendMessage(popupId);
-        sentReady.current.add(popupId);
-      }
+    if (!popupId) {
+      setPopupId(new URLSearchParams(window.location.search).get('id'));
+    } else if (!ready) {
+      setReady(getReady(popupId));
     }
-  }, [sentReady, attachedListeners, handlePopup]);
+  }, [popupId, ready]);
 };

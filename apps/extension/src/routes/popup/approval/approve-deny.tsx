@@ -1,17 +1,18 @@
 import { Button } from '@repo/ui/components/ui/button';
-import { useWindowCountdown } from './use-window-countdown';
+import { useAntiClickjackDelay } from '../../../shared/utils/anti-clickjack';
 
 export const ApproveDeny = ({
   approve,
   deny,
   ignore,
+  antiClickjack,
 }: {
   approve: () => void;
   deny: () => void;
   ignore?: () => void;
-  wait?: number;
+  antiClickjack?: number;
 }) => {
-  const count = useWindowCountdown();
+  const delay = useAntiClickjackDelay(antiClickjack);
 
   return (
     <div
@@ -27,9 +28,9 @@ export const ApproveDeny = ({
         className='w-1/2 py-3.5 text-base'
         size='lg'
         onClick={approve}
-        disabled={count > 0}
+        disabled={delay > 0}
       >
-        Approve
+        Approve {delay > 0 && `(${delay})`}
       </Button>
       <Button
         className='w-1/2 py-3.5 text-base hover:bg-destructive/90'

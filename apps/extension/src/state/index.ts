@@ -14,6 +14,7 @@ import { createOriginApprovalSlice, OriginApprovalSlice } from './origin-approva
 import { ConnectedSitesSlice, createConnectedSitesSlice } from './connected-sites';
 import { createDefaultFrontendSlice, DefaultFrontendSlice } from './default-frontend';
 import { createNumerairesSlice, NumerairesSlice } from './numeraires';
+import { createLoginPromptSlice, LoginPromptSlice } from './login-prompt';
 
 export interface AllSlices {
   wallets: WalletsSlice;
@@ -25,6 +26,7 @@ export interface AllSlices {
   originApproval: OriginApprovalSlice;
   connectedSites: ConnectedSitesSlice;
   defaultFrontend: DefaultFrontendSlice;
+  loginPrompt: LoginPromptSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -45,9 +47,10 @@ export const initializeStore = (
     network: createNetworkSlice(local)(setState, getState, store),
     numeraires: createNumerairesSlice(local)(setState, getState, store),
     connectedSites: createConnectedSitesSlice(local)(setState, getState, store),
-    txApproval: createTxApprovalSlice(local)(setState, getState, store),
+    txApproval: createTxApprovalSlice()(setState, getState, store),
     originApproval: createOriginApprovalSlice()(setState, getState, store),
     defaultFrontend: createDefaultFrontendSlice(local)(setState, getState, store),
+    loginPrompt: createLoginPromptSlice()(setState, getState, store),
   }));
 };
 
