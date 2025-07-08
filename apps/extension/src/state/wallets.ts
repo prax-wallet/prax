@@ -8,7 +8,6 @@ import { AllSlices, SliceCreator } from '.';
 export interface WalletsSlice {
   all: Wallet[];
   addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<Wallet>;
-  getSeedPhrase: () => Promise<string[]>;
 }
 
 export const createWalletsSlice =
@@ -29,12 +28,7 @@ export const createWalletsSlice =
         const key = await Key.fromJson(passwordKey);
         const encryptedSeedPhrase = await key.seal(seedPhraseStr);
         const walletId = getWalletId(fullViewingKey);
-        const newWallet = new Wallet(
-          label,
-          walletId.toJsonString(),
-          fullViewingKey.toJsonString(),
-          { encryptedSeedPhrase },
-        );
+        const newWallet = new Wallet(label, walletId, fullViewingKey, { encryptedSeedPhrase });
 
         set(state => {
           state.wallets.all.unshift(newWallet);
@@ -43,25 +37,6 @@ export const createWalletsSlice =
         const wallets = await local.get('wallets');
         await local.set('wallets', [newWallet.toJson(), ...wallets]);
         return newWallet;
-      },
-      getSeedPhrase: async () => {
-        const passwordKey = get().password.key;
-        if (!passwordKey) {
-          throw new Error('no password set');
-        }
-
-        const key = await Key.fromJson(passwordKey);
-        const activeWallet = getActiveWallet(get());
-        if (!activeWallet) {
-          throw new Error('no wallet set');
-        }
-
-        const decryptedSeedPhrase = await key.unseal(activeWallet.custody.encryptedSeedPhrase);
-        if (!decryptedSeedPhrase) {
-          throw new Error('Unable to decrypt seed phrase with password');
-        }
-
-        return decryptedSeedPhrase.split(' ');
       },
     };
   };
