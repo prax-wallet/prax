@@ -47,9 +47,18 @@ export class MockStorageArea implements chrome.storage.StorageArea {
     return Promise.resolve(this.mock.size);
   }
 
-  async remove(key: string) {
-    console.debug('MockStorageArea.remove', key);
-    this.mock.delete(key);
+  async remove(query: string | string[]) {
+    console.debug('MockStorageArea.remove', query);
+    if (typeof query === 'string') {
+      this.mock.delete(query);
+      return Promise.resolve();
+    } else if (Array.isArray(query)) {
+      for (const key of query) {
+        this.mock.delete(key);
+      }
+    } else {
+      throw new TypeError('Invalid query');
+    }
     return Promise.resolve();
   }
 
