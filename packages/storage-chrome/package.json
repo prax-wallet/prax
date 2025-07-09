@@ -17,13 +17,12 @@
     "./onboard": "./src/onboard.ts",
     "./origin": "./src/origin.ts",
     "./session": "./src/session.ts",
-    "./records": "./src/records/index.ts",
-    "./encryption": "./src/encryption/index.ts",
-    "./wallet": "./src/records/wallet.ts"
+    "./records": "./src/records/index.ts"
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "18.0.0",
     "@penumbra-zone/protobuf": "11.0.0",
+    "@repo/wallet": "workspace:*",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

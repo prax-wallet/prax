@@ -1,5 +1,5 @@
-// Hash a password with PBKDF2 using a provided salt
-// Meant to hinder brute force or dictionary attacks
+// Hash a password with PBKDF2 using a provided salt.
+// Meant to hinder brute force or dictionary attacks.
 export const keyStretchingHash = async (password: string, salt: Uint8Array): Promise<CryptoKey> => {
   const enc = new TextEncoder();
   const importedKey = await crypto.subtle.importKey(

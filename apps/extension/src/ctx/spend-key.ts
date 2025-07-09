@@ -1,5 +1,5 @@
 import { Code, ConnectError } from '@connectrpc/connect';
-import { Box, Key } from '@repo/storage-chrome/encryption';
+import { Box, Key } from '@repo/wallet/encryption';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { generateSpendKey } from '@penumbra-zone/wasm/keys';

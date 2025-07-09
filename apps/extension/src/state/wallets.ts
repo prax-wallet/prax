@@ -1,5 +1,5 @@
-import { Key } from '@repo/storage-chrome/encryption';
-import { Wallet } from '@repo/storage-chrome/wallet';
+import { Key } from '@repo/wallet/encryption';
+import { Wallet } from '@repo/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';

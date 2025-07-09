@@ -1,12 +1,5 @@
-import { Box, BoxJson } from '../encryption/box';
-
-// Stored in chrome.local.storage
-export interface WalletJson {
-  id: string;
-  label: string;
-  fullViewingKey: string;
-  custody: { encryptedSeedPhrase: BoxJson };
-}
+import { Box } from './encryption/box';
+import type { WalletJson } from './record';
 
 export class Wallet {
   constructor(
@@ -33,6 +26,3 @@ export class Wallet {
     };
   }
 }
-
-export const walletsFromJson = (wallets: WalletJson[]): Wallet[] =>
-  wallets.map(w => Wallet.fromJson(w));

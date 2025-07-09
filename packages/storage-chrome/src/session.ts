@@ -1,5 +1,5 @@
 import { ExtensionStorage } from './base';
-import { KeyJson } from './encryption/key';
+import { KeyJson } from '@repo/wallet/record';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- storage schema should be `type` and not `interface`
 export type SessionStorageState = { passwordKey?: KeyJson };

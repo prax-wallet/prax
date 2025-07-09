@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { Wallet, WalletJson } from './wallet';
-import { Box } from '../encryption/box';
+import { Wallet } from './wallet';
+import { WalletJson } from './record';
+import { Box } from './encryption/box';
 
 describe('Wallet', () => {
   const mockBox = new Box(

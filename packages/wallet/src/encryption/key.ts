@@ -1,13 +1,9 @@
 import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { Box } from './box';
 import { keyStretchingHash, encrypt, decrypt } from './encryption';
+import { KeyJson, KeyPrintJson } from '../record';
 
-export interface KeyPrintJson {
-  hash: string;
-  salt: string;
-}
 // Used to recreate the original key material
-
 export class KeyPrint {
   constructor(
     readonly hash: Uint8Array,
@@ -25,14 +21,11 @@ export class KeyPrint {
     };
   }
 }
+
 const uintArraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
   a.length === b.length && a.every((num, i) => b[i] === num);
 
-export interface KeyJson {
-  _inner: JsonWebKey;
-}
 // Private key used to encrypt & decrypt messages. Do not expose publicly.
-
 export class Key {
   private constructor(private readonly key: CryptoKey) {}
 
