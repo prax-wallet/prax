@@ -1,24 +1,25 @@
 # Custody
 
+Onboarding generates or imports a seed phrase, then prompts the user to create a password.
+
 ### Password
 
-new API
-in-memory password key in zustand
-await session.set('passwordKey', key);
-await local.set('passwordKeyPrint', keyPrint.toJson());
+The user's password is keystretched via `PBKDF2` to improve entropy, deriving a `Key` and `KeyPrint`.
+The `KeyPrint` is a salted digest of `Key`, and is stored persistently.
 
-When setting up for the first time, you'll need to set a password.
+When the user unlocks Prax, the input password is used to re-derive a `Key` confirmed to match the `KeyPrint`.
+A successfully derived `Key` is held in temporary session storage until the session ends.
 
-This password is hashed via `PBKDF2`, see [keyStretchingHash() function](../packages/crypto/src/encryption.ts).
-It utilizes a pseudorandom function along with a salt value and iteration. The use of a salt provides protection against pre-computed attacks such as rainbow tables, and the iteration count slows down brute-force attacks.
+### Wallet
 
-The password `Key` (private key material) is stored in `chrome.storage.session` used for deriving spending keys for wallets later.
+The seed phrase is sealed by the `Key` into an encrypted `Box` container, which is stored persistently.
+The actual `Box` is managed by the [`Wallet`](../packages/wallet/src/wallet.ts) class, with associated data.
 
-The password `KeyPrint` (public hash/salt) is stored in `chrome.storage.local` to later validate logins when session storage is wiped.
+When Prax needs to authorize activity, the `Box` is unsealed by the `Key` to reveal the seed phrase for further key derivation.
 
-### New wallet
-
-Upon importing or generating a new seed phrase, it is:
-
-- Encrypted using `AES-GCM`, see [encrypt() function](../packages/crypto/src/encryption.ts)
-- `Box` (nonce/ciphertext) is stored in `chrome.storage.local` for later decryption
+| Component                                             | Storage                                           | Purpose                     |
+| ----------------------------------------------------- | ------------------------------------------------- | --------------------------- |
+| [`Wallet`](../packages/wallet/src/wallet.ts)          | persistent `chrome.storage.local`                 | Contains `Box` and metadata |
+| [`Box`](../packages/encryption/src/box.ts)            | persistent `chrome.storage.local` inside `Wallet` | Encrypted record            |
+| [`KeyPrint`](../packages/encryption/src/key-print.ts) | persistent `chrome.storage.local`                 | Key record                  |
+| [`Key`](../packages/encryption/src/key.ts)            | temporary `chrome.storage.session`                | Derived key                 |
