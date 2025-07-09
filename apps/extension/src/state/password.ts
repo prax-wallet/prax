@@ -1,5 +1,6 @@
 import { AllSlices, SliceCreator } from '.';
-import { Key, KeyJson, KeyPrint } from '@repo/storage-chrome/encryption';
+import { Key, KeyPrint } from '@repo/wallet/encryption';
+import type { KeyJson } from '@repo/wallet/record';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
 import type { SessionStorageState } from '@repo/storage-chrome/session';

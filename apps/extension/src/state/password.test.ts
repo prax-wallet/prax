@@ -3,7 +3,7 @@ import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { localExtStorage } from '@repo/storage-chrome/local';
-import { Key, KeyPrint } from '@repo/storage-chrome/encryption';
+import { Key, KeyPrint } from '@repo/wallet/encryption';
 
 const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
 const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;

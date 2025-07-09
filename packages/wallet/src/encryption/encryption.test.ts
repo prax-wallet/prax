@@ -2,8 +2,6 @@ import { describe, expect, test } from 'vitest';
 import { Key, KeyPrint } from './key';
 import { Box } from './box';
 
-// NOTE: To have the most accurate representation, these the web crypto API tests run in a browser environment
-
 describe('encryption', () => {
   describe('Key', () => {
     const password = 's0meUs3rP@ssword';

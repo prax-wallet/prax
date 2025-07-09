@@ -1,0 +1,25 @@
+{
+  "name": "@repo/wallet",
+  "version": "0.0.1",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
+  "exports": {
+    ".": "./src/wallet.ts",
+    "./encryption": "./src/encryption/index.ts",
+    "./record": "./src/record.ts"
+  },
+  "dependencies": {
+    "@penumbra-zone/bech32m": "17.0.1",
+    "@penumbra-zone/protobuf": "10.1.1"
+  },
+  "devDependencies": {
+    "@penumbra-zone/types": "34.2.0",
+    "@penumbra-zone/wasm": "51.0.1",
+    "@types/chrome": "0.0.270"
+  }
+}
