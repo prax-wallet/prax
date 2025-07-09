@@ -1,6 +1,6 @@
 import type { ChromeStorageListener } from './listener';
 import { localExtStorage, type LocalStorageState } from './local';
-import { WalletJson } from './records/wallet';
+import { WalletJson } from '@repo/wallet/record';
 
 /**
  * When a user first onboards with the extension, they won't have chosen a gRPC
