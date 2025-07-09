@@ -1,8 +1,9 @@
 import { Code, ConnectError } from '@connectrpc/connect';
-import { Box, Key } from '@repo/wallet/encryption';
+import { generateSpendKey } from '@penumbra-zone/wasm/keys';
+import { Box } from '@repo/encryption/box';
+import { Key } from '@repo/encryption/key';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
-import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 
 export const getSpendKey = async () => {
   const passKeyJson = await sessionExtStorage.get('passwordKey');

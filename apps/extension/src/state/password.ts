@@ -1,5 +1,6 @@
+import { Key } from '@repo/encryption/key';
+import { KeyPrint } from '@repo/encryption/key-print';
 import { AllSlices, SliceCreator } from '.';
-import { Key, KeyPrint } from '@repo/wallet/encryption';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
 import type { SessionStorageState } from '@repo/storage-chrome/session';
@@ -20,7 +21,6 @@ export const createPasswordSlice =
   ): SliceCreator<PasswordSlice> =>
   () => {
     return {
-      key: undefined,
       setPassword: async password => {
         const { key, keyPrint } = await Key.create(password);
         const keyJson = await key.toJson();

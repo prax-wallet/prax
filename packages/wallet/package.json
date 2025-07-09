@@ -9,17 +9,16 @@
     "test": "vitest run"
   },
   "exports": {
-    ".": "./src/wallet.ts",
-    "./encryption": "./src/encryption/index.ts",
-    "./record": "./src/record.ts"
+    ".": "./src/wallet.ts"
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "18.0.0",
     "@penumbra-zone/protobuf": "11.0.0"
   },
   "devDependencies": {
-    "@penumbra-zone/types": "35.0.0",
-    "@penumbra-zone/wasm": "52.0.0",
+    "@penumbra-zone/types": "36.0.0",
+    "@penumbra-zone/wasm": "53.0.0",
+    "@repo/encryption": "workspace:*",
     "@types/chrome": "0.0.270"
   }
 }

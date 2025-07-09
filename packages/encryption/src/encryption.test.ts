@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { Key, KeyPrint } from './key';
+import { Key } from './key';
+import { KeyPrint } from './key-print';
 import { Box } from './box';
 
 describe('encryption', () => {
