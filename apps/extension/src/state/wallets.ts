@@ -1,4 +1,4 @@
-import { Key } from '@repo/wallet/encryption';
+import { Key } from '@repo/encryption/key';
 import { Wallet } from '@repo/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';

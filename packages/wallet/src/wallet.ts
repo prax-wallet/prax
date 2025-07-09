@@ -1,5 +1,11 @@
-import { Box } from './encryption/box';
-import type { WalletJson } from './record';
+import { Box, type BoxJson } from '@repo/encryption/box';
+
+export interface WalletJson {
+  id: string;
+  label: string;
+  fullViewingKey: string;
+  custody: { encryptedSeedPhrase: BoxJson };
+}
 
 export class Wallet {
   constructor(

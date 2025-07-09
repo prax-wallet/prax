@@ -1,5 +1,10 @@
 import { uint8ArrayToBase64, base64ToUint8Array } from '@penumbra-zone/types/base64';
-import type { BoxJson } from '../record';
+
+// Public, stored representation of Box
+export interface BoxJson {
+  nonce: string;
+  cipherText: string;
+}
 
 // Represents the encrypted data
 export class Box {

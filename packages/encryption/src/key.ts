@@ -1,29 +1,15 @@
-import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { Box } from './box';
-import { keyStretchingHash, encrypt, decrypt } from './encryption';
-import { KeyJson, KeyPrintJson } from '../record';
-
-// Used to recreate the original key material
-export class KeyPrint {
-  constructor(
-    readonly hash: Uint8Array,
-    readonly salt: Uint8Array,
-  ) {}
-
-  static fromJson(json: KeyPrintJson): KeyPrint {
-    return new KeyPrint(base64ToUint8Array(json.hash), base64ToUint8Array(json.salt));
-  }
-
-  toJson(): KeyPrintJson {
-    return {
-      hash: uint8ArrayToBase64(this.hash),
-      salt: uint8ArrayToBase64(this.salt),
-    };
-  }
-}
+import { decrypt } from './decrypt';
+import { encrypt } from './encrypt';
+import { keyStretchingHash } from './key-stretching';
+import { KeyPrint } from './key-print';
 
 const uintArraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
   a.length === b.length && a.every((num, i) => b[i] === num);
+
+export interface KeyJson {
+  _inner: JsonWebKey;
+}
 
 // Private key used to encrypt & decrypt messages. Do not expose publicly.
 export class Key {
@@ -56,10 +42,10 @@ export class Key {
     return new Key(key);
   }
 
-  static async fromJson(jwk: KeyJson): Promise<Key> {
+  static async fromJson(keyJson: KeyJson): Promise<Key> {
     const key = await crypto.subtle.importKey(
       'jwk',
-      jwk._inner,
+      keyJson._inner,
       { name: 'AES-GCM', length: 256 },
       false,
       ['encrypt', 'decrypt'],
