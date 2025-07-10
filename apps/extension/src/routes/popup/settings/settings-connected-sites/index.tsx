@@ -1,9 +1,8 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Input } from '@repo/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../../icons/link-gradient';
-import { OriginRecord } from '@repo/storage-chrome/types';
+import { OriginRecord, UserChoice } from '@repo/storage-chrome/records';
 import { AllSlices, useStore } from '../../../../state';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { SettingsScreen } from '../settings-screen';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
 import { allSitesFilteredOutSelector } from '../../../../state/connected-sites';

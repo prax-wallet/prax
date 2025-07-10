@@ -19,7 +19,6 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-labs/registry": "^12.7.2",
     "@penumbra-zone/bech32m": "17.0.1",
-    "@penumbra-zone/crypto-web": "46.0.1",
     "@penumbra-zone/getters": "27.0.1",
     "@penumbra-zone/keys": "4.2.3",
     "@penumbra-zone/perspective": "60.0.1",

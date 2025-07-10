@@ -1,11 +1,5 @@
 import { localExtStorage } from './local';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
-
-export interface OriginRecord {
-  origin: string;
-  choice: UserChoice;
-  date: number;
-}
+import { OriginRecord } from './records/known-site';
 
 export const getOriginRecord = async (getOrigin?: string): Promise<OriginRecord | undefined> => {
   if (!getOrigin) {

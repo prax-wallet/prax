@@ -1,12 +1,10 @@
+import { Key } from '@repo/encryption/key';
+import { KeyPrint } from '@repo/encryption/key-print';
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { Key, KeyPrint } from '@penumbra-zone/crypto-web/encryption';
-import { webcrypto } from 'crypto';
-import { sessionExtStorage } from '@repo/storage-chrome/session';
-import { localExtStorage } from '@repo/storage-chrome/local';
-
-vi.stubGlobal('crypto', webcrypto);
 
 const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
 const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;

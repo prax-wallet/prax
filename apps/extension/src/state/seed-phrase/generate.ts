@@ -1,11 +1,11 @@
-import { AllSlices, SliceCreator } from '..';
 import { SeedPhraseSlice } from '.';
+import { AllSlices, SliceCreator } from '..';
 import {
   generateSeedPhrase,
   generateValidationFields,
-  SeedPhraseLength,
   ValidationField,
-} from '@penumbra-zone/crypto-web/mnemonic';
+  type SeedPhraseLength,
+} from './mnemonic';
 
 export interface GenerateFields {
   phrase: string[];

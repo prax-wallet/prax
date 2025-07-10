@@ -1,6 +1,6 @@
 import { AllSlices, SliceCreator } from '.';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
-import { LocalStorageState } from '@repo/storage-chrome/types';
+import type { ExtensionStorage } from '@repo/storage-chrome/base';
+import type { LocalStorageState } from '@repo/storage-chrome/local';
 
 export interface DefaultFrontendSlice {
   url?: string;
