@@ -9,7 +9,7 @@ interface MockState {
   accounts: {
     label: string;
   }[];
-  fullSyncHeight: number;
+  fullSyncHeight?: number;
 }
 
 describe('Base storage default instantiation', () => {
@@ -77,7 +77,9 @@ describe('Base storage default instantiation', () => {
   });
 
   test('remove throws error when attempting to remove dbVersion', async () => {
-    await expect(extStorage.remove('dbVersion')).rejects.toThrow('Cannot remove dbVersion');
+    await expect(extStorage.remove('dbVersion' as never)).rejects.toThrow(
+      'Cannot remove dbVersion',
+    );
   });
 
   test('remove maintains concurrency and locks', async () => {
@@ -90,5 +92,12 @@ describe('Base storage default instantiation', () => {
     const networkValue = await promise3;
 
     expect(networkValue).toBe('testnet');
+  });
+
+  test('set throws TypeError for no-op values', async () => {
+    await expect(extStorage.set('fullSyncHeight', undefined)).rejects.toThrow(TypeError);
+    await expect(extStorage.set('fullSyncHeight', NaN)).rejects.toThrow(TypeError);
+    await expect(extStorage.set('fullSyncHeight', Infinity)).rejects.toThrow(TypeError);
+    await expect(extStorage.set('fullSyncHeight', -Infinity)).rejects.toThrow(TypeError);
   });
 });
