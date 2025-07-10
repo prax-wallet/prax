@@ -6,8 +6,8 @@ import {
 import type { JsonValue } from '@bufbuild/protobuf';
 import type { ActionBuildRequest } from '@penumbra-zone/types/internal-msg/offscreen';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-
 import actionKeys from '@penumbra-zone/keys';
+
 const keyFileNames: Partial<Record<Exclude<Action['action']['case'], undefined>, URL>> =
   Object.fromEntries(
     Object.entries(actionKeys).map(([action, keyFile]) => [
@@ -60,13 +60,16 @@ async function executeWorker(
 
   const actionType = transactionPlan.actions[actionPlanIndex]!.action.case!;
 
+  // Remapping only for the proving-key loader
+  const actionCase = actionType === 'positionOpenPlan' ? 'positionOpen' : actionType;
+
   // Build action according to specification in `TransactionPlan`
   const action = await penumbraWasmModule.buildActionParallel(
     transactionPlan,
     witness,
     fullViewingKey,
     actionPlanIndex,
-    keyFileNames[actionType]?.href,
+    keyFileNames[actionCase]?.href,
   );
 
   return action.toJson();
