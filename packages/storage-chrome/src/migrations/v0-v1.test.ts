@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { ExtensionStorage } from '../base';
 import * as Storage_V0 from '../versions/v0';
 import * as Storage_V1 from '../versions/v1';
-import localV0Migration from './local-v1-migration';
+import localV0Migration from './v0-v1';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { VERSION_FIELD } from '../version-field';
 
