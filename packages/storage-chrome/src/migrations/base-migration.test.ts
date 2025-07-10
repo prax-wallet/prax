@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { MockStorageArea } from '../mock';
+import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { ExtensionStorage, RequiredMigrations } from '../base';
 import { localV0Migration } from './local-v1-migration';
 
@@ -20,13 +20,14 @@ interface MockV1State {
   network: string; // stayed the same
   seedPhrase: string[]; // Changed data structure
   accounts: {
-    // label: string; // Removed field
+    // label: string; // changed structure
     encryptedSeedPhrase: string; // stayed the same
-    viewKey: string; // added new field
+    viewKey: string; // changed structure
   }[];
   frontend: string; // async set value
   grpcUrl: { url: string }; // changes data structure
   fullSyncHeight: number; // Stays the same
+  temporaryField: string; // added field
 }
 
 interface MockV2State {
@@ -34,13 +35,14 @@ interface MockV2State {
   network: string; // stayed the same
   seedPhrase: string[]; // stayed the same
   accounts: {
+    spendKey: string; // changed structure
     encryptedSeedPhrase: string; // stayed the same
-    viewKey: string; // added new field
-    spendKey: string; // added new field
+    viewKey: string; // stayed the same
   }[];
   frontend: string; // stayed the same
   grpcUrl: { url: string; image: string }; // adds new field within data structure
   fullSyncHeight: bigint; // only in v3 does it change type
+  // temporaryField: string; // removed field
 }
 
 const mockV0toV1Migration = async (prev: MockV0State): Promise<MockV1State> => {
@@ -60,6 +62,7 @@ const mockV0toV1Migration = async (prev: MockV0State): Promise<MockV1State> => {
     frontend: !prev.frontend ? 'https://pfrontend.void' : prev.frontend,
     grpcUrl: { url: prev.grpcUrl ?? '' },
     fullSyncHeight: prev.fullSyncHeight,
+    temporaryField: 'migrated value',
   };
 };
 
@@ -101,6 +104,7 @@ describe('Storage migrations', () => {
         frontend: 'http://default.com',
         grpcUrl: { url: '' },
         fullSyncHeight: 0,
+        temporaryField: 'default value',
       },
       version: {
         current: 1,
@@ -206,7 +210,7 @@ describe('Storage migrations', () => {
       expect(versionB).toBe(2);
     });
 
-    test('get works with removed/added fields', async () => {
+    test('get works on a changed data structure', async () => {
       const mock0StorageState: Record<string, unknown> = {
         network: '',
         accounts: [{ label: 'account #1', encryptedSeedPhrase: '12345' }],
@@ -229,6 +233,34 @@ describe('Storage migrations', () => {
       ]);
       const versionB = await v2ExtStorage.get('dbVersion');
       expect(versionB).toBe(2);
+    });
+
+    test('get works with fields that are added and then removed', async () => {
+      const mock0StorageState: Record<string, unknown> = {
+        network: '',
+        accounts: [{ label: 'account #1', encryptedSeedPhrase: '12345' }],
+        seedPhrase: 'cat dog mouse horse',
+        frontend: 'http://default.com',
+        grpcUrl: 'grpc.void.test',
+        fullSyncHeight: 0,
+      } satisfies MockV0State;
+
+      await rawStorage.set(mock0StorageState);
+
+      // First, trigger v0 to v1 migration
+      await v1ExtStorage.get('accounts');
+
+      const rawDeprecatedV1 = await rawStorage.get('temporaryField');
+      expect(rawDeprecatedV1).toStrictEqual({
+        temporaryField: 'migrated value',
+      });
+
+      // Then trigger v1 to v2 migration
+      await v2ExtStorage.get('accounts');
+
+      // Verify the 'temporaryField' (which existed in v1 but not in v2) is not present
+      const rawDeprecatedV2 = await rawStorage.get('temporaryField');
+      expect(rawDeprecatedV2).toStrictEqual({});
     });
 
     test('from a different version, the migration is different', async () => {
@@ -307,6 +339,7 @@ describe('Storage migrations', () => {
           frontend: 'http://default.com',
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
+          temporaryField: 'test value',
         },
         version: {
           current: 1,
@@ -343,6 +376,7 @@ describe('Storage migrations', () => {
           frontend: 'http://default.com',
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
+          temporaryField: 'test value',
         },
         version: {
           current: 1,
@@ -393,6 +427,7 @@ describe('Storage migrations', () => {
           frontend: 'http://default.com',
           grpcUrl: { url: '' },
           fullSyncHeight: 0,
+          temporaryField: 'test value',
         },
         version: {
           current: 1,

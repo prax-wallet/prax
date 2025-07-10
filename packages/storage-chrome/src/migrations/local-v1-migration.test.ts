@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { MockStorageArea } from '../mock';
+import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { ExtensionStorage } from '../base';
 import { localDefaults } from '../local';
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';

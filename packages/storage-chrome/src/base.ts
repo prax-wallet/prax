@@ -4,18 +4,6 @@ export type Listener = (
   changes: Record<string, { oldValue?: unknown; newValue?: unknown }>,
 ) => void;
 
-export interface IStorage {
-  get(keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>>;
-  getBytesInUse(keys?: string | string[] | null): Promise<number>;
-  set(items: Record<string, unknown>): Promise<void>;
-  remove(key: string): Promise<void>;
-  clear(): Promise<void>;
-  onChanged: {
-    addListener(listener: Listener): void;
-    removeListener(listener: Listener): void;
-  };
-}
-
 /**
  * To be imported in order to define a migration from the previous schema to the new one
  * Note: If one adds an optional field (newField: string | undefined), a migration is not necessary.
@@ -55,13 +43,13 @@ export interface Version {
 }
 
 export interface ExtensionStorageProps<T extends { dbVersion: number }> {
-  storage: IStorage;
+  storage: chrome.storage.StorageArea;
   defaults: ExtensionStorageDefaults<T>;
   version: Version;
 }
 
 export class ExtensionStorage<T extends { dbVersion: number }> {
-  private readonly storage: IStorage;
+  private readonly storage: chrome.storage.StorageArea;
   private readonly defaults: ExtensionStorageDefaults<T>;
   private readonly version: Version;
 
@@ -96,6 +84,10 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * Not allowed to manually update dbversion.
    */
   async set<K extends Exclude<keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
+    if (value === undefined || Number.isNaN(value) || value === Infinity || value === -Infinity) {
+      throw new TypeError(`Forbidden no-op set of ${String(value)}`, { cause: { key, value } });
+    }
+
     await this.withDbLock(async () => {
       await this._set({ [key]: value } as Record<K, T[K]>);
     });
