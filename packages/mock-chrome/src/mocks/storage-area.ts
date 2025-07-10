@@ -65,8 +65,10 @@ export class MockStorageArea implements chrome.storage.StorageArea {
   async set(items: Record<string, unknown>) {
     console.debug('MockStorageArea.set', items);
     for (const [key, value] of Object.entries(items)) {
-      // In chrome storage, setting undefined values is a no-op
-      if (value !== undefined) {
+      // In chrome storage, setting certain values is a no-op
+      if (
+        !(value === undefined || Number.isNaN(value) || value === Infinity || value === -Infinity)
+      ) {
         this.mock.set(key, value);
       }
     }

@@ -84,6 +84,10 @@ export class ExtensionStorage<T extends { dbVersion: number }> {
    * Not allowed to manually update dbversion.
    */
   async set<K extends Exclude<keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
+    if (value === undefined || Number.isNaN(value) || value === Infinity || value === -Infinity) {
+      throw new TypeError(`Forbidden no-op set of ${String(value)}`, { cause: { key, value } });
+    }
+
     await this.withDbLock(async () => {
       await this._set({ [key]: value } as Record<K, T[K]>);
     });
