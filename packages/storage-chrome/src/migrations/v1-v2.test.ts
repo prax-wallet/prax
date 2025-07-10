@@ -5,8 +5,8 @@ import { VERSION_FIELD } from '../version-field';
 import * as Storage_V1 from '../versions/v1';
 import * as Storage_V2 from '../versions/v2';
 import * as Storage_V0 from '../versions/v0';
-import localV1Migration from './local-v1-migration';
-import localV2Migration from './local-v2-migration';
+import localV1Migration from './v0-v1';
+import localV2Migration from './v1-v2';
 
 type DirtyState = Partial<{
   [K in keyof Storage_V0.LOCAL | keyof Storage_V1.LOCAL]: K extends keyof Storage_V0.LOCAL
