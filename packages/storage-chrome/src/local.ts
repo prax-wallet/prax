@@ -1,5 +1,5 @@
 import { ExtensionStorage, ExtensionStorageDefaults } from './base';
-import { VERSION as LocalStorageVersion, LOCAL as LocalStorageState } from './versions/v1';
+import { VERSION as LocalStorageVersion, LOCAL as LocalStorageState } from './versions/v2';
 
 const localDefaults: ExtensionStorageDefaults<LocalStorageState> = {
   wallets: [],
@@ -10,7 +10,7 @@ const localDefaults: ExtensionStorageDefaults<LocalStorageState> = {
 export const localExtStorage = new ExtensionStorage<LocalStorageState, LocalStorageVersion>(
   chrome.storage.local,
   localDefaults,
-  1,
+  2,
 );
 
 export type { LocalStorageState, LocalStorageVersion };
