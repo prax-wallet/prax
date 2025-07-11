@@ -8,7 +8,7 @@ import { onboardGrpcEndpoint, onboardWallet } from '@repo/storage-chrome/onboard
 import { Services } from '@repo/context';
 import { WalletServices } from '@penumbra-zone/types/services';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { isSentinel, SENTINEL_U64_MAX } from './utils/sentinal';
+import { SENTINEL_U64_MAX } from './utils/sentinel';
 
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
