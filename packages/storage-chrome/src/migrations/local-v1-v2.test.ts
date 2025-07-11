@@ -4,8 +4,8 @@ import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { VERSION_FIELD } from '../version-field';
 import * as Storage_V1 from '../versions/v1';
 import * as Storage_V2 from '../versions/v2';
-import localV1Migration from './v0-v1';
-import localV2Migration from './v1-v2';
+import local_v0_v1 from './local-v0-v1';
+import local_v1_v2 from './local-v1-v2';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 
 const storageArea = new MockStorageArea();
@@ -38,7 +38,7 @@ describe('v2 local schema migrations', () => {
       storageArea,
       requiredData,
       2,
-      { 0: localV1Migration, 1: localV2Migration },
+      { 0: local_v0_v1, 1: local_v1_v2 },
     );
   });
 
