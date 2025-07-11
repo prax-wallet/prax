@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { ExtensionStorage } from '../base';
 import * as Storage_V0 from '../versions/v0';
 import * as Storage_V1 from '../versions/v1';
-import localV0Migration from './v0-v1';
+import local_v0_v1 from './local-v0-v1';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { VERSION_FIELD } from '../version-field';
 
@@ -34,7 +34,7 @@ describe('v1 old local schema migrations', () => {
       storageArea,
       { wallets: [], knownSites: [], numeraires: [] },
       1,
-      { 0: localV0Migration },
+      { 0: local_v0_v1 },
     );
   });
 
@@ -109,7 +109,7 @@ describe('v1 old schema: migrate walletId and fullViewingKey', () => {
       storageArea,
       { wallets: [], knownSites: [], numeraires: [] },
       1,
-      { 0: localV0Migration },
+      { 0: local_v0_v1 },
     );
   });
 
@@ -188,7 +188,7 @@ describe('v2 old schema: validate grpc & frontendUrl', () => {
       storageArea,
       { wallets: [], knownSites: [], numeraires: [] },
       1,
-      { 0: localV0Migration },
+      { 0: local_v0_v1 },
     );
   });
 
