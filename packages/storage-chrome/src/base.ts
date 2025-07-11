@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- log migrations */
 import { ChromeStorageListener } from './listener';
 import { Migration } from './migrations/type';
 import { VERSION_FIELD } from './version-field';
@@ -166,9 +167,13 @@ export class ExtensionStorage<
     let [mVersion, mState] = [initialVersion, initialState];
 
     let migrate = undefined;
+    console.group(`migrating ${initialVersion} to ${this.version}`);
     while ((migrate = this.migrations?.[mVersion])) {
+      console.log('from', mVersion, mState);
       [mVersion, mState] = [migrate.version(mVersion), await migrate.transform(mState)];
     }
+    console.log('stopped', mVersion, mState);
+    console.groupEnd();
 
     // confirm resulting version
     if (mVersion !== this.version) {
