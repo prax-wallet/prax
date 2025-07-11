@@ -8,7 +8,7 @@ import { onboardGrpcEndpoint, onboardWallet } from '@repo/storage-chrome/onboard
 import { Services } from '@repo/context';
 import { WalletServices } from '@penumbra-zone/types/services';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { isSentinel } from './utils/sentinal';
+import { SENTINEL_U64_MAX } from './utils/sentinel';
 
 export const startWalletServices = async () => {
   const wallet = await onboardWallet();
@@ -67,13 +67,13 @@ const getChainId = async (baseUrl: string) => {
 const syncLastBlockToStorage = async ({ indexedDb }: Pick<WalletServices, 'indexedDb'>) => {
   const dbHeight = await indexedDb.getFullSyncHeight();
 
-  if (!isSentinel(dbHeight)) {
+  if (dbHeight != null && dbHeight !== SENTINEL_U64_MAX) {
     await localExtStorage.set('fullSyncHeight', Number(dbHeight));
   }
 
   const sub = indexedDb.subscribe('FULL_SYNC_HEIGHT');
   for await (const { value } of sub) {
-    if (!isSentinel(value)) {
+    if (value !== SENTINEL_U64_MAX) {
       await localExtStorage.set('fullSyncHeight', Number(value));
     }
   }
