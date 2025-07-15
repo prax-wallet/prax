@@ -18,37 +18,20 @@ export default {
     frontendUrl: typeof old.frontendUrl === 'string' ? old.frontendUrl : undefined,
     params: typeof old.params === 'string' ? old.params : undefined,
 
-    // passwordKeyPrint is unlikely to have failed a migration, but it should
-    // never be dropped, so is handled carefully
-    passwordKeyPrint: migratePasswordKeyPrint(old.passwordKeyPrint),
+    // no scenario is identified in which passwordKeyPrint could have failed a
+    // migration. but it should never be dropped, so is handled carefully
+    passwordKeyPrint: isVestigialItem(old.passwordKeyPrint)
+      ? old.passwordKeyPrint.value
+      : old.passwordKeyPrint,
   }),
 } satisfies MIGRATION;
 
-const migratePasswordKeyPrint = (x: unknown): { hash: string; salt: string } | undefined => {
-  // this is very unlikely, but theoretically possible
-  const unwrapped = isVestigialItem(x) ? x.value : x;
-
-  if (unwrapped == null) {
-    // no password is set
-    return undefined;
-  }
-
-  if (isKeyPrintJson(unwrapped)) {
-    // password is set
-    return unwrapped;
-  }
-
-  // this should never happen. there's no safe way to recover
-  console.error('Invalid passwordKeyPrint', x);
-  throw new TypeError(`Invalid passwordKeyPrint type ${typeof x}`, { cause: x });
-};
-
-const isKeyPrintJson = (x: unknown): x is { hash: string; salt: string } =>
-  typeof x === 'object' && x !== null && 'hash' in x && 'salt' in x;
-
-const isVestigialItem = (x: unknown): x is { version: 'V1' | 'V2'; value?: unknown } =>
+const isVestigialItem = <T>(
+  x?: T | { version: 'V1' | 'V2'; value?: T },
+): x is { version: 'V1' | 'V2'; value?: T } =>
   typeof x === 'object' &&
   x !== null &&
   'version' in x &&
   typeof x.version === 'string' &&
+  // possible legacy versions
   ['V1', 'V2'].includes(x.version);
