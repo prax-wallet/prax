@@ -1,6 +1,7 @@
 import { AssetId, Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AuctionId } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import {
+  PositionMetadata,
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
@@ -30,7 +31,11 @@ import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import type { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
-import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
+import {
+  computePositionId,
+  getLpNftMetadata,
+  decryptPositionMetadata,
+} from '@penumbra-zone/wasm/dex';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { backOff } from 'exponential-backoff';
 import { updatePricesFromSwaps } from './helpers/price-indexer';
@@ -38,7 +43,11 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
 import { RootQuerier } from './root-querier';
-import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressIndex,
+  FullViewingKey,
+  IdentityKey,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 import { toPlainMessage } from '@bufbuild/protobuf';
 import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
@@ -78,6 +87,7 @@ interface QueryClientProps {
   genesisBlock: CompactBlock | undefined;
   walletCreationBlockHeight: number | undefined;
   compactFrontierBlockHeight: number | undefined;
+  fullViewingKey: FullViewingKey;
 }
 
 interface ProcessBlockParams {
@@ -104,6 +114,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly genesisBlock: CompactBlock | undefined;
   private readonly walletCreationBlockHeight: number | undefined;
   private readonly compactFrontierBlockHeight: number | undefined;
+  private readonly fullViewingKey: FullViewingKey;
 
   constructor({
     indexedDb,
@@ -114,6 +125,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     genesisBlock,
     walletCreationBlockHeight,
     compactFrontierBlockHeight,
+    fullViewingKey,
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
@@ -123,6 +135,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.genesisBlock = genesisBlock;
     this.walletCreationBlockHeight = walletCreationBlockHeight;
     this.compactFrontierBlockHeight = compactFrontierBlockHeight;
+    this.fullViewingKey = fullViewingKey;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
@@ -877,22 +890,44 @@ export class BlockProcessor implements BlockProcessorInterface {
           penumbraAssetId: getAssetId(metadata),
         });
       }
+
+      // Optionally, decrypt position metadata by calling TS wrapper that invokes wasm decryption method.
+      let decryptedPositionMetadata: PositionMetadata | undefined;
+      if (action.value.encryptedMetadata.length !== 0) {
+        try {
+          decryptedPositionMetadata = decryptPositionMetadata(
+            this.fullViewingKey,
+            action.value.encryptedMetadata,
+          );
+        } catch (err) {
+          console.warn('Failed to decrypt position metadata:', err);
+        }
+      }
+
       // to optimize on-chain storage PositionId is not written in the positionOpen action,
       // but can be computed via hashing of immutable position fields
       await this.indexedDb.addPosition(
         computePositionId(action.value.position),
         action.value.position,
+        decryptedPositionMetadata,
         subaccount,
       );
     }
     if (action.case === 'positionClose' && action.value.positionId) {
+      // Request position metadata and slot it in when closing the position.
+      const position = await this.indexedDb.getPositionMetadataById(action.value.positionId);
+
       await this.indexedDb.updatePosition(
         action.value.positionId,
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
         subaccount,
+        position?.positionMetadata,
       );
     }
     if (action.case === 'positionWithdraw' && action.value.positionId) {
+      // Request position metadata and slot it in when withdrawing the position.
+      const position = await this.indexedDb.getPositionMetadataById(action.value.positionId);
+
       // Record the LPNFT for the current sequence number.
       const positionState = new PositionState({
         state: PositionState_PositionStateEnum.WITHDRAWN,
@@ -905,7 +940,12 @@ export class BlockProcessor implements BlockProcessorInterface {
         penumbraAssetId: getAssetId(metadata),
       });
 
-      await this.indexedDb.updatePosition(action.value.positionId, positionState, subaccount);
+      await this.indexedDb.updatePosition(
+        action.value.positionId,
+        positionState,
+        subaccount,
+        position?.positionMetadata,
+      );
     }
   }
 
