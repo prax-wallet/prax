@@ -1,27 +1,10 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
+import { getSpendKey } from './spend-key';
 
-const localExtStorage = mockLocalExtStorage();
-const sessionExtStorage = mockSessionExtStorage();
-
-vi.doMock('@repo/storage-chrome/local', async importOriginal => {
-  const mod = await importOriginal<typeof import('@repo/storage-chrome/local')>();
-  return {
-    ...mod,
-    localExtStorage,
-  };
-});
-
-vi.doMock('@repo/storage-chrome/session', async importOriginal => {
-  const mod = await importOriginal<typeof import('@repo/storage-chrome/session')>();
-  return {
-    ...mod,
-    sessionExtStorage,
-  };
-});
-
-// needs to be imported after storage mocks are set up
-const { getSpendKey } = await import('./spend-key');
+const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
+const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
 
 describe('Authorize request handler', () => {
   const sk0 = {
@@ -57,6 +40,8 @@ describe('Authorize request handler', () => {
 
   beforeEach(async () => {
     vi.resetAllMocks();
+    localMock.clear();
+    sessionMock.clear();
     await localExtStorage.set('wallets', [wallet0]);
     await sessionExtStorage.set('passwordKey', pw);
   });
@@ -70,7 +55,7 @@ describe('Authorize request handler', () => {
   });
 
   test('should fail if user is not logged in extension', async () => {
-    await sessionExtStorage.set('passwordKey', undefined);
+    await sessionExtStorage.remove('passwordKey');
     await expect(getSpendKey()).rejects.toThrow('User must login');
   });
 

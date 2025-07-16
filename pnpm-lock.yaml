@@ -50,6 +50,9 @@ importers:
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1
+      navigator.locks:
+        specifier: ^0.8.6
+        version: 0.8.6
       playwright:
         specifier: ^1.49.1
         version: 1.49.1
@@ -371,22 +374,26 @@ importers:
         version: 3.1.1
 
   packages/storage-chrome:
+    dependencies:
+      '@penumbra-zone/bech32m':
+        specifier: 18.0.0
+        version: 18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf':
+        specifier: 11.0.0
+        version: 11.0.0(@bufbuild/protobuf@1.10.0)
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
     devDependencies:
       '@penumbra-labs/registry':
         specifier: ^12.7.2
         version: 12.7.2
-      '@penumbra-zone/bech32m':
-        specifier: 18.0.0
-        version: 18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/crypto-web':
         specifier: 47.0.0
         version: 47.0.0(@penumbra-zone/types@35.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 28.0.0
         version: 28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf':
-        specifier: 11.0.0
-        version: 11.0.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/types':
         specifier: 35.0.0
         version: 35.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
@@ -396,12 +403,6 @@ importers:
       '@types/lodash':
         specifier: ^4.17.13
         version: 4.17.13
-      immer:
-        specifier: ^10.1.1
-        version: 10.1.1
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
 
   packages/tailwind-config:
     dependencies:
@@ -6077,6 +6078,9 @@ packages:
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
+
+  navigator.locks@0.8.6:
+    resolution: {integrity: sha512-3ykNHTGTGS2xgFlSUqc7fPGnrwpBiuNbYBdW3i3aSwu05nvYdk3D6qEidLxMqufxpLJ3VRnt4TBzNigNL6hcYA==}
 
   negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
@@ -14311,6 +14315,8 @@ snapshots:
   nanoid@3.3.7: {}
 
   natural-compare@1.4.0: {}
+
+  navigator.locks@0.8.6: {}
 
   negotiator@0.6.3: {}
 

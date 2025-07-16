@@ -3,7 +3,7 @@ import { AllSlices } from '.';
 import { produce } from 'immer';
 
 import { localExtStorage } from '@repo/storage-chrome/local';
-import { LocalStorageState } from '@repo/storage-chrome/types';
+import { LocalStorageState, OriginRecord } from '@repo/storage-chrome/types';
 import { sessionExtStorage, SessionStorageState } from '@repo/storage-chrome/session';
 import { walletsFromJson } from '@penumbra-zone/types/wallet';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
@@ -29,7 +29,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
     const passwordKey = await sessionExtStorage.get('passwordKey');
     const wallets = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-    const knownSites = await localExtStorage.get('knownSites');
+    const knownSites = (await localExtStorage.get('knownSites')) as OriginRecord[];
     const frontendUrl = await localExtStorage.get('frontendUrl');
     const numeraires = await localExtStorage.get('numeraires');
 
@@ -94,7 +94,8 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
     const stored = changes['knownSites'].newValue as LocalStorageState['knownSites'] | undefined;
     set(
       produce((state: AllSlices) => {
-        state.connectedSites.knownSites = stored ?? state.connectedSites.knownSites;
+        state.connectedSites.knownSites =
+          (stored as OriginRecord[] | undefined) ?? state.connectedSites.knownSites;
       }),
     );
   }

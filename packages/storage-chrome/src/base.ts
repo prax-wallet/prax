@@ -1,215 +1,276 @@
-import { EmptyObject, isEmptyObj } from '@penumbra-zone/types/utility';
-
-export type Listener = (
-  changes: Record<string, { oldValue?: unknown; newValue?: unknown }>,
-) => void;
-
-export interface IStorage {
-  get(keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>>;
-  getBytesInUse(keys?: string | string[] | null): Promise<number>;
-  set(items: Record<string, unknown>): Promise<void>;
-  remove(key: string): Promise<void>;
-  onChanged: {
-    addListener(listener: Listener): void;
-    removeListener(listener: Listener): void;
-  };
-}
+import { ChromeStorageListener } from './listener';
+import { Migration } from './migrations/type';
+import { VERSION_FIELD } from './version-field';
 
 /**
- * To be imported in order to define a migration from the previous schema to the new one
- * Note: If one adds an optional field (newField: string | undefined), a migration is not necessary.
- *       If one adds a new required field (newField: string[]), a migration is necessary
- *       to have the default value in the database.
- */
-export type MigrationFn<OldState, NewState> = (prev: OldState) => NewState | Promise<NewState>;
-
-// All properties except for dbVersion. While this is an available key to query,
-// it is defined in the version field.
-export type ExtensionStorageDefaults<T extends { dbVersion: number }> = Required<
-  Omit<T, 'dbVersion'>
->;
-
-/**
- * get(), set(), and remove() operations kick off storage migration process if it is necessary
+ * Storage fields required by schema must have default values.
  *
- * A migration happens for the entire storage object. For dev:
- * - Define RequiredMigrations within version field in ExtensionStorageProps
- * - The key is the version that will need migrating to that version + 1 (the next version)
- * - The value is a function that takes that versions state and migrates it to the new state (strongly type both)
- *   - Note: It is quite difficult writing a generic that covers all migration function kinds.
- *           Given the use of any's, the writer of the migration should ensure it is typesafe when they define it.
+ * @template T storage schema
  */
-export interface RequiredMigrations {
-  // Explicitly require key 0 representing a special key for migrating from
-  // a state prior to the current implementation.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- EXISTING USE
-  0: MigrationFn<any, any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- EXISTING USE
-  [key: number]: MigrationFn<any, any>; // Additional numeric keys
+export type ExtensionStorageDefaults<T> = {
+  [K in keyof T]: undefined extends T[K] ? never : Required<T>[K] extends T[K] ? T[K] : never;
+};
+
+/**
+ * If this storage area is versioned, migrations are provided as record mapping
+ * prior versions to the applicable migration.
+ *
+ * @template CV current version
+ * @template MV migration versions
+ */
+export type ExtensionStorageMigrations<CV, MV extends number = number> = CV extends number
+  ? { [MK in MV]: MK extends CV ? undefined : Migration<MK> }
+  : Partial<Record<number, Migration<number>>>;
+
+/**
+ * Utility to validate that a storage key is a valid string and not a reserved
+ * field. Schema presence is enforced by the type system, not at runtime.
+ *
+ * @throws {TypeError} When `key` is not a string
+ * @throws {RangeError} When `key` is the reserved VERSION_FIELD
+ */
+function assertValidKey<T>(
+  key: T,
+): asserts key is Exclude<string extends T ? T : never, typeof VERSION_FIELD> {
+  if (typeof key !== 'string') {
+    throw new TypeError(`Storage key ${String(key)} is not a string`, { cause: key });
+  }
+  if (key === VERSION_FIELD) {
+    throw new RangeError(`Storage key ${VERSION_FIELD} is reserved`, { cause: key });
+  }
 }
 
-export interface Version {
-  current: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10; // and so on, just not zero as it's reserved
-  migrations: RequiredMigrations;
-}
-
-export interface ExtensionStorageProps<T extends { dbVersion: number }> {
-  storage: IStorage;
-  defaults: ExtensionStorageDefaults<T>;
-  version: Version;
-}
-
-export class ExtensionStorage<T extends { dbVersion: number }> {
-  private readonly storage: IStorage;
-  private readonly defaults: ExtensionStorageDefaults<T>;
-  private readonly version: Version;
+/**
+ * A wrapper around a Chrome extension storage area. Enforces exclusive lock
+ * during operations, provides versioned schema migrations.
+ *
+ * @template T storage schema
+ * @template V storage version
+ */
+export class ExtensionStorage<
+  T extends Record<string, unknown>,
+  V extends number | undefined = number | undefined,
+> {
+  private migrations?: ExtensionStorageMigrations<V>;
 
   /**
-   * Locks are important on get/set/removes as migrations need to complete before those actions take place
+   * @param storage storage area to use (local, sync, a mock, etc)
+   * @param defaults default values for storage keys
+   * @param version current version
+   * @param migrations migrations
    */
-  private dbLock: Promise<void> | undefined = undefined;
+  constructor(
+    private readonly storage: chrome.storage.StorageArea,
+    private readonly defaults: ExtensionStorageDefaults<T>,
+    private readonly version: V,
+    migrations?: ExtensionStorageMigrations<V>,
+  ) {
+    for (const key of Object.keys(defaults)) {
+      assertValidKey(key);
+    }
 
-  constructor({ storage, defaults, version }: ExtensionStorageProps<T>) {
-    this.storage = storage;
-    this.defaults = defaults;
-    this.version = version;
+    if (migrations) {
+      this.enableMigration(migrations);
+    }
   }
 
   /**
-   * Retrieves a value by key (waits on ongoing migration)
+   * Gets value from storage, or a default value (waits for lock).
+   *
+   * @param key to get
+   * @returns stored value, or a default value
    */
   async get<K extends keyof T>(key: K): Promise<T[K]> {
-    return this.withDbLock(() => {
-      return this._get(key) as Promise<T[K]>;
-    });
-  }
+    assertValidKey(key);
+    return this.withLock(async () => {
+      let result: Pick<T, K>;
 
-  /**
-   * Retrieving from chrome storage will return an object with the key and value:
-   *  { fullSyncHeight: 923582341 }
-   * This function will return its value. If there isn't a value in the db for this key,
-   * chrome storage will return an empty object. For this case, we'll return undefined.
-   */
-  private async _get<K extends keyof T>(key: K): Promise<T[K] | undefined> {
-    const result = (await this.storage.get(String(key))) as Record<K, T[K]> | EmptyObject;
-    return isEmptyObj(result) ? undefined : result[key];
-  }
-
-  /**
-   * Sets value for key (waits on ongoing migration).
-   * Not allowed to manually update dbversion.
-   */
-  async set<K extends Exclude<keyof T, 'dbVersion'>>(key: K, value: T[K]): Promise<void> {
-    await this.withDbLock(async () => {
-      await this._set({ [key]: value } as Record<K, T[K]>);
-    });
-  }
-
-  /**
-   * Private set method that circumvents need to wait on migration lock (use normal set() for that)
-   */
-  private async _set<K extends keyof T>(keys: Record<K, T[K]>): Promise<void> {
-    await this.storage.set(keys);
-  }
-
-  /**
-   * Removes key/value from db (waits on ongoing migration). If there is a default, sets that.
-   */
-  async remove(key: Exclude<keyof T, 'dbVersion'>): Promise<void> {
-    await this.withDbLock(async () => {
-      // Prevent removing dbVersion
-      if (key === 'dbVersion') {
-        throw new Error('Cannot remove dbVersion');
-      }
-
-      const defaultValue = this.defaults[key];
-      if (defaultValue !== undefined) {
-        await this._set({ [key]: defaultValue } as Record<typeof key, T[typeof key]>);
+      if (key in this.defaults && this.defaults[key] !== undefined) {
+        const defaultValue = this.defaults[key];
+        // requires obvious cast for some reason
+        const queryWithDefault = { [key satisfies K]: defaultValue satisfies T[K] } as Pick<T, K>;
+        result = (await this.storage.get(queryWithDefault)) as Pick<T, K>;
       } else {
-        await this.storage.remove(String(key));
+        const queryKey = [key];
+        result = (await this.storage.get(queryKey)) as Pick<T, K>;
       }
+
+      return result[key];
     });
+  }
+
+  /**
+   * Sets value to storage (waits for lock).
+   *
+   * @param key to set
+   * @param value to store
+   */
+  async set<K extends keyof T>(key: K, value: T[K]): Promise<void> {
+    assertValidKey(key);
+
+    if (value === undefined || Number.isNaN(value) || value === Infinity || value === -Infinity) {
+      throw new TypeError(`Forbidden no-op set of ${String(value)}`, { cause: { key, value } });
+    }
+
+    await this.withLock(async () => this.storage.set({ [key]: value }));
+  }
+
+  /**
+   * Removes key from storage (waits for lock).
+   *
+   * @param key to set
+   */
+  async remove(key: keyof T): Promise<void> {
+    assertValidKey(key);
+    await this.withLock(async () => this.storage.remove(String(key)));
   }
 
   /**
    * Adds a listener to detect changes in the storage.
    */
-  addListener(listener: Listener) {
-    this.storage.onChanged.addListener(listener);
+  addListener(listener: ChromeStorageListener<T>) {
+    this.storage.onChanged.addListener(listener as ChromeStorageListener);
   }
 
   /**
    * Removes a listener from the storage change listeners.
    */
-  removeListener(listener: Listener) {
-    this.storage.onChanged.removeListener(listener);
+  removeListener(listener: ChromeStorageListener<T>) {
+    this.storage.onChanged.removeListener(listener as ChromeStorageListener);
   }
 
   /**
-   * A migration happens for the entire storage object. Process:
-   * During runtime:
-   * - get, set, or remove is called
-   * - methods internally calls withDbLock, checking if the lock is already acquired
-   * - if the lock is not acquired (ie. undefined), acquire the lock by assigning dbLock to the promise returned by migrateOrInitializeIfNeeded
-   * - wait for the lock to resolve, ensuring initialization or migration is complete
-   * - execute the storage get, set, or remove operation
-   * - finally, release the lock.
+   * Executes a storage operation with exclusive storage lock. Ensures
+   * migration/initialization occurs before storage operations.
+   *
+   * @param fn storage operation callback
+   * @returns result of the storage operation callback
    */
-  private async withDbLock<R>(fn: () => Promise<R>): Promise<R> {
-    if (this.dbLock) {
-      await this.dbLock;
-    }
-
-    try {
-      this.dbLock = this.migrateOrInitializeIfNeeded();
-      await this.dbLock;
-      return await fn();
-    } finally {
-      this.dbLock = undefined;
-    }
+  private async withLock<R>(fn: () => Promise<R>): Promise<R> {
+    return navigator.locks.request(`${chrome.runtime.id}.storage`, { mode: 'exclusive' }, () =>
+      this.migrateOrInitializeIfNeeded().then(fn),
+    ) as Promise<R>;
   }
 
   /**
-   * Migrates all fields from a given version to the next.
+   * Migrates state in-memory to the current version. Does not perform any
+   * storage read or write.
+   *
+   * @returns migrated state
+   * @throws {RangeError} When no migration exists for a needed version
    */
-  private async migrateAllFields(storedVersion: number): Promise<number> {
-    const migrationFn = this.version.migrations[storedVersion];
+  private async migrateAllFields(
+    initialVersion: number,
+    initialState: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
+    let [mVersion, mState] = [initialVersion, initialState];
 
-    if (!migrationFn) {
-      throw new Error(`No migration function provided for version: ${storedVersion}`);
+    let migrate = undefined;
+    while ((migrate = this.migrations?.[mVersion])) {
+      [mVersion, mState] = [migrate.version(mVersion), await migrate.transform(mState)];
     }
 
-    const currentDbState = await this.storage.get();
-    // Migrations save the database intermediate states hard to type
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- EXISTING USE
-    const nextState = await migrationFn(currentDbState);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- EXISTING USE
-    await this._set(nextState);
+    // confirm resulting version
+    if (mVersion !== this.version) {
+      throw new RangeError(`No migration provided for version: ${mVersion}`, {
+        cause: { initialVersion, migrations: this.migrations },
+      });
+    }
 
-    return storedVersion + 1;
+    return { ...mState, [VERSION_FIELD]: mVersion };
   }
 
   /**
-   * Initializes the database with defaults or performs migrations (multiple possible if a sequence is needed).
+   * May initialize storage with a version field, or perform migration. Called
+   * upon lock acquisition, before every storage operation by class methods.
+   *
+   * @throws {ReferenceError} When migrations are needed but not available
+   * @throws {Error} When initialization or migration fails
    */
   private async migrateOrInitializeIfNeeded(): Promise<void> {
+    // if storage is unversioned, no migration needed
+    if (!this.version) {
+      return;
+    }
+
+    const storedVersion = await this.getStoredVersion();
+
+    // storage is current, no migration needed
+    if (storedVersion === this.version) {
+      return;
+    }
+
     try {
-      // If db is empty, initialize it with defaults.
-      const bytesInUse = await this.storage.getBytesInUse();
-      if (bytesInUse === 0) {
-        const allDefaults = { ...this.defaults, dbVersion: this.version.current };
-        // @ts-expect-error Typescript does not know how to combine the above types
-        await this._set(allDefaults);
+      // if storage is empty, initialize with current version
+      if (storedVersion === undefined && !(await this.storage.getBytesInUse())) {
+        await this.storage.set({ [VERSION_FIELD]: this.version });
         return;
       }
-
-      let storedVersion = (await this._get('dbVersion')) ?? 0; // default to zero
-      // If stored version is not the same, keep migrating versions until current
-      while (storedVersion !== this.version.current) {
-        storedVersion = await this.migrateAllFields(storedVersion);
-      }
     } catch (e) {
-      throw new Error(`There was an error with migrating the database: ${String(e)}`);
+      console.error(e);
+      throw new Error(`Failed to initialize storage: ${String(e)}`, { cause: e });
     }
+
+    try {
+      // no migrations available
+      if (!this.migrations) {
+        throw new ReferenceError('No migrations available');
+      }
+
+      // perform migration
+      const initialVersion = storedVersion ?? 0;
+      const initialState = await this.storage.get();
+
+      const commit = await this.migrateAllFields(initialVersion, initialState);
+
+      // keys from the old state which are `undefined` in the new state
+      const cleanup = Object.keys(initialState).filter(k => commit[k] === undefined);
+
+      // write new state on top of the initial state
+      await this.storage.set(commit);
+      // clean up keys which migrated to `undefined`
+      await this.storage.remove(cleanup);
+      // migration complete
+    } catch (e) {
+      console.error(e);
+      throw new Error(`Failed to migrate storage: ${String(e)}`, { cause: e });
+    }
+  }
+
+  private async getStoredVersion(): Promise<number | undefined> {
+    const { [VERSION_FIELD]: version } = await this.storage.get(VERSION_FIELD);
+
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- default case
+    switch (typeof version) {
+      case 'undefined':
+      case 'number':
+        return version;
+      default:
+        throw new TypeError(`Stored version ${String(version)} is not a number`, {
+          cause: version,
+        });
+    }
+  }
+
+  /**
+   * Enables migration by this instance.
+   *
+   * @throws {RangeError} When storage is unversioned
+   * @throws {RangeError} When migrations are incomplete
+   */
+  public enableMigration(migrations: ExtensionStorageMigrations<V>) {
+    if (!this.version) {
+      throw new RangeError('Unversioned storage will never use migrations');
+    }
+
+    const zeroToNow = Array.from(new Array(this.version).keys());
+    if (!zeroToNow.every(v => v in migrations)) {
+      const missing = zeroToNow.filter(v => !(v in migrations));
+      throw new RangeError(`Migration versions missing: ${missing.join()}`, {
+        cause: { migrations, version: this.version },
+      });
+    }
+
+    this.migrations = migrations;
   }
 }

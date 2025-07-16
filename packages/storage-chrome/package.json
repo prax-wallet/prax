@@ -9,7 +9,19 @@
     "test": "vitest run"
   },
   "exports": {
-    "./*": "./src/*.ts"
+    ".": "./src/index.ts",
+    "./base": "./src/base.ts",
+    "./local": "./src/local.ts",
+    "./onboard": "./src/onboard.ts",
+    "./origin": "./src/origin.ts",
+    "./session": "./src/session.ts",
+    "./migrations": "./src/migrations/index.ts",
+    "./types": "./src/types.ts"
+  },
+  "dependencies": {
+    "@penumbra-zone/bech32m": "18.0.0",
+    "@penumbra-zone/protobuf": "11.0.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@penumbra-labs/registry": "^12.7.2",
@@ -19,8 +31,6 @@
     "@penumbra-zone/protobuf": "11.0.0",
     "@penumbra-zone/types": "35.0.0",
     "@types/chrome": "0.0.270",
-    "@types/lodash": "^4.17.13",
-    "immer": "^10.1.1",
-    "lodash": "^4.17.21"
+    "@types/lodash": "^4.17.13"
   }
 }

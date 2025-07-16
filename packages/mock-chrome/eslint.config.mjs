@@ -18,4 +18,9 @@ export default [
       '@typescript-eslint/no-deprecated': 'off',
     },
   },
+
+  {
+    name: 'allow-console',
+    rules: { 'no-console': 'off' },
+  },
 ];

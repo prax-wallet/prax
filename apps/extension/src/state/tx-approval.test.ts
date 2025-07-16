@@ -8,9 +8,13 @@ import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { beforeEach, describe, expect, MockedFunction, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { mockLocalExtStorage, mockSessionExtStorage } from '@repo/storage-chrome/mock';
+import { localExtStorage } from '@repo/storage-chrome/local';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+
+const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
+const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
 
 // Mock transaction view functions
 vi.mock('@penumbra-zone/perspective/plan/view-transaction-plan', () => {
@@ -64,9 +68,6 @@ const pw = {
 };
 
 describe('Transaction Approval Slice', () => {
-  const sessionExtStorage = mockSessionExtStorage();
-  const localExtStorage = mockLocalExtStorage();
-
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   let authorizeRequest: AuthorizeRequest;
@@ -78,6 +79,8 @@ describe('Transaction Approval Slice', () => {
     );
 
   beforeEach(async () => {
+    localMock.clear();
+    sessionMock.clear();
     await localExtStorage.set('wallets', [wallet0]);
     await sessionExtStorage.set('passwordKey', pw);
     useStore = create<AllSlices>()(initializeStore(sessionExtStorage, localExtStorage));
