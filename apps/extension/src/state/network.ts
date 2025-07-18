@@ -1,5 +1,5 @@
-import { LocalStorageState } from '@repo/storage-chrome/types';
-import { ExtensionStorage } from '@repo/storage-chrome/base';
+import type { LocalStorageState } from '@repo/storage-chrome/local';
+import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import { AllSlices, SliceCreator } from '.';
 
 export interface NetworkSlice {

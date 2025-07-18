@@ -1,4 +1,4 @@
-import { SeedPhraseLength } from '@penumbra-zone/crypto-web/mnemonic';
+import { SeedPhraseLength } from '../../state/seed-phrase/mnemonic';
 import { Toggle } from '@repo/ui/components/ui/toggle';
 
 interface WordLengthTooglesProsp {

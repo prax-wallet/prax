@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { approveSender } from './approve';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { OriginRecord } from '@repo/storage-chrome/types';
+import { OriginRecord, UserChoice } from '@repo/storage-chrome/records';
 import { PopupType } from '../message/popup';
 import { localExtStorage } from '@repo/storage-chrome/local';
 

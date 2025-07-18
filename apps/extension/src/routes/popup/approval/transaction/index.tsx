@@ -6,7 +6,7 @@ import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/cu
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
 import { ApproveDeny } from '../approve-deny';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { UserChoice } from '@repo/storage-chrome/records';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { TransactionViewTab } from './types';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
