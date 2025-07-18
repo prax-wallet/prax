@@ -1,6 +1,6 @@
 {
   "name": "chrome-extension",
-  "version": "19.2.0",
+  "version": "19.3.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "description": "chrome-extension",
