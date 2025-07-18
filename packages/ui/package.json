@@ -7,6 +7,7 @@
   "scripts": {
     "build-storybook": "storybook build",
     "lint": "eslint components lib",
+    "lint:strict": "tsc --noEmit && eslint components lib --max-warnings 0",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"

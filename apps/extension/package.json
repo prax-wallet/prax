@@ -12,6 +12,7 @@
     "clean": "rm -rfv dist beta-dist bin",
     "dev": "NODE_ENV=testnet pnpm bundle:prod --watch --mode=development -d inline-source-map",
     "lint": "eslint src",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
     "test": "vitest run"
   },
   "dependencies": {

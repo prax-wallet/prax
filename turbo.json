@@ -46,7 +46,11 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "^build"],
+      "inputs": ["**/*.ts", "**/*.tsx", "wasm/index*.ts", "package.json"]
+    },
+    "lint:strict": {
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "^build"],
       "inputs": ["**/*.ts", "**/*.tsx", "wasm/index*.ts", "package.json"]
     },
     "test": {
