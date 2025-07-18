@@ -30,12 +30,10 @@ import {
 export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount): number => {
   const filledAmount = subtractAmounts(delta, unfilled);
 
-  // Not sure why linting is suddenly failing, seems to be related to repeated cache misses in the CI – suppressing for now.
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- trusted internal usage; divideAmounts returns Amount
   return isZero(delta) || isZero(lambda) || isZero(filledAmount)
     ? 0
-    : // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- divideAmounts is a safe internal helper
-      divideAmounts(lambda, filledAmount).toNumber();
+    : // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- pending fix https://github.com/penumbra-zone/web/pull/2633
+      (divideAmounts(lambda, filledAmount).toNumber() as number);
 };
 
 export const updatePricesFromSwaps = async (

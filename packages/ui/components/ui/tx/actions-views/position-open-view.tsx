@@ -11,7 +11,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../
 import { InfoIcon } from 'lucide-react';
 
 export const PositionOpenViewComponent = ({ value }: { value: PositionOpenView }) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- positionOpenView is present for action rendering.
   const position = value.positionOpenView.value!.action!.position!;
 
   return (

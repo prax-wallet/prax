@@ -17,14 +17,14 @@ describe('Base storage default instantiation', () => {
   let extStorage: ExtensionStorage<MockState>;
   let storageArea: MockStorageArea;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     storageArea = new MockStorageArea();
+    await storageArea.set({ fullSyncHeight: 0 });
     extStorage = new ExtensionStorage(
       storageArea,
       {
         network: '',
         accounts: [],
-        fullSyncHeight: 0,
       },
       1,
       { 0: { version: () => 1, transform: state => state } },
