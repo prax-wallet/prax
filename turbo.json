@@ -19,7 +19,7 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["compile", "^build"],
+      "dependsOn": ["^build"],
       "env": ["PRAX"],
       "outputs": ["dist/**"]
     },
@@ -27,13 +27,8 @@
       "cache": false,
       "dependsOn": ["//#clean:vitest-mjs"]
     },
-    "compile": {
-      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
-      "outputs": ["wasm/**"]
-    },
     "dev": {
       "cache": false,
-      "dependsOn": ["^compile"],
       "persistent": true
     },
     "format": {
@@ -46,16 +41,15 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "^build"],
-      "inputs": ["**/*.ts", "**/*.tsx", "wasm/index*.ts", "package.json"]
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "^build"],
+      "inputs": ["**/*.ts", "**/*.tsx", "package.json"]
     },
     "lint:strict": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "^build"],
-      "inputs": ["**/*.ts", "**/*.tsx", "wasm/index*.ts", "package.json"]
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "^build"],
+      "inputs": ["**/*.ts", "**/*.tsx", "package.json"]
     },
     "test": {
-      "cache": false,
-      "dependsOn": ["compile"]
+      "cache": false
     }
   }
 }
