@@ -3,6 +3,7 @@ import { Settings } from './settings';
 import { SettingsAdvanced } from './settings-advanced';
 import { SettingsClearCache } from './settings-clear-cache';
 import { SettingsConnectedSites } from './settings-connected-sites';
+import { SettingsPassphrase } from './settings-passphrase';
 import { SettingsRPC } from './settings-rpc';
 import { SettingsDefaultFrontend } from './settings-default-frontend';
 import { SettingsNumeraires } from './settings-numeraires';
@@ -33,7 +34,15 @@ export const settingsRoutes = [
     element: <SettingsConnectedSites />,
   },
   {
+    path: PopupPath.SETTINGS_RECOVERY_PASSPHRASE,
+    element: <SettingsPassphrase />,
+  },
+  {
     path: PopupPath.SETTINGS_NUMERAIRES,
     element: <SettingsNumeraires />,
   },
+  // {
+  //   path: PopupPath.RESET_PASSWORD,
+  //   element: <SettingsResetPassword />,
+  // },
 ];
