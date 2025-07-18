@@ -1,9 +1,9 @@
-import { Key, KeyPrint } from '@penumbra-zone/crypto-web/encryption';
-import { generateSeedPhrase } from '@penumbra-zone/crypto-web/mnemonic';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Wallet } from '@penumbra-zone/types/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
+import { Key } from '@repo/encryption/key';
+import { KeyPrint } from '@repo/encryption/key-print';
 import { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { ExtensionStorage, ExtensionStorageDefaults } from '../base';
@@ -14,7 +14,8 @@ import local_v0_v1 from './local-v0-v1';
 import local_v1_v2 from './local-v1-v2';
 
 const testPassword = 'test-password-12345';
-const testSeedPhrase = generateSeedPhrase(12).join(' ');
+const testSeedPhrase =
+  'comfort ten front cycle churn burger oak absent rice ice urge result art couple benefit cabbage frequent obscure hurry trick segment cool job debate';
 const testFvk = getFullViewingKey(generateSpendKey(testSeedPhrase));
 const testId = getWalletId(testFvk);
 const testKey = await Key.create(testPassword);
@@ -273,8 +274,6 @@ describe('local-v1-v2 migration', () => {
   });
 
   describe('snapshot data tests', () => {
-    const snapshotSeedPhrase =
-      'comfort ten front cycle churn burger oak absent rice ice urge result art couple benefit cabbage frequent obscure hurry trick segment cool job debate';
     const snapshotPassword = '';
 
     test('pregenesis v0 user migrates correctly', async () => {
@@ -308,7 +307,7 @@ describe('local-v1-v2 migration', () => {
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
-      expect(decryptedSeedPhrase).toBe(snapshotSeedPhrase);
+      expect(decryptedSeedPhrase).toBe(testSeedPhrase);
     });
 
     test('typical v0 user migrates correctly', async () => {
@@ -345,7 +344,7 @@ describe('local-v1-v2 migration', () => {
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
-      expect(decryptedSeedPhrase).toBe(snapshotSeedPhrase);
+      expect(decryptedSeedPhrase).toBe(testSeedPhrase);
     });
 
     test('corrupted v1 user migrates correctly', async () => {
@@ -382,7 +381,7 @@ describe('local-v1-v2 migration', () => {
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
-      expect(decryptedSeedPhrase).toBe(snapshotSeedPhrase);
+      expect(decryptedSeedPhrase).toBe(testSeedPhrase);
     });
   });
 });
