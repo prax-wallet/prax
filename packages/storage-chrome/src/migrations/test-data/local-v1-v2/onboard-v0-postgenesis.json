@@ -1,0 +1,51 @@
+{
+  "frontendUrl": {
+    "value": "https://app.penumbra.zone",
+    "version": "V2"
+  },
+  "fullSyncHeight": {
+    "value": 404000,
+    "version": "V2"
+  },
+  "grpcEndpoint": {
+    "value": "https://penumbra-1.radiantcommons.com",
+    "version": "V2"
+  },
+  "knownSites": {
+    "value": [
+      {
+        "choice": "Approved",
+        "date": 1752856589876,
+        "origin": "https://app.penumbra.zone"
+      }
+    ],
+    "version": "V2"
+  },
+  "params": {
+    "value": "{\"chainId\":\"penumbra-1\",\"sctParams\":{\"epochDuration\":\"34560\"},\"communityPoolParams\":{},\"governanceParams\":{\"proposalVotingBlocks\":\"34560\",\"proposalDepositAmount\":{\"lo\":\"100000000\"},\"proposalValidQuorum\":\"40/100\",\"proposalPassThreshold\":\"67/100\",\"proposalSlashThreshold\":\"80/100\"},\"ibcParams\":{\"ibcEnabled\":true,\"inboundIcs20TransfersEnabled\":true,\"outboundIcs20TransfersEnabled\":true},\"stakeParams\":{\"activeValidatorLimit\":\"100\",\"slashingPenaltyMisbehavior\":\"10000000\",\"slashingPenaltyDowntime\":\"10000\",\"signedBlocksWindowLen\":\"10000\",\"missedBlocksMaximum\":\"9500\",\"minValidatorStake\":{\"lo\":\"100000000\"},\"unbondingDelay\":\"120960\"},\"feeParams\":{\"fixedGasPrices\":{\"blockSpacePrice\":\"60\",\"compactBlockSpacePrice\":\"1556\",\"verificationPrice\":\"1\",\"executionPrice\":\"1\"},\"fixedAltGasPrices\":[{\"assetId\":{\"inner\":\"UxSzPuz9XKLpnAttHgzK/j0t1YHJUtgU+2T99R+FxBE=\"}},{\"assetId\":{\"inner\":\"drPksQaBNYwSOzgfkGOEdrd4kEDkeALeh58Ps+7cjQs=\"}},{\"assetId\":{\"inner\":\"B+9mATKkwyNfqyctQ9m5dSqDN7LRCFl6v/r/XyRtDw8=\"}},{\"assetId\":{\"inner\":\"KSOgqHs6JCHxZcyFPb9zqb2vtdoNlIVktgWcsCF8RAc=\"}}]},\"distributionsParams\":{\"stakingIssuancePerBlock\":\"63411\"},\"fundingParams\":{},\"shieldedPoolParams\":{\"fmdMetaParams\":{\"fmdGracePeriodBlocks\":\"360\",\"fixedPrecisionBits\":0}},\"dexParams\":{\"isEnabled\":true,\"fixedCandidates\":[{\"inner\":\"KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=\"},{\"inner\":\"drPksQaBNYwSOzgfkGOEdrd4kEDkeALeh58Ps+7cjQs=\"}],\"maxHops\":4,\"maxPositionsPerPair\":1000,\"maxExecutionBudget\":1024},\"auctionParams\":{}}",
+    "version": "V2"
+  },
+  "passwordKeyPrint": {
+    "value": {
+      "hash": "K5LOAYC/WFvK9HMz8cXkw+2FqzsfPAD3DMwXlOI8P8c=",
+      "salt": "zyR9D1lgBMncvwiiA9sdgQ=="
+    },
+    "version": "V2"
+  },
+  "wallets": {
+    "value": [
+      {
+        "custody": {
+          "encryptedSeedPhrase": {
+            "cipherText": "FMGl53mGANW+na2rHob0BxFLV4lVRPd2xVebYZt1gH28WfS4S9iWDc/pPTX17tRYjF3QAiGuj/psfZtNsKsCr6g/SbdAay2s/fgHQSfYtRwEF2Y+axL2QoejTLdjdnZ/p+LTGe9qB6NwKCMv8qIkUiJ56NdufOxYqFullI3KQ/WfJQ2Lt6LsxMVnZbsfTU0Lsgh0tVrblhxCojCjnhddAy9gYuY=",
+            "nonce": "n+jdDP8BcjDgL+va"
+          }
+        },
+        "fullViewingKey": "{\"inner\":\"YJJFu+wD9eQqwnloyfoIwldfXR2r+rGiguKwOFt6WQkiQ2o4EUmu6kg21NJvBSL5DzzcvwHg0nLSzQm7SHNLAg==\"}",
+        "id": "{\"inner\":\"8rEdDhdZani3OEcE5ETRDR9pGEUl6pL/jmiOAmd4KwM=\"}",
+        "label": "Wallet #1"
+      }
+    ],
+    "version": "V2"
+  }
+}

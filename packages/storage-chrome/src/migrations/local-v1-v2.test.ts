@@ -271,4 +271,118 @@ describe('local-v1-v2 migration', () => {
       expect(() => KeyPrint.fromJson(passwordKeyPrint!)).toThrow();
     });
   });
+
+  describe('snapshot data tests', () => {
+    const snapshotSeedPhrase =
+      'comfort ten front cycle churn burger oak absent rice ice urge result art couple benefit cabbage frequent obscure hurry trick segment cool job debate';
+    const snapshotPassword = '';
+
+    test('pregenesis v0 user migrates correctly', async () => {
+      const { default: onboardV0PregenesisSnapshot } = await import(
+        './test-data/local-v1-v2/onboard-v0-pregenesis.json'
+      );
+      await storageArea.set(onboardV0PregenesisSnapshot);
+
+      const wallets = await v2ExtStorage.get('wallets');
+      expect(wallets).toEqual(onboardV0PregenesisSnapshot.wallets.value);
+
+      const passwordKeyPrint = await v2ExtStorage.get('passwordKeyPrint');
+      expect(passwordKeyPrint).toEqual(onboardV0PregenesisSnapshot.passwordKeyPrint.value);
+
+      const grpcEndpoint = await v2ExtStorage.get('grpcEndpoint');
+      expect(grpcEndpoint).toBe(onboardV0PregenesisSnapshot.grpcEndpoint.value);
+
+      const frontendUrl = await v2ExtStorage.get('frontendUrl');
+      expect(frontendUrl).toBe(onboardV0PregenesisSnapshot.frontendUrl.value);
+
+      const params = await v2ExtStorage.get('params');
+      expect(params).toBe(onboardV0PregenesisSnapshot.params.value);
+
+      const fullSyncHeight = await v2ExtStorage.get('fullSyncHeight');
+      expect(fullSyncHeight).toBeUndefined();
+
+      // Verify wallet can be unlocked with snapshot password
+      const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
+      const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
+      const walletFromJson = Wallet.fromJson(wallets[0]!);
+      const decryptedSeedPhrase = await recreatedKey!.unseal(
+        walletFromJson.custody.encryptedSeedPhrase,
+      );
+      expect(decryptedSeedPhrase).toBe(snapshotSeedPhrase);
+    });
+
+    test('typical v0 user migrates correctly', async () => {
+      const { default: onboardV0PostgenesisSnapshot } = await import(
+        './test-data/local-v1-v2/onboard-v0-postgenesis.json'
+      );
+      await storageArea.set(onboardV0PostgenesisSnapshot);
+
+      const wallets = await v2ExtStorage.get('wallets');
+      expect(wallets).toEqual(onboardV0PostgenesisSnapshot.wallets.value);
+
+      const passwordKeyPrint = await v2ExtStorage.get('passwordKeyPrint');
+      expect(passwordKeyPrint).toEqual(onboardV0PostgenesisSnapshot.passwordKeyPrint.value);
+
+      const grpcEndpoint = await v2ExtStorage.get('grpcEndpoint');
+      expect(grpcEndpoint).toBe(onboardV0PostgenesisSnapshot.grpcEndpoint.value);
+
+      const frontendUrl = await v2ExtStorage.get('frontendUrl');
+      expect(frontendUrl).toBe(onboardV0PostgenesisSnapshot.frontendUrl.value);
+
+      const params = await v2ExtStorage.get('params');
+      expect(params).toBe(onboardV0PostgenesisSnapshot.params.value);
+
+      const fullSyncHeight = await v2ExtStorage.get('fullSyncHeight');
+      expect(fullSyncHeight).toBe(onboardV0PostgenesisSnapshot.fullSyncHeight.value);
+
+      const knownSites = await v2ExtStorage.get('knownSites');
+      expect(knownSites).toEqual(onboardV0PostgenesisSnapshot.knownSites.value);
+
+      // Verify wallet can be unlocked with snapshot password
+      const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
+      const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
+      const walletFromJson = Wallet.fromJson(wallets[0]!);
+      const decryptedSeedPhrase = await recreatedKey!.unseal(
+        walletFromJson.custody.encryptedSeedPhrase,
+      );
+      expect(decryptedSeedPhrase).toBe(snapshotSeedPhrase);
+    });
+
+    test('corrupted v1 user migrates correctly', async () => {
+      const { default: onboardV0PregenesisV1CorruptSnapshot } = await import(
+        './test-data/local-v1-v2/onboard-v0-pregenesis-v1-corrupt.json'
+      );
+      await storageArea.set(onboardV0PregenesisV1CorruptSnapshot);
+
+      const wallets = await v2ExtStorage.get('wallets');
+      expect(wallets).toEqual(onboardV0PregenesisV1CorruptSnapshot.wallets);
+
+      const passwordKeyPrint = await v2ExtStorage.get('passwordKeyPrint');
+      expect(passwordKeyPrint).toEqual(onboardV0PregenesisV1CorruptSnapshot.passwordKeyPrint);
+
+      const grpcEndpoint = await v2ExtStorage.get('grpcEndpoint');
+      expect(grpcEndpoint).toBe(onboardV0PregenesisV1CorruptSnapshot.grpcEndpoint);
+
+      const frontendUrl = await v2ExtStorage.get('frontendUrl');
+      expect(frontendUrl).toBe(onboardV0PregenesisV1CorruptSnapshot.frontendUrl);
+
+      const params = await v2ExtStorage.get('params');
+      expect(params).toBe(onboardV0PregenesisV1CorruptSnapshot.params);
+
+      const knownSites = await v2ExtStorage.get('knownSites');
+      expect(knownSites).toEqual(onboardV0PregenesisV1CorruptSnapshot.knownSites);
+
+      const numeraires = await v2ExtStorage.get('numeraires');
+      expect(numeraires).toEqual(onboardV0PregenesisV1CorruptSnapshot.numeraires);
+
+      // Verify wallet can be unlocked with snapshot password
+      const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
+      const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
+      const walletFromJson = Wallet.fromJson(wallets[0]!);
+      const decryptedSeedPhrase = await recreatedKey!.unseal(
+        walletFromJson.custody.encryptedSeedPhrase,
+      );
+      expect(decryptedSeedPhrase).toBe(snapshotSeedPhrase);
+    });
+  });
 });
