@@ -5,7 +5,8 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint src",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
     "test": "vitest run"
   },
   "exports": {

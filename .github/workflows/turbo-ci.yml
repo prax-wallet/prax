@@ -39,7 +39,7 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo lint --cache-dir=.turbo
+      - run: pnpm turbo lint:strict --cache-dir=.turbo
 
   turbo-build:
     name: Build
