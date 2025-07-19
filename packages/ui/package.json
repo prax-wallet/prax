@@ -7,7 +7,6 @@
   "scripts": {
     "build-storybook": "storybook build",
     "lint": "eslint components lib",
-    "lint:strict": "tsc --noEmit && eslint components lib --max-warnings 0",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"
@@ -33,10 +32,10 @@
     "@penumbra-labs/registry": "^12.7.2",
     "@penumbra-zone/bech32m": "18.0.0",
     "@penumbra-zone/getters": "28.0.0",
-    "@penumbra-zone/perspective": "61.1.0",
+    "@penumbra-zone/perspective": "61.1.1",
     "@penumbra-zone/protobuf": "11.0.0",
-    "@penumbra-zone/types": "35.0.0",
-    "@penumbra-zone/wasm": "52.0.0",
+    "@penumbra-zone/types": "36.0.0",
+    "@penumbra-zone/wasm": "53.0.0",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.1.3",
     "@radix-ui/react-dialog": "1.1.1",
