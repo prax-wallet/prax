@@ -31,8 +31,8 @@
     "@penumbra-zone/crypto-web": "47.0.0",
     "@penumbra-zone/getters": "28.0.0",
     "@penumbra-zone/protobuf": "11.0.0",
-    "@penumbra-zone/types": "35.0.0",
-    "@penumbra-zone/wasm": "52.0.0",
+    "@penumbra-zone/types": "36.0.0",
+    "@penumbra-zone/wasm": "53.0.0",
     "exponential-backoff": "^3.1.1"
   },
   "engine": {
