@@ -32,8 +32,7 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
 
   return isZero(delta) || isZero(lambda) || isZero(filledAmount)
     ? 0
-    : // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- pending fix https://github.com/penumbra-zone/web/pull/2633
-      (divideAmounts(lambda, filledAmount).toNumber() as number);
+    : (divideAmounts(lambda, filledAmount).toNumber());
 };
 
 export const updatePricesFromSwaps = async (
