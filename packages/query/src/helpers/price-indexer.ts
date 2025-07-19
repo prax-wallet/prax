@@ -32,7 +32,7 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
 
   return isZero(delta) || isZero(lambda) || isZero(filledAmount)
     ? 0
-    : (divideAmounts(lambda, filledAmount).toNumber());
+    : divideAmounts(lambda, filledAmount).toNumber();
 };
 
 export const updatePricesFromSwaps = async (
