@@ -1,11 +1,9 @@
-import { StateCreator, StoreMutatorIdentifier } from 'zustand';
-import { AllSlices } from '.';
-import { produce } from 'immer';
-
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { OriginRecord } from '@repo/storage-chrome/records';
-import { Wallet } from '@repo/wallet';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { produce } from 'immer';
+import { StateCreator, StoreMutatorIdentifier } from 'zustand';
+import { AllSlices } from '.';
 
 export type Middleware = <
   T,
@@ -28,7 +26,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
 
     set(
       produce((state: AllSlices) => {
-        state.wallets.all = wallets.map(w => Wallet.fromJson(w));
+        state.wallets.all = wallets;
         state.network.grpcEndpoint = grpcEndpoint;
         state.connectedSites.knownSites = knownSites as OriginRecord[];
         state.defaultFrontend.url = frontendUrl;
@@ -42,7 +40,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         const wallets = changes.wallets.newValue;
         set(
           produce((state: AllSlices) => {
-            state.wallets.all = (wallets ?? []).map(w => Wallet.fromJson(w));
+            state.wallets.all = wallets ?? [];
           }),
         );
       }

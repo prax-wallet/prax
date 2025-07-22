@@ -52,15 +52,16 @@ export const createWalletsSlice =
         }
 
         const key = await Key.fromJson(passwordKey);
-        const activeWallet = get().wallets.all[0];
+        const activeWallet = getActiveWallet(get());
         if (!activeWallet) {
           throw new Error('no wallet set');
         }
 
-        const encryptedSeedPhrase = activeWallet.custody['encryptedSeedPhrase'];
-        if (!encryptedSeedPhrase) {
+        if (activeWallet.custodyType !== 'encryptedSeedPhrase') {
           throw new Error('no seed phrase set');
         }
+        const { encryptedSeedPhrase } = (activeWallet.toJson() as WalletJson<'encryptedSeedPhrase'>)
+          .custody;
 
         const decryptedSeedPhrase = await key.unseal(Box.fromJson(encryptedSeedPhrase));
         if (!decryptedSeedPhrase) {
