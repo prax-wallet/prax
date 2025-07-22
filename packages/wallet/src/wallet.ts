@@ -1,4 +1,3 @@
-import { toPlainMessage, type PlainMessage } from '@bufbuild/protobuf';
 import {
   FullViewingKey,
   SpendKey,
@@ -15,9 +14,9 @@ import { Key } from '@repo/encryption/key';
 import { getCustodyType } from './custody';
 
 export interface WalletJson<T extends string = string> {
-  id: { inner: string };
+  id: string;
   label: string;
-  fullViewingKey: { inner: string };
+  fullViewingKey: string;
   custody: Record<T, BoxJson>;
 }
 
@@ -27,8 +26,8 @@ export class Wallet<T extends string = string> {
 
   constructor(
     public readonly label: string,
-    public readonly id: PlainMessage<WalletId>,
-    public readonly fullViewingKey: PlainMessage<FullViewingKey>,
+    public readonly id: WalletId,
+    public readonly fullViewingKey: FullViewingKey,
     custodyData: Record<T, Box>,
   ) {
     if (!label || typeof label !== 'string') {
@@ -38,14 +37,12 @@ export class Wallet<T extends string = string> {
     if (!new WalletId(id).equals(id)) {
       throw new TypeError(`Wallet "${label}" id is not valid`, { cause: id });
     }
-    this.id = toPlainMessage(new WalletId(id));
 
     if (!new FullViewingKey(fullViewingKey).equals(fullViewingKey)) {
       throw new TypeError(`Wallet "${label}" full viewing key is not valid`, {
         cause: fullViewingKey,
       });
     }
-    this.fullViewingKey = toPlainMessage(new FullViewingKey(fullViewingKey));
 
     this.custodyType = getCustodyType(custodyData);
     this.custodyBox = custodyData[this.custodyType];
@@ -80,8 +77,8 @@ export class Wallet<T extends string = string> {
 
     return new Wallet<T>(
       json.label,
-      WalletId.fromJson(json.id),
-      FullViewingKey.fromJson(json.fullViewingKey),
+      WalletId.fromJsonString(json.id),
+      FullViewingKey.fromJsonString(json.fullViewingKey),
       { [custodyType]: Box.fromJson(json.custody[custodyType]) } as Record<T, Box>,
     );
   }
@@ -89,8 +86,8 @@ export class Wallet<T extends string = string> {
   public toJson(): WalletJson<T> {
     return {
       label: this.label,
-      id: new WalletId(this.id).toJson() as { inner: string },
-      fullViewingKey: new FullViewingKey(this.fullViewingKey).toJson() as { inner: string },
+      id: this.id.toJsonString(),
+      fullViewingKey: this.fullViewingKey.toJsonString(),
       custody: { [this.custodyType]: this.custodyBox.toJson() } as Record<T, BoxJson>,
     };
   }

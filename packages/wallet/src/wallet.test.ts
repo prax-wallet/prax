@@ -1,9 +1,6 @@
 import { toPlainMessage } from '@bufbuild/protobuf';
 import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import {
-  AuthorizationData,
-  TransactionPlan,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import { Box, BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
@@ -91,9 +88,9 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
     describe('serialization', () => {
       type CT = typeof custodyType;
       const walletJson: WalletJson<CT> = {
-        id: walletId.toJson() as { inner: string },
+        id: walletId.toJsonString(),
         label: label,
-        fullViewingKey: fvk.toJson() as { inner: string },
+        fullViewingKey: fvk.toJsonString(),
         custody: { [custodyType]: custodyBoxes[custodyType].toJson() } as Record<CT, BoxJson>,
       };
 
@@ -101,8 +98,8 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
         const deserialized = Wallet.fromJson(walletJson);
 
         expect(deserialized.label).toBe(walletJson.label);
-        expect(deserialized.id).toStrictEqual(toPlainMessage(walletId));
-        expect(deserialized.fullViewingKey).toStrictEqual(toPlainMessage(fvk));
+        expect(toPlainMessage(deserialized.id)).toStrictEqual(toPlainMessage(walletId));
+        expect(toPlainMessage(deserialized.fullViewingKey)).toStrictEqual(toPlainMessage(fvk));
 
         expect(deserialized.custodyType).toBe(Object.keys(walletJson.custody)[0]);
 
@@ -136,7 +133,7 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
         const custody = await wallet.custody(passKey);
         const authData = await custody.authorizePlan(plan);
 
-        expect(new AuthorizationData(authData).toJson()).toMatchObject({
+        expect(authData.toJson()).toMatchObject({
           effectHash: {
             inner:
               // effectHash is deterministic

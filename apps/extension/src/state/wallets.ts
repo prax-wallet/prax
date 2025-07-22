@@ -1,14 +1,16 @@
-import { Key } from '@repo/encryption/key';
-import { Wallet } from '@repo/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
+import { Box } from '@repo/encryption/box';
+import { Key } from '@repo/encryption/key';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
 import type { SessionStorageState } from '@repo/storage-chrome/session';
+import { Wallet, type WalletJson } from '@repo/wallet';
 import { AllSlices, SliceCreator } from '.';
 
 export interface WalletsSlice {
-  all: Wallet[];
+  all: WalletJson[];
   addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<Wallet>;
+  getSeedPhrase: () => Promise<string[]>;
 }
 
 export const createWalletsSlice =
@@ -35,13 +37,14 @@ export const createWalletsSlice =
         const newWallet = new Wallet(label, walletId, fullViewingKey, { encryptedSeedPhrase });
 
         set(state => {
-          state.wallets.all.unshift(newWallet);
+          state.wallets.all.unshift(newWallet.toJson());
         });
 
         const wallets = await local.get('wallets');
         await local.set('wallets', [newWallet.toJson(), ...wallets]);
         return newWallet;
       },
+
       getSeedPhrase: async () => {
         const passwordKey = await session.get('passwordKey');
         if (!passwordKey) {
@@ -49,12 +52,17 @@ export const createWalletsSlice =
         }
 
         const key = await Key.fromJson(passwordKey);
-        const activeWallet = getActiveWallet(get());
+        const activeWallet = get().wallets.all[0];
         if (!activeWallet) {
           throw new Error('no wallet set');
         }
 
-        const decryptedSeedPhrase = await key.unseal(activeWallet.custody.encryptedSeedPhrase);
+        const encryptedSeedPhrase = activeWallet.custody['encryptedSeedPhrase'];
+        if (!encryptedSeedPhrase) {
+          throw new Error('no seed phrase set');
+        }
+
+        const decryptedSeedPhrase = await key.unseal(Box.fromJson(encryptedSeedPhrase));
         if (!decryptedSeedPhrase) {
           throw new Error('Unable to decrypt seed phrase with password');
         }
@@ -65,4 +73,5 @@ export const createWalletsSlice =
   };
 
 export const walletsSelector = (state: AllSlices) => state.wallets;
-export const getActiveWallet = (state: AllSlices) => state.wallets.all[0];
+export const getActiveWallet = (state: AllSlices) =>
+  state.wallets.all[0] && Wallet.fromJson(state.wallets.all[0]);
