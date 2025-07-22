@@ -90,4 +90,42 @@ describe('Accounts Slice', () => {
       expect(accountsPt2.at(1)!.label).toBe(accountA.label);
     });
   });
+
+  describe('getSeedPhrase()', () => {
+    test('seed phrase can be return', async () => {
+      await useStore.getState().password.setPassword('user_password_123');
+      const initialSeedPhrase = seedPhrase1;
+      const accountA = {
+        label: 'Account #1',
+        seedPhrase: initialSeedPhrase,
+      };
+      await useStore.getState().wallets.addWallet(accountA);
+      expect(useStore.getState().wallets.all.length).toBe(1);
+      expect(useStore.getState().wallets.all.at(0)!.label).toBe(accountA.label);
+
+      const seedPhraseFromKey = await useStore.getState().wallets.getSeedPhrase();
+      expect(seedPhraseFromKey).toStrictEqual(initialSeedPhrase);
+    });
+
+    test('seed phrase can be return after relogin', async () => {
+      const password = 'user_password_123';
+      await useStore.getState().password.setPassword(password);
+      const initialSeedPhrase = seedPhrase1;
+      const accountA = {
+        label: 'Account #1',
+        seedPhrase: initialSeedPhrase,
+      };
+      await useStore.getState().wallets.addWallet(accountA);
+      expect(useStore.getState().wallets.all.length).toBe(1);
+      expect(useStore.getState().wallets.all.at(0)!.label).toBe(accountA.label);
+
+      const seedPhraseFromKey = await useStore.getState().wallets.getSeedPhrase();
+      expect(seedPhraseFromKey).toStrictEqual(initialSeedPhrase);
+
+      useStore.getState().password.clearSessionPassword();
+      await useStore.getState().password.setSessionPassword(password);
+      const seedPhraseFromKeyAfterRelogin = await useStore.getState().wallets.getSeedPhrase();
+      expect(seedPhraseFromKeyAfterRelogin).toStrictEqual(initialSeedPhrase);
+    });
+  });
 });
