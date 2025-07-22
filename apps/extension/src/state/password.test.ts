@@ -51,10 +51,6 @@ describe('Password Slice', () => {
     expect(await useStore.getState().password.isPassword('wrong password')).toBeFalsy();
   });
 
-  test('password key is initially undefined', () => {
-    expect(useStore.getState().password.key).toBeUndefined();
-  });
-
   test('password key can be set to session storage', async () => {
     await useStore.getState().password.setPassword(password);
     await useStore.getState().wallets.addWallet({

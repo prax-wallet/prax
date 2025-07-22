@@ -2,7 +2,7 @@ import { Key } from '@penumbra-zone/crypto-web/encryption';
 import { Wallet, WalletCreate } from '@penumbra-zone/types/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import { ExtensionStorage } from '@repo/storage-chrome/base';
-import { LocalStorageState } from '@repo/storage-chrome/types';
+import { LocalStorageState, SessionStorageState } from '@repo/storage-chrome/types';
 import { AllSlices, SliceCreator } from '.';
 
 export interface WalletsSlice {
@@ -12,7 +12,10 @@ export interface WalletsSlice {
 }
 
 export const createWalletsSlice =
-  (local: ExtensionStorage<LocalStorageState>): SliceCreator<WalletsSlice> =>
+  (
+    session: ExtensionStorage<SessionStorageState>,
+    local: ExtensionStorage<LocalStorageState>,
+  ): SliceCreator<WalletsSlice> =>
   (set, get) => {
     return {
       all: [],
@@ -21,7 +24,7 @@ export const createWalletsSlice =
         const spendKey = generateSpendKey(seedPhraseStr);
         const fullViewingKey = getFullViewingKey(spendKey);
 
-        const passwordKey = get().password.key;
+        const passwordKey = await session.get('passwordKey');
         if (passwordKey === undefined) {
           throw new Error('Password Key not in storage');
         }
@@ -45,7 +48,7 @@ export const createWalletsSlice =
         return newWallet;
       },
       getSeedPhrase: async () => {
-        const passwordKey = get().password.key;
+        const passwordKey = await session.get('passwordKey');
         if (!passwordKey) {
           throw new Error('no password set');
         }
