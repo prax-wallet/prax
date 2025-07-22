@@ -1,34 +1,36 @@
-import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import type { CustodyInstance } from './custody/types';
-import { getCustodyImplByName, getCustodyImplName } from './custody';
 import { toPlainMessage, type PlainMessage } from '@bufbuild/protobuf';
-import type {
-  CustodyImpl,
-  CustodyImplJson,
-  CustodyImplName,
-  CustodyImplParam,
-} from './custody/impls';
+import {
+  FullViewingKey,
+  SpendKey,
+  WalletId,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AuthorizationData,
+  TransactionPlan,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { authorizePlan } from '@penumbra-zone/wasm/build';
+import { generateSpendKey } from '@penumbra-zone/wasm/keys';
+import { Box, BoxJson } from '@repo/encryption/box';
+import { Key } from '@repo/encryption/key';
+import { getCustodyType } from './custody';
 
 export interface WalletJson<T extends string = string> {
   id: { inner: string };
   label: string;
   fullViewingKey: { inner: string };
-  custody: Record<T, CustodyImplJson[Extract<T, CustodyImplName>]>;
+  custody: Record<T, BoxJson>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- wallet may contain any custody
-export class Wallet<T extends CustodyImplName = any> {
+export class Wallet<T extends string = string> {
   public readonly custodyType: T;
-  public readonly custody: CustodyInstance<T, CustodyImplJson[T]>;
+  private readonly custodyBox: Box;
 
   constructor(
     public readonly label: string,
     public readonly id: PlainMessage<WalletId>,
     public readonly fullViewingKey: PlainMessage<FullViewingKey>,
-    custody: CustodyInstance<T, CustodyImplJson[T]> | Record<T, CustodyImplParam[T]>,
+    custodyData: Record<T, Box>,
   ) {
-    let instance: CustodyInstance<T, CustodyImplJson[T]>;
-
     if (!label || typeof label !== 'string') {
       throw new TypeError(`Wallet "${label}" label is not valid`, { cause: label });
     }
@@ -45,39 +47,51 @@ export class Wallet<T extends CustodyImplName = any> {
     }
     this.fullViewingKey = toPlainMessage(new FullViewingKey(fullViewingKey));
 
-    if (Object.keys(custody).length > 1 && 'custodyType' in custody) {
-      instance = custody;
-    } else if (Object.keys(custody).length === 1 && !('custodyType' in custody)) {
-      const [[custodyType, custodyParam]] = Object.entries(custody) as [[T, CustodyImplParam[T]]];
-      const impl: CustodyImpl[T] = getCustodyImplByName(custodyType);
-      instance = new impl(custodyParam);
-    } else {
-      throw new TypeError(`Wallet "${label}" custody is not valid`, { cause: custody });
+    this.custodyType = getCustodyType(custodyData);
+    this.custodyBox = custodyData[this.custodyType];
+  }
+
+  async custody(passKey: Key) {
+    const unsealed = await passKey.unseal(this.custodyBox);
+    if (unsealed == null) {
+      throw new Error(`Wrong key for "${this.label}" custody box`);
     }
 
-    this.custody = instance;
-    this.custodyType = this.custody.custodyType;
+    return {
+      authorizePlan: async (plan: TransactionPlan): Promise<AuthorizationData> => {
+        switch (this.custodyType) {
+          case 'encryptedSeedPhrase': {
+            const spendKey = generateSpendKey(unsealed);
+            return Promise.resolve(authorizePlan(spendKey, plan));
+          }
+          case 'encryptedSpendKey': {
+            const spendKey = SpendKey.fromJsonString(unsealed);
+            return Promise.resolve(authorizePlan(spendKey, plan));
+          }
+          default:
+            throw new Error(`Unknown custody type: ${this.custodyType}`);
+        }
+      },
+    };
   }
 
   public static fromJson<T extends string>(json: WalletJson<T>) {
-    const custodyType = getCustodyImplName(json.custody);
-    const impl: CustodyImpl[typeof custodyType] = getCustodyImplByName(custodyType);
-    const custody = impl.fromJson(json.custody);
+    const custodyType = getCustodyType(json.custody);
 
-    return new Wallet<typeof custodyType>(
+    return new Wallet<T>(
       json.label,
       WalletId.fromJson(json.id),
       FullViewingKey.fromJson(json.fullViewingKey),
-      custody,
+      { [custodyType]: Box.fromJson(json.custody[custodyType]) } as Record<T, Box>,
     );
   }
 
   public toJson(): WalletJson<T> {
     return {
       label: this.label,
-      id: new WalletId(this.id).toJson(),
-      fullViewingKey: new FullViewingKey(this.fullViewingKey).toJson(),
-      custody: this.custody.toJson(),
-    } as WalletJson<T>;
+      id: new WalletId(this.id).toJson() as { inner: string },
+      fullViewingKey: new FullViewingKey(this.fullViewingKey).toJson() as { inner: string },
+      custody: { [this.custodyType]: this.custodyBox.toJson() } as Record<T, BoxJson>,
+    };
   }
 }

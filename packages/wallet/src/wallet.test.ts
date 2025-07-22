@@ -1,15 +1,13 @@
 import { toPlainMessage } from '@bufbuild/protobuf';
-import { bech32mSpendKey } from '@penumbra-zone/bech32m/penumbraspendkey';
+import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
   AuthorizationData,
   TransactionPlan,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
+import { Box, BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
 import { beforeAll, describe, expect, test } from 'vitest';
-import { getCustodyImplByName } from './custody';
-import { CustodyImplJson, CustodyImplName, CustodyImplParam } from './custody/impls';
-import { CustodyInstance } from './custody/types';
 import { Wallet, WalletJson } from './wallet';
 
 const seedPhrase =
@@ -21,24 +19,32 @@ const walletId = getWalletId(fvk);
 const label = 'Test Wallet';
 const { key: passKey } = await Key.create('s0meUs3rP@ssword');
 
-const custodyParams: Record<CustodyImplName, CustodyImplParam[CustodyImplName]> = {
+const custodyBoxes = {
   encryptedSeedPhrase: await passKey.seal(seedPhrase),
-  encryptedSpendKey: await passKey.seal(bech32mSpendKey(spendKey)),
+  encryptedSpendKey: await passKey.seal(new SpendKey(spendKey).toJsonString()),
 } as const;
 
 describe('Wallet with bad custody', () => {
-  test('Wallet with unknown custody', () => {
-    expect(() => {
-      new Wallet(label, walletId, fvk, {
-        unknownCustodyTypeName: 'value',
-      } as never);
-    }).toThrow('Unknown custody type');
+  test('Wallet with unknown custody type can be created but fails on authorization', async () => {
+    const unknownCustodyBox = await passKey.seal('some fake data');
+    const wallet = new Wallet(label, walletId, fvk, {
+      unknownCustodyTypeName: unknownCustodyBox,
+    } as never);
+
+    expect(wallet.custodyType).toBe('unknownCustodyTypeName');
+
+    const plan = new TransactionPlan();
+    const custody = await wallet.custody(passKey);
+    await expect(custody.authorizePlan(plan)).rejects.toThrow(
+      'Unknown custody type: unknownCustodyTypeName',
+    );
   });
 
   test('Wallet with empty custody', () => {
-    expect(() => {
-      new Wallet(label, walletId, fvk, {} as never);
-    }).toThrow('custody is not valid');
+    // Empty object means custodyType will be undefined, and custodyBox will be undefined
+    // This should succeed in construction but fail when trying to access the custodyBox
+    const wallet = new Wallet(label, walletId, fvk, {} as never);
+    expect(wallet.custodyType).toBeUndefined();
   });
 
   test('Wallet with undefined custody', () => {
@@ -48,61 +54,47 @@ describe('Wallet with bad custody', () => {
   });
 });
 
-describe.each(Object.keys(custodyParams) as CustodyImplName[])(
+describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
   'Wallet with %s custody',
   custodyType => {
-    const impl = getCustodyImplByName(custodyType);
-    const custodyParam = { [custodyType]: custodyParams[custodyType] } as Pick<
-      typeof custodyParams,
-      typeof custodyType
-    >;
-    const custodyInstance = new impl(custodyParams[custodyType]) as CustodyInstance<
+    const custodyData = { [custodyType]: custodyBoxes[custodyType] } as Record<
       typeof custodyType,
-      CustodyImplJson[typeof custodyType]
+      Box
     >;
 
     describe('Wallet constructor', () => {
       test('constructed with valid custody data', () => {
-        const wallet = new Wallet(label, walletId, fvk, custodyParam);
+        const wallet = new Wallet(label, walletId, fvk, custodyData);
 
         expect(wallet.custodyType).toBe(custodyType);
-        expect(wallet.custody).toBeInstanceOf(impl);
-      });
-
-      test('constructed with valid custody instance', () => {
-        const wallet = new Wallet<typeof custodyType>(label, walletId, fvk, custodyInstance);
-        expect(wallet.custodyType).toBe(custodyType);
-        expect(wallet.custody).toBeInstanceOf(impl);
       });
 
       test('constructed with undefined label', () => {
         expect(() => {
-          new Wallet(undefined as never, walletId, fvk, custodyParam);
+          new Wallet(undefined as never, walletId, fvk, custodyData);
         }).toThrow('label is not valid');
       });
 
       test('constructed with undefined wallet ID', () => {
         expect(() => {
-          new Wallet(label, undefined as never, fvk, custodyParam);
+          new Wallet(label, undefined as never, fvk, custodyData);
         }).toThrow('id is not valid');
       });
 
       test('constructed with undefined full viewing key', () => {
         expect(() => {
-          new Wallet(label, walletId, undefined as never, custodyParam);
+          new Wallet(label, walletId, undefined as never, custodyData);
         }).toThrow('full viewing key is not valid');
       });
     });
 
-    describe('seralization', () => {
-      const walletJson: WalletJson<typeof custodyType> = {
+    describe('serialization', () => {
+      type CT = typeof custodyType;
+      const walletJson: WalletJson<CT> = {
         id: walletId.toJson() as { inner: string },
         label: label,
         fullViewingKey: fvk.toJson() as { inner: string },
-        custody: { [custodyType]: custodyParams[custodyType].toJson() } as Pick<
-          CustodyImplJson,
-          typeof custodyType
-        >,
+        custody: { [custodyType]: custodyBoxes[custodyType].toJson() } as Record<CT, BoxJson>,
       };
 
       test('round-trip', () => {
@@ -113,7 +105,6 @@ describe.each(Object.keys(custodyParams) as CustodyImplName[])(
         expect(deserialized.fullViewingKey).toStrictEqual(toPlainMessage(fvk));
 
         expect(deserialized.custodyType).toBe(Object.keys(walletJson.custody)[0]);
-        expect(deserialized.custody).toBeInstanceOf(impl);
 
         expect(deserialized.toJson()).toStrictEqual(walletJson);
       });
@@ -132,7 +123,7 @@ describe.each(Object.keys(custodyParams) as CustodyImplName[])(
     });
 
     describe('authorization', () => {
-      const wallet = new Wallet(label, walletId, fvk, custodyParam);
+      const wallet = new Wallet(label, walletId, fvk, custodyData);
       let plan: TransactionPlan;
 
       beforeAll(async () => {
@@ -142,7 +133,8 @@ describe.each(Object.keys(custodyParams) as CustodyImplName[])(
       });
 
       test('authorization success', async () => {
-        const authData = await wallet.custody.authorize(passKey, walletId, plan);
+        const custody = await wallet.custody(passKey);
+        const authData = await custody.authorizePlan(plan);
 
         expect(new AuthorizationData(authData).toJson()).toMatchObject({
           effectHash: {
@@ -163,18 +155,12 @@ describe.each(Object.keys(custodyParams) as CustodyImplName[])(
         });
       });
 
-      test('authorization with wrong wallet ID fails', async () => {
-        const wrongWalletId = { inner: new Uint8Array() };
-
-        await expect(wallet.custody.authorize(passKey, wrongWalletId, plan)).rejects.toThrow(
-          'Wrong wallet',
-        );
-      });
-
       test('authorization with wrong pass key fails', async () => {
         const { key: wrongPassKey } = await Key.create('differentPassword');
 
-        await expect(wallet.custody.authorize(wrongPassKey, walletId, plan)).rejects.toThrow();
+        await expect(wallet.custody(wrongPassKey)).rejects.toThrow(
+          `Wrong key for "${label}" custody box`,
+        );
       });
     });
   },
