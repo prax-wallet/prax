@@ -1,0 +1,19 @@
+{
+  "name": "@repo/encryption",
+  "version": "0.0.1",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
+  "exports": {
+    "./box": "./src/box.ts",
+    "./key": "./src/key.ts",
+    "./key-print": "./src/key-print.ts"
+  },
+  "devDependencies": {
+    "@penumbra-zone/types": "36.0.0"
+  }
+}

@@ -1,5 +1,5 @@
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { getOriginRecord, upsertOriginRecord } from '@repo/storage-chrome/origin';
+import { UserChoice } from '@repo/storage-chrome/records';
 import { PopupType } from '../message/popup';
 import { popup } from '../popup';
 import { PrerenderingExternalSender, ValidExternalSender } from './external';

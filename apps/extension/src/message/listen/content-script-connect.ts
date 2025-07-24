@@ -1,6 +1,6 @@
 import { Code, ConnectError } from '@connectrpc/connect';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { UserChoice } from '@repo/storage-chrome/records';
 import { PraxConnection } from '../../content-scripts/message/prax-connection';
 import { PraxControl } from '../../content-scripts/message/prax-control';
 import { approveSender } from '../../senders/approve';

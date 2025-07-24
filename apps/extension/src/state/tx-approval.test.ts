@@ -4,7 +4,7 @@ import {
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { UserChoice } from '@repo/storage-chrome/records';
 import { beforeEach, describe, expect, MockedFunction, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';

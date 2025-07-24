@@ -41,8 +41,4 @@ export const settingsRoutes = [
     path: PopupPath.SETTINGS_NUMERAIRES,
     element: <SettingsNumeraires />,
   },
-  // {
-  //   path: PopupPath.RESET_PASSWORD,
-  //   element: <SettingsResetPassword />,
-  // },
 ];

@@ -1,7 +1,7 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
 import { beforeEach, describe, expect, test } from 'vitest';
-import { SeedPhraseLength } from '@penumbra-zone/crypto-web/mnemonic';
+import { SeedPhraseLength } from './mnemonic';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { sessionExtStorage } from '@repo/storage-chrome/session';
 

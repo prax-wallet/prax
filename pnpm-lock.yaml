@@ -101,9 +101,6 @@ importers:
       '@penumbra-zone/client':
         specifier: 29.0.0
         version: 29.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.6.1(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.2)
-      '@penumbra-zone/crypto-web':
-        specifier: 47.0.0
-        version: 47.0.0(@penumbra-zone/types@36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 28.0.0
         version: 28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
@@ -143,12 +140,18 @@ importers:
       '@repo/context':
         specifier: workspace:*
         version: link:../../packages/context
+      '@repo/encryption':
+        specifier: workspace:*
+        version: link:../../packages/encryption
       '@repo/storage-chrome':
         specifier: workspace:*
         version: link:../../packages/storage-chrome
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@repo/wallet':
+        specifier: workspace:*
+        version: link:../../packages/wallet
       '@tanstack/react-query':
         specifier: 5.55.0
         version: 5.55.0(react@18.3.1)
@@ -207,6 +210,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
+      bip39:
+        specifier: ^3.1.0
+        version: 3.1.0
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -270,9 +276,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: 18.0.0
         version: 18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/crypto-web':
-        specifier: 47.0.0
-        version: 47.0.0(@penumbra-zone/types@36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 28.0.0
         version: 28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
@@ -309,6 +312,12 @@ importers:
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
+
+  packages/encryption:
+    devDependencies:
+      '@penumbra-zone/types':
+        specifier: 36.0.0
+        version: 36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
 
   packages/mock-chrome:
     devDependencies:
@@ -354,9 +363,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: 18.0.0
         version: 18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/crypto-web':
-        specifier: 47.0.0
-        version: 47.0.0(@penumbra-zone/types@36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 28.0.0
         version: 28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
@@ -381,6 +387,9 @@ importers:
       '@penumbra-zone/protobuf':
         specifier: 11.0.0
         version: 11.0.0(@bufbuild/protobuf@1.10.0)
+      '@repo/wallet':
+        specifier: workspace:*
+        version: link:../wallet
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -388,9 +397,6 @@ importers:
       '@penumbra-labs/registry':
         specifier: ^12.7.2
         version: 12.7.2
-      '@penumbra-zone/crypto-web':
-        specifier: 47.0.0
-        version: 47.0.0(@penumbra-zone/types@36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
       '@penumbra-zone/getters':
         specifier: 28.0.0
         version: 28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
@@ -400,6 +406,9 @@ importers:
       '@penumbra-zone/wasm':
         specifier: 53.0.0
         version: 53.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
+      '@repo/encryption':
+        specifier: workspace:*
+        version: link:../encryption
       '@types/chrome':
         specifier: 0.0.270
         version: 0.0.270
@@ -607,6 +616,28 @@ importers:
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.17(ts-node@10.9.2(@swc/core@1.7.28)(@types/node@22.10.2)(typescript@5.6.2))
+
+  packages/wallet:
+    dependencies:
+      '@penumbra-zone/bech32m':
+        specifier: 18.0.0
+        version: 18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf':
+        specifier: 11.0.0
+        version: 11.0.0(@bufbuild/protobuf@1.10.0)
+    devDependencies:
+      '@penumbra-zone/types':
+        specifier: 36.0.0
+        version: 36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/wasm':
+        specifier: 53.0.0
+        version: 53.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
+      '@repo/encryption':
+        specifier: workspace:*
+        version: link:../encryption
+      '@types/chrome':
+        specifier: 0.0.270
+        version: 0.0.270
 
 packages:
 

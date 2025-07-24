@@ -6,7 +6,6 @@ import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/
 import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import {
   MsgAcknowledgement,
   MsgRecvPacket,
@@ -149,7 +148,9 @@ export interface RelevantTx {
 type RecoveredSourceRecords = (SpendableNoteRecord | SwapRecord)[];
 
 const generateTxId = async (tx: Transaction): Promise<TransactionId> => {
-  return new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
+  return new TransactionId({
+    inner: new Uint8Array(await crypto.subtle.digest('SHA-256', tx.toBinary())),
+  });
 };
 
 const isSpendableNoteRecord = (
