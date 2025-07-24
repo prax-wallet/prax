@@ -11,7 +11,31 @@ import { authorizePlan } from '@penumbra-zone/wasm/build';
 import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 import { Box, BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
-import { getCustodyType } from './custody';
+import {
+  assertCustodyTypeName,
+  CustodyTypeName,
+  getCustodyTypeName,
+  isCustodyTypeName,
+} from './custody';
+
+export function assertWalletCustodyType<T extends CustodyTypeName>(
+  checkName: T,
+  w: Wallet,
+): asserts w is Wallet<T> {
+  assertCustodyTypeName(checkName);
+  if (w.custodyType !== checkName) {
+    throw new TypeError(`Wallet "${w.label}" custody type is not ${checkName}`, {
+      cause: w.custodyType,
+    });
+  }
+}
+
+export function isWalletCustodyType<T extends CustodyTypeName>(
+  checkName: T,
+  w: Wallet,
+): w is Wallet<T> {
+  return isCustodyTypeName(checkName) && w.custodyType === checkName;
+}
 
 export interface WalletJson<T extends string = string> {
   id: string;
@@ -44,7 +68,7 @@ export class Wallet<T extends string = string> {
       });
     }
 
-    this.custodyType = getCustodyType(custodyData);
+    this.custodyType = getCustodyTypeName(custodyData);
     this.custodyBox = custodyData[this.custodyType];
   }
 
@@ -73,7 +97,7 @@ export class Wallet<T extends string = string> {
   }
 
   public static fromJson<T extends string>(json: WalletJson<T>) {
-    const custodyType = getCustodyType(json.custody);
+    const custodyType = getCustodyTypeName(json.custody);
 
     return new Wallet<T>(
       json.label,

@@ -23,25 +23,17 @@ const custodyBoxes = {
 
 describe('Wallet with bad custody', () => {
   test('Wallet with unknown custody type can be created but fails on authorization', async () => {
-    const unknownCustodyBox = await passKey.seal('some fake data');
-    const wallet = new Wallet(label, walletId, fvk, {
-      unknownCustodyTypeName: unknownCustodyBox,
-    } as never);
+    const unknownCustodyTypeName: Box = await passKey.seal('some fake data');
 
-    expect(wallet.custodyType).toBe('unknownCustodyTypeName');
-
-    const plan = new TransactionPlan();
-    const custody = await wallet.custody(passKey);
-    await expect(custody.authorizePlan(plan)).rejects.toThrow(
-      'Unknown custody type: unknownCustodyTypeName',
+    expect(() => new Wallet(label, walletId, fvk, { unknownCustodyTypeName } as never)).toThrow(
+      'Unknown custody type name: unknownCustodyTypeName',
     );
   });
 
   test('Wallet with empty custody', () => {
-    // Empty object means custodyType will be undefined, and custodyBox will be undefined
-    // This should succeed in construction but fail when trying to access the custodyBox
-    const wallet = new Wallet(label, walletId, fvk, {} as never);
-    expect(wallet.custodyType).toBeUndefined();
+    expect(() => new Wallet(label, walletId, fvk, {} as never)).toThrow(
+      'Unknown custody type name: undefined',
+    );
   });
 
   test('Wallet with undefined custody', () => {
@@ -107,7 +99,7 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
       });
 
       test.each(['id', 'label', 'fullViewingKey', 'custody'] as const)(
-        `throws if %s is undefined`,
+        `throws if %s is missing`,
         walletField => {
           expect(() =>
             Wallet.fromJson({

@@ -1,15 +1,15 @@
-import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
-import { Box } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
+import { Box } from '@repo/encryption/box';
+import { assertWalletCustodyType, Wallet, type WalletJson } from '@repo/wallet';
+import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
 import type { SessionStorageState } from '@repo/storage-chrome/session';
-import { Wallet, type WalletJson } from '@repo/wallet';
 import { AllSlices, SliceCreator } from '.';
 
 export interface WalletsSlice {
   all: WalletJson[];
-  addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<Wallet>;
+  addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<void>;
   getSeedPhrase: () => Promise<string[]>;
 }
 
@@ -42,7 +42,6 @@ export const createWalletsSlice =
 
         const wallets = await local.get('wallets');
         await local.set('wallets', [newWallet.toJson(), ...wallets]);
-        return newWallet;
       },
 
       getSeedPhrase: async () => {
@@ -57,18 +56,16 @@ export const createWalletsSlice =
           throw new Error('no wallet set');
         }
 
-        if (activeWallet.custodyType !== 'encryptedSeedPhrase') {
-          throw new Error('no seed phrase set');
-        }
-        const { encryptedSeedPhrase } = (activeWallet.toJson() as WalletJson<'encryptedSeedPhrase'>)
-          .custody;
+        assertWalletCustodyType('encryptedSeedPhrase', activeWallet);
 
-        const decryptedSeedPhrase = await key.unseal(Box.fromJson(encryptedSeedPhrase));
-        if (!decryptedSeedPhrase) {
+        const phraseBox = Box.fromJson(activeWallet.toJson().custody.encryptedSeedPhrase);
+
+        const phrase = await key.unseal(phraseBox);
+        if (!phrase) {
           throw new Error('Unable to decrypt seed phrase with password');
         }
 
-        return decryptedSeedPhrase.split(' ');
+        return phrase.split(' ');
       },
     };
   };

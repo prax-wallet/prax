@@ -49,9 +49,10 @@ const getAddrByIndex =
       throw new Error('No active wallet');
     }
 
+    const fullViewingKey = wallet.fullViewingKey;
     return ephemeral
-      ? getEphemeralByIndex(wallet.fullViewingKey, index)
-      : getAddressByIndex(wallet.fullViewingKey, index);
+      ? getEphemeralByIndex(fullViewingKey, index)
+      : getAddressByIndex(fullViewingKey, index);
   };
 
 export const PopupIndex = () => {

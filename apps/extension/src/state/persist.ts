@@ -1,9 +1,10 @@
+import { StateCreator, StoreMutatorIdentifier } from 'zustand';
+import { AllSlices } from '.';
+import { produce } from 'immer';
+
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { OriginRecord } from '@repo/storage-chrome/records';
-import { produce } from 'immer';
-import { StateCreator, StoreMutatorIdentifier } from 'zustand';
-import { AllSlices } from '.';
 
 export type Middleware = <
   T,
