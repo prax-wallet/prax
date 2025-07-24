@@ -39,7 +39,7 @@ export const initializeStore = (
   local: ExtensionStorage<LocalStorageState>,
 ) => {
   return immer((setState, getState: () => AllSlices, store) => ({
-    wallets: createWalletsSlice(local)(setState, getState, store),
+    wallets: createWalletsSlice(session, local)(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
     network: createNetworkSlice(local)(setState, getState, store),
