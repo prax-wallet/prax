@@ -11,40 +11,37 @@ import { authorizePlan } from '@penumbra-zone/wasm/build';
 import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 import { Box, BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
-import {
-  assertCustodyTypeName,
-  CustodyTypeName,
-  getCustodyTypeName,
-  isCustodyTypeName,
-} from './custody';
+import { assertCustodyTypeName, type CustodyTypeName, getCustodyTypeName } from './custody';
+
+export function isWalletCustodyType<T extends CustodyTypeName>(
+  w: Wallet,
+  checkName: T,
+): w is Wallet<T> {
+  assertCustodyTypeName(checkName);
+  return w.custodyType === checkName;
+}
 
 export function assertWalletCustodyType<T extends CustodyTypeName>(
-  checkName: T,
   w: Wallet,
+  checkName: T,
 ): asserts w is Wallet<T> {
-  assertCustodyTypeName(checkName);
-  if (w.custodyType !== checkName) {
+  if (!isWalletCustodyType(w, checkName)) {
     throw new TypeError(`Wallet "${w.label}" custody type is not ${checkName}`, {
       cause: w.custodyType,
     });
   }
 }
 
-export function isWalletCustodyType<T extends CustodyTypeName>(
-  checkName: T,
-  w: Wallet,
-): w is Wallet<T> {
-  return isCustodyTypeName(checkName) && w.custodyType === checkName;
-}
-
-export interface WalletJson<T extends string = string> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- may be any type of wallet
+export interface WalletJson<T extends CustodyTypeName = any> {
   id: string;
   label: string;
   fullViewingKey: string;
   custody: Record<T, BoxJson>;
 }
 
-export class Wallet<T extends string = string> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- may be any type of wallet
+export class Wallet<T extends CustodyTypeName = any> {
   public readonly custodyType: T;
   private readonly custodyBox: Box;
 
@@ -96,10 +93,10 @@ export class Wallet<T extends string = string> {
     };
   }
 
-  public static fromJson<T extends string>(json: WalletJson<T>) {
+  public static fromJson<T extends CustodyTypeName>(json: WalletJson<T>): Wallet<T> {
     const custodyType = getCustodyTypeName(json.custody);
 
-    return new Wallet<T>(
+    return new Wallet(
       json.label,
       WalletId.fromJsonString(json.id),
       FullViewingKey.fromJsonString(json.fullViewingKey),

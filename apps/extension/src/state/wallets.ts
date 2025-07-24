@@ -56,7 +56,7 @@ export const createWalletsSlice =
           throw new Error('no wallet set');
         }
 
-        assertWalletCustodyType('encryptedSeedPhrase', activeWallet);
+        assertWalletCustodyType(activeWallet, 'encryptedSeedPhrase');
 
         const phraseBox = Box.fromJson(activeWallet.toJson().custody.encryptedSeedPhrase);
 

@@ -5,7 +5,7 @@ export function isCustodyTypeName(checkName?: string): checkName is CustodyTypeN
 }
 
 export function assertCustodyTypeName(checkName?: string): asserts checkName is CustodyTypeName {
-  if (!custodyTypeNames.includes(checkName as CustodyTypeName)) {
+  if (!isCustodyTypeName(checkName)) {
     throw new TypeError(`Unknown custody type name: ${checkName}`, { cause: checkName });
   }
 }
