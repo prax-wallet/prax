@@ -1,6 +1,7 @@
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Wallet } from '@penumbra-zone/types/wallet';
+import { Wallet as LegacyWallet } from '@penumbra-zone/types/wallet';
+import { Wallet } from '@repo/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import { Key } from '@repo/encryption/key';
 import { KeyPrint } from '@repo/encryption/key-print';
@@ -19,9 +20,14 @@ const testSeedPhrase =
 const testFvk = getFullViewingKey(generateSpendKey(testSeedPhrase));
 const testId = getWalletId(testFvk);
 const testKey = await Key.create(testPassword);
-const testWallet = new Wallet('Test Wallet', testId.toJsonString(), testFvk.toJsonString(), {
-  encryptedSeedPhrase: await testKey.key.seal(testSeedPhrase),
-});
+const legacyTestWallet = new LegacyWallet(
+  'Test Wallet',
+  testId.toJsonString(),
+  testFvk.toJsonString(),
+  {
+    encryptedSeedPhrase: await testKey.key.seal(testSeedPhrase),
+  },
+);
 
 const defaultData: ExtensionStorageDefaults<Storage_V1.LOCAL> = {
   wallets: [],
@@ -36,7 +42,7 @@ const validRequiredData: Storage_V1.LOCAL = {
 };
 
 const onboardedData: Pick<Storage_V1.LOCAL, 'wallets' | 'passwordKeyPrint'> = {
-  wallets: [testWallet.toJson()],
+  wallets: [legacyTestWallet.toJson()],
   passwordKeyPrint: testKey.keyPrint.toJson(),
 };
 
@@ -224,13 +230,18 @@ describe('local-v1-v2 migration', () => {
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(testPassword, migratedKeyPrint);
 
-      expect(wallets[0]).toStrictEqual(testWallet.toJson());
+      expect(wallets[0]).toStrictEqual(legacyTestWallet.toJson());
 
-      const walletFromJson = Wallet.fromJson(wallets[0]!);
+      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
+
+      // works with new wallet tools
+      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
 
     test('corrupted passwordKeyPrint is recovered and valid', async () => {
@@ -247,14 +258,19 @@ describe('local-v1-v2 migration', () => {
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(testPassword, migratedKeyPrint);
 
-      expect(wallets[0]).toStrictEqual(testWallet.toJson());
+      expect(wallets[0]).toStrictEqual(legacyTestWallet.toJson());
 
-      const walletFromJson = Wallet.fromJson(wallets[0]!);
+      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
 
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
+
+      // works with new wallet tools
+      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
 
     test('invalid passwordKeyPrint is unchanged and invalid', async () => {
@@ -303,11 +319,16 @@ describe('local-v1-v2 migration', () => {
       // Verify wallet can be unlocked with snapshot password
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
-      const walletFromJson = Wallet.fromJson(wallets[0]!);
+      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
+
+      // works with new wallet tools
+      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
 
     test('typical v0 user migrates correctly', async () => {
@@ -340,11 +361,16 @@ describe('local-v1-v2 migration', () => {
       // Verify wallet can be unlocked with snapshot password
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
-      const walletFromJson = Wallet.fromJson(wallets[0]!);
+      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
+
+      // works with new wallet tools
+      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
 
     test('corrupted v1 user migrates correctly', async () => {
@@ -377,11 +403,16 @@ describe('local-v1-v2 migration', () => {
       // Verify wallet can be unlocked with snapshot password
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
-      const walletFromJson = Wallet.fromJson(wallets[0]!);
+      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
+
+      // works with new wallet tools
+      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
   });
 });
