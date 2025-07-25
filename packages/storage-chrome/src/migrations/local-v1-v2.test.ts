@@ -1,7 +1,7 @@
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Wallet as LegacyWallet } from '@penumbra-zone/types/wallet';
-import { Wallet } from '@repo/wallet';
+import { Wallet } from '_penumbra_zone_types_36/wallet';
+import { Wallet as RepoWallet } from '@repo/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import { Key } from '@repo/encryption/key';
 import { KeyPrint } from '@repo/encryption/key-print';
@@ -20,14 +20,9 @@ const testSeedPhrase =
 const testFvk = getFullViewingKey(generateSpendKey(testSeedPhrase));
 const testId = getWalletId(testFvk);
 const testKey = await Key.create(testPassword);
-const legacyTestWallet = new LegacyWallet(
-  'Test Wallet',
-  testId.toJsonString(),
-  testFvk.toJsonString(),
-  {
-    encryptedSeedPhrase: await testKey.key.seal(testSeedPhrase),
-  },
-);
+const legacyTestWallet = new Wallet('Test Wallet', testId.toJsonString(), testFvk.toJsonString(), {
+  encryptedSeedPhrase: await testKey.key.seal(testSeedPhrase),
+});
 
 const defaultData: ExtensionStorageDefaults<Storage_V1.LOCAL> = {
   wallets: [],
@@ -232,14 +227,14 @@ describe('local-v1-v2 migration', () => {
 
       expect(wallets[0]).toStrictEqual(legacyTestWallet.toJson());
 
-      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
+      const walletFromJson = Wallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
       // works with new wallet tools
-      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
       expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
       expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
@@ -260,7 +255,7 @@ describe('local-v1-v2 migration', () => {
 
       expect(wallets[0]).toStrictEqual(legacyTestWallet.toJson());
 
-      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
+      const walletFromJson = Wallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
@@ -268,7 +263,7 @@ describe('local-v1-v2 migration', () => {
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
       // works with new wallet tools
-      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
       expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
       expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
@@ -319,14 +314,14 @@ describe('local-v1-v2 migration', () => {
       // Verify wallet can be unlocked with snapshot password
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
-      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
+      const walletFromJson = Wallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
       // works with new wallet tools
-      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
       expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
       expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
@@ -361,14 +356,14 @@ describe('local-v1-v2 migration', () => {
       // Verify wallet can be unlocked with snapshot password
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
-      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
+      const walletFromJson = Wallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
       // works with new wallet tools
-      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
       expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
       expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
@@ -403,14 +398,14 @@ describe('local-v1-v2 migration', () => {
       // Verify wallet can be unlocked with snapshot password
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(snapshotPassword, migratedKeyPrint);
-      const walletFromJson = LegacyWallet.fromJson(wallets[0]!);
+      const walletFromJson = Wallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
         walletFromJson.custody.encryptedSeedPhrase,
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
       // works with new wallet tools
-      const newWalletFromJson = Wallet.fromJson(wallets[0]!);
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
       expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
       expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
