@@ -11,7 +11,7 @@ import { authorizePlan } from '@penumbra-zone/wasm/build';
 import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 import { Box, BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
-import { assertCustodyTypeName, type CustodyTypeName, getCustodyTypeName } from './custody';
+import { assertCustodyTypeName, CustodyTypeName, getCustodyTypeName } from './custody';
 
 export function isWalletCustodyType<T extends CustodyTypeName>(
   w: Wallet,
@@ -32,16 +32,14 @@ export function assertWalletCustodyType<T extends CustodyTypeName>(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- may be any type of wallet
-export interface WalletJson<T extends CustodyTypeName = any> {
+export interface WalletJson<T extends string = string> {
   id: string;
   label: string;
   fullViewingKey: string;
   custody: Record<T, BoxJson>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- may be any type of wallet
-export class Wallet<T extends CustodyTypeName = any> {
+export class Wallet<T extends string = string> {
   public readonly custodyType: T;
   private readonly custodyBox: Box;
 
@@ -77,6 +75,7 @@ export class Wallet<T extends CustodyTypeName = any> {
 
     return {
       authorizePlan: async (plan: TransactionPlan): Promise<AuthorizationData> => {
+        assertCustodyTypeName(this.custodyType);
         switch (this.custodyType) {
           case 'encryptedSeedPhrase': {
             const spendKey = generateSpendKey(unsealed);
@@ -87,7 +86,11 @@ export class Wallet<T extends CustodyTypeName = any> {
             return Promise.resolve(authorizePlan(spendKey, plan));
           }
           default:
-            throw new Error(`Unknown custody type: ${this.custodyType}`);
+            // unreachable
+            this.custodyType satisfies never;
+            throw new Error(`Cannot authorize plan with custody type ${String(this.custodyType)}`, {
+              cause: this.custodyType,
+            });
         }
       },
     };
@@ -96,7 +99,7 @@ export class Wallet<T extends CustodyTypeName = any> {
   public static fromJson<T extends CustodyTypeName>(json: WalletJson<T>): Wallet<T> {
     const custodyType = getCustodyTypeName(json.custody);
 
-    return new Wallet(
+    return new Wallet<T>(
       json.label,
       WalletId.fromJsonString(json.id),
       FullViewingKey.fromJsonString(json.fullViewingKey),
