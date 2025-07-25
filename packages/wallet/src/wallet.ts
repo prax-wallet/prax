@@ -18,36 +18,6 @@ import {
   getCustodyTypeName,
 } from './custody';
 
-export function assertWallet(wallet: unknown): asserts wallet is Wallet {
-  if (!(wallet instanceof Wallet)) {
-    throw new TypeError(`Wallet expected, but received ${typeof wallet} ${String(wallet)}`, {
-      cause: wallet,
-    });
-  }
-}
-
-export function isWalletCustodyType<T extends CustodyTypeName>(
-  w: unknown,
-  checkName: T,
-): w is Wallet<T> {
-  assertWallet(w);
-  assertCustodyTypeName(checkName);
-  return w.custodyType === checkName;
-}
-
-export function assertWalletCustodyType<T extends CustodyTypeName>(
-  wallet: unknown,
-  checkName: T,
-): asserts wallet is Wallet<T> {
-  assertCustodyTypeName(checkName);
-  assertWallet(wallet);
-  if (wallet.custodyType !== checkName) {
-    throw new TypeError(`Wallet "${wallet.label}" custody type is not ${checkName}`, {
-      cause: wallet.custodyType,
-    });
-  }
-}
-
 export interface WalletJson<T extends CustodyTypeName = CustodyTypeName> {
   id: string;
   label: string;
