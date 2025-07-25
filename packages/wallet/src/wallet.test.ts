@@ -21,35 +21,12 @@ const custodyBoxes = {
   encryptedSpendKey: await passKey.seal(new SpendKey(spendKey).toJsonString()),
 } as const;
 
-describe('Wallet with bad custody', () => {
-  test('Wallet with unknown custody type can be created but fails on authorization', async () => {
-    const unknownCustodyTypeName: Box = await passKey.seal('some fake data');
-
-    expect(() => new Wallet(label, walletId, fvk, { unknownCustodyTypeName } as never)).toThrow(
-      'Unknown custody type name: unknownCustodyTypeName',
-    );
-  });
-
-  test('Wallet with empty custody', () => {
-    expect(() => new Wallet(label, walletId, fvk, {} as never)).toThrow(
-      'Unknown custody type name: undefined',
-    );
-  });
-
-  test('Wallet with undefined custody', () => {
-    expect(() => {
-      new Wallet(label, walletId, fvk, undefined as never);
-    }).toThrow('Cannot convert undefined or null to object');
-  });
-});
-
 describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
   'Wallet with %s custody',
   custodyType => {
-    const custodyData = { [custodyType]: custodyBoxes[custodyType] } as Record<
-      typeof custodyType,
-      Box
-    >;
+    const custodyBox = custodyBoxes[custodyType];
+
+    const custodyData = { [custodyType]: custodyBox } as Record<typeof custodyType, Box>;
 
     describe('Wallet constructor', () => {
       test('constructed with valid custody data', () => {
@@ -75,15 +52,31 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
           new Wallet(label, walletId, undefined as never, custodyData);
         }).toThrow('full viewing key is not valid');
       });
+
+      test('constructed with undefined custody type name', () => {
+        expect(() => {
+          new Wallet(label, walletId, fvk, {} as never);
+        }).toThrow('Custody type name unknown: undefined');
+      });
+
+      test('constructed with undefined custody box', () => {
+        expect(() => {
+          new Wallet(label, walletId, fvk, { [custodyType]: undefined } as never);
+        }).toThrow('custody box is not valid');
+      });
     });
 
     describe('serialization', () => {
-      type CT = typeof custodyType;
-      const walletJson: WalletJson<CT> = {
+      const custodyJson = { [custodyType]: custodyBoxes[custodyType].toJson() } as Record<
+        typeof custodyType,
+        BoxJson
+      >;
+
+      const walletJson: WalletJson = {
         id: walletId.toJsonString(),
         label: label,
         fullViewingKey: fvk.toJsonString(),
-        custody: { [custodyType]: custodyBoxes[custodyType].toJson() } as Record<CT, BoxJson>,
+        custody: custodyJson,
       };
 
       test('round-trip', () => {
