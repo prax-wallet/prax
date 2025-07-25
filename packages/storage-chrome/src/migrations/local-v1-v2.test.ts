@@ -20,7 +20,7 @@ const testSeedPhrase =
 const testFvk = getFullViewingKey(generateSpendKey(testSeedPhrase));
 const testId = getWalletId(testFvk);
 const testKey = await Key.create(testPassword);
-const legacyTestWallet = new Wallet('Test Wallet', testId.toJsonString(), testFvk.toJsonString(), {
+const testWallet = new Wallet('Test Wallet', testId.toJsonString(), testFvk.toJsonString(), {
   encryptedSeedPhrase: await testKey.key.seal(testSeedPhrase),
 });
 
@@ -37,7 +37,7 @@ const validRequiredData: Storage_V1.LOCAL = {
 };
 
 const onboardedData: Pick<Storage_V1.LOCAL, 'wallets' | 'passwordKeyPrint'> = {
-  wallets: [legacyTestWallet.toJson()],
+  wallets: [testWallet.toJson()],
   passwordKeyPrint: testKey.keyPrint.toJson(),
 };
 
@@ -225,7 +225,7 @@ describe('local-v1-v2 migration', () => {
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(testPassword, migratedKeyPrint);
 
-      expect(wallets[0]).toStrictEqual(legacyTestWallet.toJson());
+      expect(wallets[0]).toStrictEqual(testWallet.toJson());
 
       const walletFromJson = Wallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
@@ -253,7 +253,7 @@ describe('local-v1-v2 migration', () => {
       const migratedKeyPrint = KeyPrint.fromJson(passwordKeyPrint!);
       const recreatedKey = await Key.recreate(testPassword, migratedKeyPrint);
 
-      expect(wallets[0]).toStrictEqual(legacyTestWallet.toJson());
+      expect(wallets[0]).toStrictEqual(testWallet.toJson());
 
       const walletFromJson = Wallet.fromJson(wallets[0]!);
       const decryptedSeedPhrase = await recreatedKey!.unseal(
