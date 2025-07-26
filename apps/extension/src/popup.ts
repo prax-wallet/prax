@@ -1,9 +1,8 @@
 import { PopupPath } from './routes/popup/paths';
-import { Code, ConnectError } from '@connectrpc/connect';
-import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { PopupRequest, PopupResponse, PopupType } from './message/popup';
 import { sendPopup } from './message/send-popup';
 import { listenReady } from './message/listen-ready';
+import { throwIfNeedsLogin } from './needs-login';
 
 const POPUP_READY_TIMEOUT = 60_000;
 const POPUP_PATHS = {
@@ -69,14 +68,6 @@ const popupUrl = (popupType?: PopupType, id?: string): URL => {
   }
 
   return pop;
-};
-
-/** Throws if the user is not logged in. */
-const throwIfNeedsLogin = async () => {
-  const loggedIn = await sessionExtStorage.get('passwordKey');
-  if (!loggedIn) {
-    throw new ConnectError('User must login to extension', Code.Unauthenticated);
-  }
 };
 
 /**
