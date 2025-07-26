@@ -6,7 +6,7 @@ export const ApproveDeny = ({
   deny,
   ignore,
 }: {
-  approve: () => void;
+  approve?: () => void;
   deny: () => void;
   ignore?: () => void;
   wait?: number;
@@ -27,7 +27,7 @@ export const ApproveDeny = ({
         className='w-1/2 py-3.5 text-base'
         size='lg'
         onClick={approve}
-        disabled={count > 0}
+        disabled={!approve || count > 0}
       >
         Approve
       </Button>

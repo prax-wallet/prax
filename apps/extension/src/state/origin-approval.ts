@@ -28,7 +28,9 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
     });
   },
 
-  acceptRequest: ({ origin: requestOrigin, favIconUrl, title, lastRequest }) => {
+  acceptRequest: req => {
+    const { origin: requestOrigin, favIconUrl, title, lastRequest } = req;
+
     const existing = get().originApproval;
     if (existing.responder) {
       throw new Error('Another request is still pending');
