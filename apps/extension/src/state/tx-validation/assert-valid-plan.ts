@@ -122,6 +122,7 @@ export function assertValidActionPlan(
     case 'ics20Withdrawal':
     case 'positionClose':
     case 'positionOpen':
+    case 'positionOpenPlan':
     case 'positionRewardClaim':
     case 'positionWithdraw':
     case 'proposalDepositClaim':
