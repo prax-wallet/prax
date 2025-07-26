@@ -400,9 +400,6 @@ importers:
       '@penumbra-zone/getters':
         specifier: 28.0.0
         version: 28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/types':
-        specifier: 36.0.0
-        version: 36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/wasm':
         specifier: 53.0.0
         version: 53.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
@@ -629,9 +626,6 @@ importers:
         specifier: 11.0.0
         version: 11.0.0(@bufbuild/protobuf@1.10.0)
     devDependencies:
-      '@penumbra-zone/types':
-        specifier: 36.0.0
-        version: 36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/wasm':
         specifier: 53.0.0
         version: 53.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@36.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@28.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@18.0.0(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@11.0.0(@bufbuild/protobuf@1.10.0)))
