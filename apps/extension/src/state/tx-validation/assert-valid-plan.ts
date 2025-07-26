@@ -34,8 +34,13 @@ export function assertValidActionPlan(
   fvk?: PartialMessage<FullViewingKey>,
 ): asserts actionPlan is ActionPlan & { action: { case: string } } {
   const { action } = actionPlan;
+
   if (action?.value == null) {
     throw new ReferenceError('Missing action plan', { cause: action });
+  }
+
+  if (!Object.values(action.value).some(v => v != null)) {
+    throw new TypeError('Empty action plan', { cause: action });
   }
 
   /* eslint default-case: ["error"] -- explicitly require a default case for handling unexpected input */
@@ -134,9 +139,6 @@ export function assertValidActionPlan(
     case 'validatorDefinition':
     case 'validatorVote':
       // no specific assertions
-      if (!Object.values(action.value).some(v => v != null)) {
-        throw new TypeError('Empty action plan', { cause: action });
-      }
       return;
 
     default:
