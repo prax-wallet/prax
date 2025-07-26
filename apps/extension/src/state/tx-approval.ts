@@ -1,42 +1,38 @@
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
-import { AllSlices, SliceCreator } from '.';
-import {
-  TransactionPlan,
-  TransactionView,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { viewClient } from '../clients';
-import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
-import { UserChoice } from '@repo/storage-chrome/records';
-import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
+import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
-
+import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
 } from '@penumbra-zone/perspective/translators/transaction-view';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/view-transaction-plan';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  TransactionPlan,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import type { Jsonified } from '@penumbra-zone/types/jsonified';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
+import { AllSlices, SliceCreator } from '.';
+import { viewClient } from '../clients';
 import { PopupRequest, PopupResponse, PopupType } from '../message/popup';
+import { assertValidActionPlans } from './tx-validation/assert-valid-plan';
 
 export interface TxApprovalSlice {
-  /**
-   * Zustand doesn't like JsonValue, because the type is infinitely deep. And we
-   * can't store instances of custom classes (like `TransactionView`s) in the
-   * store, because we're using Immer middleware for Zustand, which requires
-   * that everything be JSON-serializeable. So we'll store `Stringified`
-   * representations of them instead.
-   */
   responder?: PromiseWithResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
-  authorizeRequest?: Stringified<AuthorizeRequest>;
-  transactionView?: Stringified<TransactionView>;
+  authorizeRequest?: PlainMessage<AuthorizeRequest>;
+  transactionView?: PlainMessage<TransactionView>;
+  invalidPlan?: Error;
   choice?: UserChoice;
 
-  asSender?: Stringified<TransactionView>;
-  asReceiver?: Stringified<TransactionView>;
-  asPublic?: Stringified<TransactionView>;
+  asSender?: PlainMessage<TransactionView>;
+  asReceiver?: PlainMessage<TransactionView>;
+  asPublic?: PlainMessage<TransactionView>;
   transactionClassification?: TransactionClassification;
 
   acceptRequest: (
@@ -51,18 +47,34 @@ export interface TxApprovalSlice {
 export const createTxApprovalSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<TxApprovalSlice> =>
   (set, get) => ({
-    acceptRequest: async ({ authorizeRequest: authReqJson }) => {
+    acceptRequest: async req => {
+      const authorizeRequest = AuthorizeRequest.fromJson(req.authorizeRequest);
+
       const existing = get().txApproval;
       if (existing.responder) {
         throw new Error('Another request is still pending');
       }
+
+      const fvk = await local.get('wallets').then(([wallet0]) => {
+        if (!wallet0) {
+          throw new Error('No found wallet');
+        }
+        return FullViewingKey.fromJsonString(wallet0.fullViewingKey);
+      });
+
+      let invalidPlan: ConnectError | undefined;
+      try {
+        assertValidActionPlans(authorizeRequest.plan?.actions, fvk);
+        invalidPlan = undefined;
+      } catch (e) {
+        invalidPlan = ConnectError.from(e, Code.InvalidArgument);
+      }
+
       const responder =
         Promise.withResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>();
       set(state => {
         state.txApproval.responder = responder;
       });
-
-      const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
 
       const getMetadata = async (assetId: AssetId) => {
         try {
@@ -73,19 +85,13 @@ export const createTxApprovalSlice =
         }
       };
 
-      const wallets = await local.get('wallets');
-      if (!wallets[0]) {
-        throw new Error('No found wallet');
-      }
-
       const transactionView = await viewTransactionPlan(
         authorizeRequest.plan ?? new TransactionPlan(),
         getMetadata,
-        FullViewingKey.fromJsonString(wallets[0].fullViewingKey),
+        fvk,
       );
 
       // pregenerate views from various perspectives.
-      // TODO: should this be done in the component?
       const asSender = transactionView;
       const asPublic = asPublicTransactionView(transactionView);
       const asReceiver = await asReceiverTransactionView(transactionView, {
@@ -96,12 +102,13 @@ export const createTxApprovalSlice =
       const transactionClassification = classifyTransaction(transactionView);
 
       set(state => {
-        state.txApproval.authorizeRequest = authorizeRequest.toJsonString();
-        state.txApproval.transactionView = transactionView.toJsonString();
+        state.txApproval.authorizeRequest = toPlainMessage(authorizeRequest);
+        state.txApproval.transactionView = toPlainMessage(transactionView);
 
-        state.txApproval.asSender = asSender.toJsonString();
-        state.txApproval.asPublic = asPublic.toJsonString();
-        state.txApproval.asReceiver = asReceiver.toJsonString();
+        state.txApproval.asSender = toPlainMessage(asSender);
+        state.txApproval.asPublic = toPlainMessage(asPublic);
+        state.txApproval.asReceiver = toPlainMessage(asReceiver);
+        state.txApproval.invalidPlan = invalidPlan;
         state.txApproval.transactionClassification = transactionClassification.type;
 
         state.txApproval.choice = undefined;
@@ -117,31 +124,27 @@ export const createTxApprovalSlice =
     },
 
     sendResponse: () => {
-      const {
-        responder,
-        choice,
-        transactionView: transactionViewString,
-        authorizeRequest: authorizeRequestString,
-      } = get().txApproval;
+      const { responder, choice, authorizeRequest, invalidPlan } = get().txApproval;
 
       try {
         if (!responder) {
-          throw new Error('No responder');
+          throw new ReferenceError('No responder');
         }
 
         try {
-          if (choice === undefined || !transactionViewString || !authorizeRequestString) {
-            throw new Error('Missing response data');
+          if (invalidPlan) {
+            throw invalidPlan;
           }
 
-          // zustand doesn't like jsonvalue so stringify
-          const authorizeRequest = AuthorizeRequest.fromJsonString(
-            authorizeRequestString,
-          ).toJson() as Jsonified<AuthorizeRequest>;
+          if (choice === undefined || !authorizeRequest) {
+            throw new ReferenceError('Missing response data');
+          }
 
           responder.resolve({
             choice,
-            authorizeRequest,
+            authorizeRequest: new AuthorizeRequest(
+              authorizeRequest,
+            ).toJson() as Jsonified<AuthorizeRequest>,
           });
         } catch (e) {
           responder.reject(e);
@@ -152,6 +155,7 @@ export const createTxApprovalSlice =
           state.txApproval.authorizeRequest = undefined;
           state.txApproval.transactionView = undefined;
           state.txApproval.choice = undefined;
+          state.txApproval.invalidPlan = undefined;
 
           state.txApproval.asSender = undefined;
           state.txApproval.asReceiver = undefined;
