@@ -1,5 +1,6 @@
 import { Key } from '@repo/encryption/key';
-import { Wallet } from '@repo/wallet';
+import { Box } from '@repo/encryption/box';
+import { Wallet, type WalletJson } from '@repo/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
@@ -7,8 +8,9 @@ import type { SessionStorageState } from '@repo/storage-chrome/session';
 import { AllSlices, SliceCreator } from '.';
 
 export interface WalletsSlice {
-  all: Wallet[];
-  addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<Wallet>;
+  /** new custody types aren't used yet */
+  all: WalletJson<'encryptedSeedPhrase'>[];
+  addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<void>;
   getSeedPhrase: () => Promise<string[]>;
 }
 
@@ -31,23 +33,19 @@ export const createWalletsSlice =
         }
 
         const key = await Key.fromJson(passwordKey);
-        const encryptedSeedPhrase = await key.seal(seedPhraseStr);
-        const walletId = getWalletId(fullViewingKey);
-        const newWallet = new Wallet(
-          label,
-          walletId.toJsonString(),
-          fullViewingKey.toJsonString(),
-          { encryptedSeedPhrase },
-        );
+        const newWallet = new Wallet(label, getWalletId(fullViewingKey), fullViewingKey, {
+          encryptedSeedPhrase: await key.seal(seedPhraseStr),
+        });
 
         set(state => {
-          state.wallets.all.unshift(newWallet);
+          state.wallets.all.unshift(newWallet.toJson());
         });
 
         const wallets = await local.get('wallets');
         await local.set('wallets', [newWallet.toJson(), ...wallets]);
-        return newWallet;
       },
+
+      /** @deprecated */
       getSeedPhrase: async () => {
         const passwordKey = await session.get('passwordKey');
         if (!passwordKey) {
@@ -60,15 +58,18 @@ export const createWalletsSlice =
           throw new Error('no wallet set');
         }
 
-        const decryptedSeedPhrase = await key.unseal(activeWallet.custody.encryptedSeedPhrase);
-        if (!decryptedSeedPhrase) {
+        const phraseBox = Box.fromJson(activeWallet.toJson().custody.encryptedSeedPhrase);
+
+        const phrase = await key.unseal(phraseBox);
+        if (!phrase) {
           throw new Error('Unable to decrypt seed phrase with password');
         }
 
-        return decryptedSeedPhrase.split(' ');
+        return phrase.split(' ');
       },
     };
   };
 
 export const walletsSelector = (state: AllSlices) => state.wallets;
-export const getActiveWallet = (state: AllSlices) => state.wallets.all[0];
+export const getActiveWallet = (state: AllSlices) =>
+  state.wallets.all[0] && Wallet.fromJson(state.wallets.all[0]);

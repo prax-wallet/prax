@@ -1,188 +1,149 @@
-import { describe, expect, test } from 'vitest';
-import { Box } from '@repo/encryption/box';
-import { Wallet, type WalletJson } from './wallet';
+import { toPlainMessage } from '@bufbuild/protobuf';
+import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
+import { Box, BoxJson } from '@repo/encryption/box';
+import { Key } from '@repo/encryption/key';
+import { beforeAll, describe, expect, test } from 'vitest';
+import { Wallet, WalletJson } from './wallet';
 
-describe('Wallet', () => {
-  const mockBox = new Box(
-    new Uint8Array([72, 101, 108, 108, 111]),
-    new Uint8Array([87, 111, 114, 108, 100]),
-  );
+const seedPhrase =
+  'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
 
-  const mockWalletJson: WalletJson = {
-    id: 'test-wallet-id',
-    label: 'Test Wallet',
-    fullViewingKey: 'test-fvk-12345',
-    custody: { encryptedSeedPhrase: mockBox.toJson() },
-  };
+const spendKey = generateSpendKey(seedPhrase);
+const fvk = getFullViewingKey(spendKey);
+const walletId = getWalletId(fvk);
+const label = 'Test Wallet';
+const { key: passKey } = await Key.create('s0meUs3rP@ssword');
 
-  describe('constructor', () => {
-    test('creates a Wallet instance with provided properties', () => {
-      const wallet = new Wallet('Test Wallet', 'test-id', 'test-fvk', {
-        encryptedSeedPhrase: mockBox,
+const custodyBoxes = {
+  encryptedSeedPhrase: await passKey.seal(seedPhrase),
+  encryptedSpendKey: await passKey.seal(new SpendKey(spendKey).toJsonString()),
+} as const;
+
+describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
+  'Wallet with %s custody',
+  custodyType => {
+    const custodyBox = custodyBoxes[custodyType];
+
+    const custodyData = { [custodyType]: custodyBox } as Record<typeof custodyType, Box>;
+
+    describe('Wallet constructor', () => {
+      test('constructed with valid custody data', () => {
+        const wallet = new Wallet(label, walletId, fvk, custodyData);
+
+        expect(wallet.custodyType).toBe(custodyType);
       });
 
-      expect(wallet.label).toBe('Test Wallet');
-      expect(wallet.id).toBe('test-id');
-      expect(wallet.fullViewingKey).toBe('test-fvk');
-      expect(wallet.custody.encryptedSeedPhrase).toBe(mockBox);
+      test('constructed with undefined label', () => {
+        expect(() => {
+          new Wallet(undefined as never, walletId, fvk, custodyData);
+        }).toThrow('label is not valid');
+      });
+
+      test('constructed with undefined wallet ID', () => {
+        expect(() => {
+          new Wallet(label, undefined as never, fvk, custodyData);
+        }).toThrow('id is not valid');
+      });
+
+      test('constructed with undefined full viewing key', () => {
+        expect(() => {
+          new Wallet(label, walletId, undefined as never, custodyData);
+        }).toThrow('full viewing key is not valid');
+      });
+
+      test('constructed with undefined custody type name', () => {
+        expect(() => {
+          new Wallet(label, walletId, fvk, {} as never);
+        }).toThrow('Custody type name unknown: undefined');
+      });
+
+      test('constructed with undefined custody box', () => {
+        expect(() => {
+          new Wallet(label, walletId, fvk, { [custodyType]: undefined } as never);
+        }).toThrow('custody box is not valid');
+      });
     });
-  });
 
-  describe('fromJson', () => {
-    test('creates a Wallet instance from valid JSON', () => {
-      const wallet = Wallet.fromJson(mockWalletJson);
+    describe('serialization', () => {
+      const custodyJson = { [custodyType]: custodyBoxes[custodyType].toJson() } as Record<
+        typeof custodyType,
+        BoxJson
+      >;
 
-      expect(wallet).toBeInstanceOf(Wallet);
-      expect(wallet.label).toBe('Test Wallet');
-      expect(wallet.id).toBe('test-wallet-id');
-      expect(wallet.fullViewingKey).toBe('test-fvk-12345');
-      expect(wallet.custody.encryptedSeedPhrase).toBeInstanceOf(Box);
-    });
-
-    test('correctly converts Box from JSON', () => {
-      const wallet = Wallet.fromJson(mockWalletJson);
-      const box = wallet.custody.encryptedSeedPhrase;
-
-      expect(box.nonce).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
-      expect(box.cipherText).toEqual(new Uint8Array([87, 111, 114, 108, 100]));
-    });
-
-    test('handles empty strings', () => {
-      const emptyWalletJson: WalletJson = {
-        id: '',
-        label: '',
-        fullViewingKey: '',
-        custody: { encryptedSeedPhrase: mockBox.toJson() },
+      const walletJson: WalletJson = {
+        id: walletId.toJsonString(),
+        label: label,
+        fullViewingKey: fvk.toJsonString(),
+        custody: custodyJson,
       };
 
-      const wallet = Wallet.fromJson(emptyWalletJson);
+      test('round-trip', () => {
+        const deserialized = Wallet.fromJson(walletJson);
 
-      expect(wallet.id).toBe('');
-      expect(wallet.label).toBe('');
-      expect(wallet.fullViewingKey).toBe('');
-    });
+        expect(deserialized.label).toBe(walletJson.label);
+        expect(toPlainMessage(deserialized.id)).toStrictEqual(toPlainMessage(walletId));
+        expect(toPlainMessage(deserialized.fullViewingKey)).toStrictEqual(toPlainMessage(fvk));
 
-    test('throws if invalid base64 in Box nonce', () => {
-      const invalidWalletJson: WalletJson = {
-        ...mockWalletJson,
-        custody: { encryptedSeedPhrase: { nonce: 'invalid-base64!', cipherText: 'V29ybGQ=' } },
-      };
+        expect(deserialized.custodyType).toBe(Object.keys(walletJson.custody)[0]);
 
-      expect(() => Wallet.fromJson(invalidWalletJson)).toThrow('Invalid character');
-    });
-
-    test('throws if invalid base64 in Box cipherText', () => {
-      const invalidWalletJson: WalletJson = {
-        ...mockWalletJson,
-        custody: { encryptedSeedPhrase: { nonce: 'SGVsbG8=', cipherText: 'invalid-base64!' } },
-      };
-
-      expect(() => Wallet.fromJson(invalidWalletJson)).toThrow('Invalid character');
-    });
-
-    test('throws if missing custody property', () => {
-      expect(() => {
-        // @ts-expect-error Testing missing property
-        Wallet.fromJson({
-          id: 'test-id',
-          label: 'Test Wallet',
-          fullViewingKey: 'test-fvk',
-        });
-      }).toThrow('Cannot read');
-    });
-
-    test('throws if missing encryptedSeedPhrase', () => {
-      expect(() => {
-        Wallet.fromJson({
-          id: 'test-id',
-          label: 'Test Wallet',
-          fullViewingKey: 'test-fvk',
-          custody: {} as never,
-        });
-      }).toThrow('Cannot read');
-    });
-
-    test.fails('null values in JSON', () => {
-      expect(() => {
-        Wallet.fromJson({
-          id: null,
-          label: null,
-          fullViewingKey: null,
-          custody: { encryptedSeedPhrase: mockBox.toJson() },
-        } as never);
-      }).toThrow();
-    });
-  });
-
-  describe('toJson', () => {
-    test('converts Wallet instance to JSON', () => {
-      const wallet = new Wallet('Test Wallet', 'test-id', 'test-fvk', {
-        encryptedSeedPhrase: mockBox,
+        expect(deserialized.toJson()).toStrictEqual(walletJson);
       });
 
-      const json = wallet.toJson();
-
-      expect(json).toEqual({
-        label: 'Test Wallet',
-        id: 'test-id',
-        fullViewingKey: 'test-fvk',
-        custody: { encryptedSeedPhrase: mockBox.toJson() },
-      });
-    });
-
-    test('correctly converts Box to JSON', () => {
-      const wallet = new Wallet('Test Wallet', 'test-id', 'test-fvk', {
-        encryptedSeedPhrase: mockBox,
-      });
-
-      const expectBoxJson = mockBox.toJson();
-
-      const json = wallet.toJson();
-
-      expect(json.custody.encryptedSeedPhrase).toEqual(expectBoxJson);
-    });
-
-    test('serialization produces expected JSON', () => {
-      const wallet = new Wallet('Test', 'id', 'fvk', {
-        encryptedSeedPhrase: mockBox,
-      });
-
-      const json = wallet.toJson();
-      const jsonString = JSON.stringify(json);
-      const parsed = JSON.parse(jsonString) as WalletJson;
-
-      expect(parsed).toEqual(json);
-      expect(parsed).toHaveProperty('id');
-      expect(parsed).toHaveProperty('label');
-      expect(parsed).toHaveProperty('fullViewingKey');
-      expect(parsed).toHaveProperty('custody');
-      expect(parsed.custody).toHaveProperty('encryptedSeedPhrase');
-    });
-
-    test('fromJson and toJson are inverse operations', () => {
-      const originalJson = mockWalletJson;
-      const wallet = Wallet.fromJson(originalJson);
-      const serializedJson = wallet.toJson();
-
-      expect(serializedJson).toEqual(originalJson);
-    });
-
-    test('toJson and fromJson are inverse operations', () => {
-      const originalWallet = new Wallet('Test Wallet', 'test-id', 'test-fvk', {
-        encryptedSeedPhrase: mockBox,
-      });
-      const json = originalWallet.toJson();
-      const deserializedWallet = Wallet.fromJson(json);
-
-      expect(deserializedWallet.label).toBe(originalWallet.label);
-      expect(deserializedWallet.id).toBe(originalWallet.id);
-      expect(deserializedWallet.fullViewingKey).toBe(originalWallet.fullViewingKey);
-      expect(deserializedWallet.custody.encryptedSeedPhrase.nonce).toEqual(
-        originalWallet.custody.encryptedSeedPhrase.nonce,
-      );
-      expect(deserializedWallet.custody.encryptedSeedPhrase.cipherText).toEqual(
-        originalWallet.custody.encryptedSeedPhrase.cipherText,
+      test.each(['id', 'label', 'fullViewingKey', 'custody'] as const)(
+        `throws if %s is missing`,
+        walletField => {
+          expect(() =>
+            Wallet.fromJson({
+              ...walletJson,
+              [walletField]: undefined as never,
+            }),
+          ).toThrow();
+        },
       );
     });
-  });
-});
+
+    describe('authorization', () => {
+      const wallet = new Wallet(label, walletId, fvk, custodyData);
+      let plan: TransactionPlan;
+
+      beforeAll(async () => {
+        plan = await import('./test-data/tx-plan.json').then(
+          ({ default: json }: { default: unknown }) => TransactionPlan.fromJson(json as never),
+        );
+      });
+
+      test('authorization success', async () => {
+        const custody = await wallet.custody(passKey);
+        const authData = await custody.authorizePlan(plan);
+
+        expect(authData.toJson()).toMatchObject({
+          effectHash: {
+            inner:
+              // effectHash is deterministic
+              '893Otjfg4OeeAmkKfv4PCmajI58GTR2pE4/QGsgCRo9CRLYSPMPh2slkojPcyHujU8AhHUDjGlzyQB4j0+8MkQ==',
+          },
+          spendAuths: [
+            {
+              inner:
+                // spendAuth is nondeterministic
+                expect.stringMatching(/^[A-Za-z0-9+/]{86}==$/) as unknown,
+            },
+          ],
+          // empty arrays will be missing from json
+          // delegatorVoteAuths: [],
+          // lqtVoteAuths: [],
+        });
+      });
+
+      test('authorization with wrong pass key fails', async () => {
+        const { key: wrongPassKey } = await Key.create('differentPassword');
+
+        await expect(wallet.custody(wrongPassKey)).rejects.toThrow(
+          `Wrong key for "${label}" custody box`,
+        );
+      });
+    });
+  },
+);

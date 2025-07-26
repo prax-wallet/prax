@@ -1,4 +1,4 @@
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { SelectAccount } from '@repo/ui/components/ui/select';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { Wallet } from '@repo/wallet';
@@ -49,7 +49,7 @@ const getAddrByIndex =
       throw new Error('No active wallet');
     }
 
-    const fullViewingKey = FullViewingKey.fromJsonString(wallet.fullViewingKey);
+    const fullViewingKey = wallet.fullViewingKey;
     return ephemeral
       ? getEphemeralByIndex(fullViewingKey, index)
       : getAddressByIndex(fullViewingKey, index);
