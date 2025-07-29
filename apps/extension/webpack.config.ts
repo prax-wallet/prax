@@ -186,6 +186,7 @@ export default ({
       new webpack.ProvidePlugin({
         // Required by the `bip39` library
         Buffer: ['buffer', 'Buffer'],
+        buffer: ['buffer', 'Buffer'],
       }),
       new webpack.IgnorePlugin({
         // Not required by the `bip39` library, but very nice
