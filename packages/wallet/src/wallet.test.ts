@@ -6,6 +6,8 @@ import { Box, BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
 import { beforeAll, describe, expect, test } from 'vitest';
 import { Wallet, WalletJson } from './wallet';
+import { ledgerUSBVendorId } from '@ledgerhq/devices/lib-es/index';
+import { CustodyTypeName } from './custody/types';
 
 const seedPhrase =
   'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
@@ -19,7 +21,12 @@ const { key: passKey } = await Key.create('s0meUs3rP@ssword');
 const custodyBoxes = {
   encryptedSeedPhrase: await passKey.seal(seedPhrase),
   encryptedSpendKey: await passKey.seal(new SpendKey(spendKey).toJsonString()),
-} as const;
+  ledgerUsb: await passKey.seal(
+    JSON.stringify({
+      filters: [{ vendorId: ledgerUSBVendorId }],
+    } satisfies USBDeviceRequestOptions),
+  ),
+} as const satisfies Record<CustodyTypeName, Box>;
 
 describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
   'Wallet with %s custody',

@@ -1,22 +1,7 @@
-import {
-  FullViewingKey,
-  SpendKey,
-  WalletId,
-} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import {
-  AuthorizationData,
-  TransactionPlan,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { authorizePlan } from '@penumbra-zone/wasm/build';
-import { generateSpendKey } from '@penumbra-zone/wasm/keys';
+import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Box, BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
-import {
-  assertCustodyTypeName,
-  CustodyNamedValue,
-  CustodyTypeName,
-  getCustodyTypeName,
-} from './custody';
+import { CustodyNamedValue, CustodyTypeName, getCustodyTypeName } from './custody/types';
 
 export interface WalletJson<T extends CustodyTypeName = CustodyTypeName> {
   id: string;
@@ -63,28 +48,12 @@ export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
       throw new Error(`Wrong key for "${this.label}" custody box`);
     }
 
+    const {
+      default: { [this.custodyType]: authorizePlanImpl },
+    } = await import('./custody/authorize-plan');
+
     return {
-      authorizePlan: async (plan: TransactionPlan): Promise<AuthorizationData> => {
-        assertCustodyTypeName(this.custodyType);
-        switch (this.custodyType) {
-          case 'encryptedSeedPhrase': {
-            // unsealed is the seed phrase string
-            const spendKey = generateSpendKey(unsealed);
-            return Promise.resolve(authorizePlan(spendKey, plan));
-          }
-          case 'encryptedSpendKey': {
-            // unsealed is the spend key string
-            const spendKey = SpendKey.fromJsonString(unsealed);
-            return Promise.resolve(authorizePlan(spendKey, plan));
-          }
-          default:
-            // unreachable
-            this.custodyType satisfies never;
-            throw new Error(`Cannot authorize plan with custody type ${String(this.custodyType)}`, {
-              cause: this.custodyType,
-            });
-        }
-      },
+      authorizePlan: authorizePlanImpl.bind(this, unsealed),
     };
   }
 

@@ -16,8 +16,13 @@
     "@penumbra-zone/protobuf": "11.0.0"
   },
   "devDependencies": {
+    "@ledgerhq/devices": "^8.4.7",
+    "@ledgerhq/hw-transport-webusb": "^6.29.7",
     "@penumbra-zone/wasm": "53.0.0",
     "@repo/encryption": "workspace:*",
-    "@types/chrome": "0.0.270"
+    "@types/chrome": "0.0.270",
+    "@types/w3c-web-usb": "^1.0.10",
+    "@zondax/ledger-penumbra": "^1.0.0",
+    "@zondax/zemu": "^0.60.0"
   }
 }
