@@ -9,6 +9,7 @@
     "ledger:make": "cd ledger-penumbra && make",
     "ledger:snapshots": "vitest run || cp -rv snapshots-tmp/* snapshots/",
     "lint": "eslint \"**/*.ts*\"",
+    "pretest": "$npm_execpath run ledger:clone && $npm_execpath run ledger:make",
     "test": "vitest run"
   },
   "exports": {

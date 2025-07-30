@@ -180,16 +180,16 @@ export default ({
       alias: {
         '@ui': path.resolve(__dirname, '../../packages/ui'),
       },
+      fallback: { buffer: false },
     },
     plugins: [
       new webpack.CleanPlugin(),
       new webpack.ProvidePlugin({
-        // Required by the `bip39` library
+        // Required by a few dependencies
         Buffer: ['buffer', 'Buffer'],
-        buffer: ['buffer', 'Buffer'],
       }),
       new webpack.IgnorePlugin({
-        // Not required by the `bip39` library, but very nice
+        // reduces the size of `bip39` bundle
         checkResource(resource) {
           return /.*\/wordlists\/(?!english).*\.json/.test(resource);
         },
