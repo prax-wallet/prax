@@ -8,19 +8,15 @@ import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 import { LedgerPenumbra } from '../webusb/ledger-penumbra';
 import type { CustodyTypeName } from './types';
 import type { Wallet } from '../wallet';
-
-/*
-interface AuthorizePlanFn<T extends CustodyTypeName> {
-  // eslint-disable-next-line @typescript-eslint/prefer-function-type -- declare function with explicit `this` parameter
-  (this: ThisType<Wallet<T>>, unsealed: string, plan: TransactionPlan): Promise<AuthorizationData>;
-}
-  */
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 type AuthorizePlanFn<T extends CustodyTypeName> = (
   this: ThisType<Wallet<T>>,
   unsealed: string,
   plan: TransactionPlan,
 ) => Promise<AuthorizationData>;
+
+console.debug('authorize-plan imported');
 
 export default {
   async encryptedSeedPhrase(
@@ -46,7 +42,8 @@ export default {
   ) {
     const usbRequest = JSON.parse(usbRequestString) as USBDeviceRequestOptions;
     const usbDevice = await navigator.usb.requestDevice(usbRequest);
-    const ledgerApp = await LedgerPenumbra.claimUSB(usbDevice);
+    const transport = await TransportWebUSB.open(usbDevice);
+    const ledgerApp = new LedgerPenumbra(transport);
     return ledgerApp.sign(plan);
   },
 } satisfies {
