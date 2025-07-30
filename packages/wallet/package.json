@@ -5,6 +5,9 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
+    "ledger:clone": "stat ledger-penumbra/Makefile || git clone https://github.com/zondax/ledger-penumbra ledger-penumbra --revision v1.0.2 --depth 1 --shallow-submodules --recursive",
+    "ledger:make": "cd ledger-penumbra && make",
+    "ledger:snapshots": "vitest run || cp -rv snapshots-tmp/* snapshots/",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
@@ -22,6 +25,7 @@
     "@repo/encryption": "workspace:*",
     "@types/chrome": "0.0.270",
     "@types/w3c-web-usb": "^1.0.10",
+    "@zondax/ledger-js": "^1.2.0",
     "@zondax/ledger-penumbra": "^1.0.0",
     "@zondax/zemu": "^0.60.0"
   }

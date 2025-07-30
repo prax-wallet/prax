@@ -1,5 +1,4 @@
 import { PartialMessage } from '@bufbuild/protobuf';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import {
   Address,
   AddressIndex,
@@ -9,6 +8,7 @@ import {
   AuthorizationData,
   TransactionPlan,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import type { Transport } from '@zondax/ledger-js';
 import { DEFAULT_PATH as PENUMBRA_PATH, PenumbraApp } from '@zondax/ledger-penumbra';
 
 /** Convert `AddressIndex` to the external type of the same name. */
@@ -22,28 +22,21 @@ export class LedgerPenumbra {
   public readonly signal: AbortSignal;
   public readonly release: (reason?: unknown) => Promise<void>;
 
-  private didCloseTransport = false;
+  constructor(transport: Transport) {
+    this.app = new PenumbraApp(transport);
 
-  static claimUSB = async (dev: USBDevice): Promise<LedgerPenumbra> =>
-    new LedgerPenumbra(new PenumbraApp(await TransportWebUSB.open(dev)));
+    const ac = new AbortController();
+    ac.signal.addEventListener('abort', () => void this.app.transport.close());
 
-  constructor(private readonly app: PenumbraApp) {
-    const usbAc = new AbortController();
-
-    usbAc.signal.addEventListener('abort', () => {
-      if (!this.didCloseTransport) {
-        void this.app.transport.close();
-      }
-    });
-
-    this.signal = usbAc.signal;
+    this.signal = ac.signal;
     this.release = (reason?: unknown) => {
       const closing = this.app.transport.close();
-      this.didCloseTransport = true;
-      usbAc.abort(reason);
+      ac.abort(reason);
       return closing;
     };
   }
+
+  private readonly app: PenumbraApp;
 
   async getAddress(idx?: PartialMessage<AddressIndex>): Promise<Address> {
     const { address } = await this.app.getAddress(PENUMBRA_PATH, toLedgerIndex(idx));
