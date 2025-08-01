@@ -34,7 +34,7 @@ describe('individual plans', () => {
 
   it('rejects an action missing a case', () => {
     const planMissingCase = new ActionPlan({});
-    planMissingCase.action.value = {} as any;
+    planMissingCase.action.value = { something: 'with a value' } as any;
     planMissingCase.action.case = undefined;
 
     expect(() => assertValidActionPlans([planMissingCase], currentUserFullViewingKey)).toThrow(
@@ -44,7 +44,7 @@ describe('individual plans', () => {
 
   it('rejects an action with some unknown case', () => {
     const planUnknownCase = new ActionPlan({});
-    planUnknownCase.action.value = {} as any;
+    planUnknownCase.action.value = { something: 'with a value' } as any;
     planUnknownCase.action.case = 'notValid' as ActionPlan['action']['case'];
     expect(() => assertValidActionPlans([planUnknownCase], currentUserFullViewingKey)).toThrow(
       'Unknown action plan',
