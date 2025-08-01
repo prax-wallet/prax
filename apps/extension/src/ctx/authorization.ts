@@ -28,7 +28,7 @@ export const getAuthorization = async (plan: TransactionPlan): Promise<Authoriza
     .then(response => response?.choice === UserChoice.Approved)
     .catch(error => {
       console.error(error);
-      throw new ConnectError('Authorization failed', Code.Internal);
+      throw new ConnectError('Approval failed', Code.Internal);
     });
 
   const [authorizationData, approval] = await Promise.all([authorize, choose]);
