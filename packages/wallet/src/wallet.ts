@@ -18,6 +18,10 @@ import {
   getCustodyTypeName,
 } from './custody';
 
+export interface WalletCustody {
+  authorizePlan: (plan: TransactionPlan) => Promise<AuthorizationData>;
+}
+
 export interface WalletJson<T extends CustodyTypeName = CustodyTypeName> {
   id: string;
   label: string;
@@ -57,7 +61,7 @@ export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
     }
   }
 
-  async custody(passKey: Key) {
+  async custody(passKey: Key): Promise<WalletCustody> {
     const unsealed = await passKey.unseal(this.custodyBox);
     if (unsealed == null) {
       throw new Error(`Wrong key for "${this.label}" custody box`);
