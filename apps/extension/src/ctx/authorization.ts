@@ -15,40 +15,39 @@ import { throwIfNeedsLogin } from '../needs-login';
 import { popup } from '../popup';
 
 export const getAuthorization = async (plan: TransactionPlan): Promise<AuthorizationData> => {
-  await throwIfNeedsLogin();
-
-  const authorization = openWallet().then(custody => custody.authorizePlan(plan));
-
-  const approval = popup(PopupType.TxApproval, {
-    authorizeRequest: new AuthorizeRequest({ plan }).toJson() as Jsonified<AuthorizeRequest>,
-  });
-
-  const [authorizationData] = await Promise.all([
-    authorization.catch(error => {
+  const authorize = openWallet()
+    .then(custody => custody.authorizePlan(plan))
+    .catch(error => {
       console.error(error);
       throw new ConnectError('Authorization failed', Code.Internal);
-    }),
-    approval.then(
-      response => {
-        if (response?.choice !== UserChoice.Approved) {
-          throw new ConnectError('Authorization denied', Code.PermissionDenied);
-        }
-      },
-      error => {
-        console.error(error);
-        throw new ConnectError('Authorization failed', Code.Internal);
-      },
-    ),
-  ]);
+    });
+
+  const choose = popup(PopupType.TxApproval, {
+    authorizeRequest: new AuthorizeRequest({ plan }).toJson() as Jsonified<AuthorizeRequest>,
+  })
+    .then(response => response?.choice === UserChoice.Approved)
+    .catch(error => {
+      console.error(error);
+      throw new ConnectError('Approval failed', Code.Internal);
+    });
+
+  const [authorizationData, approval] = await Promise.all([authorize, choose]);
+
+  if (!approval) {
+    throw new ConnectError('Authorization denied', Code.PermissionDenied);
+  }
 
   return authorizationData;
 };
 
 const openWallet = async () => {
-  const [passKey, wallet] = await Promise.all([
-    sessionExtStorage.get('passwordKey').then(passKeyJson => Key.fromJson(passKeyJson!)),
-    localExtStorage.get('wallets').then(wallets => Wallet.fromJson(wallets[0]!)),
-  ]);
+  await throwIfNeedsLogin();
 
-  return wallet.custody(passKey);
+  const passKey = sessionExtStorage
+    .get('passwordKey')
+    .then(passKeyJson => Key.fromJson(passKeyJson!));
+
+  const wallet = localExtStorage.get('wallets').then(wallets => Wallet.fromJson(wallets[0]!));
+
+  return (await wallet).custody(await passKey);
 };

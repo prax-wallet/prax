@@ -20,9 +20,9 @@ export const useTransactionViewSwitcher = (): {
     }
 
     return {
-      asSender: TransactionView.fromJsonString(asSender),
-      asReceiver: TransactionView.fromJsonString(asReceiver),
-      asPublic: TransactionView.fromJsonString(asPublic),
+      asSender: new TransactionView(asSender),
+      asReceiver: new TransactionView(asReceiver),
+      asPublic: new TransactionView(asPublic),
     };
   }, [asSender, asReceiver, asPublic]);
 
