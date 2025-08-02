@@ -1,4 +1,8 @@
 import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import type {
+  AuthorizationData,
+  TransactionPlan,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { Box, BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
 import { CustodyNamedValue, CustodyTypeName, getCustodyTypeName } from './custody/types';
