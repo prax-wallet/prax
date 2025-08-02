@@ -4,6 +4,7 @@ import { GenerateSeedPhrase } from './generate';
 import { ImportSeedPhrase } from './import';
 import { OnboardingSuccess } from './success';
 import { SetPassword } from './password';
+import { ConnectLedgerWallet } from './custody/connect-ledger';
 
 export const onboardingRoutes = [
   {
@@ -17,6 +18,10 @@ export const onboardingRoutes = [
   {
     path: PagePath.IMPORT_SEED_PHRASE,
     element: <ImportSeedPhrase />,
+  },
+  {
+    path: PagePath.CONNECT_LEDGER_WALLET,
+    element: <ConnectLedgerWallet />,
   },
   {
     path: PagePath.SET_PASSWORD,
