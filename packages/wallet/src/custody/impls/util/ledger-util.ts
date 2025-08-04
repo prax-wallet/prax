@@ -50,9 +50,9 @@ export function assertLedgerPenumbraFvk(ledgerFvk: ResponseFvk, fullViewingKey: 
 }
 
 /**
- * Convert the output of {@link PenumbraApp.sign} to a proper {@link AuthorizationData}
+ * Convert the output of `PenumbraApp.sign`to a proper {@link AuthorizationData}
  *
- * @param ledgerSigned Awaited output of {@link PenumbraApp.sign}
+ * @param ledgerSigned Awaited output of `PenumbraApp.sign`
  */
 export function convertLedgerAuthorizationData(ledgerSigned: ResponseSign): AuthorizationData {
   const signed = {
@@ -73,9 +73,9 @@ export function convertLedgerAuthorizationData(ledgerSigned: ResponseSign): Auth
 }
 
 /**
- * Convert the output of {@link PenumbraApp.getFVK} to a proper {@link FullViewingKey}
+ * Convert the output of `PenumbraApp.getFVK` to a proper {@link FullViewingKey}
  *
- * @param ledgerFvk Awaited output of {@link PenumbraApp.getFVK}
+ * @param ledgerFvk Awaited output of `PenumbraApp.getFVK`
  */
 export function convertLedgerResponseFvk(ledgerFvk: ResponseFvk): FullViewingKey {
   const inner = new Uint8Array(ledgerFvk.ak.length + ledgerFvk.nk.length);

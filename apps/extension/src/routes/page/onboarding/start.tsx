@@ -7,11 +7,18 @@ import {
   CardTitle,
 } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
+import { useStore } from '../../../state';
+import { onboardStartSelector } from '../../../state/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 
 export const OnboardingStart = () => {
   const navigate = usePageNav();
+  const { hasWallets, beginOnboarding } = useStore(onboardStartSelector);
+
+  if (hasWallets) {
+    navigate(PagePath.ONBOARDING_SUCCESS);
+  }
 
   return (
     <FadeTransition>
@@ -28,16 +35,32 @@ export const OnboardingStart = () => {
           <Button
             variant='gradient'
             className='w-full'
-            onClick={() => navigate(PagePath.GENERATE_SEED_PHRASE)}
+            onClick={() => {
+              beginOnboarding('generated');
+              navigate(PagePath.GENERATE_SEED_PHRASE);
+            }}
           >
             Create new wallet
           </Button>
           <Button
             variant='secondary'
             className='w-full'
-            onClick={() => navigate(PagePath.IMPORT_SEED_PHRASE)}
+            onClick={() => {
+              beginOnboarding('imported');
+              navigate(PagePath.IMPORT_SEED_PHRASE);
+            }}
           >
             Import existing wallet
+          </Button>
+          <Button
+            variant='secondary'
+            className='w-full'
+            onClick={() => {
+              beginOnboarding('ledger');
+              navigate(PagePath.CONNECT_LEDGER);
+            }}
+          >
+            Connect Ledger
           </Button>
         </CardContent>
       </Card>

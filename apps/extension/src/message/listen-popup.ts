@@ -7,6 +7,17 @@ export const listenPopup =
   (
     popupId: string,
     handle: <T extends PopupType>(message: PopupRequest<T>) => Promise<PopupResponse<T>>,
+    {
+      onVisibilityChange = () =>
+        document.visibilityState === 'hidden' ? window.close() : void null,
+      onNavigation = () => window.close(),
+      afterResponse = () => window.close(),
+    }: {
+      onVisibilityChange?: (ev: DocumentEventMap['visibilitychange']) => void;
+      onNavigation?: (ev: Event) => void;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      afterResponse?: (response: PopupResponse<any> | PopupError) => void;
+    } = {},
   ) =>
   (
     message: unknown,
@@ -18,17 +29,16 @@ export const listenPopup =
       return false;
     }
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        window.close();
-      }
-    });
-
-    window.navigation.addEventListener('navigate', () => window.close());
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.navigation.addEventListener('navigate', onNavigation);
 
     void handle(message)
       .catch(e => ({ error: errorToJson(ConnectError.from(e, Code.Internal), undefined) }))
-      .then(sendResponse);
+      .then(response => {
+        console.debug('listen-popup sendResponse', response);
+        sendResponse(response);
+        afterResponse(response);
+      });
 
     return true;
   };

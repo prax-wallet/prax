@@ -1,6 +1,5 @@
 import { PopupPath } from '../paths';
 import { Settings } from './settings';
-import { SettingsAdvanced } from './settings-advanced';
 import { SettingsClearCache } from './settings-clear-cache';
 import { SettingsConnectedSites } from './settings-connected-sites';
 import { SettingsPassphrase } from './settings-passphrase';
@@ -12,10 +11,6 @@ export const settingsRoutes = [
   {
     path: PopupPath.SETTINGS,
     element: <Settings />,
-  },
-  {
-    path: PopupPath.SETTINGS_ADVANCED,
-    element: <SettingsAdvanced />,
   },
   {
     path: PopupPath.SETTINGS_RPC,

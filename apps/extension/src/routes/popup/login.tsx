@@ -1,11 +1,11 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { InputProps } from '@repo/ui/components/ui/input';
-import { PasswordInput } from '../../shared/components/password-input';
-import { usePopupNav } from '../../utils/navigate';
-import { useStore } from '../../state';
-import { passwordSelector } from '../../state/password';
 import { FormEvent, useState } from 'react';
+import { PasswordInput } from '../../shared/components/password-input';
+import { useStore } from '../../state';
+import { loginSelector } from '../../state/password';
+import { usePopupNav } from '../../utils/navigate';
 import { PopupPath } from './paths';
 import { needsOnboard } from './popup-needs';
 
@@ -14,7 +14,7 @@ export const popupLoginLoader = () => needsOnboard();
 export const Login = () => {
   const navigate = usePopupNav();
 
-  const { isPassword, setSessionPassword } = useStore(passwordSelector);
+  const { isPassword, setSessionPassword } = useStore(loginSelector);
   const [input, setInputValue] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
 

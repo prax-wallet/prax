@@ -1,76 +1,21 @@
-import { Key } from '@repo/encryption/key';
-import { Box } from '@repo/encryption/box';
-import { assertWalletType, Wallet, type WalletJson } from '@repo/wallet';
-import { generateSpendKey, getFullViewingKey } from '@penumbra-zone/wasm/keys';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
 import type { SessionStorageState } from '@repo/storage-chrome/session';
-import { AllSlices, SliceCreator } from '.';
+import { Wallet, type WalletJson } from '@repo/wallet';
+import type { AllSlices, SliceCreator } from '.';
 
 export interface WalletsSlice {
-  /** new custody types aren't used yet */
   all: WalletJson[];
-  addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<void>;
-  getSeedPhrase: () => Promise<string[]>;
 }
 
-export const createWalletsSlice =
-  (
-    session: ExtensionStorage<SessionStorageState>,
-    local: ExtensionStorage<LocalStorageState>,
-  ): SliceCreator<WalletsSlice> =>
-  (set, get) => {
-    return {
-      all: [],
-      addWallet: async ({ label, seedPhrase }) => {
-        const seedPhraseStr = seedPhrase.join(' ');
-        const spendKey = generateSpendKey(seedPhraseStr);
-        const fullViewingKey = getFullViewingKey(spendKey);
+export const createWalletsSlice = (
+  _session: ExtensionStorage<SessionStorageState>,
+  _local: ExtensionStorage<LocalStorageState>,
+): SliceCreator<WalletsSlice> => {
+  return (_set, _get, _store) => ({
+    all: [],
+  });
+};
 
-        const passwordKey = await session.get('passwordKey');
-        if (passwordKey === undefined) {
-          throw new Error('Password Key not in storage');
-        }
-
-        const key = await Key.fromJson(passwordKey);
-        const newWallet = new Wallet(label, fullViewingKey, {
-          encryptedSeedPhrase: await key.seal(seedPhraseStr),
-        });
-
-        set(state => {
-          state.wallets.all.unshift(newWallet.toJson());
-        });
-
-        const wallets = await local.get('wallets');
-        await local.set('wallets', [newWallet.toJson(), ...wallets]);
-      },
-
-      /** @deprecated */
-      getSeedPhrase: async () => {
-        const passwordKey = await session.get('passwordKey');
-        if (!passwordKey) {
-          throw new Error('no password set');
-        }
-
-        const key = await Key.fromJson(passwordKey);
-        const activeWallet = getActiveWallet(get());
-        if (!activeWallet) {
-          throw new Error('no wallet set');
-        }
-
-        assertWalletType('encryptedSeedPhrase', activeWallet);
-        const phraseBox = Box.fromJson(activeWallet.toJson().custody.encryptedSeedPhrase);
-
-        const phrase = await key.unseal(phraseBox);
-        if (!phrase) {
-          throw new Error('Unable to decrypt seed phrase with password');
-        }
-
-        return phrase.split(' ');
-      },
-    };
-  };
-
-export const walletsSelector = (state: AllSlices) => state.wallets;
-export const getActiveWallet = (state: AllSlices) =>
+export const activeWalletSelector = (state: AllSlices) =>
   state.wallets.all[0] && Wallet.fromJson(state.wallets.all[0]);
