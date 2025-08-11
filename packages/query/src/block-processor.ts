@@ -179,7 +179,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // inside a compact block (~100KB). We don't neccessarily need to determine the optimal chunk
     // size, rather it needs to be sufficiently small that devices can handle crossing the syncing
     // hurdle of processing the genesis block.
-    const GENESIS_CHUNK_SIZE = 500;
+    const GENESIS_CHUNK_SIZE = 2000;
 
     // start at next block, or genesis if height is undefined
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
