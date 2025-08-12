@@ -138,6 +138,7 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
                   console.debug(args);
                   return Promise.resolve(MOCK_USB_DEVICE);
                 },
+                getDevices: () => Promise.resolve([MOCK_USB_DEVICE]),
               };
             },
           });
