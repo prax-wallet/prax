@@ -5,15 +5,17 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
+    "clean": "$npm_execpath run ledger:clean",
+    "ledger:clean": "cd ledger-penumbra && make clean",
     "ledger:clone": "stat ledger-penumbra/Makefile || git clone https://github.com/zondax/ledger-penumbra ledger-penumbra --branch v1.0.2 --depth 1 --shallow-submodules --recursive",
     "ledger:make": "cd ledger-penumbra && make",
     "ledger:snapshots": "vitest run || cp -rv snapshots-tmp/* snapshots/",
     "lint": "eslint \"**/*.ts*\"",
-    "pretest": "$npm_execpath run ledger:clone && $npm_execpath run ledger:make",
+    "pretest": "$npm_execpath run ledger:clone && $npm_execpath run ledger:make buildS2",
     "test": "vitest run"
   },
   "exports": {
-    ".": "./src/wallet.ts"
+    ".": "./src/index.ts"
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "18.0.0",
