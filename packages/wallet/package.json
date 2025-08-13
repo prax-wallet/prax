@@ -10,8 +10,8 @@
     "ledger:clone": "stat ledger-penumbra/Makefile || git clone https://github.com/zondax/ledger-penumbra ledger-penumbra --branch v1.0.2 --depth 1 --shallow-submodules --recursive",
     "ledger:make": "cd ledger-penumbra && make",
     "ledger:snapshots": "vitest run || cp -rv snapshots-tmp/* snapshots/",
-    "preledger:snapshots": "rm -rf snapshots snapshots-tmp ; mkdir snapshots",
     "lint": "eslint \"**/*.ts*\"",
+    "preledger:snapshots": "rm -rf snapshots snapshots-tmp ; mkdir snapshots",
     "pretest": "$npm_execpath run ledger:clone && $npm_execpath run ledger:make buildS2",
     "test": "vitest run"
   },
