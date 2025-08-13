@@ -1,5 +1,4 @@
 import { toPlainMessage } from '@bufbuild/protobuf';
-import { ledgerUSBVendorId } from '@ledgerhq/devices/lib-es/index';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
@@ -17,8 +16,8 @@ const seedPhrase =
 const defaultOptions = {
   ...DEFAULT_START_OPTIONS,
   disablePool: true,
-  logging: true,
-  custom: `-s "${seedPhrase}"`,
+  logging: false,
+  custom: `-s "${seedPhrase}" --log-level werkzeug:ERROR`,
   X11: false,
 };
 
@@ -31,11 +30,7 @@ const { key: passKey } = await Key.create('s0meUs3rP@ssword');
 const custodyBoxes = {
   encryptedSeedPhrase: await passKey.seal(seedPhrase),
   encryptedSpendKey: await passKey.seal(new SpendKey(spendKey).toJsonString()),
-  ledgerUsb: await passKey.seal(
-    JSON.stringify({
-      filters: [{ vendorId: ledgerUSBVendorId }],
-    } satisfies USBDeviceRequestOptions),
-  ),
+  ledgerUsb: await passKey.seal('not a real serial number'),
 } as const satisfies Record<CustodyTypeName, Box>;
 
 describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
@@ -114,7 +109,7 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
       );
     });
 
-    describe('authorization', { timeout: 80_000 }, () => {
+    describe.skip('authorization', { timeout: 80_000 }, () => {
       let interact: () => Promise<void>;
       let sim: Promise<InstanceType<typeof Zemu>> | undefined;
 

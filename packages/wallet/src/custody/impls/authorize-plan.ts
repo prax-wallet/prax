@@ -31,7 +31,12 @@ export const authorizePlanImpls: {
       this.fullViewingKey,
     );
     return convertLedgerAuthorizationData(
-      await ledgerApp.sign(PENUMBRA_PATH, Buffer.from(plan.toBinary())),
+      await ledgerApp.sign(PENUMBRA_PATH, Buffer.from(plan.toBinary())).catch((cause: unknown) => {
+        throw new Error(
+          `Ledger failed to sign ${plan.actions.map(a => a.action.case).join()} with: ${String(cause)}`,
+          { cause },
+        );
+      }),
     );
   },
 };
