@@ -59,7 +59,7 @@ export const createTxApprovalSlice =
         if (!wallet0) {
           throw new Error('No found wallet');
         }
-        return FullViewingKey.fromJsonString(wallet0.fullViewingKey);
+        return FullViewingKey.fromJson(wallet0.fullViewingKey);
       });
 
       let invalidPlan: ConnectError | undefined;

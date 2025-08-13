@@ -11,7 +11,7 @@ import type { WalletCustody } from './custody/wallet-custody';
 
 export interface WalletJson<T extends CustodyTypeName = CustodyTypeName> {
   label: string;
-  fullViewingKey: string;
+  fullViewingKey: { inner: string };
   custody: CustodyNamedValue<BoxJson, T>;
 }
 
@@ -88,17 +88,13 @@ export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
 
     const custodyData = { [custodyType]: custodyBox } as CustodyNamedValue<Box, J>;
 
-    return new Wallet<J>(
-      json.label,
-      FullViewingKey.fromJsonString(json.fullViewingKey),
-      custodyData,
-    );
+    return new Wallet<J>(json.label, FullViewingKey.fromJson(json.fullViewingKey), custodyData);
   }
 
   public toJson(): WalletJson<T> {
     return {
       label: this.label,
-      fullViewingKey: this.fullViewingKey.toJsonString(),
+      fullViewingKey: this.fullViewingKey.toJson() as { inner: string },
       custody: { [this.custodyType]: this.custodyBox.toJson() } as CustodyNamedValue<BoxJson, T>,
     };
   }

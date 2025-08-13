@@ -14,8 +14,9 @@ type LOCAL = {
       | { encryptedSeedPhrase: { cipherText: string; nonce: string } }
       | { encryptedSpendKey: { cipherText: string; nonce: string } }
       | { ledgerUsb: { cipherText: string; nonce: string } };
-    /** Stringified FullViewingKey */
-    fullViewingKey: string;
+    fullViewingKey: import('../json-message').JsonMessage<
+      import('@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb').FullViewingKey
+    >;
     label: string;
   }[];
 
@@ -30,7 +31,9 @@ type LOCAL = {
   /** url string */
   grpcEndpoint?: string;
   /** Stringified AppParameters */
-  params?: string;
+  params?: import('../json-message').JsonMessage<
+    import('@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb').AppParameters
+  >;
   /** KeyPrintJson */
   passwordKeyPrint?: { hash: string; salt: string };
   /** integer */

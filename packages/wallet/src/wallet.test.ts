@@ -69,7 +69,7 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
 
       const walletJson: WalletJson = {
         label: label,
-        fullViewingKey: fvk.toJsonString(),
+        fullViewingKey: fvk.toJson() as { inner: string },
         custody: custodyJson,
       };
 

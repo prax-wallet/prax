@@ -3,7 +3,7 @@ import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createClient } from '@connectrpc/connect';
 import { Wallet } from '@repo/wallet';
-import { localExtStorage } from '@repo/storage-chrome/local';
+import { type JsonMessage, localExtStorage } from '@repo/storage-chrome';
 import { onboardGrpcEndpoint, onboardWallet } from '@repo/storage-chrome/onboard';
 import { Services } from '@repo/context';
 import { WalletServices } from '@penumbra-zone/types/services';
@@ -48,10 +48,10 @@ const getChainId = async (baseUrl: string) => {
     )) ??
     (await localExtStorage
       .get('params')
-      .then(jsonParams => (jsonParams ? AppParameters.fromJsonString(jsonParams) : undefined)));
+      .then(jsonParams => (jsonParams ? AppParameters.fromJson(jsonParams) : undefined)));
 
   if (params?.chainId) {
-    void localExtStorage.set('params', params.toJsonString());
+    void localExtStorage.set('params', params.toJson() as JsonMessage<AppParameters>);
   } else {
     throw new Error('No chainId available');
   }
