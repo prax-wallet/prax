@@ -1,25 +1,14 @@
 import { toPlainMessage } from '@bufbuild/protobuf';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import { Box, type BoxJson } from '@repo/encryption/box';
 import { Key } from '@repo/encryption/key';
-import Zemu, { DEFAULT_START_OPTIONS } from '@zondax/zemu';
-import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import type { CustodyTypeName } from './custody/util';
 import { Wallet, type WalletJson } from './wallet';
 
 const seedPhrase =
   'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
-
-const defaultOptions = {
-  ...DEFAULT_START_OPTIONS,
-  disablePool: true,
-  logging: false,
-  custom: `-s "${seedPhrase}" --log-level werkzeug:ERROR`,
-  X11: false,
-};
 
 const spendKey = generateSpendKey(seedPhrase);
 const fvk = getFullViewingKey(spendKey);
@@ -107,121 +96,6 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
           ).toThrow();
         },
       );
-    });
-
-    describe.skip('authorization', { timeout: 80_000 }, () => {
-      let interact: () => Promise<void>;
-      let sim: Promise<InstanceType<typeof Zemu>> | undefined;
-
-      const MOCK_USB_DEVICE = '__MOCK_USB_DEVICE__';
-
-      beforeEach(async ctx => {
-        if (custodyType === 'ledgerUsb') {
-          vi.stubGlobal('navigator', {
-            get usb() {
-              console.count('mock navigator.usb');
-              return {
-                requestDevice: (...args: unknown[]) => {
-                  console.count('mock navigator.usb.requestDevice');
-                  console.debug(args);
-                  return Promise.resolve(MOCK_USB_DEVICE);
-                },
-                getDevices: () => Promise.resolve([MOCK_USB_DEVICE]),
-              };
-            },
-          });
-
-          sim = Promise.resolve(new Zemu(__LEDGER_APP__!)).then(async emulator => {
-            console.count('zemu start');
-            await emulator.start({ ...defaultOptions, model: __LEDGER_MODEL__! as never });
-            return emulator;
-          });
-
-          await sim;
-
-          vi.spyOn(TransportWebUSB, 'open').mockImplementation(async (...args) => {
-            console.debug('mock call TransportWebUSB open', args);
-            expect(args).toStrictEqual([MOCK_USB_DEVICE]);
-            expect(sim).toBeDefined();
-            return sim!.then(emulator => emulator.getTransport()) as never;
-          });
-
-          interact = async () => {
-            expect(sim).toBeDefined();
-            await sim!.then(async emulator => {
-              await emulator.waitUntilScreenIsNot(emulator.getMainMenuSnapshot());
-              await emulator.waitForText('Review');
-              await emulator.compareSnapshotsAndApprove(
-                '.',
-                `${ctx.task.name}-${custodyType}`.replace(' ', '-'),
-              );
-            });
-          };
-        } else {
-          sim = undefined;
-          interact = async () => expect(sim).toBeUndefined();
-          vi.stubGlobal('navigator', {
-            get usb() {
-              return null;
-            },
-          });
-        }
-      }, defaultOptions.startTimeout);
-
-      afterEach(async () => {
-        if (custodyType === 'ledgerUsb') {
-          expect(sim).toBeDefined();
-          await sim!.then(emulator => emulator.close());
-          sim = undefined;
-        } else {
-          expect(sim).toBeUndefined();
-        }
-      });
-
-      const wallet = new Wallet(label, fvk, custodyData);
-      let plan: TransactionPlan;
-
-      beforeAll(async () => {
-        plan = await import('./test-data/tx-plan.json').then(
-          ({ default: json }: { default: unknown }) => TransactionPlan.fromJson(json as never),
-        );
-      });
-
-      test('authorization success', async () => {
-        const custody = await wallet.custody(passKey);
-
-        const authRequest = custody.authorizePlan(plan);
-
-        await interact();
-
-        const authData = await authRequest;
-
-        expect(authData.toJson()).toMatchObject({
-          effectHash: {
-            inner:
-              // effectHash is deterministic
-              '893Otjfg4OeeAmkKfv4PCmajI58GTR2pE4/QGsgCRo9CRLYSPMPh2slkojPcyHujU8AhHUDjGlzyQB4j0+8MkQ==',
-          },
-          spendAuths: [
-            {
-              inner:
-                // spendAuth is nondeterministic
-                expect.stringMatching(/^[A-Za-z0-9+/]{86}==$/) as unknown,
-            },
-          ],
-          // empty arrays will be missing from json
-          // delegatorVoteAuths: [],
-          // lqtVoteAuths: [],
-        });
-      });
-
-      test('authorization with wrong pass key fails', async () => {
-        const { key: wrongPassKey } = await Key.create('differentPassword');
-
-        await expect(wallet.custody(wrongPassKey)).rejects.toThrow(
-          `Wrong key for "${label}" custody box`,
-        );
-      });
     });
   },
 );
