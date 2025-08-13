@@ -2,7 +2,7 @@ import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_
 import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createClient } from '@connectrpc/connect';
-import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Wallet } from '@repo/wallet';
 import { localExtStorage } from '@repo/storage-chrome/local';
 import { onboardGrpcEndpoint, onboardWallet } from '@repo/storage-chrome/onboard';
 import { Services } from '@repo/context';
@@ -11,7 +11,7 @@ import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb
 import { SENTINEL_U64_MAX } from './utils/sentinel';
 
 export const startWalletServices = async () => {
-  const wallet = await onboardWallet();
+  const wallet = Wallet.fromJson(await onboardWallet());
   const grpcEndpoint = await onboardGrpcEndpoint();
   const numeraires = await localExtStorage.get('numeraires');
   const chainId = await getChainId(grpcEndpoint);
@@ -21,8 +21,8 @@ export const startWalletServices = async () => {
   const services = new Services({
     grpcEndpoint,
     chainId,
-    walletId: WalletId.fromJsonString(wallet.id),
-    fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
+    walletId: wallet.id,
+    fullViewingKey: wallet.fullViewingKey,
     numeraires: numeraires.map(n => AssetId.fromJsonString(n)),
     walletCreationBlockHeight,
     compactFrontierBlockHeight,
