@@ -25,11 +25,16 @@ import type { CustodyTypeName } from './custody/util';
 import { replaceUncaughtExceptionListener } from './test-data/util';
 import { Wallet } from './wallet';
 
+const MOCK_USB_DEVICE = crypto.randomUUID();
+const timeout = Number(import.meta.env.LEDGER_TIMEOUT);
+
 const seedPhrase =
   'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
 
-const defaultOptions: IStartOptions = {
+const zemuOptions: IStartOptions = {
   ...DEFAULT_START_OPTIONS,
+  startTimeout: timeout / 6,
+  model: import.meta.env.LEDGER_MODEL as never,
   disablePool: true,
   logging: false,
   custom: `-s "${seedPhrase}" --log-level werkzeug:ERROR`,
@@ -120,8 +125,6 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
     const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
       replaceUncaughtExceptionListener();
 
-    const MOCK_USB_DEVICE = '__MOCK_USB_DEVICE__';
-
     beforeEach(async ctx => {
       expect(uncaughtExceptionListener).not.toHaveBeenCalled();
       uncaughtExceptionListener.mockClear();
@@ -136,8 +139,8 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
           },
         });
 
-        sim = Promise.resolve(new Zemu(__LEDGER_APP__!)).then(async emulator => {
-          await emulator.start({ ...defaultOptions, model: __LEDGER_MODEL__! as never });
+        sim = Promise.resolve(new Zemu(import.meta.env.LEDGER_APP)).then(async emulator => {
+          await emulator.start(zemuOptions);
           return emulator;
         });
 
@@ -145,8 +148,7 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
 
         vi.spyOn(TransportWebUSB, 'open').mockImplementation((...args) => {
           expect(args).toStrictEqual([MOCK_USB_DEVICE]);
-          expect(sim).toBeDefined();
-          return sim!.then(emulator => emulator.getTransport() as TransportWebUSB);
+          return sim!.then(emulator => emulator.getTransport() as never);
         });
       } else {
         sim = undefined;
@@ -157,10 +159,10 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
         });
       }
 
-      interact.mockImplementationOnce((timeout: number) =>
+      interact.mockImplementationOnce((actionTimeout: number) =>
         sim?.then(async emulator => {
           await emulator.waitUntilScreenIsNot(emulator.getMainMenuSnapshot());
-          await emulator.waitForText('Review', timeout);
+          await emulator.waitForText('Review', actionTimeout);
           const snapshotName = `${ctx.task.suite.name}_${ctx.task.name}`
             .trim()
             .replaceAll(/[\s,]/g, '-')
@@ -170,11 +172,11 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
             snapshotName,
             undefined,
             undefined,
-            timeout,
+            actionTimeout,
           );
         }),
       );
-    }, defaultOptions.startTimeout);
+    }, zemuOptions.startTimeout);
 
     afterEach(async () => {
       if (custodyType === 'ledgerUsb') {
@@ -205,7 +207,7 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
           ? `miss ${Array.from(missingAuths).join()}`
           : 'pass';
 
-      test(`${custodyType} ${actions.join()} should ${outcome}`, { timeout: 40_000 }, async () => {
+      test(`${custodyType} ${actions.join()} should ${outcome}`, { timeout }, async () => {
         onTestFinished(() => {
           expect(uncaughtExceptionListener).not.toHaveBeenCalled();
           uncaughtExceptionListener.mockClear();
@@ -217,12 +219,12 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
         const interaction = interact(
           // swaps are large and need extra time
           rejectActions.has('swap')
-            ? 15_000
+            ? timeout / 3
             : // other rejected actions should fail pretty quick
               rejectActions.size
-              ? 5_000
+              ? timeout / 6
               : // normal tests need a bit of time
-                10_000,
+                timeout / 4,
         );
 
         if (rejectActions.size) {

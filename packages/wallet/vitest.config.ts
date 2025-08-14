@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -10,5 +11,11 @@ export default defineConfig({
     },
     setupFiles: ['./tests-setup.ts'],
     exclude: ['node_modules', 'ledger-penumbra'],
+    env: {
+      LEDGER_APP:
+        process.env['LEDGER_APP'] ?? path.resolve('./ledger-penumbra/app/output/app_s2.elf'),
+      LEDGER_MODEL: process.env['LEDGER_MODEL'] ?? 'nanosp',
+      LEDGER_TIMEOUT: process.env['LEDGER_TIMEOUT'] ?? String(process.env['CI'] ? 80_000 : 40_000),
+    },
   },
 });
