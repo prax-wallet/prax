@@ -107,8 +107,4 @@ export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
       custody: { [this.custodyType]: this.custodyBox.toJson() } as CustodyNamedValue<BoxJson, T>,
     };
   }
-
-  public toJSON() {
-    return this.toJson();
-  }
 }
