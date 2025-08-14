@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { JsonObject } from '@bufbuild/protobuf';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -113,7 +114,7 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
     const custodyBox = custodyBoxes[custodyType];
     const custodyData = { [custodyType]: custodyBox } as Record<typeof custodyType, Box>;
 
-    let interact = vi.fn<[timeout: number], void | Promise<void>>();
+    const interact = vi.fn<[timeout: number], void | Promise<void>>();
     let sim: Promise<InstanceType<typeof Zemu>> | undefined;
 
     const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
@@ -142,10 +143,10 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
 
         await sim;
 
-        vi.spyOn(TransportWebUSB, 'open').mockImplementation(async (...args) => {
+        vi.spyOn(TransportWebUSB, 'open').mockImplementation((...args) => {
           expect(args).toStrictEqual([MOCK_USB_DEVICE]);
           expect(sim).toBeDefined();
-          return sim!.then(emulator => emulator.getTransport()) as never;
+          return sim!.then(emulator => emulator.getTransport() as TransportWebUSB);
         });
       } else {
         sim = undefined;
@@ -199,12 +200,12 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
       const missingAuths = new Set(actions).intersection(ignoredActions[custodyType]);
 
       const outcome = rejectActions.size
-        ? `fail ${Array.from(rejectActions)}`
+        ? `fail ${Array.from(rejectActions).join()}`
         : missingAuths.size
-          ? `miss ${Array.from(missingAuths)}`
+          ? `miss ${Array.from(missingAuths).join()}`
           : 'pass';
 
-      test(`${custodyType} ${actions} should ${outcome}`, { timeout: 40_000 }, async () => {
+      test(`${custodyType} ${actions.join()} should ${outcome}`, { timeout: 40_000 }, async () => {
         onTestFinished(() => {
           expect(uncaughtExceptionListener).not.toHaveBeenCalled();
           uncaughtExceptionListener.mockClear();
@@ -233,13 +234,13 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
           await interaction;
 
           // Effect hash is deterministic and should match
-          expect(authData?.effectHash?.equals(expectData.effectHash)).toBeTruthy();
+          expect(authData.effectHash?.equals(expectData.effectHash)).toBeTruthy();
 
           // Action auths are non-deterministic, but should match length
-          expect(authData?.spendAuths.length).toBe(expectData.spendAuths.length);
-          expect(authData?.lqtVoteAuths.length).toBe(expectData.lqtVoteAuths.length);
+          expect(authData.spendAuths.length).toBe(expectData.spendAuths.length);
+          expect(authData.lqtVoteAuths.length).toBe(expectData.lqtVoteAuths.length);
 
-          expect(authData?.delegatorVoteAuths.length).toBe(
+          expect(authData.delegatorVoteAuths.length).toBe(
             !missingAuths.has('delegatorVote') ? expectData.delegatorVoteAuths.length : 0,
           );
         }

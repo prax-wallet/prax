@@ -1,6 +1,7 @@
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Wallet } from '_penumbra_zone_types_36/wallet';
+import { Wallet as RepoWallet } from '@repo/wallet';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import { Key } from '@repo/encryption/key';
 import { KeyPrint } from '@repo/encryption/key-print';
@@ -232,13 +233,10 @@ describe('local-v1-v2 migration', () => {
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
-      /**
-       * @deprecated wallet class changed
-       * // works with new wallet tools
-       * const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
-       * expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
-       * expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
-       */
+      // works with new wallet tools
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
 
     test('corrupted passwordKeyPrint is recovered and valid', async () => {
@@ -264,13 +262,10 @@ describe('local-v1-v2 migration', () => {
 
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
-      /**
-       * @deprecated wallet class changed
-       * // works with new wallet tools
-       * const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
-       * expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
-       * expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
-       */
+      // works with new wallet tools
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
 
     test('invalid passwordKeyPrint is unchanged and invalid', async () => {
@@ -325,13 +320,10 @@ describe('local-v1-v2 migration', () => {
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
-      /**
-       * @deprecated wallet class changed
-       * // works with new wallet tools
-       * const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
-       * expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
-       * expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
-       */
+      // works with new wallet tools
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
 
     test('typical v0 user migrates correctly', async () => {
@@ -370,13 +362,10 @@ describe('local-v1-v2 migration', () => {
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
-      /**
-       * @deprecated wallet class changed
-       * // works with new wallet tools
-       * const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
-       * expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
-       * expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
-       */
+      // works with new wallet tools
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
 
     test('corrupted v1 user migrates correctly', async () => {
@@ -415,13 +404,10 @@ describe('local-v1-v2 migration', () => {
       );
       expect(decryptedSeedPhrase).toBe(testSeedPhrase);
 
-      /**
-       * @deprecated wallet class changed
-       * // works with new wallet tools
-       * const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
-       * expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
-       * expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
-       */
+      // works with new wallet tools
+      const newWalletFromJson = RepoWallet.fromJson(wallets[0]!);
+      expect(newWalletFromJson.custodyType).toBe('encryptedSeedPhrase');
+      expect(() => newWalletFromJson.custody(recreatedKey!)).not.toThrow();
     });
   });
 });

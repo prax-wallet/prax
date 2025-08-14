@@ -1,4 +1,4 @@
-export type ExplicitPartial<T> = {
+export type Explicit<T> = {
   [K in keyof Required<T>]: T[K];
 };
 
@@ -9,5 +9,5 @@ export interface Migration<
   ToState extends Record<string, unknown> = Record<string, unknown>,
 > {
   version(iv: FromV): ToV;
-  transform(fs: Partial<FromState>): ExplicitPartial<ToState> | Promise<ExplicitPartial<ToState>>;
+  transform(fs: Partial<FromState>): Explicit<ToState> | Promise<Explicit<ToState>>;
 }

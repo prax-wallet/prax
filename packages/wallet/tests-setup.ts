@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- test setup */
 /* eslint-disable no-var  -- test global */
 import { runtime, storage } from '@repo/mock-chrome';
 import Zemu from '@zondax/zemu';
@@ -17,15 +18,13 @@ const {
 vi.stubGlobal('__LEDGER_APP__', LEDGER_APP);
 vi.stubGlobal('__LEDGER_MODEL__', LEDGER_MODEL);
 
-await Zemu.stopAllEmuContainers();
+Zemu.stopAllEmuContainers();
 
 await Zemu.checkAndPullImage().catch(() =>
   console.log('Failed to check/pull Docker image, continuing anyway'),
 );
 
-afterAll(async () => {
-  await Zemu.stopAllEmuContainers();
-});
+afterAll(() => Zemu.stopAllEmuContainers());
 
 declare global {
   var __LEDGER_APP__: typeof LEDGER_APP;
