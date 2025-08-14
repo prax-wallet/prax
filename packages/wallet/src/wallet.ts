@@ -1,7 +1,4 @@
-import {
-  FullViewingKey,
-  type WalletId,
-} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getWalletId } from '@penumbra-zone/wasm/keys';
 import { Box, type BoxJson } from '@repo/encryption/box';
 import type { Key } from '@repo/encryption/key';
@@ -11,7 +8,8 @@ import type { WalletCustody } from './custody/wallet-custody';
 
 export interface WalletJson<T extends CustodyTypeName = CustodyTypeName> {
   label: string;
-  fullViewingKey: { inner: string };
+  id: string;
+  fullViewingKey: string;
   custody: CustodyNamedValue<BoxJson, T>;
 }
 
@@ -88,13 +86,24 @@ export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
 
     const custodyData = { [custodyType]: custodyBox } as CustodyNamedValue<Box, J>;
 
-    return new Wallet<J>(json.label, FullViewingKey.fromJson(json.fullViewingKey), custodyData);
+    const fullViewingKey = FullViewingKey.fromJsonString(json.fullViewingKey);
+    const walletId = getWalletId(fullViewingKey);
+    if (!walletId.equals(WalletId.fromJsonString(json.id))) {
+      throw new TypeError('Wallet ID mismatch');
+    }
+
+    return new Wallet<J>(
+      json.label,
+      FullViewingKey.fromJsonString(json.fullViewingKey),
+      custodyData,
+    );
   }
 
   public toJson(): WalletJson<T> {
     return {
       label: this.label,
-      fullViewingKey: this.fullViewingKey.toJson() as { inner: string },
+      id: this.id.toJsonString(),
+      fullViewingKey: this.fullViewingKey.toJsonString(),
       custody: { [this.custodyType]: this.custodyBox.toJson() } as CustodyNamedValue<BoxJson, T>,
     };
   }

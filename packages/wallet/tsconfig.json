@@ -1,6 +1,6 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["src", "vitest.config.ts", "tests-setup.ts", "__mocks__"],
+  "include": ["src", "vitest.config.ts", "tests-setup.ts"],
   "compilerOptions": {
     "lib": ["DOM", "ESNext"]
   }

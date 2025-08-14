@@ -36,5 +36,3 @@ export function expectVersion<X, E extends number, O extends number>(
 }
 
 export type { Migration } from './type';
-
-export type { JsonMessage } from '../json-message';

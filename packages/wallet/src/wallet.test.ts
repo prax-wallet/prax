@@ -68,8 +68,9 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
       >;
 
       const walletJson: WalletJson = {
+        id: getWalletId(fvk).toJsonString(),
         label: label,
-        fullViewingKey: fvk.toJson() as { inner: string },
+        fullViewingKey: fvk.toJsonString(),
         custody: custodyJson,
       };
 
@@ -85,17 +86,14 @@ describe.each(Object.keys(custodyBoxes) as (keyof typeof custodyBoxes)[])(
         expect(deserialized.toJson()).toStrictEqual(walletJson);
       });
 
-      test.each(['label', 'fullViewingKey', 'custody'] satisfies (keyof WalletJson)[])(
-        `throws if %s is missing`,
-        walletJsonField => {
-          expect(() =>
-            Wallet.fromJson({
-              ...walletJson,
-              [walletJsonField]: undefined as never,
-            }),
-          ).toThrow();
-        },
-      );
+      test.each(Object.keys(walletJson))(`throws if %s is missing`, walletJsonField => {
+        expect(() =>
+          Wallet.fromJson({
+            ...walletJson,
+            [walletJsonField]: undefined as never,
+          }),
+        ).toThrow();
+      });
     });
   },
 );

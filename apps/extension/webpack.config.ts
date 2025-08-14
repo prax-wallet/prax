@@ -185,11 +185,11 @@ export default ({
     plugins: [
       new webpack.CleanPlugin(),
       new webpack.ProvidePlugin({
-        // Required by a few dependencies
+        // Required by the `bip39` library
         Buffer: ['buffer', 'Buffer'],
       }),
       new webpack.IgnorePlugin({
-        // reduces the size of `bip39` bundle
+        // Not required by the `bip39` library, but very nice
         checkResource(resource) {
           return /.*\/wordlists\/(?!english).*\.json/.test(resource);
         },

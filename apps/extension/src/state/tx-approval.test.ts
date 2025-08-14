@@ -52,9 +52,7 @@ const bech32FVK =
 const wallet0 = {
   label: 'mock',
   id: 'mock',
-  fullViewingKey: new FullViewingKey(fullViewingKeyFromBech32m(bech32FVK)).toJson() as {
-    inner: string;
-  },
+  fullViewingKey: new FullViewingKey(fullViewingKeyFromBech32m(bech32FVK)).toJsonString(),
   custody: {
     encryptedSeedPhrase: {
       cipherText:
