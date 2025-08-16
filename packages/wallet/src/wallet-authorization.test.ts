@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { JsonObject } from '@bufbuild/protobuf';
+import { ledgerUSBVendorId } from '@ledgerhq/devices';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
@@ -25,7 +26,11 @@ import type { CustodyTypeName } from './custody/util';
 import { replaceUncaughtExceptionListener } from './test-data/util';
 import { Wallet } from './wallet';
 
-const MOCK_USB_DEVICE = crypto.randomUUID();
+const MOCK_USB_DEVICE = {
+  vendorId: ledgerUSBVendorId,
+  serialNumber: crypto.randomUUID(),
+};
+
 const timeout = Number(import.meta.env.LEDGER_TIMEOUT);
 
 const seedPhrase =
@@ -49,7 +54,7 @@ const { key: passKey } = await Key.create('s0meUs3rP@ssword');
 const custodyBoxes: Record<CustodyTypeName, Box> = {
   encryptedSeedPhrase: await passKey.seal(seedPhrase),
   encryptedSpendKey: await passKey.seal(new SpendKey(spendKey).toJsonString()),
-  ledgerUsb: await passKey.seal('not a real serial number'),
+  ledgerUsb: await passKey.seal(JSON.stringify(MOCK_USB_DEVICE)),
 };
 
 type ActionTypeName = NonNullable<Action['action']['case']>;
@@ -94,6 +99,12 @@ const createTestData = (plans: JsonObject[]) =>
 
 const testData = [
   {
+    dataSet: 'txPlan',
+    data: await import('./test-data/tx-plan.json').then(({ default: plans }) =>
+      createTestData(plans as never),
+    ),
+  },
+  {
     dataSet: 'zondaxLedger',
     data: await import('./test-data/zondax_ledger_penumbra_testcases.json').then(
       ({ default: plans }) => createTestData(plans as never),
@@ -103,12 +114,6 @@ const testData = [
     dataSet: 'penumbraPr4948',
     data: await import('./test-data/penumbra_pr4948_transaction_plans.json').then(
       ({ default: plans }) => createTestData(plans as never),
-    ),
-  },
-  {
-    dataSet: 'txPlan',
-    data: await import('./test-data/tx-plan.json').then(({ default: plans }) =>
-      createTestData(plans as never),
     ),
   },
 ].flatMap(({ dataSet, data }) => data.map(d => ({ dataSet, ...d })));
@@ -146,9 +151,14 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
 
         await sim;
 
-        vi.spyOn(TransportWebUSB, 'open').mockImplementation((...args) => {
+        vi.spyOn(TransportWebUSB, 'open').mockImplementation(async (...args) => {
           expect(args).toStrictEqual([MOCK_USB_DEVICE]);
-          return sim!.then(emulator => emulator.getTransport() as never);
+
+          const transport = (await sim!.then(emulator =>
+            emulator.getTransport(),
+          )) as TransportWebUSB;
+
+          return transport;
         });
       } else {
         sim = undefined;

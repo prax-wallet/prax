@@ -1,9 +1,9 @@
-import { ledgerUSBVendorId } from '@ledgerhq/devices/lib-es/index';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import penumbraSpec from '@penumbra-zone/bech32m';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { AuthorizationData } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { PenumbraApp, ResponseFvk, ResponseSign } from '@zondax/ledger-penumbra';
+import { PenumbraApp, type ResponseFvk, type ResponseSign } from '@zondax/ledger-penumbra';
+import { usbDeviceFilter } from './usb-filter';
 
 /**
  * We're using this instead of the library's device acquisition utility to
@@ -11,37 +11,26 @@ import { PenumbraApp, ResponseFvk, ResponseSign } from '@zondax/ledger-penumbra'
  *
  * Prefers an already-paired device to avoid a permission modal.
  *
- * @note It's possible that a device pairing may be lost without user intention.
- * If no paired device is found, this will fall back to request pairing a ledger
- * device with the appropriate serial number.
- *
- * @todo webusb request modal doesn't work in a popup, where this is used. so if
- * no paired device is found, this will fail.
+ * @todo webusb request modal doesn't work in a popup, where this is used. if no
+ * paired device is found, this will fail.
  */
-export const getLedgerPenumbraBySerial = async (knownSerial: string) => {
-  const [paired, ...extra] = await navigator.usb
-    .getDevices()
-    .then(devices =>
-      devices.filter(
-        ({ vendorId, serialNumber }) =>
-          vendorId === ledgerUSBVendorId && serialNumber === knownSerial,
-      ),
-    );
-
+export const getSpecificLedgerDevice = async (filter?: USBDeviceFilter) => {
+  const devices = await navigator.usb.getDevices();
+  const [paired, ...extra] = devices.filter(d => usbDeviceFilter(filter, d));
   if (extra.length) {
-    throw new Error(`Multiple paired Ledger devices with serial number ${knownSerial}`, {
-      cause: [paired, ...extra],
-    });
+    throw RangeError(`Multiple paired Ledger devices found`, { cause: { filter, devices } });
   }
+  if (!paired) {
+    throw ReferenceError('No paired Ledger device found', { cause: { filter, devices } });
+  }
+  return paired;
+};
 
-  const ledgerDevice =
-    paired ??
-    // chrome may have dropped the pairing, so fall back to request
-    (await navigator.usb.requestDevice({
-      filters: [{ vendorId: ledgerUSBVendorId, serialNumber: knownSerial }],
-    }));
-
-  return new PenumbraApp(await TransportWebUSB.open(ledgerDevice));
+export const getSpecificLedgerApp = async (filter?: USBDeviceFilter, signal?: AbortSignal) => {
+  const device = await getSpecificLedgerDevice(filter);
+  const transport = await TransportWebUSB.open(device);
+  signal?.addEventListener('abort', () => void transport.close());
+  return new PenumbraApp(transport);
 };
 
 /**

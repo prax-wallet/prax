@@ -13,7 +13,7 @@
     "lint": "eslint src ./*.ts",
     "preledger:snapshots": "rm -rf snapshots snapshots-tmp ; mkdir snapshots",
     "pretest": "$npm_execpath run ledger:clone && $npm_execpath run ledger:make buildS2",
-    "test": "vitest run"
+    "test": "vitest run --bail 1"
   },
   "exports": {
     ".": "./src/index.ts"

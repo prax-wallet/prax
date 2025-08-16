@@ -4,11 +4,7 @@ import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 import { DEFAULT_PATH as PENUMBRA_PATH } from '@zondax/ledger-penumbra';
 import type { CustodyTypeName } from '../util';
 import type { WalletCustody } from '../wallet-custody';
-import {
-  assertLedgerPenumbraFvk,
-  convertLedgerAuthorizationData,
-  getLedgerPenumbraBySerial,
-} from './ledger-util';
+import { convertLedgerAuthorizationData, getSpecificLedgerApp } from './util/ledger-util';
 import type { BindToWalletUnsealed } from './types';
 
 export const authorizePlanImpls: {
@@ -24,19 +20,22 @@ export const authorizePlanImpls: {
     return Promise.resolve(authorizePlan(spendKey, plan));
   },
 
-  async ledgerUsb(ledgerSerial, plan) {
-    const ledgerApp = await getLedgerPenumbraBySerial(ledgerSerial);
-    assertLedgerPenumbraFvk(
-      await ledgerApp.getFVK(PENUMBRA_PATH, { account: 0 }),
-      this.fullViewingKey,
-    );
-    return convertLedgerAuthorizationData(
-      await ledgerApp.sign(PENUMBRA_PATH, Buffer.from(plan.toBinary())).catch((cause: unknown) => {
-        throw new Error(
-          `Ledger failed to sign ${plan.actions.map(a => a.action.case).join()} with: ${String(cause)}`,
-          { cause },
-        );
-      }),
-    );
+  async ledgerUsb(deviceFilterJson, plan) {
+    const ac = new AbortController();
+    try {
+      const deviceFilter = JSON.parse(deviceFilterJson) as USBDeviceFilter;
+      const ledgerApp = await getSpecificLedgerApp(deviceFilter, ac.signal);
+
+      // check the device info
+      // const deviceInfo = await ledgerApp.deviceInfo();
+      // console.debug('deviceInfo', deviceInfo);
+
+      const signed = await ledgerApp.sign(PENUMBRA_PATH, plan.toBinary() as Buffer);
+
+      return convertLedgerAuthorizationData(signed);
+    } catch (cause) {
+      ac.abort(cause);
+      throw cause;
+    }
   },
 };

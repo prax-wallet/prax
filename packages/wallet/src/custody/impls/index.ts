@@ -2,6 +2,7 @@ import type { Wallet } from '../../wallet';
 import type { CustodyTypeName } from '../util';
 import type { WalletCustody } from '../wallet-custody';
 import { authorizePlanImpls } from './authorize-plan';
+import { readyImpls } from './ready';
 
 /**
  * Bind the appropriate utility implementations to a given {@link Wallet}, and
@@ -15,6 +16,7 @@ export function bindCustodyImpl<T extends CustodyTypeName>(
   unsealed: Awaited<ReturnType<Wallet<T>['unseal']>>,
 ): WalletCustody {
   return {
+    ready: readyImpls[to.custodyType].bind(to, unsealed),
     authorizePlan: authorizePlanImpls[to.custodyType].bind(to, unsealed),
   };
 }

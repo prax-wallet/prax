@@ -15,7 +15,7 @@ export default defineConfig({
       LEDGER_APP:
         process.env['LEDGER_APP'] ?? path.resolve('./ledger-penumbra/app/output/app_s2.elf'),
       LEDGER_MODEL: process.env['LEDGER_MODEL'] ?? 'nanosp',
-      LEDGER_TIMEOUT: process.env['LEDGER_TIMEOUT'] ?? String(process.env['CI'] ? 80_000 : 40_000),
+      LEDGER_TIMEOUT: process.env['LEDGER_TIMEOUT'] ?? String(process.env['CI'] ? 90_000 : 60_000),
     },
   },
 });

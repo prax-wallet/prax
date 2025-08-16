@@ -5,5 +5,6 @@ import type {
 
 /** The 'open wallet' utilities returned by {@link Wallet.custody}. */
 export interface WalletCustody {
+  ready: () => Promise<void>;
   authorizePlan: (plan: TransactionPlan) => Promise<AuthorizationData>;
 }
