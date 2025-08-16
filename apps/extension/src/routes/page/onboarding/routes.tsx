@@ -1,9 +1,11 @@
 import { PagePath } from '../paths';
 import { OnboardingStart } from './start';
-import { GenerateSeedPhrase } from './generate';
-import { ImportSeedPhrase } from './import';
+import { GenerateSeedPhrase } from './custody/generate-phrase';
+import { ImportSeedPhrase } from './custody/import-phrase';
 import { OnboardingSuccess } from './success';
-import { SetPassword } from './password';
+import { OnboardingSetup } from './setup';
+import { OnboardingPassword } from './password';
+import { ConnectLedger } from './custody/connect-ledger';
 
 export const onboardingRoutes = [
   {
@@ -19,8 +21,16 @@ export const onboardingRoutes = [
     element: <ImportSeedPhrase />,
   },
   {
+    path: PagePath.CONNECT_LEDGER,
+    element: <ConnectLedger />,
+  },
+  {
+    path: PagePath.ONBOARDING_SETUP,
+    element: <OnboardingSetup />,
+  },
+  {
     path: PagePath.SET_PASSWORD,
-    element: <SetPassword />,
+    element: <OnboardingPassword />,
   },
   {
     path: PagePath.ONBOARDING_SUCCESS,
