@@ -1,7 +1,15 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV", "MODE", "CHROMIUM_PROFILE"],
+  "globalEnv": [
+    "NODE_ENV",
+    "MODE",
+    "CHROMIUM_PROFILE",
+    "LEDGER_APP",
+    "LEDGER_MODEL",
+    "LEDGER_TIMEOUT",
+    "CI"
+  ],
   "tasks": {
     "//#clean:vitest-mjs": {
       "cache": false

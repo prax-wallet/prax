@@ -1,50 +1,40 @@
-import {
-  FullViewingKey,
-  SpendKey,
-  WalletId,
-} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import {
-  AuthorizationData,
-  TransactionPlan,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { authorizePlan } from '@penumbra-zone/wasm/build';
-import { generateSpendKey } from '@penumbra-zone/wasm/keys';
-import { Box, BoxJson } from '@repo/encryption/box';
-import { Key } from '@repo/encryption/key';
-import {
-  assertCustodyTypeName,
-  CustodyNamedValue,
-  CustodyTypeName,
-  getCustodyTypeName,
-} from './custody';
-
-export interface WalletCustody {
-  authorizePlan: (plan: TransactionPlan) => Promise<AuthorizationData>;
-}
+import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { getWalletId } from '@penumbra-zone/wasm/keys';
+import { Box, type BoxJson } from '@repo/encryption/box';
+import type { Key } from '@repo/encryption/key';
+import { bindCustodyImpl } from './custody/impls';
+import { type CustodyNamedValue, type CustodyTypeName, getCustodyTypeName } from './custody/util';
+import type { WalletCustody } from './custody/wallet-custody';
 
 export interface WalletJson<T extends CustodyTypeName = CustodyTypeName> {
-  id: string;
   label: string;
+  id: string;
   fullViewingKey: string;
   custody: CustodyNamedValue<BoxJson, T>;
 }
 
+/**
+ * Abstracts details of custody implementation.  Call {@link Wallet.custody}
+ * with the appropriate key to access custody utilities.
+ */
 export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
-  public readonly custodyType: T;
   private readonly custodyBox: Box;
 
+  public readonly custodyType: T;
+  public readonly id: WalletId;
+
+  /**
+   * @param label Arbitrary string identifier
+   * @param fullViewingKey View-only key with no transaction authority
+   * @param custodyData Encrypted data identified by {@link CustodyTypeName}
+   */
   constructor(
     public readonly label: string,
-    public readonly id: WalletId,
     public readonly fullViewingKey: FullViewingKey,
     custodyData: CustodyNamedValue<Box, T>,
   ) {
     if (!label || typeof label !== 'string') {
       throw new TypeError(`Wallet "${label}" label is not valid`, { cause: label });
-    }
-
-    if (!new WalletId(id).equals(id)) {
-      throw new TypeError(`Wallet "${label}" id is not valid`, { cause: id });
     }
 
     if (!new FullViewingKey(fullViewingKey).equals(fullViewingKey)) {
@@ -53,43 +43,41 @@ export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
       });
     }
 
+    // this derivation validates the fvk
+    this.id = getWalletId(fullViewingKey);
+
     this.custodyType = getCustodyTypeName(custodyData);
     this.custodyBox = custodyData[this.custodyType];
 
     if (!(this.custodyBox instanceof Box)) {
-      throw new TypeError(`Wallet "${label}" custody box is not valid`, { cause: this.custodyBox });
+      throw new TypeError(`Wallet "${label}" custody box is not valid`, { cause: custodyData });
     }
   }
 
-  async custody(passKey: Key): Promise<WalletCustody> {
+  /**
+   * Unseal the wallet's custody box.
+   *
+   * @param passKey the correct key
+   * @throws Error if the key is incorrect
+   */
+  protected async unseal(passKey: Key) {
     const unsealed = await passKey.unseal(this.custodyBox);
     if (unsealed == null) {
       throw new Error(`Wrong key for "${this.label}" custody box`);
     }
 
-    return {
-      authorizePlan: async (plan: TransactionPlan): Promise<AuthorizationData> => {
-        assertCustodyTypeName(this.custodyType);
-        switch (this.custodyType) {
-          case 'encryptedSeedPhrase': {
-            // unsealed is the seed phrase string
-            const spendKey = generateSpendKey(unsealed);
-            return Promise.resolve(authorizePlan(spendKey, plan));
-          }
-          case 'encryptedSpendKey': {
-            // unsealed is the spend key string
-            const spendKey = SpendKey.fromJsonString(unsealed);
-            return Promise.resolve(authorizePlan(spendKey, plan));
-          }
-          default:
-            // unreachable
-            this.custodyType satisfies never;
-            throw new Error(`Cannot authorize plan with custody type ${String(this.custodyType)}`, {
-              cause: this.custodyType,
-            });
-        }
-      },
-    };
+    return unsealed;
+  }
+
+  /**
+   * Unseal the wallet's custody box to access wallet utilities.
+   *
+   * @param passKey the correct password key
+   * @throws Error if the key is incorrect
+   */
+  async custody(passKey: Key): Promise<WalletCustody> {
+    const unsealed = await this.unseal(passKey);
+    return bindCustodyImpl(this, unsealed);
   }
 
   public static fromJson<J extends CustodyTypeName>(json: WalletJson<J>): Wallet<J> {
@@ -98,9 +86,14 @@ export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
 
     const custodyData = { [custodyType]: custodyBox } as CustodyNamedValue<Box, J>;
 
+    const fullViewingKey = FullViewingKey.fromJsonString(json.fullViewingKey);
+    const walletId = getWalletId(fullViewingKey);
+    if (!walletId.equals(WalletId.fromJsonString(json.id))) {
+      throw new TypeError('Wallet ID mismatch');
+    }
+
     return new Wallet<J>(
       json.label,
-      WalletId.fromJsonString(json.id),
       FullViewingKey.fromJsonString(json.fullViewingKey),
       custodyData,
     );

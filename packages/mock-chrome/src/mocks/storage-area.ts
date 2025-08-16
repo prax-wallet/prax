@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style -- meets external mapped types */
 export class MockStorageArea implements chrome.storage.StorageArea {
-  public mock = new Map<string, unknown>();
+  public mock = new MapWithUpdates<string, unknown>();
+
+  public listeners = new Set<(changes: { [key: string]: chrome.storage.StorageChange }) => void>();
 
   get(cb: (result: Record<string, unknown>) => void): void;
   get(keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>>;
@@ -59,6 +62,13 @@ export class MockStorageArea implements chrome.storage.StorageArea {
     } else {
       throw new TypeError('Invalid query');
     }
+
+    const updates = this.mock.flushUpdates();
+    const callListeners = Promise.all(
+      Array.from(this.listeners).map(listener => Promise.resolve(updates).then(listener)),
+    );
+    void callListeners;
+
     return Promise.resolve();
   }
 
@@ -72,25 +82,22 @@ export class MockStorageArea implements chrome.storage.StorageArea {
         this.mock.set(key, value);
       }
     }
+
+    const updates = this.mock.flushUpdates();
+    const callListeners = Promise.all(
+      Array.from(this.listeners).map(listener => Promise.resolve(updates).then(listener)),
+    );
+    void callListeners;
+
     return Promise.resolve();
   }
 
   get onChanged(): chrome.storage.StorageAreaChangedEvent {
     return {
-      addListener: listener => {
-        console.debug('MockStorageArea.onChanged.addListener', listener);
-      },
-      removeListener: listener => {
-        console.debug('MockStorageArea.onChanged.removeListener', listener);
-      },
-      hasListener: listener => {
-        console.debug('MockStorageArea.onChanged.hasListener', listener);
-        throw new Error('Not implemented');
-      },
-      hasListeners: () => {
-        console.debug('MockStorageArea.onChanged.hasListeners');
-        throw new Error('Not implemented');
-      },
+      addListener: listener => this.listeners.add(listener),
+      removeListener: listener => this.listeners.delete(listener),
+      hasListener: listener => this.listeners.has(listener),
+      hasListeners: () => this.listeners.size > 0,
       getRules: undefined as never,
       addRules: undefined as never,
       removeRules: undefined as never,
@@ -100,11 +107,53 @@ export class MockStorageArea implements chrome.storage.StorageArea {
   async clear() {
     console.debug('MockStorageArea.clear');
     this.mock.clear();
+
+    const updates = this.mock.flushUpdates();
+    const callListeners = Promise.all(
+      Array.from(this.listeners).map(listener => Promise.resolve(updates).then(listener)),
+    );
+    void callListeners;
+
     return Promise.resolve();
   }
 
   async setAccessLevel() {
     console.debug('MockStorageArea.setAccessLevel');
     return Promise.reject(new Error('Not implemented'));
+  }
+}
+
+class MapWithUpdates<K extends string, V> extends Map<K, V> {
+  public previous = new Map<K, V | undefined>();
+
+  override set(key: K, value: V) {
+    this.previous.set(key, super.get(key));
+    return super.set(key, value);
+  }
+
+  override delete(key: K): boolean {
+    if (super.has(key)) {
+      this.previous.set(key, super.get(key));
+    }
+    return super.delete(key);
+  }
+
+  override clear() {
+    this.previous = new Map(super.entries());
+    super.clear();
+  }
+
+  flushUpdates() {
+    const updates = new Map<K, chrome.storage.StorageChange>();
+
+    for (const [key, oldValue] of this.previous.entries()) {
+      updates.set(key, { oldValue, newValue: super.get(key) });
+    }
+
+    this.previous.clear();
+
+    return Object.fromEntries(updates.entries()) as {
+      [key: string]: chrome.storage.StorageChange;
+    };
   }
 }

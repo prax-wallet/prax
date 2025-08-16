@@ -23,6 +23,16 @@ export default {
     passwordKeyPrint: isVestigialItem(old.passwordKeyPrint)
       ? old.passwordKeyPrint.value
       : old.passwordKeyPrint,
+
+    // lol
+    backupReminderSeen:
+      typeof old.backupReminderSeen === 'boolean' ? old.backupReminderSeen : undefined,
+    compactFrontierBlockHeight:
+      typeof old.compactFrontierBlockHeight === 'number'
+        ? old.compactFrontierBlockHeight
+        : undefined,
+    walletCreationBlockHeight:
+      typeof old.walletCreationBlockHeight === 'number' ? old.walletCreationBlockHeight : undefined,
   }),
 } satisfies MIGRATION;
 

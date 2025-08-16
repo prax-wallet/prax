@@ -1,4 +1,4 @@
-import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Wallet } from '@repo/wallet';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { localExtStorage } from '@repo/storage-chrome/local';
 
@@ -8,5 +8,5 @@ export const getFullViewingKey = async () => {
     throw new ConnectError('No wallet available', Code.FailedPrecondition);
   }
 
-  return FullViewingKey.fromJsonString(wallet0.fullViewingKey);
+  return Wallet.fromJson(wallet0).fullViewingKey;
 };

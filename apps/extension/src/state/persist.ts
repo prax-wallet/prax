@@ -96,7 +96,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         set(
           produce((state: AllSlices) => {
             state.network.chainId = stored
-              ? AppParameters.fromJsonString(stored).chainId
+              ? AppParameters.fromJson(stored).chainId
               : state.network.chainId;
           }),
         );

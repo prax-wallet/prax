@@ -1,7 +1,7 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["src", "vitest.config.ts", "tests-setup.ts"],
+  "include": ["src", "./vitest.env.d.ts", "./vitest.config.ts", "./tests-setup.ts"],
   "compilerOptions": {
-    "lib": ["WebWorker", "DOM", "ESNext"]
+    "lib": ["DOM", "ESNext"]
   }
 }

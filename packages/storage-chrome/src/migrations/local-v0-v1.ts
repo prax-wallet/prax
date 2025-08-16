@@ -23,6 +23,11 @@ export default {
     knownSites: old.knownSites?.value ?? [],
     params: old.params?.value,
     numeraires: old.numeraires?.value ?? [],
+
+    // absent values now explicitly required
+    backupReminderSeen: undefined,
+    compactFrontierBlockHeight: undefined,
+    walletCreationBlockHeight: undefined,
   }),
 } satisfies MIGRATION;
 
