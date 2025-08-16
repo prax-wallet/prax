@@ -6,13 +6,13 @@ import { useCallback, useState } from 'react';
 import { FileTextGradientIcon } from '../../../icons/file-text-gradient';
 import { PasswordInput } from '../../../shared/components/password-input';
 import { useStore } from '../../../state';
-import { passwordSelector } from '../../../state/password';
-import { getActiveWallet } from '../../../state/wallets';
+import { recoveryPhraseSelector } from '../../../state/password';
+import { activeWalletSelector } from '../../../state/wallets';
 import { SettingsScreen } from './settings-screen';
 
 export const SettingsPassphrase = () => {
-  const wallet = useStore(getActiveWallet);
-  const { isPassword, unseal } = useStore(passwordSelector);
+  const wallet = useStore(activeWalletSelector);
+  const { isPassword, unseal } = useStore(recoveryPhraseSelector);
 
   const [passwordInput, setPasswordInput] = useState('');
   const [failure, setFailure] = useState<Error>();

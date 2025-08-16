@@ -16,7 +16,8 @@
     "test": "vitest run --bail 1"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./ledger-util": "./src/custody/impls/ledger-util.ts"
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "18.0.0",

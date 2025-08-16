@@ -6,7 +6,7 @@ import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
 import { localExtStorage } from '@repo/storage-chrome/local';
-import { getActiveWallet } from '../../../state/wallets';
+import { activeWalletSelector } from '../../../state/wallets';
 import { needsLogin, needsOnboard } from '../popup-needs';
 import { FrontendLink } from './frontend-link';
 import { AssetsTable } from './assets-table';
@@ -46,7 +46,7 @@ const getAddrByIndex =
   };
 
 export const PopupIndex = () => {
-  const activeWallet = useStore(getActiveWallet);
+  const activeWallet = useStore(activeWalletSelector);
   const [index, setIndex] = useState<number>(0);
   const [showReminder, setShowReminder] = useState(false);
 

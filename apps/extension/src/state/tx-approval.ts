@@ -8,7 +8,7 @@ import {
   asReceiverTransactionView,
 } from '@penumbra-zone/perspective/translators/transaction-view';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getActiveWallet } from './wallets';
+import { activeWalletSelector } from './wallets';
 import {
   AuthorizationData,
   TransactionPlan,
@@ -173,11 +173,13 @@ export const createTxApprovalSlice =
 
       ready.promise.then(
         () => {
+          console.debug('resolve ready');
           set(state => {
             state.txApproval.ready = true;
           });
         },
         cause => {
+          console.debug('reject ready', cause);
           set(state => {
             state.txApproval.ready =
               cause instanceof Error ? cause : new Error('Unknown ready failure', { cause });
@@ -213,11 +215,13 @@ export const createTxApprovalSlice =
 
       auth.promise.then(
         data => {
+          console.debug('resolve auth', data);
           set(state => {
             state.txApproval.auth = toPlainMessage(data);
           });
         },
         cause => {
+          console.debug('reject auth', cause);
           set(state => {
             state.txApproval.auth =
               cause instanceof Error ? cause : new Error('Unknown sign failure', { cause });
@@ -228,8 +232,7 @@ export const createTxApprovalSlice =
       void Promise.resolve()
         .then(async () => {
           const wallet = await reliableGetWallet(get, local);
-          const keyJson = await session.get('passwordKey');
-          const key = await Key.fromJson(keyJson!);
+          const key = await session.get('passwordKey').then(keyJson => Key.fromJson(keyJson!));
           const custody = await wallet.custody(key);
           return custody.authorizePlan(new TransactionPlan(authorizeRequest.plan));
         })
@@ -292,12 +295,12 @@ export const txApprovalSelector = (state: AllSlices) => {
   };
 };
 
-/** @todo - getActiveWallet is unreliable if called too early */
+/** @todo - activeWalletSelector is unreliable if called too early */
 const reliableGetWallet = (
   getState: () => AllSlices,
   localStorage: ExtensionStorage<LocalStorageState>,
 ) =>
-  getActiveWallet(getState()) ??
+  activeWalletSelector(getState()) ??
   localStorage // fall back to direct storage access
     .get('wallets')
     .then(([walletJson0]) => Wallet.fromJson(walletJson0!));
