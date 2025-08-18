@@ -12,6 +12,7 @@ import { sessionExtStorage } from '@repo/storage-chrome/session';
 import type { OnboardingCustody } from './index';
 import type { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { Wallet, type WalletJson } from '@repo/wallet';
+import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 
 const { mock: localMock, listeners: localListeners } = chrome.storage
   .local as unknown as MockStorageArea;
@@ -271,6 +272,34 @@ describe('OnboardingSlice', () => {
       });
       await useStore.getState().onboarding.onboardWallet(mockKey);
       expect(localMock.get('wallets')).toHaveLength(2);
+    });
+
+    test('prevents duplicate wallet creation', async () => {
+      const mockKey = await useStore.getState().onboarding.onboardPassword('test-password');
+      const mnemonic = generateMnemonic();
+
+      // Create first wallet with specific mnemonic
+      useStore.getState().onboarding.beginOnboarding('generated');
+      useStore.setState(state => {
+        state.onboarding.generatePhrase.phrase = mnemonic.split(' ');
+        return state;
+      });
+      await useStore.getState().onboarding.onboardWallet(mockKey);
+      expect(localMock.get('wallets')).toHaveLength(1);
+
+      // Attempt to create duplicate wallet with same mnemonic
+      useStore.getState().onboarding.beginOnboarding('imported');
+      useStore.setState(state => {
+        state.onboarding.importPhrase.phrase = mnemonic.split(' ');
+        return state;
+      });
+
+      await expect(useStore.getState().onboarding.onboardWallet(mockKey)).rejects.toThrow(
+        'already exists',
+      );
+
+      // Wallet count should remain unchanged
+      expect(localMock.get('wallets')).toHaveLength(1);
     });
   });
 });

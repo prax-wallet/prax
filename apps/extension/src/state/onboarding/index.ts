@@ -2,7 +2,7 @@ import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
 import { Transport } from '@connectrpc/connect';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { generateSpendKey, getFullViewingKey } from '@penumbra-zone/wasm/keys';
 import { Key } from '@repo/encryption/key';
 import { KeyPrint } from '@repo/encryption/key-print';
@@ -22,6 +22,7 @@ import {
   testGrpcEndpoint,
 } from './util';
 import type { SessionStorageState } from '@repo/storage-chrome/session';
+import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 
 export interface OnboardRemoteOpts {
   chainRegistryClient?: ChainRegistryClient;
@@ -162,7 +163,18 @@ export const createOnboardingSlice =
 
       const wallet = new Wallet(label, fullViewingKey, custodyData);
 
-      const wallets = [wallet.toJson(), ...(await local.get('wallets'))];
+      // Check for duplicate wallet by ID
+      const existingWallets = await local.get('wallets');
+
+      if (
+        existingWallets.some(existingWallet =>
+          wallet.id.equals(WalletId.fromJsonString(existingWallet.id)),
+        )
+      ) {
+        throw new Error(`Wallet with ${bech32mWalletId(wallet.id)} already exists`);
+      }
+
+      const wallets = [wallet.toJson(), ...existingWallets];
       const keyJson = await key.toJson();
       await local.set('wallets', wallets);
       await session.set('passwordKey', keyJson);
