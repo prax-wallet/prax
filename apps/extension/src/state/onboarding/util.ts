@@ -5,12 +5,14 @@ import { AppService, SctService, TendermintProxyService } from '@penumbra-zone/p
 import { shuffle } from 'lodash';
 import { DEFAULT_GRPC } from '../../routes/page/onboarding/constants';
 
+const shortTimeoutOpts = { timeoutMs: 5_000 };
+
 export const testGrpcEndpoint = async (baseUrl: string, transport?: Transport) => {
   const tendermintClient = createClient(
     TendermintProxyService,
     (globalThis.__DEV__ ? transport : undefined) ?? createGrpcWebTransport({ baseUrl }),
   );
-  const status = await tendermintClient.getStatus({}, { timeoutMs: 3000 }).catch(() => undefined);
+  const status = await tendermintClient.getStatus({}, shortTimeoutOpts).catch(() => undefined);
 
   return status?.syncInfo?.latestBlockHeight;
 };
@@ -27,7 +29,7 @@ export const getShuffledGrpcEndpoints = async (chainRegistryClient: ChainRegistr
 
 export const getFrontierBlockHeight = (transport: Transport) =>
   createClient(SctService, transport)
-    .sctFrontier({ withProof: false }, { timeoutMs: 5000 })
+    .sctFrontier({ withProof: false }, shortTimeoutOpts)
     .then(
       ({ height }) => height,
       () => undefined,
@@ -35,7 +37,7 @@ export const getFrontierBlockHeight = (transport: Transport) =>
 
 export const getChainId = (transport: Transport) =>
   createClient(AppService, transport)
-    .appParameters({}, { timeoutMs: 5000 })
+    .appParameters({}, shortTimeoutOpts)
     .then(
       ({ appParameters }) => appParameters?.chainId,
       () => undefined,
