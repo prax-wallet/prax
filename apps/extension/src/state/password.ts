@@ -1,5 +1,6 @@
 import { Key } from '@repo/encryption/key';
 import { KeyPrint } from '@repo/encryption/key-print';
+import { Box } from '@repo/encryption/box';
 import { AllSlices, SliceCreator } from '.';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
@@ -12,6 +13,7 @@ export interface PasswordSlice {
   isPassword: (password: string) => Promise<boolean>;
   clearSessionPassword: () => void;
   setSessionPassword: (password: string) => Promise<void>;
+  unseal: (box: Box) => Promise<string>;
 }
 
 export const createPasswordSlice =
@@ -54,6 +56,18 @@ export const createPasswordSlice =
 
         const key = await Key.recreate(attempt, KeyPrint.fromJson(keyPrintJson));
         return Boolean(key);
+      },
+      unseal: async box => {
+        const passwordKey = await session.get('passwordKey');
+        if (passwordKey == null) {
+          throw new ReferenceError('No password key in session storage');
+        }
+        const key = await Key.fromJson(passwordKey);
+        const unsealed = await key.unseal(box);
+        if (unsealed == null) {
+          throw new ReferenceError('No unsealed data');
+        }
+        return unsealed;
       },
     };
   };

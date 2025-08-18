@@ -13,11 +13,11 @@ import { usePopupReady } from '../../hooks/popup-ready';
  * then removing the hard-coded width from `globals.css`.
  */
 export const PopupLayout = () => {
-  usePopupReady();
+  const popupReadyContext = usePopupReady();
 
   return (
     <div className='relative flex grow flex-col bg-card-radial'>
-      <Outlet />
+      <Outlet context={popupReadyContext} />
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { InputProps } from '@repo/ui/components/ui/input';
+import { FormEvent, useState } from 'react';
 import { PasswordInput } from '../../shared/components/password-input';
-import { usePopupNav } from '../../utils/navigate';
 import { useStore } from '../../state';
 import { passwordSelector } from '../../state/password';
-import { FormEvent, useState } from 'react';
+import { usePopupNav } from '../../utils/navigate';
 import { PopupPath } from './paths';
 import { needsOnboard } from './popup-needs';
 

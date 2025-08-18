@@ -44,7 +44,7 @@ export const initializeStore = (
     network: createNetworkSlice(local)(setState, getState, store),
     numeraires: createNumerairesSlice(local)(setState, getState, store),
     connectedSites: createConnectedSitesSlice(local)(setState, getState, store),
-    txApproval: createTxApprovalSlice(local)(setState, getState, store),
+    txApproval: createTxApprovalSlice(session, local)(setState, getState, store),
     originApproval: createOriginApprovalSlice()(setState, getState, store),
     defaultFrontend: createDefaultFrontendSlice(local)(setState, getState, store),
   }));

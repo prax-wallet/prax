@@ -32,20 +32,43 @@ const handlePopup = async <T extends PopupType>(
  * The initialization message responder is stored in the dialog's state slice
  * and eventually used by components to respond with the dialog result.
  */
-export const usePopupReady = () => {
+export const usePopupReady = (): PopupReadyContext => {
   const sentReady = useRef(new Set());
   const attachedListeners = useRef(new Set());
+
+  const attention = useRef({
+    required: true,
+    setRequired: (yn: boolean) => {
+      attention.current.required = yn;
+    },
+  });
 
   useEffect(() => {
     if (!sentReady.current.size && !attachedListeners.current.size) {
       const popupId = new URLSearchParams(window.location.search).get('id');
       if (popupId) {
-        const listener = listenPopup(popupId, handlePopup);
+        const listener = listenPopup(popupId, handlePopup, {
+          onVisibilityChange: () => {
+            if (attention.current.required && document.visibilityState === 'hidden') {
+              window.close();
+            }
+          },
+        });
         chrome.runtime.onMessage.addListener(listener);
         attachedListeners.current.add(listener);
         void chrome.runtime.sendMessage(popupId);
         sentReady.current.add(popupId);
       }
     }
-  }, [sentReady, attachedListeners, handlePopup]);
+  }, [sentReady, attachedListeners, handlePopup, attention.current]);
+
+  return {
+    attentionRequired: Boolean(attention.current.required),
+    setAttentionRequired: (yn: boolean) => attention.current.setRequired(yn),
+  };
 };
+
+export interface PopupReadyContext {
+  attentionRequired: boolean;
+  setAttentionRequired: (yn: boolean) => void;
+}

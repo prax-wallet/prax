@@ -18,8 +18,7 @@ export interface WalletJson<T extends CustodyTypeName = CustodyTypeName> {
  * with the appropriate key to access custody utilities.
  */
 export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
-  private readonly custodyBox: Box;
-
+  public readonly custodyBox: Box;
   public readonly custodyType: T;
   public readonly id: WalletId;
 
@@ -76,8 +75,16 @@ export class Wallet<T extends CustodyTypeName = CustodyTypeName> {
    * @throws Error if the key is incorrect
    */
   async custody(passKey: Key): Promise<WalletCustody> {
+    // const lockGrantedCallback = (async () => {
     const unsealed = await this.unseal(passKey);
     return bindCustodyImpl(this, unsealed);
+    // }) satisfies LockGrantedCallback;
+
+    // return (await navigator.locks.request(
+    //  `custody-${this.label}-${bech32mWalletId(this.id)}`,
+    //   { mode: 'exclusive' },
+    //   lockGrantedCallback,
+    // )) as never;
   }
 
   public static fromJson<J extends CustodyTypeName>(json: WalletJson<J>): Wallet<J> {
