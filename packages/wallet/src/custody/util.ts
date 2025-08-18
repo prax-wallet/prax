@@ -1,13 +1,15 @@
-const CUSTODY_TYPES = ['encryptedSeedPhrase', 'encryptedSpendKey'] as const;
+const CUSTODY_TYPE_NAMES = ['encryptedSeedPhrase', 'encryptedSpendKey', 'ledgerUsb'] as const;
 
-export type CustodyTypeName = (typeof CUSTODY_TYPES)[number];
+export type CustodyTypeName = (typeof CUSTODY_TYPE_NAMES)[number];
 
 export type CustodyNamedValue<V, S extends CustodyTypeName = CustodyTypeName> = {
   [N in S]: Record<N, V>;
 }[S];
 
 export function isCustodyTypeName(checkName?: unknown): checkName is CustodyTypeName {
-  return typeof checkName === 'string' && (CUSTODY_TYPES as readonly string[]).includes(checkName);
+  return (
+    typeof checkName === 'string' && (CUSTODY_TYPE_NAMES as readonly string[]).includes(checkName)
+  );
 }
 
 export function assertCustodyTypeName(checkName?: unknown): asserts checkName is CustodyTypeName {

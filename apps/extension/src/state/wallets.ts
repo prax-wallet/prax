@@ -1,7 +1,7 @@
 import { Key } from '@repo/encryption/key';
 import { Box } from '@repo/encryption/box';
-import { Wallet, type WalletJson } from '@repo/wallet';
-import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
+import { assertWalletType, Wallet, type WalletJson } from '@repo/wallet';
+import { generateSpendKey, getFullViewingKey } from '@penumbra-zone/wasm/keys';
 import type { ExtensionStorage } from '@repo/storage-chrome/base';
 import type { LocalStorageState } from '@repo/storage-chrome/local';
 import type { SessionStorageState } from '@repo/storage-chrome/session';
@@ -9,7 +9,7 @@ import { AllSlices, SliceCreator } from '.';
 
 export interface WalletsSlice {
   /** new custody types aren't used yet */
-  all: WalletJson<'encryptedSeedPhrase'>[];
+  all: WalletJson[];
   addWallet: (toAdd: { label: string; seedPhrase: string[] }) => Promise<void>;
   getSeedPhrase: () => Promise<string[]>;
 }
@@ -33,7 +33,7 @@ export const createWalletsSlice =
         }
 
         const key = await Key.fromJson(passwordKey);
-        const newWallet = new Wallet(label, getWalletId(fullViewingKey), fullViewingKey, {
+        const newWallet = new Wallet(label, fullViewingKey, {
           encryptedSeedPhrase: await key.seal(seedPhraseStr),
         });
 
@@ -58,6 +58,7 @@ export const createWalletsSlice =
           throw new Error('no wallet set');
         }
 
+        assertWalletType('encryptedSeedPhrase', activeWallet);
         const phraseBox = Box.fromJson(activeWallet.toJson().custody.encryptedSeedPhrase);
 
         const phrase = await key.unseal(phraseBox);

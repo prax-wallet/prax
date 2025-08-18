@@ -180,6 +180,7 @@ export default ({
       alias: {
         '@ui': path.resolve(__dirname, '../../packages/ui'),
       },
+      fallback: { buffer: false },
     },
     plugins: [
       new webpack.CleanPlugin(),
