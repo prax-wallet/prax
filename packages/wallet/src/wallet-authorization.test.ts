@@ -217,7 +217,7 @@ describe.each(Object.keys(custodyBoxes) as CustodyTypeName[])(
           ? `miss ${Array.from(missingAuths).join()}`
           : 'pass';
 
-      test.skip(`${custodyType} ${actions.join()} should ${outcome}`, { timeout }, async () => {
+      test(`${custodyType} ${actions.join()} should ${outcome}`, { timeout }, async () => {
         onTestFinished(() => {
           expect(uncaughtExceptionListener).not.toHaveBeenCalled();
           uncaughtExceptionListener.mockClear();
