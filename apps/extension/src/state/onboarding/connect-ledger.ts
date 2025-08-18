@@ -1,6 +1,6 @@
 import { ledgerUSBVendorId } from '@ledgerhq/devices';
 import { AllSlices, SliceCreator } from '..';
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { DEFAULT_PATH as PENUMBRA_PATH, PenumbraApp } from '@zondax/ledger-penumbra';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
@@ -11,12 +11,9 @@ export interface OnboardConnectLedgerSlice {
   };
 
   fullViewingKey?: PlainMessage<FullViewingKey>;
-  address?: PlainMessage<Address>;
 
-  appInfo?: Awaited<ReturnType<PenumbraApp['appInfo']>>;
   deviceInfo?: Awaited<ReturnType<PenumbraApp['deviceInfo']>>;
 
-  getAppInfo: (app: PenumbraApp) => Promise<void>;
   getDeviceInfo: (app: PenumbraApp) => Promise<void>;
 
   initOnboardingType: () => void;
@@ -25,8 +22,6 @@ export interface OnboardConnectLedgerSlice {
   requestPairingDevice: () => Promise<USBDevice>;
 
   connectLedgerApp: (device: USBDevice) => Promise<PenumbraApp>;
-
-  getAddress: (app: PenumbraApp) => Promise<void>;
 
   getFullViewingKey: (app: PenumbraApp) => Promise<void>;
 }
@@ -62,46 +57,19 @@ export const createOnboardConnectLedgerSlice: SliceCreator<OnboardConnectLedgerS
   connectLedgerApp: async (device: USBDevice) =>
     new PenumbraApp(await TransportWebUSB.open(device)),
 
-  getAddress: async (app: PenumbraApp) => {
-    const { address: ledgerAddress } = await app.getAddress(PENUMBRA_PATH, {
-      account: 0,
-      randomizer: Buffer.alloc(12, 0),
-    });
-
-    if (!ledgerAddress) {
-      throw new ReferenceError('Failed to retrieve address from Ledger device');
-    }
-
-    set(state => {
-      state.onboarding.connectLedger.address = toPlainMessage(
-        new Address({ inner: Uint8Array.from(ledgerAddress) }),
-      );
-    });
-  },
-
-  getAppInfo: async (app: PenumbraApp) => {
+  getDeviceInfo: async (app: PenumbraApp) => {
     try {
-      const appInfo = await app.appInfo();
-      if (appInfo.appName !== 'Penumbra') {
-        throw new Error(`Expected Penumbra app, got ${appInfo.appName} instead`);
-      }
+      const deviceInfo = await app.deviceInfo();
       set(state => {
-        state.onboarding.connectLedger.appInfo = appInfo;
+        state.onboarding.connectLedger.deviceInfo = deviceInfo;
       });
     } catch (cause) {
       console.error(cause);
-      if (cause instanceof Error) {
-        throw new Error(`Failed to get app info: ${cause.message}`, { cause });
-      }
-      throw new Error(`Failed to get app info: ${String(cause)}`, { cause });
+      throw new Error(
+        `Failed to get device info: ${cause instanceof Error ? cause.message : String(cause)}`,
+        { cause },
+      );
     }
-  },
-
-  getDeviceInfo: async (app: PenumbraApp) => {
-    const deviceInfo = await app.deviceInfo();
-    set(state => {
-      state.onboarding.connectLedger.deviceInfo = deviceInfo;
-    });
   },
 
   getFullViewingKey: async (app: PenumbraApp) => {
@@ -121,11 +89,9 @@ export const createOnboardConnectLedgerSlice: SliceCreator<OnboardConnectLedgerS
 
   clearLedgerState: () => {
     set(state => {
-      state.onboarding.connectLedger.appInfo = undefined;
       state.onboarding.connectLedger.deviceInfo = undefined;
       state.onboarding.connectLedger.specificDevice = undefined;
       state.onboarding.connectLedger.fullViewingKey = undefined;
-      state.onboarding.connectLedger.address = undefined;
     });
   },
 });

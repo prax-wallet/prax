@@ -2,7 +2,9 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
+import { cn } from '@repo/ui/lib/utils';
 import { useCallback, useEffect, useState } from 'react';
+import { LineWave } from 'react-loader-spinner';
 import { useStore } from '../../../state';
 import { onboardingSetupSelector } from '../../../state/onboarding';
 import { usePageNav } from '../../../utils/navigate';
@@ -40,6 +42,13 @@ export const OnboardingSetup = () => {
           <CardTitle>Setting up wallet</CardTitle>
         </CardHeader>
         <CardContent className='flex flex-col items-center justify-center py-8 space-y-4'>
+          <LineWave
+            visible={true}
+            height='60'
+            width='60'
+            color='#FFFFFF'
+            wrapperClass={cn('mt-[-17.5px] mr-[-21px]', error && 'animate-none')}
+          />
           {error && <p className='text-sm text-muted-foreground'>{error.message}</p>}
         </CardContent>
       </Card>

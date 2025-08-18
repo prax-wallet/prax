@@ -12,7 +12,6 @@ import { sessionExtStorage } from '@repo/storage-chrome/session';
 import type { OnboardingCustody } from './index';
 import type { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { Wallet, type WalletJson } from '@repo/wallet';
-import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 
 const { mock: localMock, listeners: localListeners } = chrome.storage
   .local as unknown as MockStorageArea;

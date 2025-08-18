@@ -1,4 +1,6 @@
-import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
+import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { getWalletId } from '@penumbra-zone/wasm/keys';
 import { Button } from '@repo/ui/components/ui/button';
 import {
   Card,
@@ -12,12 +14,12 @@ import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { cn } from '@repo/ui/lib/utils';
 import { PenumbraApp } from '@zondax/ledger-penumbra';
 import { useCallback, useEffect, useState } from 'react';
+import { LineWave } from 'react-loader-spinner';
 import { useStore } from '../../../../state';
 import { selectOnboardingLedger } from '../../../../state/onboarding/connect-ledger';
 import { usePageNav } from '../../../../utils/navigate';
 import { PagePath } from '../../paths';
 import { LedgerIcon } from './ledger-icon';
-import { LineWave } from 'react-loader-spinner';
 
 export const ConnectLedger = () => {
   const navigate = usePageNav();
@@ -29,42 +31,26 @@ export const ConnectLedger = () => {
   const {
     requestPairingDevice,
     connectLedgerApp,
-    address,
     fullViewingKey,
-    getAddress,
     getFullViewingKey,
+    deviceInfo,
+    getDeviceInfo,
     clearLedgerState,
-    getAppInfo,
-    appInfo,
   } = useStore(selectOnboardingLedger);
 
   const stop = useCallback(
     (cause: unknown) => {
       setComplete(false);
       setPending(false);
-      if (cause == null) {
-        setFailure(null);
-      } else {
-        console.error(cause);
-        setFailure(
-          cause instanceof Error
-            ? cause
-            : new Error(`Unknown failure: ${String(cause as unknown)}`, { cause }),
-        );
-      }
+      console.error(cause);
+      setFailure(
+        cause instanceof Error ? cause : new Error(`Unknown failure: ${String(cause)}`, { cause }),
+      );
     },
     [clearLedgerState, setFailure, setPending, setUsbDevice, setLedgerApp],
   );
 
   useEffect(() => {
-    console.log('useEffect', {
-      pending,
-      usbDevice,
-      ledgerApp,
-      fullViewingKey,
-      address,
-      appInfo,
-    });
     if (pending || complete || failure) {
       return;
     }
@@ -76,19 +62,17 @@ export const ConnectLedger = () => {
 
       if (!ledgerApp) {
         step = connectLedgerApp(usbDevice).then(setLedgerApp);
-      } else if (!appInfo) {
-        step = getAppInfo(ledgerApp);
+      } else if (!deviceInfo) {
+        step = getDeviceInfo(ledgerApp);
       } else if (!fullViewingKey) {
-        step = getFullViewingKey(ledgerApp);
-      } else if (!address) {
-        step = getAddress(ledgerApp).then(() => setComplete(true));
+        step = getFullViewingKey(ledgerApp).then(() => setComplete(true));
       }
 
       void Promise.resolve(step)
         .catch(stop)
         .finally(() => setPending(false));
     }
-  }, [ledgerApp, fullViewingKey, address, pending, getFullViewingKey, getAddress, usbDevice]);
+  }, [ledgerApp, fullViewingKey, pending, getFullViewingKey, usbDevice]);
 
   return (
     <FadeTransition>
@@ -126,41 +110,43 @@ export const ConnectLedger = () => {
               </>
             )}
             {usbDevice && <div>Claimed Ledger USB device...</div>}
-            {ledgerApp && <div>Obtaining app info...</div>}
-            {appInfo && <div>Obtaining viewing key...</div>}
-            {fullViewingKey && <div>Obtaining address...</div>}
-            {address && <div>Success!</div>}
-            {address && (
-              <>
-                <div>Ledger device Address 0:</div>
-                <div className='font-mono text-muted-foreground break-all'>
-                  {bech32mAddress(address)}
+            {ledgerApp && <div>Obtaining device info...</div>}
+            {deviceInfo && <div>Obtaining viewing key...</div>}
+            {fullViewingKey && (
+              <div className='p-12'>
+                <div className='font-headline'>Success!</div>
+                <div
+                  className={cn('font-mono text-muted-foreground', 'w-1/2', 'break-all', 'mx-auto')}
+                >
+                  {bech32mWalletId(getWalletId(new FullViewingKey(fullViewingKey)))}
                 </div>
-              </>
+              </div>
             )}
             {failure && <div className='text-rust'>{String(failure)}</div>}
           </div>
           <div className='flex flex-row justify-center gap-4'>
-            <Button
-              disabled={pending || complete}
-              variant='gradient'
-              className='mt-4'
-              onClick={() => {
-                setFailure(null);
-                setLedgerApp(null);
-                setUsbDevice(null);
-                clearLedgerState();
+            {!complete && (
+              <Button
+                disabled={pending || complete}
+                variant='gradient'
+                className='mt-4'
+                onClick={() => {
+                  setFailure(null);
+                  setLedgerApp(null);
+                  setUsbDevice(null);
+                  clearLedgerState();
 
-                setPending(true);
-                void requestPairingDevice()
-                  .then(setUsbDevice, stop)
-                  .finally(() => setPending(false));
-              }}
-            >
-              {!complete ? 'Connect' : 'Connected'}
-              &nbsp;
-              <LedgerIcon className='inline-block gap-1' />
-            </Button>
+                  setPending(true);
+                  void requestPairingDevice()
+                    .then(setUsbDevice, stop)
+                    .finally(() => setPending(false));
+                }}
+              >
+                {!pending ? 'Connect' : 'Pending...'}
+                &nbsp;
+                <LedgerIcon className='inline-block gap-1' />
+              </Button>
+            )}
             {complete && (
               <Button
                 disabled={!complete}
