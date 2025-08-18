@@ -1,6 +1,9 @@
-import type { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import type {
+  AuthorizeRequest,
+  AuthorizeResponse,
+} from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import type { OriginRecord, UserChoice } from '@repo/storage-chrome/records';
+import type { OriginRecord } from '@repo/storage-chrome/records';
 import type { JsonValue } from '@bufbuild/protobuf';
 
 export enum PopupType {
@@ -62,8 +65,7 @@ interface PopupRequestMap {
 
 interface PopupResponseMap {
   TxApproval: {
-    authorizeRequest: Jsonified<AuthorizeRequest>;
-    choice: UserChoice;
+    authorizeResponse: Jsonified<AuthorizeResponse>;
   };
   OriginApproval: OriginRecord;
 }
