@@ -8,6 +8,7 @@ import { generateSpendKey, getFullViewingKey } from '@penumbra-zone/wasm/keys';
 import { Key } from '@repo/encryption/key';
 import { Wallet, type WalletJson } from '@repo/wallet';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import type { MockStorageArea } from '@repo/mock-chrome/mocks/storage-area';
 import { Box } from '@repo/encryption/box';
 
 const seedPhrase1 = [
@@ -40,16 +41,10 @@ const seedPhrase2 = [
   'similar',
 ];
 
-const { mock: localMock, listeners: localListeners } = chrome.storage.local as unknown as {
-  mock: Map<string, unknown>;
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  listeners: Set<(changes: { [key: string]: chrome.storage.StorageChange }) => void>;
-};
-const { mock: sessionMock, listeners: sessionListeners } = chrome.storage.session as unknown as {
-  mock: Map<string, unknown>;
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  listeners: Set<(changes: { [key: string]: chrome.storage.StorageChange }) => void>;
-};
+const { mock: localMock, listeners: localListeners } = chrome.storage
+  .local as unknown as MockStorageArea;
+const { mock: sessionMock, listeners: sessionListeners } = chrome.storage
+  .session as unknown as MockStorageArea;
 
 describe('Accounts Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

@@ -1,4 +1,3 @@
-import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { Button } from '@repo/ui/components/ui/button';
 import {
   Card,
@@ -8,22 +7,22 @@ import {
   CardTitle,
 } from '@repo/ui/components/ui/card';
 import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
+import { BackIcon } from '@repo/ui/components/ui/icons/back-icon';
 import { cn } from '@repo/ui/lib/utils';
-import { useStore } from '../../../state';
-import { importSelector } from '../../../state/seed-phrase/import';
-import { usePageNav } from '../../../utils/navigate';
-import { ImportForm } from '../../../shared/containers/import-form';
 import { FormEvent, MouseEvent } from 'react';
-import { navigateToPasswordPage } from './password/utils';
-import { SEED_PHRASE_ORIGIN } from './password/types';
+import { useStore } from '../../../../state';
+import { selectOnboardImportPhrase } from '../../../../state/onboarding/import-phrase';
+import { usePageNav } from '../../../../utils/navigate';
+import { PhraseImportForm } from '../../../../shared/components/seed-phrase/phrase-import-form';
+import { PagePath } from '../../paths';
 
 export const ImportSeedPhrase = () => {
   const navigate = usePageNav();
-  const { phrase, phraseIsValid } = useStore(importSelector);
+  const { phrase, phraseIsFilled, phraseIsValid } = useStore(selectOnboardImportPhrase);
 
   const handleSubmit = (event: MouseEvent | FormEvent) => {
     event.preventDefault();
-    navigateToPasswordPage(navigate, SEED_PHRASE_ORIGIN.IMPORTED);
+    navigate(PagePath.ONBOARDING_SETUP);
   };
 
   return (
@@ -38,16 +37,16 @@ export const ImportSeedPhrase = () => {
         </CardHeader>
         <CardContent>
           <form className='mt-6 grid gap-4' onSubmit={handleSubmit}>
-            <ImportForm />
+            <PhraseImportForm />
             <Button
               className='mt-4'
               variant='gradient'
-              disabled={!phrase.every(w => w.length > 0) || !phraseIsValid()}
+              disabled={!phraseIsFilled || !phraseIsValid}
               onClick={handleSubmit}
             >
-              {!phrase.length || !phrase.every(w => w.length > 0)
+              {!phraseIsFilled
                 ? 'Fill in passphrase'
-                : !phraseIsValid()
+                : !phraseIsValid
                   ? 'Phrase is invalid'
                   : 'Import'}
             </Button>

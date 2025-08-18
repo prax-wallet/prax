@@ -64,8 +64,6 @@ interface PopupRequestMap {
 }
 
 interface PopupResponseMap {
-  TxApproval: {
-    authorizeResponse: Jsonified<AuthorizeResponse>;
-  };
+  TxApproval: { authorizeResponse: Jsonified<AuthorizeResponse> };
   OriginApproval: OriginRecord;
 }

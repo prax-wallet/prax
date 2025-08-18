@@ -7,7 +7,9 @@ import {
 import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import { Key } from '@repo/encryption/key';
+import { localExtStorage } from '@repo/storage-chrome/local';
 import { UserChoice } from '@repo/storage-chrome/records';
+import { sessionExtStorage } from '@repo/storage-chrome/session';
 import { beforeEach, describe, expect, MockedFunction, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
@@ -18,7 +20,9 @@ import { PopupRequest, PopupType } from '../message/popup';
 import testTxPlanJson from './test-data/tx-plan.json';
 import { WalletJson } from '@repo/wallet';
 import { txApprovalSelector } from './tx-approval';
-import { localExtStorage, sessionExtStorage } from '@repo/storage-chrome';
+
+const localMock = (chrome.storage.local as unknown as { mock: Map<string, unknown> }).mock;
+const sessionMock = (chrome.storage.session as unknown as { mock: Map<string, unknown> }).mock;
 
 // Mock transaction view functions
 vi.mock('@penumbra-zone/perspective/plan/view-transaction-plan', () => {
@@ -121,8 +125,8 @@ describe('Transaction Approval Slice', () => {
   } satisfies PopupRequest<PopupType.TxApproval>[PopupType.TxApproval];
 
   beforeEach(async () => {
-    await chrome.storage.local.clear();
-    await chrome.storage.session.clear();
+    localMock.clear();
+    sessionMock.clear();
     await localExtStorage.set('wallets', [wallet0]);
     await sessionExtStorage.set('passwordKey', pw);
     useStore = create<AllSlices>()(

@@ -10,8 +10,8 @@ import {
 import { useCallback, useMemo } from 'react';
 import { CustomLink } from '../../../shared/components/link';
 import { useStore } from '../../../state';
-import { passwordSelector } from '../../../state/password';
-import { getActiveWallet } from '../../../state/wallets';
+import { logoutSelector } from '../../../state/password';
+import { activeWalletSelector } from '../../../state/wallets';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { SettingsScreen } from './settings-screen';
@@ -51,8 +51,8 @@ const links = [
 
 export const Settings = () => {
   const navigate = usePopupNav();
-  const { clearSessionPassword } = useStore(passwordSelector);
-  const wallet = useStore(getActiveWallet);
+  const { clearSessionPassword } = useStore(logoutSelector);
+  const wallet = useStore(activeWalletSelector);
 
   const activeLinks = useMemo(
     () =>
