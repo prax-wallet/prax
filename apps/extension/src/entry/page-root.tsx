@@ -12,7 +12,7 @@ const MainPage = () => {
   return (
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={pageRouter} future={{ v7_startTransition: false }} />
+        <RouterProvider router={pageRouter} />
       </QueryClientProvider>
     </StrictMode>
   );

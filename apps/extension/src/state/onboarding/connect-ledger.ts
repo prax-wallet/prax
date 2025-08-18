@@ -1,4 +1,4 @@
-import { ledgerUSBVendorId } from '@ledgerhq/devices/lib-es/index';
+import { ledgerUSBVendorId } from '@ledgerhq/devices';
 import { AllSlices, SliceCreator } from '..';
 import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { DEFAULT_PATH as PENUMBRA_PATH, PenumbraApp } from '@zondax/ledger-penumbra';
