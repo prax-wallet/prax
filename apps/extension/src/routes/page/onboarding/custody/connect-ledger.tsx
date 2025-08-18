@@ -42,6 +42,9 @@ export const ConnectLedger = () => {
     (cause: unknown) => {
       setComplete(false);
       setPending(false);
+      setLedgerApp(null);
+      setUsbDevice(null);
+      clearLedgerState();
       console.error(cause);
       setFailure(
         cause instanceof Error ? cause : new Error(`Unknown failure: ${String(cause)}`, { cause }),
