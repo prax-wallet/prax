@@ -19,14 +19,13 @@ export const alreadyApprovedSender = async (
  * Obtain the approval status of an origin, for use by connection request
  * handler. Input origins should already be validated.
  *
- * @param approve A sender that has already been validated
+ * @param validSender A sender that has already been validated
  * @returns The user's choice about the origin, from storage or fresh off the popup
  */
-export const approveSender = async (approve: {
-  origin: string;
-  tab: chrome.tabs.Tab;
-}): Promise<UserChoice> => {
-  const existingRecord = await getOriginRecord(approve.origin);
+export const approveSender = async (
+  validSender: ValidExternalSender | PrerenderingExternalSender,
+): Promise<UserChoice> => {
+  const existingRecord = await getOriginRecord(validSender.origin);
 
   switch (existingRecord?.choice) {
     case UserChoice.Approved:
@@ -35,12 +34,11 @@ export const approveSender = async (approve: {
 
     case UserChoice.Denied:
     case undefined: {
-      const popupResponse = await popup(PopupType.OriginApproval, {
-        origin: approve.origin,
-        favIconUrl: approve.tab.favIconUrl,
-        title: approve.tab.title,
-        lastRequest: existingRecord?.date,
-      });
+      const popupResponse = await popup(
+        PopupType.OriginApproval,
+        { lastRequest: existingRecord?.date },
+        validSender,
+      );
 
       // if user interacted with popup, update record
       if (popupResponse) {

@@ -3,14 +3,20 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import type { OriginRecord, UserChoice } from '@repo/storage-chrome/records';
 import type { JsonValue } from '@bufbuild/protobuf';
 
+const REQUEST_KEYS = ['id', 'sender'];
+
 export enum PopupType {
   TxApproval = 'TxApproval',
   OriginApproval = 'OriginApproval',
+  LoginPrompt = 'LoginPrompt',
 }
 
 export type PopupError = Record<'error', JsonValue>;
 
-export type PopupRequest<M extends PopupType> = { id: string } & Record<M, PopupRequestMap[M]>;
+export type PopupRequest<M extends PopupType> = {
+  id: string;
+  sender?: chrome.runtime.MessageSender;
+} & Record<M, PopupRequestMap[M]>;
 
 export type PopupResponse<M extends PopupType> = Record<M, PopupResponseMap[M]>;
 
@@ -18,7 +24,6 @@ export type PopupResponse<M extends PopupType> = Record<M, PopupResponseMap[M]>;
 export const isPopupRequest = (id: string, req: unknown): req is PopupRequest<any> =>
   typeof req === 'object' &&
   req !== null &&
-  Object.keys(req).length === 2 &&
   'id' in req &&
   req.id === id &&
   Object.keys(req).some(k => k in PopupType);
@@ -29,9 +34,7 @@ export const isPopupRequestType = <M extends PopupType>(
 ): req is PopupRequest<M> =>
   typeof req === 'object' &&
   req !== null &&
-  Object.keys(req).length === 2 &&
-  'id' in req &&
-  Object.keys(req).some(k => pt === k);
+  Object.keys(req).every(k => REQUEST_KEYS.includes(k) || k === pt);
 
 export const isPopupResponseType = <M extends PopupType>(
   pt: M,
@@ -39,11 +42,10 @@ export const isPopupResponseType = <M extends PopupType>(
 ): res is PopupResponse<M> =>
   typeof res === 'object' &&
   res !== null &&
-  Object.keys(res).length === 1 &&
-  pt === Object.keys(res)[0];
+  Object.keys(res).every(k => !REQUEST_KEYS.includes(k) && k === pt);
 
 export const typeOfPopupRequest = <M extends PopupType>(req: PopupRequest<M>): M => {
-  const [key, ...extra] = Object.keys(req).filter(k => k !== 'id');
+  const [key, ...extra] = Object.keys(req).filter(k => !REQUEST_KEYS.includes(k));
   if (!extra.length && key && key in PopupType) {
     return key as M;
   }
@@ -51,16 +53,13 @@ export const typeOfPopupRequest = <M extends PopupType>(req: PopupRequest<M>): M
 };
 
 interface PopupRequestMap {
+  LoginPrompt: { next: Exclude<PopupType, PopupType.LoginPrompt> };
   TxApproval: { authorizeRequest: Jsonified<AuthorizeRequest> };
-  OriginApproval: {
-    origin: string;
-    favIconUrl?: string;
-    title?: string;
-    lastRequest?: number;
-  };
+  OriginApproval: { lastRequest?: number };
 }
 
 interface PopupResponseMap {
+  LoginPrompt: { didLogin: boolean };
   TxApproval: {
     authorizeRequest: Jsonified<AuthorizeRequest>;
     choice: UserChoice;

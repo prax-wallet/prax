@@ -11,15 +11,19 @@ const handlePopup = async <T extends PopupType>(
   // get popup slice acceptRequest method
   const state = useStore.getState();
   const acceptRequest: {
-    [k in PopupType]: (request: PopupRequest<k>[k]) => Promise<PopupResponse<k>[k]>;
+    [k in PopupType]: (
+      request: PopupRequest<k>[k],
+      sender?: chrome.runtime.MessageSender,
+    ) => Promise<PopupResponse<k>[k]>;
   } = {
     [PopupType.TxApproval]: state.txApproval.acceptRequest,
     [PopupType.OriginApproval]: state.originApproval.acceptRequest,
+    [PopupType.LoginPrompt]: state.loginPrompt.acceptRequest,
   };
 
   // handle via slice
   const popupResponse = {
-    [popupType]: await acceptRequest[popupType](popupRequest[popupType]),
+    [popupType]: await acceptRequest[popupType](popupRequest[popupType], popupRequest.sender),
   } as PopupResponse<T>;
 
   return popupResponse;

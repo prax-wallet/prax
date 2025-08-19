@@ -25,6 +25,7 @@ import { assertValidActionPlans } from './tx-validation/assert-valid-plan';
 
 export interface TxApprovalSlice {
   responder?: PromiseWithResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
+  sender?: chrome.runtime.MessageSender;
   authorizeRequest?: PlainMessage<AuthorizeRequest>;
   transactionView?: PlainMessage<TransactionView>;
   invalidPlan?: Error;
@@ -37,6 +38,7 @@ export interface TxApprovalSlice {
 
   acceptRequest: (
     req: PopupRequest<PopupType.TxApproval>[PopupType.TxApproval],
+    sender?: chrome.runtime.MessageSender,
   ) => Promise<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>;
 
   setChoice: (choice: UserChoice) => void;
@@ -47,9 +49,8 @@ export interface TxApprovalSlice {
 export const createTxApprovalSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<TxApprovalSlice> =>
   (set, get) => ({
-    acceptRequest: async req => {
-      const authorizeRequest = AuthorizeRequest.fromJson(req.authorizeRequest);
-
+    acceptRequest: async ({ authorizeRequest: authReqJson }, sender) => {
+      const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
       const existing = get().txApproval;
       if (existing.responder) {
         throw new Error('Another request is still pending');
@@ -74,6 +75,7 @@ export const createTxApprovalSlice =
         Promise.withResolvers<PopupResponse<PopupType.TxApproval>[PopupType.TxApproval]>();
       set(state => {
         state.txApproval.responder = responder;
+        state.txApproval.sender = sender;
       });
 
       const getMetadata = async (assetId: AssetId) => {
@@ -152,6 +154,7 @@ export const createTxApprovalSlice =
       } finally {
         set(state => {
           state.txApproval.responder = undefined;
+          state.txApproval.sender = undefined;
           state.txApproval.authorizeRequest = undefined;
           state.txApproval.transactionView = undefined;
           state.txApproval.choice = undefined;

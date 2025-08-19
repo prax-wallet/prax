@@ -2,14 +2,16 @@ import { PopupPath } from './routes/popup/paths';
 import { PopupRequest, PopupResponse, PopupType } from './message/popup';
 import { sendPopup } from './message/send-popup';
 import { listenReady } from './message/listen-ready';
-import { throwIfNeedsLogin } from './needs-login';
+import { promptIfNeedsLogin } from './needs-login';
 
 const POPUP_READY_TIMEOUT = 60_000;
 const POPUP_PATHS = {
   [PopupType.TxApproval]: PopupPath.TRANSACTION_APPROVAL,
   [PopupType.OriginApproval]: PopupPath.ORIGIN_APPROVAL,
+  [PopupType.LoginPrompt]: PopupPath.LOGIN_PROMPT,
 } as const;
 const POPUP_BASE = chrome.runtime.getURL('/popup.html');
+const POPUP_SIZE_DETACHED = { width: 400, height: 628 };
 
 /**
  * Launch a popup dialog to obtain a decision from the user. Returns the user
@@ -17,31 +19,31 @@ const POPUP_BASE = chrome.runtime.getURL('/popup.html');
  */
 export const popup = async <M extends PopupType>(
   popupType: M,
-  request: PopupRequest<M>[M],
+  request: Omit<PopupRequest<M>[M], 'sender'>,
+  sender?: chrome.runtime.MessageSender,
 ): Promise<PopupResponse<M>[M] | null> => {
-  await throwIfNeedsLogin();
-
-  const lockGranted = (async lock => {
-    if (!lock) {
-      throw new Error(`Popup ${popupType} already open`);
-    }
-
-    const popupId = await spawnDetachedPopup(popupType).catch(cause => {
-      throw new Error(`Popup ${popupType} failed to open`, { cause });
-    });
-
-    const popupRequest = {
-      [popupType]: request,
-      id: popupId,
-    } as PopupRequest<M>;
-
-    return sendPopup(popupRequest);
-  }) satisfies LockGrantedCallback;
+  if (popupType !== PopupType.LoginPrompt) {
+    await promptIfNeedsLogin(popupType, sender);
+  }
 
   const popupResponse = await navigator.locks.request(
-    popupType,
+    `${chrome.runtime.id}-popup-${popupType}`,
     { ifAvailable: true, mode: 'exclusive' },
-    lockGranted,
+    async lock => {
+      if (!lock) {
+        throw new Error(`Popup ${popupType} already open`);
+      }
+
+      const popupId = await spawnPopup(popupType, sender);
+
+      const popupRequest = {
+        [popupType]: request,
+        id: popupId,
+        sender,
+      } as PopupRequest<M>;
+
+      return sendPopup(popupRequest);
+    },
   );
 
   if (popupResponse == null) {
@@ -72,30 +74,51 @@ const popupUrl = (popupType?: PopupType, id?: string): URL => {
 
 /**
  * Spawns a popup with a unique id, and resolves the ID when the popup is ready.
+ *
+ * If a relevant sender with a tab id is provided, the popup is an attached
+ * action popup. Otherwise, a detached popup appears near the last focused
+ * window.
+ *
+ * @todo when sender is available in service context, rm detached popups
+ *
  * Ready promise times out in {@link POPUP_READY_TIMEOUT} milliseconds.
  */
-const spawnDetachedPopup = async (popupType: PopupType): Promise<string> => {
+const spawnPopup = async (
+  popupType: PopupType,
+  sender?: chrome.runtime.MessageSender,
+): Promise<string> => {
   const popupId = crypto.randomUUID();
   const ready = listenReady(popupId, AbortSignal.timeout(POPUP_READY_TIMEOUT));
 
-  const geometry = await chrome.windows
-    .getLastFocused()
-    .then(({ top = 0, left = 0, width = 0 }) => ({
-      width: 400,
-      height: 628,
-      // top right side of parent
-      top: Math.max(0, top),
-      left: Math.max(0, left + width - 400),
-    }));
+  if (sender?.tab) {
+    // Spawn an attached popup on the relevant tab.
+    await chrome.action.setPopup({
+      tabId: sender.tab.id,
+      popup: popupUrl(popupType, popupId).href,
+    });
+    await chrome.action.openPopup({
+      windowId: sender.tab.windowId,
+    });
+  } else {
+    // Spawn a detached popup near the last focused window, which is hopefully relevant.
+    const geometry = await chrome.windows
+      .getLastFocused()
+      .then(({ top = 0, left = 0, width = 0 }) => ({
+        // top right side of parent
+        top: Math.max(0, top),
+        left: Math.max(0, left + width - POPUP_SIZE_DETACHED.width),
+        ...POPUP_SIZE_DETACHED,
+      }));
 
-  const created = await chrome.windows.create({
-    url: popupUrl(popupType, popupId).href,
-    type: 'popup',
-    ...geometry,
-  });
+    const created = await chrome.windows.create({
+      url: popupUrl(popupType, popupId).href,
+      type: 'popup',
+      ...geometry,
+    });
 
-  // window id is guaranteed present after `create`
-  void ready.catch(() => chrome.windows.remove(created.id!));
+    // window id is guaranteed present after `create`
+    void ready.catch(() => chrome.windows.remove(created.id!));
+  }
 
   return ready;
 };

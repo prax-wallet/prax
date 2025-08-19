@@ -1,6 +1,7 @@
 export enum PopupPath {
   INDEX = '/',
   LOGIN = '/login',
+  LOGIN_PROMPT = '/login-prompt',
   TRANSACTION_APPROVAL = '/approval/tx',
   ORIGIN_APPROVAL = '/approval/origin',
   SETTINGS = '/settings',
